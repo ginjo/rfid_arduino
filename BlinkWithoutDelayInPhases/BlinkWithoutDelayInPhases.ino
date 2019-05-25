@@ -12,7 +12,7 @@
   const int led_pin =  9; //LED_BUILTIN;// the number of the LED pin
   
   // Sets duration of led phases (milliseconds) - should always be even num of elements.
-  const long interval[] = {50,20,50,20,50,1810};
+  const long interval[] = {50,20,50,20,50,1700};
   
   // Sets initial state of led (phase 0)
   int led_state = LOW;
@@ -131,23 +131,27 @@
         // Draws or selects menu
         switch (char(byt)) {
           case '1':
-            youSelected(char(byt));
+            BTserial.println("Menu > List tags");
             listTags();
+            BTserial.println("");
             bt_state = '0';
             break;
           case '2':
-            BTserial.print("\r\nPlease enter a tag number to store: ");
+            BTserial.println("Menu > Add tag");
+            BTserial.print("Enter a tag number to store: ");
             bt_state = '2';
             break;
           case '3':
-            youSelected(char(byt));
+            BTserial.println("Menu > Delete tag");
+            BTserial.println("");
             bt_state = '0';
             break;
           default:
-            BTserial.println("\r\nMenu");
+            BTserial.println("Menu");
             BTserial.println("1. List tags");
             BTserial.println("2. Add tag");
-            BTserial.println("3. Delete tags");
+            BTserial.println("3. Delete tag");
+            BTserial.println("");
             bt_state = '0';
             break;
         }
@@ -163,11 +167,12 @@
           // Need to discard bogus tags... this kinda works
           if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
             bt_state = '0';
+            BTserial.println("");
             return;
           }
           
-          BTserial.print("Tag entered: ");
-          BTserial.println((char*)buff);
+          //BTserial.print("Tag entered: ");
+          //BTserial.println((char*)buff);
           //for (int i = 0; i < 8; i++) {
           //  BTserial.write(buff[i]);
           //}
@@ -179,7 +184,10 @@
           tag_index ++;
           
           bt_state = '0';
+          listTags();
+          BTserial.println("");
         }
+      // Are either of these last two conditions used?
       } else if (int(byt) == 13) {
         // User hit Return
         BTserial.println("");
@@ -192,11 +200,11 @@
   }
 
   // Generic menu selection response
-  void youSelected(char item) {
-    BTserial.print("\r\nYou selected menu item '");
-    BTserial.print(item);
-    BTserial.println("'");
-  }
+  //void youSelected(char item) {
+  //  BTserial.print("\r\nYou selected menu item '");
+  //  BTserial.print(item);
+  //  BTserial.println("'");
+  //}
 
   // Log to serial port(s)
   void logger(char str) {
@@ -218,3 +226,4 @@
       BTserial.println("");
     }
   }
+  
