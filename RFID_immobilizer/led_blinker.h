@@ -1,8 +1,8 @@
 // LED Blinker Class
 
-#include <Arduino.h>
 #ifndef __LED_BLINKER_H__
 #define __LED_BLINKER_H__
+  #include <Arduino.h>
 
   class Led {
   public:
@@ -32,7 +32,8 @@
     // like maybe 16 or 32. How much ram will this take?
     int intervals_length;
     int intervals[];
-  
+
+    // constructor
     Led(int);
     
     void setup(int[], int);

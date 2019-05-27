@@ -38,7 +38,7 @@
       Serial.println(n);
       Serial.print("inv[n]: ");
       Serial.println(inv[n]);
-      Serial.println("\r\n");
+      Serial.println("");
     }
   
     Serial.print("intervals: ");
@@ -99,12 +99,12 @@
       previous_ms_saved = previous_ms;
       previous_ms = current_ms;
       
-      Serial.println(phase);
-      Serial.println(intervals[phase]);
-      Serial.println(current_ms);
-      Serial.println(previous_ms_saved);
-      Serial.println(led_state);
-      Serial.println(" ");
+      //Serial.println(phase);
+      //Serial.println(intervals[phase]);
+      //Serial.println(current_ms);
+      //Serial.println(previous_ms_saved);
+      //Serial.println(led_state);
+      //Serial.println(" ");
   
       // Increments the led phase, or resets it to zero,
       // then calls startPhase()
