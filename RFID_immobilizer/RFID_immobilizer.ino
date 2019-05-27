@@ -5,21 +5,21 @@
  */
 
   #include <SoftwareSerial.h>
-  #include "led_class.h"
-  #include "serial_menu.h"
+  #include "led_blinker.h"
+  //#include "serial_menu.h"
 
   // Brings up a simple menu cli on a BT serial port.
   //SoftwareSerial BTserial(2, 3); // RX | TX
-  SerialMenu BTmenu(2, 3, 9600);
+  //SerialMenu BTmenu(2, 3, 9600);
 
   // Brings up a blinker LED with specified patter of on/off intervals.
   int blinker_intervals[4] = {50,20,50,2880};
-  Led Blinker(9, 4, blinker_intervals); 
+  Led Blinker(9); 
 
   void setup() {
     Serial.begin(9600);
     //BTmenu.setup();
-    Blinker.setup(blinker_intervals);
+    Blinker.setup(blinker_intervals, 4);
   }
   
   void loop() {
@@ -27,6 +27,6 @@
     
     //BTmenu.loop();
     Blinker.loop();
-    delay(500);
+    //delay(500);
   }
   
