@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #ifndef __LED_BLINKER_H__
 #define __LED_BLINKER_H__
+#define INTERVALS_LENGTH 10
 
 
   class Led {
@@ -31,13 +32,16 @@
     // clobber its memory locations.
     // TODO: Set a defined number of elements possible in the intervals[] array,
     // like maybe 16 or 32. How much ram will this take?
-    int intervals_length;
-    unsigned long intervals[];
+    //const int intervals_length = 8;
+    int intervals_count;
+    unsigned long intervals[INTERVALS_LENGTH];
+    
 
     // constructor
     Led(int);
     
-    void begin(unsigned long[], int);
+    //void begin(unsigned long[], int);
+    void begin(unsigned long[]);
     void loop();
     void startPhase(int);
     int  ledStateChange();

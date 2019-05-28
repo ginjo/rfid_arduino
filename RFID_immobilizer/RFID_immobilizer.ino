@@ -15,7 +15,7 @@
   SerialMenu BTmenu(&BTserial);
 
   // Brings up a blinker LED with specified patter of on/off intervals.
-  unsigned long blinker_intervals[4] = {50,20,50,2880};
+  unsigned long blinker_intervals[] = {50,20,50,2880};
   Led Blinker(9); 
 
   void setup() {
@@ -27,13 +27,16 @@
 
 
 //  FIX:
-//  These two items together crash the arduino repeatedly and quickly.
-//  But any other combination of the setup calls, does not crash.
+//  These two items together crash the arduino repeatedly and quickly
+//  when Blinker is setup before BTmenu (the actual setup causes crash).
+//  But either way, only one (Blinker OR BTmenu) can run in the loop,
+//  otherwise arduino will crash (during the loop).
 
     BTmenu.begin();
     delay(100);
 
-    Blinker.begin(blinker_intervals, 4);
+    //Blinker.begin(blinker_intervals, 4);
+    Blinker.begin(blinker_intervals);
     delay(100);
    
 //    BTmenu.begin();
@@ -45,8 +48,8 @@
     
     Blinker.loop();
     delay(50);
-//
-//    BTmenu.loop();
-//    delay(50);
+
+    BTmenu.loop();
+    delay(50);
   }
   

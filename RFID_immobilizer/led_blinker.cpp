@@ -23,17 +23,20 @@
   }
   
   
-  void Led::begin(unsigned long inv[], int len) {
+  //void Led::begin(unsigned long inv[], int len) {
+  void Led::begin(unsigned long inv[]) {
   	pinMode(led_pin, OUTPUT);
   	start_blinker = HIGH;
     // I don't think you can use sizeof on a passed-in array.
     //intervals_length = sizeof(inv)/sizeof(inv[0]);
-    intervals_length = len;
-    //Serial.print("Led::setup() intervals_length: ");
-    //Serial.println(intervals_length);
-    
-    for (int n = 0; n < intervals_length; n ++) {
+    //intervals_length = len;
+    //int intervals_count = sizeof(inv)/sizeof(*inv);
+    //Serial.print("Led::setup() intervals_count: ");
+    //Serial.println(intervals_count);
+
+    for (int n = 0; n < INTERVALS_LENGTH && inv[n] > 0; n ++) {
       intervals[n] = inv[n];
+      intervals_count = n+1;
       
       //Serial.print("n: ");
       //Serial.println(n);
@@ -43,9 +46,9 @@
     }
   
     Serial.print("Led::intervals[]: ");
-    Serial.print(intervals_length);
+    Serial.print(intervals_count);
     Serial.print(",");
-    for (int n = 0; n < intervals_length; n ++) {
+    for (int n = 0; n < INTERVALS_LENGTH; n ++) {
       Serial.print(" ");
       Serial.print(intervals[n]);
     }
@@ -103,7 +106,7 @@
       // Increments the led phase, or resets it to zero,
       // then calls startPhase()
       //int ary_size = sizeof(intervals)/sizeof(*intervals);
-      if (phase >= intervals_length - 1) {
+      if (phase >= intervals_count - 1) {
         startPhase(0);
       } else {
         startPhase(phase + 1);

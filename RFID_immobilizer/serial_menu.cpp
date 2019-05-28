@@ -130,13 +130,13 @@
 	void SerialMenu::menuListTags() {
     serial_port->println("Menu > Tags");
 	  //serial_port->println((char*)tags);
-	  for (int i = 0; i < 8; i ++) {
+	  for (int i = 0; i < TAG_LIST_SIZE; i ++) {
 	    if (! char(tags[i][0])) {
 	      return;
 	    }
 	    serial_port->print(i);
 	    serial_port->print(". ");
-	    for (int j = 0; j < 8; j ++) {
+	    for (int j = 0; j < TAG_LENGTH; j ++) {
 	      serial_port->print(char(tags[i][j]));
 	    }
 	    serial_port->println("");
@@ -159,12 +159,13 @@
     buff_index ++;
     serial_port->write(byt);
   
-    if (int(byt) == 13 || buff_index > 7) {
+    if (int(byt) == 13 || buff_index >= TAG_LENGTH) {
       buff_index = 0;
       serial_port->println("");
   
       // Need to discard bogus tags... this kinda works
-      if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
+      //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
+      if (buff_index < TAG_LENGTH || buff[0] == 13) {
         bt_state = '0';
         serial_port->println("");
         return;
@@ -177,7 +178,7 @@
       //}
       serial_port->println("");
   
-      for (int i = 0; i < 8; i ++) {
+      for (int i = 0; i < TAG_LENGTH; i ++) {
         tags[tag_index][i] = buff[i];
       }
       tag_index ++;

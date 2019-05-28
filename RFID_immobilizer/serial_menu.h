@@ -5,6 +5,8 @@
 
 #ifndef __SERIAL_MENU_H__
 #define __SERIAL_MENU_H__
+#define TAG_LENGTH 8
+#define TAG_LIST_SIZE 8
 
   
   class SerialMenu {
@@ -18,10 +20,10 @@
   	char bt_state;
   
   	// Byte buffer for incoming BTserial strings
-  	uint8_t buff[8];
+  	uint8_t buff[TAG_LENGTH];
   	int buff_index;
   
-  	char tags[8][8];
+  	char tags[TAG_LIST_SIZE][TAG_LENGTH];
   	int tag_index;
 
     // constructor
