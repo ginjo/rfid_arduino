@@ -1,14 +1,17 @@
 // Serial Menu Class
 
+#include <Arduino.h>
+#include <Stream.h>
+
 #ifndef __SERIAL_MENU_H__
 #define __SERIAL_MENU_H__
-  #include <Arduino.h>
-  #include <SoftwareSerial.h>
+
   
   class SerialMenu {
+  private:
+    Stream *serial_port;
+    
   public:
-  
-  	Stream *serial_port;
     int receive_pin;
     int transmit_pin;
   	unsigned long baud_rate;
@@ -20,7 +23,6 @@
   
   	char tags[8][8];
   	int tag_index;
-    
 
     // constructor
     //SerialMenu(int, int, unsigned long);

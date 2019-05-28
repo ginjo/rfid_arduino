@@ -2,8 +2,8 @@
 
 #include "led_blinker.h"
   
-  Led::Led(int byt) : 
-    led_pin(byt)  //,
+  Led::Led(int pin) : 
+    led_pin(pin)
   	//intervals_length(len)
   	//intervals(inv) // this doesn't seem to work here,
   	// so use the itterative pattern below:
@@ -23,7 +23,7 @@
   }
   
   
-  void Led::setup(int inv[], int len) {
+  void Led::setup(unsigned long inv[], int len) {
   	pinMode(led_pin, OUTPUT);
   	start_blinker = HIGH;
     // I don't think you can do sizeof on a passed-in array.
@@ -34,11 +34,12 @@
     
     for (int n = 0; n < intervals_length; n ++) {
       intervals[n] = inv[n];
-      Serial.print("n: ");
-      Serial.println(n);
-      Serial.print("inv[n]: ");
-      Serial.println(inv[n]);
-      Serial.println("");
+      
+      //Serial.print("n: ");
+      //Serial.println(n);
+      //Serial.print("inv[n]: ");
+      //Serial.println(inv[n]);
+      //Serial.println("");
     }
   
     Serial.print("intervals: ");
@@ -98,13 +99,6 @@
       // save the last time you started a new phase
       previous_ms_saved = previous_ms;
       previous_ms = current_ms;
-      
-      //Serial.println(phase);
-      //Serial.println(intervals[phase]);
-      //Serial.println(current_ms);
-      //Serial.println(previous_ms_saved);
-      //Serial.println(led_state);
-      //Serial.println(" ");
   
       // Increments the led phase, or resets it to zero,
       // then calls startPhase()

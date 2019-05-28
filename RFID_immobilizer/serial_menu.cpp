@@ -29,11 +29,22 @@
 	}
 	
 	void SerialMenu::setup(unsigned long baud) {
-		//serial_port->begin(baud);
+    //showInfo();
+    serial_port->println("1 SerialMenu::setup calling serial_port->println()");
+    delay(500);
+    serial_port->println("2 SerialMenu::setup calling serial_port->println()");
+    delay(500);
+    serial_port->println("3 SerialMenu::setup calling serial_port->println()");
+    delay(500);
+    serial_port->println("4 SerialMenu::setup calling serial_port->println()");
+    delay(500);
+    serial_port->println("5 SerialMenu::setup calling serial_port->println()");
     showInfo();
 	}
 
   void SerialMenu::loop() {
+    //serial_port->println("SerialMenu::loop() calling serial_port->println()");
+    //delay(500);
     handleSerialPort();
   }
 
@@ -56,8 +67,12 @@
 
 	// Handle serial_port
 	void SerialMenu::handleSerialPort() {
-    Serial.println("About to call serial_port->available()");
-	  if (serial_port.available()) {
+    //Serial.println("About to call serial_port->...()");
+    //delay(500);
+    //serial_port->println("SerialMenu::handleSerialPort() calling serial_port->println()");
+    //delay(500);
+    //return 0;
+	  if (serial_port->available()) {
       Serial.println("serial_port->available() is TRUE");
 	    uint8_t byt = serial_port->read();
     
