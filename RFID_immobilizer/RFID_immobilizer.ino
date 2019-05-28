@@ -19,22 +19,34 @@
   Led Blinker(9); 
 
   void setup() {
-    Blinker.setup(blinker_intervals, 4);
-
-    delay(500);
-    
     Serial.begin(9600);
+    delay(100);
+
     BTserial.begin(9600);
-    BTmenu.setup();
+    delay(100);
+
+
+//  FIX:
+//  These two items together crash the arduino repeatedly and quickly.
+//  But any other combination of the setup calls, does not crash.
+
+    BTmenu.begin();
+    delay(100);
+
+    Blinker.begin(blinker_intervals, 4);
+    delay(100);
+   
+//    BTmenu.begin();
+//    delay(100);
   }
   
   void loop() {
     // here is where you put code that needs to be running all the time.
     
-    BTmenu.loop();
-    //Blinker.loop();
-
-    // only for debugging
-    //delay(500);
+    Blinker.loop();
+    delay(50);
+//
+//    BTmenu.loop();
+//    delay(50);
   }
   

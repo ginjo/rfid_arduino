@@ -37,7 +37,7 @@
     // constructor
     Led(int);
     
-    void setup(unsigned long[], int);
+    void begin(unsigned long[], int);
     void loop();
     void startPhase(int);
     int  ledStateChange();

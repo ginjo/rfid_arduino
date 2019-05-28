@@ -29,8 +29,8 @@
     //SerialMenu(Stream, unsigned long);
     SerialMenu(Stream *stream_ref);
     
-    void setup();
-    void setup(unsigned long);
+    void begin();
+    void begin(unsigned long);
     void showInfo();
     void handleSerialPort();
     void menuMain();

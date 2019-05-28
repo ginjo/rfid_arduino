@@ -23,14 +23,14 @@
   }
   
   
-  void Led::setup(unsigned long inv[], int len) {
+  void Led::begin(unsigned long inv[], int len) {
   	pinMode(led_pin, OUTPUT);
   	start_blinker = HIGH;
-    // I don't think you can do sizeof on a passed-in array.
+    // I don't think you can use sizeof on a passed-in array.
     //intervals_length = sizeof(inv)/sizeof(inv[0]);
     intervals_length = len;
-    Serial.print("Led::setup intervals_length: ");
-    Serial.println(intervals_length);
+    //Serial.print("Led::setup() intervals_length: ");
+    //Serial.println(intervals_length);
     
     for (int n = 0; n < intervals_length; n ++) {
       intervals[n] = inv[n];
@@ -42,7 +42,7 @@
       //Serial.println("");
     }
   
-    Serial.print("intervals: ");
+    Serial.print("Led::intervals[]: ");
     Serial.print(intervals_length);
     Serial.print(",");
     for (int n = 0; n < intervals_length; n ++) {

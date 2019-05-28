@@ -24,11 +24,11 @@
     // Call .begin from setup() function instead.
 	}
 
-	void SerialMenu::setup() {
-		SerialMenu::setup(baud_rate);
+	void SerialMenu::begin() {
+		SerialMenu::begin(baud_rate);
 	}
 	
-	void SerialMenu::setup(unsigned long baud) {
+	void SerialMenu::begin(unsigned long baud) {
     //showInfo();
     serial_port->println("1 SerialMenu::setup calling serial_port->println()");
     delay(500);
@@ -128,6 +128,7 @@
   }
 
 	void SerialMenu::menuListTags() {
+    serial_port->println("Menu > Tags");
 	  //serial_port->println((char*)tags);
 	  for (int i = 0; i < 8; i ++) {
 	    if (! char(tags[i][0])) {
@@ -140,6 +141,7 @@
 	    }
 	    serial_port->println("");
 	  }
+    serial_port->println("");
 	}
 
   void SerialMenu::menuAddTag() {
