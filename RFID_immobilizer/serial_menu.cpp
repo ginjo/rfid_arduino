@@ -4,7 +4,7 @@
 
 	//SerialMenu::SerialMenu(int rx, int tx, unsigned long baud) :
   //SerialMenu::SerialMenu(Stream *stream_ref, unsigned long baud) :
-  SerialMenu::SerialMenu(Stream *stream_ref) :
+  SerialMenu::SerialMenu(Stream &stream_ref) :
     serial_port(stream_ref),
 		baud_rate(9600),
     bt_state('0'),
@@ -29,7 +29,7 @@
 	}
 	
 	void SerialMenu::setup(unsigned long baud) {
-		//serial_port->begin(baud);
+		//serial_port.begin(baud);
     showInfo();
 	}
 
@@ -38,7 +38,7 @@
   }
 
   void SerialMenu::showInfo() {
-    //serial_port->println("serial_port is active!");
+    //serial_port.println("serial_port is active!");
     Serial.print("SerialMenu::setup baud_rate: ");
     Serial.println(baud_rate);
     Serial.print("SerialMenu::setup bt_state: ");
@@ -56,19 +56,19 @@
 
 	// Handle serial_port
 	void SerialMenu::handleSerialPort() {
-    Serial.println("About to call serial_port->available()");
+    Serial.println("About to call serial_port.available()");
 	  if (serial_port.available()) {
-      Serial.println("serial_port->available() is TRUE");
-	    uint8_t byt = serial_port->read();
+      Serial.println("serial_port.available() is TRUE");
+	    uint8_t byt = serial_port.read();
     
       //// debugging
-      //serial_port->println("");
-      //serial_port->print("BYTE ");
-      //serial_port->println(byt);
-      //serial_port->print("BYTE_CHAR ");
-      //serial_port->println(char(byt));
-      //serial_port->print("STATE_CHAR ");
-      //serial_port->println(bt_state);
+      //serial_port.println("");
+      //serial_port.print("BYTE ");
+      //serial_port.println(byt);
+      //serial_port.print("BYTE_CHAR ");
+      //serial_port.println(char(byt));
+      //serial_port.print("STATE_CHAR ");
+      //serial_port.println(bt_state);
     
 	    if (bt_state == '0') {
 	      // Draws or selects menu
@@ -95,70 +95,70 @@
 	    // Are either of these last two conditions used?
 	    } else if (int(byt) == 13) {
 	      // User hit Return
-	      serial_port->println("");
+	      serial_port.println("");
 	      bt_state = '0';
 	    } else {
-	      serial_port->write(byt);
+	      serial_port.write(byt);
 	    }
     
 	  } // done with available serial_port input
 	}
 
   void SerialMenu::menuMain() {
-    serial_port->println("Menu");
-    serial_port->println("1. List tags");
-    serial_port->println("2. Add tag");
-    serial_port->println("3. Delete tag");
-    serial_port->println("");
+    serial_port.println("Menu");
+    serial_port.println("1. List tags");
+    serial_port.println("2. Add tag");
+    serial_port.println("3. Delete tag");
+    serial_port.println("");
   }
 
 	void SerialMenu::menuListTags() {
-	  //serial_port->println((char*)tags);
+	  //serial_port.println((char*)tags);
 	  for (int i = 0; i < 8; i ++) {
 	    if (! char(tags[i][0])) {
 	      return;
 	    }
-	    serial_port->print(i);
-	    serial_port->print(". ");
+	    serial_port.print(i);
+	    serial_port.print(". ");
 	    for (int j = 0; j < 8; j ++) {
-	      serial_port->print(char(tags[i][j]));
+	      serial_port.print(char(tags[i][j]));
 	    }
-	    serial_port->println("");
+	    serial_port.println("");
 	  }
 	}
 
   void SerialMenu::menuAddTag() {
-    serial_port->println("Menu > Add tag");
-    serial_port->print("Enter a tag number to store: ");
+    serial_port.println("Menu > Add tag");
+    serial_port.print("Enter a tag number to store: ");
   }
 
   void SerialMenu::menuDeleteTag() {
-    serial_port->println("Menu > Delete tag");
-    serial_port->println("");
+    serial_port.println("Menu > Delete tag");
+    serial_port.println("");
   }
 
   void SerialMenu::receiveTagInput(uint8_t byt) {
     buff[buff_index] = byt;
     buff_index ++;
-    serial_port->write(byt);
+    serial_port.write(byt);
   
     if (int(byt) == 13 || buff_index > 7) {
       buff_index = 0;
-      serial_port->println("");
+      serial_port.println("");
   
       // Need to discard bogus tags... this kinda works
       if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
         bt_state = '0';
-        serial_port->println("");
+        serial_port.println("");
         return;
       }
     
-      //serial_port->print("Tag entered: ");
-      //serial_port->println((char*)buff);
+      //serial_port.print("Tag entered: ");
+      //serial_port.println((char*)buff);
       //for (int i = 0; i < 8; i ++) {
-      //  serial_port->write(buff[i]);
+      //  serial_port.write(buff[i]);
       //}
-      serial_port->println("");
+      serial_port.println("");
   
       for (int i = 0; i < 8; i ++) {
         tags[tag_index][i] = buff[i];
@@ -167,6 +167,6 @@
     
       bt_state = '0';
       menuListTags();
-      serial_port->println("");
+      serial_port.println("");
     }
   }

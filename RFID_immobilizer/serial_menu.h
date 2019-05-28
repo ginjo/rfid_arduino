@@ -8,7 +8,7 @@
   class SerialMenu {
   public:
   
-  	Stream *serial_port;
+  	Stream &serial_port;
     int receive_pin;
     int transmit_pin;
   	unsigned long baud_rate;
@@ -25,7 +25,7 @@
     // constructor
     //SerialMenu(int, int, unsigned long);
     //SerialMenu(Stream, unsigned long);
-    SerialMenu(Stream *stream_ref);
+    SerialMenu(Stream &stream_ref);
     
     void setup();
     void setup(unsigned long);

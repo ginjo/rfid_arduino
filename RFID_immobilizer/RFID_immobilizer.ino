@@ -12,7 +12,7 @@
   // Don't use both of these lines at the same time.
   SoftwareSerial BTserial(2, 3); // RX | TX
   //SerialMenu BTmenu(2, 3, 9600);
-  SerialMenu BTmenu(&BTserial);
+  SerialMenu BTmenu(BTserial);
 
   // Brings up a blinker LED with specified patter of on/off intervals.
   int blinker_intervals[4] = {50,20,50,2880};

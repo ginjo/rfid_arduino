@@ -3,27 +3,27 @@
 class Test
 {
   private:
-    Stream *_streamRef;
+    Stream &_streamRef;
   
   public:
-    setSerial(Stream *streamObject)
+    setSerial(Stream &streamObject)
     {
       _streamRef=streamObject;
     }
     
     sendText(char *someText)
     {
-      _streamRef->println(someText);
+      _streamRef.println(someText);
     }
 
-    Test(Stream *_ref) : _streamRef(_ref) {}
+    Test(Stream &_ref) : _streamRef(_ref) {}
 };
 
 
 SoftwareSerial softSerial(2, 3);
 
-Test wrapper1(&Serial);
-Test wrapper2(&softSerial);
+Test wrapper1(Serial);
+Test wrapper2(softSerial);
 
 void setup() {
   // put your setup code here, to run once:
