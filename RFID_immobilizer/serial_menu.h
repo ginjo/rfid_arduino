@@ -23,8 +23,8 @@
   	uint8_t buff[TAG_LENGTH];
   	int buff_index;
   
-  	char tags[TAG_LIST_SIZE][TAG_LENGTH];
-  	int tag_index;
+  	unsigned long tags[TAG_LIST_SIZE];
+  	//int tag_index; // TODO: no longer needed.
 
     // constructor
     //SerialMenu(int, int, unsigned long);
@@ -40,6 +40,7 @@
     void menuAddTag();
     void menuDeleteTag();
     void receiveTagInput(uint8_t);
+    void addTagNum(unsigned long);
     void loop();
   
   };

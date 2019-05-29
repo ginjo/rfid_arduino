@@ -1,6 +1,18 @@
 // Serial Menu Class
 
 #include "serial_menu.h"
+#include <stdlib.h>
+
+// NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
+// This works in onlinegbd.com, but may not work for arduino.
+//  #include <stdlib.h>
+//  int main()
+//  {
+//      char str[] = "9F8E7D6C";
+//      unsigned long num = strtol(str, NULL, 16);
+//      printf("%u", num);
+//  }
+
 
 	//SerialMenu::SerialMenu(int rx, int tx, unsigned long baud) :
   //SerialMenu::SerialMenu(Stream *stream_ref, unsigned long baud) :
@@ -9,12 +21,14 @@
 		baud_rate(9600),
     bt_state('0'),
     buff_index(0),
-    tag_index(3),
-    tags {
-      {'1','2','3','4','a','b','c','d'},
-      {'z','x','c','v','9','8','7','6'},
-      {'A','1','B','2','C','3','D','4'}
-    }
+    //tag_index(3), // TODO: no longer needed
+    tags {305441741, 2882343476, 2676915564} // 1234ABCD, ABCD1234, 9F8E7D6C
+
+    //tags {
+    //  {'1','2','3','4','a','b','c','d'},
+    //  {'z','x','c','v','9','8','7','6'},
+    //  {'A','1','B','2','C','3','D','4'}
+    //}
 	{
     //serial_port(receive_pin, transmit_pin);
     //serial_port = ss;
@@ -31,14 +45,15 @@
 	void SerialMenu::begin(unsigned long baud) {
     //showInfo();
     serial_port->println("1 SerialMenu::setup calling serial_port->println()");
-    delay(500);
+    delay(50);
     serial_port->println("2 SerialMenu::setup calling serial_port->println()");
-    delay(500);
+    delay(50);
     serial_port->println("3 SerialMenu::setup calling serial_port->println()");
-    delay(500);
+    delay(50);
     serial_port->println("4 SerialMenu::setup calling serial_port->println()");
-    delay(500);
+    delay(50);
     serial_port->println("5 SerialMenu::setup calling serial_port->println()");
+    
     showInfo();
 	}
 
@@ -56,10 +71,10 @@
     Serial.println(bt_state);
     Serial.print("SerialMenu::setup buff_index: ");
     Serial.println(buff_index);
-    Serial.print("SerialMenu::setup tags[2][2]: ");
-    Serial.println(tags[2][2]);
-    Serial.print("SerialMenu::setup tag_index: ");
-    Serial.println(tag_index);
+    Serial.print("SerialMenu::setup tags[2]: ");
+    Serial.println(tags[2]);
+    //Serial.print("SerialMenu::setup tag_index: ");
+    //Serial.println(tag_index);
         
     //Serial.println("SerialMenu::setup printing tags to serial_port");
     //listTags();
@@ -127,26 +142,40 @@
     serial_port->println("");
   }
 
-	void SerialMenu::menuListTags() {
+  //	void SerialMenu::menuListTags() {
+  //    serial_port->println("Menu > Tags");
+  //	  //serial_port->println((char*)tags);
+  //	  for (int i = 0; i < TAG_LIST_SIZE; i ++) {
+  //	    if (! char(tags[i][0])) {
+  //	      return;
+  //	    }
+  //	    serial_port->print(i);
+  //	    serial_port->print(". ");
+  //	    for (int j = 0; j < TAG_LENGTH; j ++) {
+  //	      serial_port->print(char(tags[i][j]));
+  //	    }
+  //	    serial_port->println("");
+  //	  }
+  //    serial_port->println("");
+  //	}
+  
+  void SerialMenu::menuListTags() {
     serial_port->println("Menu > Tags");
-	  //serial_port->println((char*)tags);
-	  for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-	    if (! char(tags[i][0])) {
-	      return;
-	    }
-	    serial_port->print(i);
-	    serial_port->print(". ");
-	    for (int j = 0; j < TAG_LENGTH; j ++) {
-	      serial_port->print(char(tags[i][j]));
-	    }
-	    serial_port->println("");
-	  }
+    //serial_port->println((char*)tags);
+    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
+      if (tags[i] > 0) {
+        serial_port->print(i);
+        serial_port->print(". ");
+        serial_port->print(tags[i]);
+        serial_port->println("");
+      }
+    }
     serial_port->println("");
-	}
+  }
 
   void SerialMenu::menuAddTag() {
     serial_port->println("Menu > Add tag");
-    serial_port->print("Enter a tag number to store: ");
+    serial_port->print("Enter a tag number (unsigned long) to store: ");
   }
 
   void SerialMenu::menuDeleteTag() {
@@ -154,37 +183,59 @@
     serial_port->println("");
   }
 
+  // TODO: Make a generic function for receiving line(s?) of input.
+  // Example: ... SerialMenu::receiveInput(int lines, char stop, char var_name[]);
+  // The suggestion function would have to put the instance of SerialMenu
+  // into a receive bytes mode, capable of spanning multiple loop cycles,
+  // like this existing receiveTagInput does.
+  // 
+  // TODO: Perhaps this class should be called SerialCLI,
+  // where the 'menu' is just a mode of interaction with the port,
+  // and receiving lines of data would be another mode of interaction.
+  // 
+  // TODO: I think tag-related functions should be in their own class: Tags.
+  // The RFID reader should probably also have its own class, maybe?
+  //
+  // TODO: Hmmm, we have RFID, BT serial, Tag management, Timer-switch management.
+  // Do each of those need theier own class, or should some be combined.
+  //
   void SerialMenu::receiveTagInput(uint8_t byt) {
     buff[buff_index] = byt;
     buff_index ++;
     serial_port->write(byt);
   
     if (int(byt) == 13 || buff_index >= TAG_LENGTH) {
-      buff_index = 0;
       serial_port->println("");
   
       // Need to discard bogus tags... this kinda works
       //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
-      if (buff_index < TAG_LENGTH || buff[0] == 13) {
+      if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
         bt_state = '0';
+        buff_index = 0;
         serial_port->println("");
         return;
       }
     
-      //serial_port->print("Tag entered: ");
-      //serial_port->println((char*)buff);
-      //for (int i = 0; i < 8; i ++) {
-      //  serial_port->write(buff[i]);
-      //}
+      serial_port->print("Tag entered: ");
+      serial_port->println((char*)buff);
       serial_port->println("");
-  
-      for (int i = 0; i < TAG_LENGTH; i ++) {
-        tags[tag_index][i] = buff[i];
-      }
-      tag_index ++;
+
+      addTagNum(strtol(buff, NULL, 10));
+      
+      // TODO: Is tag_index still necessary? I don't think so.
+      //tag_index ++;
     
       bt_state = '0';
+      buff_index = 0;
       menuListTags();
-      serial_port->println("");
+    }
+  }
+
+  void SerialMenu::addTagNum(unsigned long tag_num) {
+    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
+      if (! tags[i] > 0) {
+        tags[i] = tag_num;
+        return 0;
+      }
     }
   }
