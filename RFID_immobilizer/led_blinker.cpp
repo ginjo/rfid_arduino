@@ -4,45 +4,24 @@
   
   Led::Led(int pin) : 
     led_pin(pin)
-  	//intervals_length(len)
-  	//intervals(inv) // this doesn't seem to work here,
-  	// so use the itterative pattern below:
   {
-  	//Serial.println("Beginning LED constructor\r\n");
-    //for (int n = 0; n < len; n ++) {
-    //  intervals[n] = inv[n];
-    //	// Serial.print("n: ");
-    //	// Serial.println(n);
-    //	// Serial.print("inv[n]: ");
-    //	// Serial.println(inv[n]);
-    //	// Serial.println("\r\n");
-    //}
-  
-  	// Serial.println("Finished LED contructor");
-   ;
+    ;
   }
-  
   
   //void Led::begin(unsigned long inv[], int len) {
   void Led::begin(unsigned long inv[]) {
   	pinMode(led_pin, OUTPUT);
   	start_blinker = HIGH;
-    // I don't think you can use sizeof on a passed-in array.
-    //intervals_length = sizeof(inv)/sizeof(inv[0]);
-    //intervals_length = len;
-    //int intervals_count = sizeof(inv)/sizeof(*inv);
-    //Serial.print("Led::setup() intervals_count: ");
-    //Serial.println(intervals_count);
 
     for (int n = 0; n < INTERVALS_LENGTH && inv[n] > 0; n ++) {
       intervals[n] = inv[n];
       intervals_count = n+1;
       
-      //Serial.print("n: ");
-      //Serial.println(n);
-      //Serial.print("inv[n]: ");
-      //Serial.println(inv[n]);
-      //Serial.println("");
+      //  Serial.print("n: ");
+      //  Serial.println(n);
+      //  Serial.print("inv[n]: ");
+      //  Serial.println(inv[n]);
+      //  Serial.println("");
     }
   
     Serial.print("Led::intervals[]: ");
@@ -55,11 +34,9 @@
     Serial.println("");
   }
   
-  
   void Led::loop() {
     handleBlinker();
   }
-  
   
   // Starts a new blinker phase, given int
   void Led::startPhase(int phz) {
@@ -77,7 +54,6 @@
     }
     return led_state;
   }
-  
   
   // Handles start-stop blinker and blinker cycling
   void Led::handleBlinker() {
@@ -108,8 +84,6 @@
       //int ary_size = sizeof(intervals)/sizeof(*intervals);
       if (phase >= intervals_count - 1) {
         startPhase(0);
-        Serial.print("Free Memory: ");
-        Serial.println(freeMemory());
       } else {
         startPhase(phase + 1);
       }

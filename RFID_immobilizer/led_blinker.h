@@ -5,33 +5,10 @@
 #define __LED_BLINKER_H__
 #define INTERVALS_LENGTH 10
 
-
-  // This should really go in a Utility class.
-  // It is only here as a quick fix.    
-  // Free memory from https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
-  #ifdef __arm__
-  // should use uinstd.h to define sbrk but Due causes a conflict
-  extern "C" char* sbrk(int incr);
-  #else  // __ARM__
-  extern char *__brkval;
-  #endif  // __arm__
-  
-  static int freeMemory() {
-    char top;
-  #ifdef __arm__
-    return &top - reinterpret_cast<char*>(sbrk(0));
-  #elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-    return &top - __brkval;
-  #else  // __arm__
-    return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-  #endif  // __arm__
-  }
-
-
   class Led {
   public:
     // Sets the pin number
-    int led_pin; // = 9; //LED_BUILTIN;// the number of the LED pin
+    int led_pin;  //LED_BUILTIN;
     
     // Sets initial state of led (phase 0)
     int led_state = LOW;
