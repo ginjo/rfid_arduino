@@ -5,6 +5,7 @@
 
 #ifndef __SERIAL_MENU_H__
 #define __SERIAL_MENU_H__
+
 #define TAG_LENGTH 8
 #define TAG_LIST_SIZE 8
 
@@ -14,12 +15,12 @@
     Stream *serial_port;
     
   public:
-    int receive_pin;
-    int transmit_pin;
-  	unsigned long baud_rate;
-  	char bt_state;
+    //int receive_pin;
+    //int transmit_pin;
+  	//unsigned long baud_rate;
+  	char menu_state;
   
-  	// Byte buffer for incoming BTserial strings
+  	// Byte buffer for incoming serial strings
   	uint8_t buff[TAG_LENGTH];
   	int buff_index;
   
@@ -32,9 +33,9 @@
     SerialMenu(Stream *stream_ref);
     
     void begin();
-    void begin(unsigned long);
+    //void begin(unsigned long);
     void showInfo();
-    void handleSerialPort();
+    void checkSerialPort();
     void menuMain();
     void menuListTags();
     void menuAddTag();

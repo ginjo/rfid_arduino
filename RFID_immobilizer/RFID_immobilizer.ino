@@ -16,7 +16,7 @@
 
   // Brings up a blinker LED with specified patter of on/off intervals.
   unsigned long blinker_intervals[] = {50,20,50,2880};
-  Led Blinker(9); 
+  Led Blinker(9);
 
   void setup() {
     Serial.begin(9600);

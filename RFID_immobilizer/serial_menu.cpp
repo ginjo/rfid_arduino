@@ -1,74 +1,51 @@
 // Serial Menu Class
+// Handles human-readable input and output between text-based serial port
+// and arduino application (classes, functions, data, et.c.).
 
 #include "serial_menu.h"
 #include <stdlib.h>
 
-// NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
-// This works in onlinegbd.com, but may not work for arduino.
-//  #include <stdlib.h>
-//  int main()
-//  {
-//      char str[] = "9F8E7D6C";
-//      unsigned long num = strtol(str, NULL, 16);
-//      printf("%u", num);
-//  }
+  // NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
+  // This works in onlinegbd.com, but may not work for arduino.
+  //  #include <stdlib.h>
+  //  int main()
+  //  {
+  //      char str[] = "9F8E7D6C";
+  //      unsigned long num = strtol(str, NULL, 16);
+  //      printf("%u", num);
+  //  }
 
-
-	//SerialMenu::SerialMenu(int rx, int tx, unsigned long baud) :
-  //SerialMenu::SerialMenu(Stream *stream_ref, unsigned long baud) :
   SerialMenu::SerialMenu(Stream *stream_ref) :
     serial_port(stream_ref),
-		baud_rate(9600),
-    bt_state('0'),
+		//baud_rate(9600),
+    menu_state('0'),
     buff_index(0),
-    //tag_index(3), // TODO: no longer needed
     tags {305441741, 2882343476, 2676915564} // 1234ABCD, ABCD1234, 9F8E7D6C
-
-    //tags {
-    //  {'1','2','3','4','a','b','c','d'},
-    //  {'z','x','c','v','9','8','7','6'},
-    //  {'A','1','B','2','C','3','D','4'}
-    //}
 	{
-    //serial_port(receive_pin, transmit_pin);
-    //serial_port = ss;
 		// Don't call .begin here, since this is too close to hardware init.
 		// For example, "serial_port()" above triggers actual hardware init.
 		// So the hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
 	}
-
-	void SerialMenu::begin() {
-		SerialMenu::begin(baud_rate);
-	}
 	
-	void SerialMenu::begin(unsigned long baud) {
-    //showInfo();
-    serial_port->println("1 SerialMenu::setup calling serial_port->println()");
-    delay(50);
-    serial_port->println("2 SerialMenu::setup calling serial_port->println()");
-    delay(50);
-    serial_port->println("3 SerialMenu::setup calling serial_port->println()");
-    delay(50);
-    serial_port->println("4 SerialMenu::setup calling serial_port->println()");
-    delay(50);
-    serial_port->println("5 SerialMenu::setup calling serial_port->println()");
-    
+	//void SerialMenu::begin(unsigned long baud) {
+  void SerialMenu::begin() {
+    serial_port->println("SerialMenu::setup calling showInfo()");
     showInfo();
 	}
 
   void SerialMenu::loop() {
     //serial_port->println("SerialMenu::loop() calling serial_port->println()");
     //delay(500);
-    handleSerialPort();
+    checkSerialPort();
   }
 
   void SerialMenu::showInfo() {
     //serial_port->println("serial_port is active!");
-    Serial.print("SerialMenu::setup baud_rate: ");
-    Serial.println(baud_rate);
-    Serial.print("SerialMenu::setup bt_state: ");
-    Serial.println(bt_state);
+    //Serial.print("SerialMenu::setup baud_rate: ");
+    //Serial.println(baud_rate);
+    Serial.print("SerialMenu::setup menu_state: ");
+    Serial.println(menu_state);
     Serial.print("SerialMenu::setup buff_index: ");
     Serial.println(buff_index);
     Serial.print("SerialMenu::setup tags[2]: ");
@@ -81,12 +58,8 @@
   }
 
 	// Handle serial_port
-	void SerialMenu::handleSerialPort() {
-    //Serial.println("About to call serial_port->...()");
-    //delay(500);
-    //serial_port->println("SerialMenu::handleSerialPort() calling serial_port->println()");
-    //delay(500);
-    //return 0;
+	void SerialMenu::checkSerialPort() {
+
 	  if (serial_port->available()) {
       Serial.println("serial_port->available() is TRUE");
 	    uint8_t byt = serial_port->read();
@@ -98,35 +71,35 @@
       //serial_port->print("BYTE_CHAR ");
       //serial_port->println(char(byt));
       //serial_port->print("STATE_CHAR ");
-      //serial_port->println(bt_state);
+      //serial_port->println(menu_state);
     
-	    if (bt_state == '0') {
+	    if (menu_state == '0') {
 	      // Draws or selects menu
 	      switch (char(byt)) {
 	        case '1':
 	          menuListTags();
-	          bt_state = '0';
+	          menu_state = '0';
 	          break;
 	        case '2':
             menuAddTag();
-	          bt_state = '2';
+	          menu_state = '2';
 	          break;
 	        case '3':
             menuDeleteTag();
-	          bt_state = '0';
+	          menu_state = '0';
 	          break;
 	        default:
             menuMain();
-            bt_state = '0';
+            menu_state = '0';
             break;
 	      }
-	    } else if (bt_state == '2') {
+	    } else if (menu_state == '2') {
         receiveTagInput(byt);
 	    // Are either of these last two conditions used?
 	    } else if (int(byt) == 13) {
 	      // User hit Return
 	      serial_port->println("");
-	      bt_state = '0';
+	      menu_state = '0';
 	    } else {
 	      serial_port->write(byt);
 	    }
@@ -142,26 +115,11 @@
     serial_port->println("");
   }
 
-  //	void SerialMenu::menuListTags() {
-  //    serial_port->println("Menu > Tags");
-  //	  //serial_port->println((char*)tags);
-  //	  for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-  //	    if (! char(tags[i][0])) {
-  //	      return;
-  //	    }
-  //	    serial_port->print(i);
-  //	    serial_port->print(". ");
-  //	    for (int j = 0; j < TAG_LENGTH; j ++) {
-  //	      serial_port->print(char(tags[i][j]));
-  //	    }
-  //	    serial_port->println("");
-  //	  }
-  //    serial_port->println("");
-  //	}
-  
+  // Lists tags for menu.
   void SerialMenu::menuListTags() {
     serial_port->println("Menu > Tags");
     //serial_port->println((char*)tags);
+    // TODO: Move the bulk of this to RFIDTags?
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
       if (tags[i] > 0) {
         serial_port->print(i);
@@ -173,11 +131,15 @@
     serial_port->println("");
   }
 
+  // Asks user for full tag,
+  // sets mode to receive-text-line-from-serial,
+  // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
     serial_port->println("Menu > Add tag");
     serial_port->print("Enter a tag number (unsigned long) to store: ");
   }
 
+  // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag() {
     serial_port->println("Menu > Delete tag");
     serial_port->println("");
@@ -196,7 +158,7 @@
   // TODO: I think tag-related functions should be in their own class: Tags.
   // The RFID reader should probably also have its own class, maybe?
   //
-  // TODO: Hmmm, we have RFID, BT serial, Tag management, Timer-switch management.
+  // TODO: Hmmm, we have RFID, serial-cli, tag management, timer-switch management.
   // Do each of those need theier own class, or should some be combined.
   //
   void SerialMenu::receiveTagInput(uint8_t byt) {
@@ -210,7 +172,7 @@
       // Need to discard bogus tags... this kinda works
       //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
       if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
-        bt_state = '0';
+        menu_state = '0';
         buff_index = 0;
         serial_port->println("");
         return;
@@ -225,12 +187,13 @@
       // TODO: Is tag_index still necessary? I don't think so.
       //tag_index ++;
     
-      bt_state = '0';
+      menu_state = '0';
       buff_index = 0;
       menuListTags();
     }
   }
 
+  // Adds tag number to tag list.
   void SerialMenu::addTagNum(unsigned long tag_num) {
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
       if (! tags[i] > 0) {
