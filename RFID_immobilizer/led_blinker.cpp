@@ -108,6 +108,8 @@
       //int ary_size = sizeof(intervals)/sizeof(*intervals);
       if (phase >= intervals_count - 1) {
         startPhase(0);
+        Serial.print("Free Memory: ");
+        Serial.println(freeMemory());
       } else {
         startPhase(phase + 1);
       }
