@@ -17,17 +17,13 @@
 
   void setup() {
     Serial.begin(9600);
-    delay(100);
 
     BTserial.begin(9600);
-    delay(100);
 
     BTmenu.begin();
-    delay(100);
 
     unsigned long blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
     Blinker.begin(blinker_intervals);
-    delay(100);
   }
   
   void loop() {

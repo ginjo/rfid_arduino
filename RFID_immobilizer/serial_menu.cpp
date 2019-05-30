@@ -38,99 +38,254 @@
   //  }
 
 
+  /*** Constructor and Setup ***/
+
   SerialMenu::SerialMenu(Stream *stream_ref) :
     serial_port(stream_ref),
-		//baud_rate(9600),
-    menu_state("menu"),
+    buff({}),
     buff_index(0),
+    current_function(""),
+    input_mode("menu"),
     tags {305441741, 2882343476, 2676915564} // 1234ABCD, ABCD1234, 9F8E7D6C
 	{
-		// Don't call .begin here, since this is too close to hardware init.
+		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
 	}
 	
 	//void SerialMenu::begin(unsigned long baud) {
   void SerialMenu::begin() {
-    serial_port->println("SerialMenu is active\r\n");
+    serial_port->println("SerialMenu starting up\r\n");
     showInfo();
     //menuListTags();
 	}
 
+
+  /*** Looping Functions ***/
+
   void SerialMenu::loop() {
     //serial_port->println("SerialMenu::loop() calling serial_port->println()");
-    //delay(500);
     checkSerialPort();
+    runCallbacks();
   }
 
-  void SerialMenu::showInfo() {
-    //serial_port->println("serial_port is active!");
-    Serial.print("SerialMenu::setup menu_state: ");
-    Serial.println(menu_state);
-    Serial.print("SerialMenu::setup buff_index: ");
-    Serial.println(buff_index);
-    Serial.print("SerialMenu::setup tags[2]: ");
-    Serial.println(tags[2]);
-  }
-
-	// Handle serial_port
+	// check serial_port every cycle
 	void SerialMenu::checkSerialPort() {
 	  if (serial_port->available()) {
-      //Serial.println("serial_port->available() is TRUE");
+      Serial.println("checkSerialPort() serial_port->available() is TRUE");
 	    uint8_t byt = serial_port->read();
       
       //  Serial.print("checkSerialPort received byte: ");
       //  Serial.println(char(byt));
-      //  Serial.print("checkSerialPort menu_state is: ");
-      //  Serial.println(menu_state);
-
-      // TODO: should (can?) this use a switch statement?
+      //  Serial.print("checkSerialPort input_mode is: ");
+      //  Serial.println(input_mode);
       
-	    if (strcmp(menu_state, "menu") == 0) {
+	    if (matchInputMode("menu")) {
         // sends incoming byt to menu selector
-        selectMenuItem(char(byt));
-	    } else if (strcmp(menu_state, "add_tag") == 0) {
-        // sends incoming byte to add-a-tag handler
-        receiveTagInput(byt);
-	    } else if (int(byt) == 13) {
-	      // user hit return in unhandled state
-	      serial_port->println("");
-	      strncpy(menu_state, "menu", 16);
+        Serial.println("checkSerialPort() matchInputMode('menu') is TRUE");
+        selectMenuItem(byt);
+	    } else if (matchInputMode("line")) {
+        // sends incoming byte to getLine()
+        Serial.println("checkSerialPort() matchInputMode('line') is TRUE");
+        getLine(byt);
 	    } else {
         // last-resort default just writes byt to serial_port
+        // this should not happen under normal circumstances
+        Serial.println("checkSerialPort() no matching input mode, using default");
 	      serial_port->write(byt);
 	    }
      
 	  } // done with available serial_port input
 	}
 
+  // check for callbacks every cycle
+  void SerialMenu::runCallbacks() {
+    if (inputAvailable()) {
+      Serial.print("runCallbacks() inputAvailableFor(): ");
+      Serial.println(inputAvailableFor());
+
+      if (inputAvailable("menuAddTag")) {
+        Serial.println("runCallbacks() selected menuAddTag");
+        if (addTagString(buff)) { 
+          menuListTags();
+        } else {
+          Serial.println("runCallbacks() call to addTagString(buff) failed");
+        }
+        resetInputBuffer();
+        setCurrentFunction("");
+
+      // } else if {
+      //   ...
+      
+      } else {
+        Serial.println("runCallbacks() inputAvailableFor() 'none/default' ");
+        
+        setInputMode("menu");
+        setCurrentFunction("");
+        buff_index = 0;
+        strncpy(buff, "", INPUT_BUFFER_LENGTH);
+      }
+    }
+  }
+
+
+  /*** Menu and State Logic ***/
+
   // Activates an incoming menu selection.
-  void SerialMenu::selectMenuItem(char byt) {
-    //  Serial.print("selectMenuItem received byte: ");
-    //  Serial.print(byt);
+  void SerialMenu::selectMenuItem(uint8_t byt) {
+    Serial.print("selectMenuItem received byte: ");
+    Serial.println(char(byt));
     
     switch (char(byt)) {
+      // NOTE: A missing 'break' will allow
+      // drop-thru to the next case.
       case '1':
         menuListTags();
-        strncpy(menu_state, "menu", 16);
+        //strncpy(input_mode, "menu", 16);
         break;
       case '2':
         menuAddTag();
-        strncpy(menu_state, "add_tag", 16);
+        //strncpy(input_mode, "add_tag", 16);
         break;
       case '3':
         menuDeleteTag();
-        strncpy(menu_state, "menu", 16);
+        //strncpy(input_mode, "menu", 16);
         break;
       case '4':
         menuShowFreeMemory();
-        strncpy(menu_state, "menu", 16);
+        //strncpy(input_mode, "menu", 16);
         break;
       default:
         menuMain();
-        strncpy(menu_state, "menu", 16);
+        //strncpy(input_mode, "menu", 16);
         break;
     }
+  }
+
+  void SerialMenu::getLine(uint8_t byt) {
+    Serial.print("getLine() byt: ");
+    Serial.println(char(byt));
+    Serial.print("getLine() buff: ");
+    Serial.println((char *)buff);
+    
+    buff[buff_index] = byt;
+    buff_index ++;
+    serial_port->write(byt);
+  
+    if (int(byt) == 13) {
+      serial_port->println("");
+  
+      serial_port->print("You entered: ");
+      serial_port->println((char*)buff);
+      serial_port->println("");
+
+      buff_index = 0;
+      setInputMode("menu");
+    }
+  }
+  
+  void SerialMenu::setInputMode(char str[INPUT_MODE_LENGTH]) {
+    strncpy(input_mode, str, INPUT_MODE_LENGTH);
+    
+    Serial.print("setInputMode() to: ");
+    Serial.println(input_mode);
+  }
+
+  bool SerialMenu::matchInputMode(char mode[INPUT_MODE_LENGTH]) {
+    //  Serial.print("matchInputMode() mode, input_mode: ");
+    //  Serial.print(mode);
+    //  Serial.print(", ");
+    //  Serial.println(input_mode);
+    
+    return strcmp(mode, input_mode) == 0;
+  }
+
+  void SerialMenu::setCurrentFunction(char func[32]) {
+    strncpy(current_function, func, 32);
+
+    Serial.print("setCurrentFunction() to: ");
+    Serial.println(current_function);
+  }
+
+  bool SerialMenu::matchCurrentFunction(char func[32]) {
+    Serial.print("matchCurrentFunction() with: ");
+    Serial.print(func);
+    Serial.print(", ");
+    Serial.println(current_function);
+    
+    return strcmp(current_function, func) == 0;
+  }
+
+  bool SerialMenu::inputAvailable() {
+    return buff_index == 0 && buff[0] > 0;
+  }
+  
+  bool SerialMenu::inputAvailable(char func[32]) {
+    return inputAvailable() && matchCurrentFunction(func);
+  }
+
+  char * SerialMenu::inputAvailableFor() {
+    if(inputAvailable()) {
+      return current_function;
+    } else {
+      return "";
+    }
+  }
+
+  bool SerialMenu::addTagString(uint8_t str[TAG_LENGTH]) {
+    // Need to discard bogus tags... this kinda works,
+    // but needs more failure conditions.
+    // TODO: Make sure string consists of only numerics, no other characters.
+    // OR, if it's a valid hex string, use that.
+    //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
+    //if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
+    if (buff[0] == 13) {
+      strncpy(input_mode, "menu", 16);
+      buff_index = 0;
+      serial_port->println("");
+      return false;
+    }
+  
+    serial_port->print("Tag entered: ");
+    serial_port->println((char*)buff);
+    serial_port->println("");
+
+    return addTagNum(strtol(buff, NULL, 10));
+  }
+  
+  // Adds tag number to tag list.
+  // TODO: Make sure number to add is within bounds of 32-bit integer,
+  // since that is as high as the tag ids will go: 4294967295 or 'FFFFFFFF'
+  bool SerialMenu::addTagNum(unsigned long tag_num) {
+    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
+      if (! tags[i] > 0) {
+        tags[i] = tag_num;
+        setCurrentFunction("");
+        return true;
+      }
+    }
+
+    // fails if didn't return from inner block
+    return false;
+  }
+
+  void SerialMenu::resetInputBuffer() {
+    strncpy(buff, "", INPUT_BUFFER_LENGTH);
+    buff_index = 0;
+    setInputMode("menu");
+  }
+
+
+  /*** Draw Menu Items and Log Messages ***/
+
+  void SerialMenu::showInfo() {
+    //serial_port->println("serial_port is active!");
+    Serial.print("SerialMenu::setup input_mode: ");
+    Serial.println(input_mode);
+    Serial.print("SerialMenu::setup buff_index: ");
+    Serial.println(buff_index);
+    Serial.print("SerialMenu::setup tags[2]: ");
+    Serial.println(tags[2]);
   }
 
   void SerialMenu::menuMain() {
@@ -162,6 +317,8 @@
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
+    setInputMode("line");
+    setCurrentFunction(__FUNCTION__);
     serial_port->println("Add Tag");
     serial_port->print("Enter a tag number (unsigned long) to store: ");
   }
@@ -177,6 +334,10 @@
     serial_port->println(freeMemory());
     serial_port->println();
   }
+
+
+  /*** Old functions for debugging reference ***/
+
 
   // TODO: Make a generic function for receiving line(s?) of input.
   // Example: ... SerialMenu::receiveInput(int lines, char stop, char var_name[]);
@@ -194,44 +355,34 @@
   // TODO: Hmmm, we have RFID, serial-cli, tag management, timer-switch management.
   // Do each of those need theier own class, or should some be combined.
   //
-  void SerialMenu::receiveTagInput(uint8_t byt) {
-    buff[buff_index] = byt;
-    buff_index ++;
-    serial_port->write(byt);
-  
-    if (int(byt) == 13 || buff_index >= TAG_LENGTH) {
-      serial_port->println("");
-  
-      // Need to discard bogus tags... this kinda works
-      //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
-      if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
-        strncpy(menu_state, "menu", 16);
-        buff_index = 0;
-        serial_port->println("");
-        return;
-      }
-    
-      serial_port->print("Tag entered: ");
-      serial_port->println((char*)buff);
-      serial_port->println("");
-
-      addTagNum(strtol(buff, NULL, 10));
-      
-      // TODO: Is tag_index still necessary? I don't think so.
-      //tag_index ++;
-    
-      strncpy(menu_state, "menu", 16);
-      buff_index = 0;
-      menuListTags();
-    }
-  }
-
-  // Adds tag number to tag list.
-  void SerialMenu::addTagNum(unsigned long tag_num) {
-    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      if (! tags[i] > 0) {
-        tags[i] = tag_num;
-        return 0;
-      }
-    }
-  }
+  //  void SerialMenu::receiveTagInput(uint8_t byt) {
+  //    buff[buff_index] = byt;
+  //    buff_index ++;
+  //    serial_port->write(byt);
+  //  
+  //    if (int(byt) == 13 || buff_index >= TAG_LENGTH) {
+  //      serial_port->println("");
+  //  
+  //      // Need to discard bogus tags... this kinda works
+  //      //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
+  //      if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
+  //        strncpy(input_mode, "menu", 16);
+  //        buff_index = 0;
+  //        serial_port->println("");
+  //        return;
+  //      }
+  //    
+  //      serial_port->print("Tag entered: ");
+  //      serial_port->println((char*)buff);
+  //      serial_port->println("");
+  //
+  //      addTagNum(strtol(buff, NULL, 10));
+  //      
+  //      // TODO: Is tag_index still necessary? I don't think so.
+  //      //tag_index ++;
+  //    
+  //      strncpy(input_mode, "menu", 16);
+  //      buff_index = 0;
+  //      menuListTags();
+  //    }
+  //  }
