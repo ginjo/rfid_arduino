@@ -141,23 +141,18 @@
       // drop-thru to the next case.
       case '1':
         menuListTags();
-        //strncpy(input_mode, "menu", 16);
         break;
       case '2':
         menuAddTag();
-        //strncpy(input_mode, "add_tag", 16);
         break;
       case '3':
         menuDeleteTag();
-        //strncpy(input_mode, "menu", 16);
         break;
       case '4':
         menuShowFreeMemory();
-        //strncpy(input_mode, "menu", 16);
         break;
       default:
         menuMain();
-        //strncpy(input_mode, "menu", 16);
         break;
     }
   }
@@ -183,15 +178,17 @@
       setInputMode("menu");
     }
   }
+
+  // TODO: Do parameter var declarations need size, or can they be variable?
   
-  void SerialMenu::setInputMode(char str[INPUT_MODE_LENGTH]) {
+  void SerialMenu::setInputMode(char str[]) {
     strncpy(input_mode, str, INPUT_MODE_LENGTH);
     
     Serial.print("setInputMode() to: ");
     Serial.println(input_mode);
   }
 
-  bool SerialMenu::matchInputMode(char mode[INPUT_MODE_LENGTH]) {
+  bool SerialMenu::matchInputMode(char mode[]) {
     //  Serial.print("matchInputMode() mode, input_mode: ");
     //  Serial.print(mode);
     //  Serial.print(", ");
@@ -200,14 +197,14 @@
     return strcmp(mode, input_mode) == 0;
   }
 
-  void SerialMenu::setCurrentFunction(char func[32]) {
-    strncpy(current_function, func, 32);
+  void SerialMenu::setCurrentFunction(char func[]) {
+    strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
 
     Serial.print("setCurrentFunction() to: ");
     Serial.println(current_function);
   }
 
-  bool SerialMenu::matchCurrentFunction(char func[32]) {
+  bool SerialMenu::matchCurrentFunction(char func[]) {
     Serial.print("matchCurrentFunction() with: ");
     Serial.print(func);
     Serial.print(", ");
@@ -220,7 +217,7 @@
     return buff_index == 0 && buff[0] > 0;
   }
   
-  bool SerialMenu::inputAvailable(char func[32]) {
+  bool SerialMenu::inputAvailable(char func[]) {
     return inputAvailable() && matchCurrentFunction(func);
   }
 
@@ -232,7 +229,8 @@
     }
   }
 
-  bool SerialMenu::addTagString(uint8_t str[TAG_LENGTH]) {
+  //bool SerialMenu::addTagString(uint8_t str[TAG_LENGTH]) {
+  bool SerialMenu::addTagString(uint8_t str[]) {
     // Need to discard bogus tags... this kinda works,
     // but needs more failure conditions.
     // TODO: Make sure string consists of only numerics, no other characters.
@@ -240,7 +238,7 @@
     //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
     //if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
     if (buff[0] == 13) {
-      strncpy(input_mode, "menu", 16);
+      strncpy(input_mode, "menu", INPUT_MODE_LENGTH);
       buff_index = 0;
       serial_port->println("");
       return false;
@@ -334,55 +332,3 @@
     serial_port->println(freeMemory());
     serial_port->println();
   }
-
-
-  /*** Old functions for debugging reference ***/
-
-
-  // TODO: Make a generic function for receiving line(s?) of input.
-  // Example: ... SerialMenu::receiveInput(int lines, char stop, char var_name[]);
-  // The suggestion function would have to put the instance of SerialMenu
-  // into a receive bytes mode, capable of spanning multiple loop cycles,
-  // like this existing receiveTagInput does.
-  // 
-  // TODO: Perhaps this class should be called SerialCLI,
-  // where the 'menu' is just a mode of interaction with the port,
-  // and receiving lines of data would be another mode of interaction.
-  // 
-  // TODO: I think tag-related functions should be in their own class: Tags.
-  // The RFID reader should probably also have its own class, maybe?
-  //
-  // TODO: Hmmm, we have RFID, serial-cli, tag management, timer-switch management.
-  // Do each of those need theier own class, or should some be combined.
-  //
-  //  void SerialMenu::receiveTagInput(uint8_t byt) {
-  //    buff[buff_index] = byt;
-  //    buff_index ++;
-  //    serial_port->write(byt);
-  //  
-  //    if (int(byt) == 13 || buff_index >= TAG_LENGTH) {
-  //      serial_port->println("");
-  //  
-  //      // Need to discard bogus tags... this kinda works
-  //      //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
-  //      if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
-  //        strncpy(input_mode, "menu", 16);
-  //        buff_index = 0;
-  //        serial_port->println("");
-  //        return;
-  //      }
-  //    
-  //      serial_port->print("Tag entered: ");
-  //      serial_port->println((char*)buff);
-  //      serial_port->println("");
-  //
-  //      addTagNum(strtol(buff, NULL, 10));
-  //      
-  //      // TODO: Is tag_index still necessary? I don't think so.
-  //      //tag_index ++;
-  //    
-  //      strncpy(input_mode, "menu", 16);
-  //      buff_index = 0;
-  //      menuListTags();
-  //    }
-  //  }

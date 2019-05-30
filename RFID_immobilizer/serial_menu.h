@@ -9,7 +9,8 @@
 
 #define INPUT_BUFFER_LENGTH 32
 #define INPUT_MODE_LENGTH 16
-#define TAG_LENGTH 8 // this may no longer be necessary
+#define CURRENT_FUNCTION_LENGTH 32
+//#define TAG_LENGTH 8 // this may no longer be necessary
 #define TAG_LIST_SIZE 8
 
   class SerialMenu {
@@ -20,17 +21,19 @@
     //int receive_pin;
     //int transmit_pin;
   	//unsigned long baud_rate;
-  	char input_mode[16];
+  	char input_mode[INPUT_MODE_LENGTH];
   
   	// Byte buffer for incoming serial strings
   	uint8_t buff[INPUT_BUFFER_LENGTH];
   	int buff_index;
-    char current_function[32];
+    char current_function[CURRENT_FUNCTION_LENGTH];
   	unsigned long tags[TAG_LIST_SIZE];
 
     // constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
     SerialMenu(Stream *stream_ref);
+
+    // TODO: Do we need to specify the array lengths here?
     
     void begin();
     void showInfo();
@@ -43,13 +46,13 @@
     void menuShowFreeMemory();
     void getLine(uint8_t);
     void receiveTagInput(uint8_t);
-    void setInputMode(char[INPUT_MODE_LENGTH]);
-    bool matchInputMode(char[INPUT_MODE_LENGTH]);
-    void setCurrentFunction(char[32]);
-    bool matchCurrentFunction(char[32]);
+    void setInputMode(char[]);
+    bool matchInputMode(char[]);
+    void setCurrentFunction(char[]);
+    bool matchCurrentFunction(char[]);
     bool inputAvailable();
-    bool inputAvailable(char[32]);
-    char * inputAvailableFor();
+    bool inputAvailable(char[]);
+    char * inputAvailableFor(); // returns char array
     void runCallbacks();
     bool addTagString(uint8_t[]);
     bool addTagNum(unsigned long);
