@@ -15,7 +15,7 @@
   }
 
   void RFID::loop() {
-    if (serial_port->available() && millis() - previous_ms > 1000) {
+    if (serial_port->available() && millis() - previous_ms > TAG_READ_INTERVAL) {
       buff[buff_index] = serial_port->read();
 
       Serial.print("(");
