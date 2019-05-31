@@ -11,6 +11,9 @@
   //void Led::begin(unsigned long inv[], int len) {
   void Led::begin(unsigned long inv[]) {
   	pinMode(led_pin, OUTPUT);
+    // just while starting up arduino
+    digitalWrite(led_pin, HIGH);
+    
   	start_blinker = HIGH;
 
     for (int n = 0; n < INTERVALS_LENGTH && inv[n] > 0; n ++) {

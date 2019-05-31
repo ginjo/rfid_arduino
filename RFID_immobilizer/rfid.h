@@ -14,6 +14,26 @@
  */
 
 #include <Arduino.h>
+//#include <Stream.h>
+#include <SoftwareSerial.h>
 
 #ifndef __RFID_TAGS_H__
 #define __RFID_TAGS_H__
+#define RAW_TAG_LENGTH 14
+
+  class RFID {
+  public:
+    uint8_t buff[RAW_TAG_LENGTH];
+    int buff_index;
+    unsigned long previous_ms;
+    Stream *serial_port;
+
+    // constructor
+    RFID(Stream *_serial_port);
+
+    void begin();
+    void loop();
+    void resetBuffer();
+  };
+
+#endif

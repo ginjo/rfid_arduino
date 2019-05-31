@@ -4,10 +4,9 @@
 
 #include "serial_menu.h"
 
-
+  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
   // This should really go in a Utility class.
   // It is only here as a quick fix.    
-  // Free memory from https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
   #ifdef __arm__
   // should use uinstd.h to define sbrk but Due causes a conflict
   extern "C" char* sbrk(int incr);
@@ -46,6 +45,10 @@
     buff_index(0),
     current_function(""),
     input_mode("menu"),
+    // See resetAdmin()
+    //  run_mode(1), // 0=run, 1=admin
+    //  admin_timeout(3), // seconds
+    //  previous_ms(millis());
     tags {305441741, 2882343476, 2676915564} // 1234ABCD, ABCD1234, 9F8E7D6C
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
@@ -55,8 +58,9 @@
 	
 	//void SerialMenu::begin(unsigned long baud) {
   void SerialMenu::begin() {
-    serial_port->println("SerialMenu starting up\r\n");
+    serial_port->println("SerialMenu Admin Console\r\n");
     showInfo();
+    //resetAdmin(5);
     //menuListTags();
 	}
 
@@ -65,6 +69,7 @@
 
   void SerialMenu::loop() {
     //serial_port->println("SerialMenu::loop() calling serial_port->println()");
+    adminTimeout();
     checkSerialPort();
     runCallbacks();
   }
@@ -72,6 +77,8 @@
 	// check serial_port every cycle
 	void SerialMenu::checkSerialPort() {
 	  if (serial_port->available()) {
+      resetAdmin(15);
+      
       Serial.println("checkSerialPort() serial_port->available() is TRUE");
 	    uint8_t byt = serial_port->read();
       
@@ -150,6 +157,10 @@
         break;
       case '4':
         menuShowFreeMemory();
+        break;
+      case '5':
+        serial_port->println("Exiting admin console\r\n\r\n");
+        resetAdmin(0);
         break;
       default:
         menuMain();
@@ -273,6 +284,31 @@
     setInputMode("menu");
   }
 
+  void SerialMenu::adminTimeout() {
+    unsigned long current_ms = millis();
+    
+    //  Serial.print("adminTimeout() run_mode, admin_timeout, now, previous_ms: ");
+    //  Serial.print(run_mode); Serial.print(" ");
+    //  Serial.print(admin_timeout); Serial.print(" ");
+    //  Serial.print(current_ms); Serial.print(" ");
+    //  Serial.println(previous_ms);
+    
+    if (run_mode == 0) { return; }
+    if ( (current_ms - previous_ms)/1000 > admin_timeout ) {
+      Serial.println("adminTimeout() setting run_mode to 0");
+      run_mode = 0;
+    }
+  }
+
+  void SerialMenu::resetAdmin(int seconds) {
+    Serial.print("resetAdmin() seconds: ");
+    Serial.println(seconds);
+    
+    admin_timeout = seconds;
+    run_mode = 1;
+    previous_ms = millis();
+  }
+
 
   /*** Draw Menu Items and Log Messages ***/
 
@@ -292,6 +328,7 @@
     serial_port->println("2. Add tag");
     serial_port->println("3. Delete tag");
     serial_port->println("4. Show free memory");
+    serial_port->println("5. Exit");
     serial_port->println("");
   }
 

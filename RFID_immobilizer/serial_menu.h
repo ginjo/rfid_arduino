@@ -1,7 +1,8 @@
 // Serial Menu Class
 
 #include <Arduino.h>
-#include <Stream.h>
+//#include <Stream.h>
+#include <SoftwareSerial.h>
 #include <string.h>
 
 #ifndef __SERIAL_MENU_H__
@@ -18,9 +19,10 @@
     Stream *serial_port;
     
   public:
-    //int receive_pin;
-    //int transmit_pin;
-  	//unsigned long baud_rate;
+    int run_mode; // 0=run, 1=admin
+    unsigned long previous_ms;
+    int admin_timeout; // seconds
+  	
   	char input_mode[INPUT_MODE_LENGTH];
   
   	// Byte buffer for incoming serial strings
@@ -31,6 +33,7 @@
 
     // constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
+    // TODO: Is the parameter name required here? What about the pointer?
     SerialMenu(Stream *stream_ref);
 
     // TODO: Do we need to specify the array lengths here?
@@ -57,6 +60,8 @@
     bool addTagString(uint8_t[]);
     bool addTagNum(unsigned long);
     void resetInputBuffer();
+    void adminTimeout();
+    void resetAdmin(int); // seconds
     void loop();
   
   };
