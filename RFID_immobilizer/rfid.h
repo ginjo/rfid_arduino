@@ -1,4 +1,4 @@
-// RFID Tags Class
+// RFID Tag Class
 
 /*
  * Load list of tags from EEPROM
