@@ -2,6 +2,12 @@
 // Handles human-readable input and output between text-based serial port
 // and arduino application (classes, functions, data, et.c.).
 
+// TODO: Create a function for menu option "Read Tag",
+// that temporarily switches run_mode to 0, gathers a single tag,
+// then returns run_mode to 1 so BTmenu can resume where it left off.
+// This could allow a menu option for "Add tag from scanner",
+// vs the current add-tag-from-keyboard menu option.
+
 #include "serial_menu.h"
 
   // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
