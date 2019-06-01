@@ -16,7 +16,7 @@
   SerialMenu BTmenu(&BTserial);
 
   // Brings up a blinker LED.
-  //Led Blinker(9);
+  Led Blinker(9);
 
   // The RFID reader.
   SoftwareSerial RDM6300(5,4);
@@ -30,10 +30,10 @@
     
     delay(1000);
     
-    //unsigned long blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
-    //Blinker.begin(blinker_intervals);
+    unsigned long blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
+    Blinker.begin(blinker_intervals);
 
-    BTserial.begin(4800);
+    BTserial.begin(9600);
 
     BTmenu.begin();
     BTmenu.resetAdmin(2);
@@ -47,7 +47,7 @@
   void loop() {
     // here is where you put code that needs to be running all the time.
     
-    //Blinker.loop();
+    Blinker.loop();
 
     if (BTmenu.run_mode > 0) {
       BTserial.listen();
