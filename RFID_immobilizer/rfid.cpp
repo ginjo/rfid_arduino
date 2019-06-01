@@ -21,7 +21,9 @@
       Serial.print("(");
       Serial.print(buff_index);
       Serial.print(")");
-      Serial.print(buff[buff_index]);
+      Serial.print(buff[buff_index], HEX);
+      Serial.print(":");
+      Serial.print(buff[buff_index], DEC);
 
       int final_index = RAW_TAG_LENGTH - 1;
 
@@ -35,7 +37,34 @@
         Serial.print(",");
       } else { // tag complete, now process it
         Serial.println("");
-        Serial.println((char *)buff);
+
+
+        /* Rough Processing */
+        
+        int id_begin;
+        int id_end;
+         
+        if (RAW_TAG_LENGTH == 14) {  // RDM6300 reader
+          Serial.println((char *)buff);
+          //Serial.println(strtol(buff, NULL, 16));
+          id_begin = 3;
+          id_end   = 10;
+        } else if (RAW_TAG_LENGTH == 10) {  // 7941E reader
+          id_begin = 4;
+          id_end   = 7;
+        }
+
+        int id_len = id_end - id_begin;
+        char tmp_str[id_len] = "";
+        
+        for(int n=id_begin; n<=id_end; n++) {
+          sprintf(tmp_str + strlen(tmp_str), "%x", buff[n]);
+        }
+        Serial.println((char *)tmp_str);
+        Serial.println(strtol((char *)tmp_str, NULL, 16));
+        strncpy(tmp_str, NULL, id_len);
+
+        
         previous_ms = millis();
         resetBuffer();
       }

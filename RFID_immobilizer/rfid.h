@@ -19,7 +19,8 @@
 
 #ifndef __RFID_TAGS_H__
 #define __RFID_TAGS_H__
-#define RAW_TAG_LENGTH 14
+//#define RAW_TAG_LENGTH 14  // RDM63000
+#define RAW_TAG_LENGTH 10  // 7941E
 #define TAG_READ_INTERVAL 1000
 
   class RFID {

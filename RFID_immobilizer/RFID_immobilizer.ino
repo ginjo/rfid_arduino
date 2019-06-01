@@ -7,7 +7,7 @@
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
   #include "serial_menu.h"
-  //#include "rfid.h"
+  #include "rfid.h"
   #include "rdm6300_lib_example.cpp"
 
 
@@ -19,29 +19,29 @@
   //Led Blinker(9);
 
   // The RFID reader.
-  //SoftwareSerial RDM6300(7, 8);
-  //RFID Rfid(&RDM6300);
+  SoftwareSerial RDM6300(5,4);
+  RFID Rfid(&RDM6300);
 
   // Rdm3600 library example
-  Rdm6300LibExample RdmExample; 
+  //Rdm6300LibExample RdmExample; 
 
   void setup() {
+    Serial.begin(9600);
+    
     delay(1000);
     
     //unsigned long blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
     //Blinker.begin(blinker_intervals);
-    
-    // Serial.begin(9600);
 
-    BTserial.begin(9600);
+    BTserial.begin(4800);
 
     BTmenu.begin();
     BTmenu.resetAdmin(2);
 
-    //RDM6300.begin(9600);
-    //Rfid.begin();
+    RDM6300.begin(9600);
+    Rfid.begin();
 
-    RdmExample.begin();
+    //RdmExample.begin();
   }
   
   void loop() {
@@ -55,12 +55,11 @@
       BTmenu.loop();
       
     } else {
-      //RDM6300.listen();
-      //delay(1);
-      //Rfid.loop();
+      RDM6300.listen();
+      Rfid.loop();
 
-      RdmExample.rdm6300._software_serial->listen();
-      RdmExample.loop();
+      //RdmExample.rdm6300._software_serial->listen();
+      //RdmExample.loop();
     }
   }
 
