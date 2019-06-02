@@ -96,12 +96,12 @@
       //Serial.println("cycleReaderPower() setting reader power LOW");
       digitalWrite(READER_POWER_CONTROL_PIN, LOW);
     } else if (current_ms > ms_a && current_ms < ms_b) {
-      //Serial.println("cycleReaderPower() setting reader power HIGH");
+      //Serial.println(F("cycleReaderPower() setting reader power HIGH"));
       digitalWrite(READER_POWER_CONTROL_PIN, HIGH);
     } else {
-      Serial.print("cycleReaderPower() updating last_reader_power_cycle, last tag read: ");
+      Serial.print(F("cycleReaderPower() updating last_reader_power_cycle, last tag read: "));
       Serial.print((current_ms - last_tag_read_ms)/1000);
-      Serial.println(" seconds ago");
+      Serial.println(F(" seconds ago"));
       last_reader_power_cycle = millis();
     }
   }

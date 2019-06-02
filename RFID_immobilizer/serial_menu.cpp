@@ -64,7 +64,7 @@
 	
 	//void SerialMenu::begin(unsigned long baud) {
   void SerialMenu::begin() {
-    serial_port->println("SerialMenu Admin Console\r\n");
+    serial_port->println(F("SerialMenu Admin Console\r\n"));
     showInfo();
     //resetAdmin(5);
     //menuListTags();
@@ -85,7 +85,7 @@
 	  if (serial_port->available()) {
       resetAdmin(15);
       
-      Serial.println("checkSerialPort() serial_port->available() is TRUE");
+      Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
 	    uint8_t byt = serial_port->read();
       
       //  Serial.print("checkSerialPort received byte: ");
@@ -104,7 +104,7 @@
 	    } else {
         // last-resort default just writes byt to serial_port
         // this should not happen under normal circumstances
-        Serial.println("checkSerialPort() no matching input mode, using default");
+        Serial.println(F("checkSerialPort() no matching input mode, using default"));
 	      serial_port->write(byt);
 	    }
      
@@ -114,15 +114,15 @@
   // check for callbacks every cycle
   void SerialMenu::runCallbacks() {
     if (inputAvailable()) {
-      Serial.print("runCallbacks() inputAvailableFor(): ");
+      Serial.print(F("runCallbacks() inputAvailableFor(): "));
       Serial.println(inputAvailableFor());
 
       if (inputAvailable("menuAddTag")) {
-        Serial.println("runCallbacks() selected menuAddTag");
+        Serial.println(F("runCallbacks() selected menuAddTag"));
         if (addTagString(buff)) { 
           menuListTags();
         } else {
-          Serial.println("runCallbacks() call to addTagString(buff) failed");
+          Serial.println(F("runCallbacks() call to addTagString(buff) failed"));
         }
         resetInputBuffer();
         setCurrentFunction("");
@@ -131,7 +131,7 @@
       //   ...
       
       } else {
-        Serial.println("runCallbacks() inputAvailableFor() 'none/default' ");
+        Serial.println(F("runCallbacks() inputAvailableFor() 'none/default' "));
         
         setInputMode("menu");
         setCurrentFunction("");
@@ -146,7 +146,7 @@
 
   // Activates an incoming menu selection.
   void SerialMenu::selectMenuItem(uint8_t byt) {
-    Serial.print("selectMenuItem received byte: ");
+    Serial.print(F("selectMenuItem received byte: "));
     Serial.println(char(byt));
     
     switch (char(byt)) {
@@ -165,7 +165,7 @@
         menuShowFreeMemory();
         break;
       case '5':
-        serial_port->println("Exiting admin console\r\n\r\n");
+        serial_port->println(F("Exiting admin console\r\n\r\n"));
         resetAdmin(0);
         break;
       default:
@@ -175,7 +175,7 @@
   }
 
   void SerialMenu::getLine(uint8_t byt) {
-    Serial.print("getLine() byt: ");
+    Serial.print(F("getLine() byt: "));
     Serial.println(char(byt));
     Serial.print("getLine() buff: ");
     Serial.println((char *)buff);
@@ -187,7 +187,7 @@
     if (int(byt) == 13) {
       serial_port->println("");
   
-      serial_port->print("You entered: ");
+      serial_port->print(F("You entered: "));
       serial_port->println((char*)buff);
       serial_port->println("");
 
@@ -201,7 +201,7 @@
   void SerialMenu::setInputMode(char str[]) {
     strncpy(input_mode, str, INPUT_MODE_LENGTH);
     
-    Serial.print("setInputMode() to: ");
+    Serial.print(F("setInputMode() to: "));
     Serial.println(input_mode);
   }
 
@@ -217,12 +217,12 @@
   void SerialMenu::setCurrentFunction(char func[]) {
     strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
 
-    Serial.print("setCurrentFunction() to: ");
+    Serial.print(F("setCurrentFunction() to: "));
     Serial.println(current_function);
   }
 
   bool SerialMenu::matchCurrentFunction(char func[]) {
-    Serial.print("matchCurrentFunction() with: ");
+    Serial.print(F("matchCurrentFunction() with: "));
     Serial.print(func);
     Serial.print(", ");
     Serial.println(current_function);
@@ -261,7 +261,7 @@
       return false;
     }
   
-    serial_port->print("Tag entered: ");
+    serial_port->print(F("Tag entered: "));
     serial_port->println((char*)buff);
     serial_port->println("");
 
@@ -301,13 +301,13 @@
     
     if (run_mode == 0) { return; }
     if ( (current_ms - previous_ms)/1000 > admin_timeout ) {
-      Serial.println("adminTimeout() setting run_mode to 0");
+      Serial.println(F("adminTimeout() setting run_mode to 0"));
       run_mode = 0;
     }
   }
 
   void SerialMenu::resetAdmin(int seconds) {
-    Serial.print("resetAdmin() seconds: ");
+    Serial.print(F("resetAdmin() seconds: "));
     Serial.println(seconds);
     
     admin_timeout = seconds;
@@ -320,21 +320,21 @@
 
   void SerialMenu::showInfo() {
     //serial_port->println("serial_port is active!");
-    Serial.print("SerialMenu::setup input_mode: ");
+    Serial.print(F("SerialMenu::setup input_mode: "));
     Serial.println(input_mode);
-    Serial.print("SerialMenu::setup buff_index: ");
+    Serial.print(F("SerialMenu::setup buff_index: "));
     Serial.println(buff_index);
-    Serial.print("SerialMenu::setup tags[2]: ");
+    Serial.print(F("SerialMenu::setup tags[2]: "));
     Serial.println(tags[2]);
   }
 
   void SerialMenu::menuMain() {
-    serial_port->println("Menu");
-    serial_port->println("1. List tags");
-    serial_port->println("2. Add tag");
-    serial_port->println("3. Delete tag");
-    serial_port->println("4. Show free memory");
-    serial_port->println("5. Exit");
+    serial_port->println(F("Menu"));
+    serial_port->println(F("1. List tags"));
+    serial_port->println(F("2. Add tag"));
+    serial_port->println(F("3. Delete tag"));
+    serial_port->println(F("4. Show free memory"));
+    serial_port->println(F("5. Exit"));
     serial_port->println("");
   }
 
@@ -360,18 +360,20 @@
   void SerialMenu::menuAddTag() {
     setInputMode("line");
     setCurrentFunction(__FUNCTION__);
-    serial_port->println("Add Tag");
-    serial_port->print("Enter a tag number (unsigned long) to store: ");
+    serial_port->println(F("Add Tag"));
+    serial_port->print(F("Enter a tag number (unsigned long) to store: "));
   }
 
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag() {
-    serial_port->println("Delete Tag");
+    serial_port->println(F("Delete Tag"));
     serial_port->println("");
   }
 
   void SerialMenu::menuShowFreeMemory() {
-    serial_port->print("Free Memory: ");
+    serial_port->print(F("Free Memory: "));
     serial_port->println(freeMemory());
     serial_port->println();
   }
+
+ 

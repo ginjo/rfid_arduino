@@ -27,7 +27,7 @@
       //  Serial.println("");
     }
   
-    Serial.print("Led::intervals[]: ");
+    Serial.print(F("Led::intervals[]: "));
     Serial.print(intervals_count);
     Serial.print(",");
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {

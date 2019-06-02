@@ -29,7 +29,7 @@
     
       rdm6300.begin(RDM6300_RX_PIN);
     
-      Serial.println("\nPlace RFID tag near the rdm6300...");
+      Serial.println(F("\nPlace RFID tag near the rdm6300..."));
     }
     
     void loop()
