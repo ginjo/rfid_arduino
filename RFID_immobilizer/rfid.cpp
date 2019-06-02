@@ -4,18 +4,20 @@
   RFID::RFID(Stream *_serial_port) :
     buff({}),
     buff_index(0),
-    previous_ms(0),
+    last_tag_read_ms(0),
     serial_port(_serial_port)
   {
     ;
   }
 
   void RFID::begin() {
-    ;
+    digitalWrite(READER_POWER_CONTROL_PIN, HIGH);
   }
 
   void RFID::loop() {
-    if (serial_port->available() && millis() - previous_ms > TAG_READ_INTERVAL) {
+    unsigned long current_ms = millis();
+    
+    if (serial_port->available() && current_ms - last_tag_read_ms > TAG_READ_INTERVAL) {
       buff[buff_index] = serial_port->read();
 
       Serial.print("(");
@@ -39,7 +41,7 @@
         Serial.println("");
 
 
-        /* Rough Processing */
+        /* Rough Processing, TODO: Put this in a function */
         
         int id_begin;
         int id_end;
@@ -65,12 +67,12 @@
         strncpy(tmp_str, NULL, id_len);
 
         
-        previous_ms = millis();
+        last_tag_read_ms = current_ms;
         resetBuffer();
       }
       
-    } else {
-      ;
+    } else if (current_ms - last_tag_read_ms > READER_CYCLE_HIGH_DURATION) {
+      cycleReaderPower();
     }
   }
 
@@ -79,4 +81,27 @@
     strncpy(buff, NULL, RAW_TAG_LENGTH);
   }
 
-  
+  void RFID::cycleReaderPower() {
+    unsigned long current_ms = millis();
+    unsigned long ms_a = last_reader_power_cycle + READER_CYCLE_LOW_DURATION;
+    unsigned long ms_b = last_reader_power_cycle + READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION;
+    
+    //  Serial.print("cycleReaderPower() current, last, ms_a, ms_b: ");
+    //  Serial.print(current_ms); Serial.print(",");
+    //  Serial.print(last_reader_power_cycle); Serial.print(",");
+    //  Serial.print(ms_a); Serial.print(",");
+    //  Serial.println(ms_b);
+    
+    if (current_ms > last_reader_power_cycle && current_ms < ms_a) {
+      //Serial.println("cycleReaderPower() setting reader power LOW");
+      digitalWrite(READER_POWER_CONTROL_PIN, LOW);
+    } else if (current_ms > ms_a && current_ms < ms_b) {
+      //Serial.println("cycleReaderPower() setting reader power HIGH");
+      digitalWrite(READER_POWER_CONTROL_PIN, HIGH);
+    } else {
+      Serial.print("cycleReaderPower() updating last_reader_power_cycle, last tag read: ");
+      Serial.print((current_ms - last_tag_read_ms)/1000);
+      Serial.println(" seconds ago");
+      last_reader_power_cycle = millis();
+    }
+  }

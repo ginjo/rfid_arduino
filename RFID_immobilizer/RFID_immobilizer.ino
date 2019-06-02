@@ -4,6 +4,13 @@
  * 
  */
 
+ // TODO: Change all 'previous_ms' to 'last_<whatever>'.
+ // TODO: Close fuel switch at startup, so we don't have to wait for software load.
+ //       But track if there was a 'fatal' missing-tag timeout, using EEPROM.
+ //       If there WAS a previous timeout, keep fuel switch OPEN at startup,
+ //       until a valid tag is read (then clear the 'fatal' event from EEPROM.
+ 
+
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
   #include "serial_menu.h"
@@ -57,6 +64,7 @@
     } else {
       RDM6300.listen();
       Rfid.loop();
+      delay(20);
 
       //RdmExample.rdm6300._software_serial->listen();
       //RdmExample.loop();

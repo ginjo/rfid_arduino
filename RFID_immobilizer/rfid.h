@@ -22,12 +22,16 @@
 //#define RAW_TAG_LENGTH 14  // RDM63000
 #define RAW_TAG_LENGTH 10  // 7941E
 #define TAG_READ_INTERVAL 1000
+#define READER_CYCLE_LOW_DURATION 150
+#define READER_CYCLE_HIGH_DURATION 5000
+#define READER_POWER_CONTROL_PIN 6
 
   class RFID {
   public:
     uint8_t buff[RAW_TAG_LENGTH];
     int buff_index;
-    unsigned long previous_ms;
+    unsigned long last_tag_read_ms;
+    unsigned long last_reader_power_cycle;
     Stream *serial_port;
 
     // constructor
@@ -36,6 +40,7 @@
     void begin();
     void loop();
     void resetBuffer();
+    void cycleReaderPower();
   };
 
 #endif

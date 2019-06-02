@@ -8,11 +8,11 @@
 #ifndef __SERIAL_MENU_H__
 #define __SERIAL_MENU_H__
 
-#define INPUT_BUFFER_LENGTH 32
-#define INPUT_MODE_LENGTH 16
-#define CURRENT_FUNCTION_LENGTH 32
+#define INPUT_BUFFER_LENGTH 16
+#define INPUT_MODE_LENGTH 8
+#define CURRENT_FUNCTION_LENGTH 20
 //#define TAG_LENGTH 8 // this may no longer be necessary
-#define TAG_LIST_SIZE 8
+#define TAG_LIST_SIZE 5
 
   class SerialMenu {
   private:
