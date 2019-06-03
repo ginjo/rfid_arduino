@@ -14,7 +14,9 @@
  // TODO: Implement blinker cycle limit setting.
  // TODO: Create menu options to set global variables.
  // TODO: Create var-to-eeprom address mapping for common settings (to be editable by menu).
- 
+ // TODO: Provide standard message when admin menu exits/transitions to run mode.
+ // TODO: Sort out git repos in Documents/Arduino folder.
+ // TODO: Better code documentation. User documentation.
 
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
@@ -24,11 +26,12 @@
 
 
   // Brings up a simple menu cli on a BT serial port.
-  SoftwareSerial BTserial(2, 3); // RX | TX
-  SerialMenu BTmenu(&BTserial);
 
   // Brings up a blinker LED.
   Led Blinker(9);
+  
+  SoftwareSerial BTserial(2, 3); // RX | TX
+  SerialMenu BTmenu(&BTserial, &Blinker);
 
   // The RFID reader.
   SoftwareSerial RfidSerial(5,4);

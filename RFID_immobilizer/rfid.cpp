@@ -130,7 +130,7 @@
       fuel_pump_state = 1;
 
       if (current_ms - last_tag_read_ms > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION + TAG_READ_INTERVAL) {
-        int fast_blink[INTERVALS_LENGTH] = {100,100};
+        int fast_blink[INTERVALS_LENGTH] = {70,70};
         blinker->update(0, fast_blink);
       }
     }

@@ -36,8 +36,8 @@
     int fuel_pump_state;
     unsigned long last_tag_read_ms;
     unsigned long last_reader_power_cycle;
-    Stream *serial_port;
-    Led *blinker;
+    Stream * serial_port;
+    Led * blinker;
 
     // constructor
     RFID(Stream*, Led*);

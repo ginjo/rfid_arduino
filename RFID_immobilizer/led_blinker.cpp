@@ -42,6 +42,8 @@
     handleBlinker();
   }
 
+  // Calls begin() only if params have changed.
+  // Should generally use this instad of begin().
   void Led::update(int _num_cycles, int _intervals[]) {
     if (
         _num_cycles == num_cycles &&
@@ -61,19 +63,23 @@
     if (phz == 0) {
       cycle_count ++;
     }
-    led_state = (phz + 1) % 2;
+
+    // don't bother changing state if interval is 0
+    if (intervals[phz] > 0) {
+      led_state = (phz + 1) % 2;
+    }
+    
     previous_ms = millis();
   }
 
   void Led::on() {
-    //int mostly_on[INTERVALS_LENGTH] = {980,20};
-    //update(0, mostly_on);
-    update(0, 1000);
-    //digitalWrite(led_pin, HIGH);
+    int intervals[INTERVALS_LENGTH] = {1000};
+    update(0, intervals);
   }
 
   void Led::off() {
-    digitalWrite(led_pin, LOW);
+    int intervals[INTERVALS_LENGTH] = {0,1000};
+    update(0, intervals);
   }
   
   // Handles start-stop blinker and blinker cycling

@@ -45,12 +45,13 @@
 
   /*** Constructor and Setup ***/
 
-  SerialMenu::SerialMenu(Stream *stream_ref) :
+  SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
     buff({}),
     buff_index(0),
     current_function(""),
     input_mode("menu"),
+    blinker(_blinker),
     // See resetAdmin()
     //  run_mode(1), // 0=run, 1=admin
     //  admin_timeout(3), // seconds
@@ -302,6 +303,7 @@
     if (run_mode == 0) { return; }
     if ( (current_ms - previous_ms)/1000 > admin_timeout ) {
       Serial.println(F("adminTimeout() setting run_mode to 0"));
+      blinker->off();
       run_mode = 0;
     }
   }

@@ -1,18 +1,19 @@
 // Serial Menu Class
 
-#include <Arduino.h>
-//#include <Stream.h>
-#include <SoftwareSerial.h>
-#include <string.h>
-
 #ifndef __SERIAL_MENU_H__
 #define __SERIAL_MENU_H__
 
-#define INPUT_BUFFER_LENGTH 16
-#define INPUT_MODE_LENGTH 8
-#define CURRENT_FUNCTION_LENGTH 20
-//#define TAG_LENGTH 8 // this may no longer be necessary
-#define TAG_LIST_SIZE 5
+  #include <Arduino.h>
+  //#include <Stream.h>
+  #include <SoftwareSerial.h>
+  #include <string.h>
+  #include "led_blinker.h"
+  
+  #define INPUT_BUFFER_LENGTH 16
+  #define INPUT_MODE_LENGTH 8
+  #define CURRENT_FUNCTION_LENGTH 20
+  //#define TAG_LENGTH 8 // this may no longer be necessary
+  #define TAG_LIST_SIZE 5
 
   class SerialMenu {
   private:
@@ -31,10 +32,13 @@
     char current_function[CURRENT_FUNCTION_LENGTH];
   	unsigned long tags[TAG_LIST_SIZE];
 
+    Led * blinker;
+
     // constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
     // TODO: Is the parameter name required here? What about the pointer?
-    SerialMenu(Stream *stream_ref);
+    //SerialMenu(Stream *stream_ref);
+    SerialMenu(Stream*, Led*);
 
     // TODO: Do we need to specify the array lengths here?
     
