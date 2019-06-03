@@ -1,11 +1,13 @@
 #include "rfid.h"
 
   // constructor
-  RFID::RFID(Stream *_serial_port) :
+  RFID::RFID(Stream *_serial_port, Led *_blinker) :
     buff({}),
     buff_index(0),
     last_tag_read_ms(0),
-    serial_port(_serial_port)
+    serial_port(_serial_port),
+    blinker(_blinker),
+    fuel_pump_state(1)
   {
     ;
   }
@@ -16,8 +18,9 @@
 
   void RFID::loop() {
     unsigned long current_ms = millis();
+    unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
     
-    if (serial_port->available() && current_ms - last_tag_read_ms > TAG_READ_INTERVAL) {
+    if (serial_port->available() && ms_since_last_tag_read > TAG_READ_INTERVAL) {
       buff[buff_index] = serial_port->read();
 
       Serial.print("(");
@@ -39,41 +42,45 @@
         Serial.print(",");
       } else { // tag complete, now process it
         Serial.println("");
-
-
-        /* Rough Processing, TODO: Put this in a function */
-        
-        int id_begin;
-        int id_end;
-         
-        if (RAW_TAG_LENGTH == 14) {  // RDM6300 reader
-          Serial.println((char *)buff);
-          //Serial.println(strtol(buff, NULL, 16));
-          id_begin = 3;
-          id_end   = 10;
-        } else if (RAW_TAG_LENGTH == 10) {  // 7941E reader
-          id_begin = 4;
-          id_end   = 7;
-        }
-
-        int id_len = id_end - id_begin;
-        char tmp_str[id_len] = "";
-        
-        for(int n=id_begin; n<=id_end; n++) {
-          sprintf(tmp_str + strlen(tmp_str), "%x", buff[n]);
-        }
-        Serial.println((char *)tmp_str);
-        Serial.println(strtol((char *)tmp_str, NULL, 16));
-        strncpy(tmp_str, NULL, id_len);
-
-        
+        processTagData(*buff);
         last_tag_read_ms = current_ms;
         resetBuffer();
       }
       
-    } else if (current_ms - last_tag_read_ms > READER_CYCLE_HIGH_DURATION) {
+    } else if (ms_since_last_tag_read > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION) {
       cycleReaderPower();
     }
+
+    // Check fuel pump timeout
+    timeoutFuelPump();
+  }
+
+  void RFID::processTagData(uint8_t * _tag[RAW_TAG_LENGTH]) {    
+    int id_begin;
+    int id_end;
+     
+    if (RAW_TAG_LENGTH == 14) {  // RDM6300 reader
+      Serial.println((char *)_tag);
+      //Serial.println(strtol(buff, NULL, 16));
+      id_begin = 3;
+      id_end   = 10;
+      
+    } else if (RAW_TAG_LENGTH == 10) {  // 7941E reader
+      id_begin = 4;
+      id_end   = 7;
+    }
+  
+    int id_len = id_end - id_begin;
+    char tmp_str[id_len] = "";
+    
+    for(int n=id_begin; n<=id_end; n++) {
+      sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
+    }
+    Serial.println((char *)tmp_str);
+    Serial.println(strtol((char *)tmp_str, NULL, 16));
+    strncpy(tmp_str, NULL, id_len);
+  
+    blinker->on();
   }
 
   void RFID::resetBuffer() {
@@ -104,4 +111,26 @@
       Serial.println(F(" seconds ago"));
       last_reader_power_cycle = millis();
     }
+  }
+
+  void RFID::timeoutFuelPump() {
+    unsigned long current_ms = millis();
+    
+    if (current_ms - last_tag_read_ms > 15000) {
+      if (fuel_pump_state != 0) {
+        int slow_blink[INTERVALS_LENGTH] = {500,500};
+        blinker->update(0, slow_blink);
+      }
+      fuel_pump_state = 0;
+      
+    } else if (current_ms - last_tag_read_ms <= 15000) {
+      fuel_pump_state = 1;
+
+      if (current_ms - last_tag_read_ms > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION) {
+        int fast_blink[INTERVALS_LENGTH] = {100,100};
+        blinker->update(0, fast_blink);
+      }
+    }
+
+    // digitalWrite(fuel-pump-pin, fuel_pump_state);
   }

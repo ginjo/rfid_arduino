@@ -13,34 +13,40 @@
  * 
  */
 
-#include <Arduino.h>
-//#include <Stream.h>
-#include <SoftwareSerial.h>
+#ifndef __RFID_H__
+#define __RFID_H__
 
-#ifndef __RFID_TAGS_H__
-#define __RFID_TAGS_H__
-//#define RAW_TAG_LENGTH 14  // RDM63000
-#define RAW_TAG_LENGTH 10  // 7941E
-#define TAG_READ_INTERVAL 1000
-#define READER_CYCLE_LOW_DURATION 150
-#define READER_CYCLE_HIGH_DURATION 5000
-#define READER_POWER_CONTROL_PIN 6
+  #include <Arduino.h>
+  //#include <Stream.h>
+  #include <SoftwareSerial.h>
+  #include "led_blinker.h"
+  
+  //#define RAW_TAG_LENGTH 14  // RDM63000
+  #define RAW_TAG_LENGTH 10  // 7941E
+  #define TAG_READ_INTERVAL 1000
+  #define READER_CYCLE_LOW_DURATION 150
+  #define READER_CYCLE_HIGH_DURATION 5000
+  #define READER_POWER_CONTROL_PIN 6
 
   class RFID {
   public:
     uint8_t buff[RAW_TAG_LENGTH];
     int buff_index;
+    int fuel_pump_state;
     unsigned long last_tag_read_ms;
     unsigned long last_reader_power_cycle;
     Stream *serial_port;
+    Led *blinker;
 
     // constructor
-    RFID(Stream *_serial_port);
+    RFID(Stream*, Led*);
 
     void begin();
     void loop();
     void resetBuffer();
     void cycleReaderPower();
+    void timeoutFuelPump();
+    void processTagData(uint8_t * []);
   };
 
 #endif

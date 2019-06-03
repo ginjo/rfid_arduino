@@ -9,6 +9,8 @@
  //       But track if there was a 'fatal' missing-tag timeout, using EEPROM.
  //       If there WAS a previous timeout, keep fuel switch OPEN at startup,
  //       until a valid tag is read (then clear the 'fatal' event from EEPROM.
+ // TODO: LED blinker needs a refactor: 1. Simplify, 2. Allow cycle count passed to begin();
+ // TODO: I think macros need to be coordinated between each file, since they can clobber each other.
  
 
   #include <SoftwareSerial.h>
@@ -26,26 +28,27 @@
   Led Blinker(9);
 
   // The RFID reader.
-  SoftwareSerial RDM6300(5,4);
-  RFID Rfid(&RDM6300);
+  SoftwareSerial RfidSerial(5,4);
+  RFID Rfid(&RfidSerial, &Blinker);
 
   // Rdm3600 library example
   //Rdm6300LibExample RdmExample; 
 
-  void setup() {
+  void setup() {    
     Serial.begin(9600);
+    while (! Serial) {
+      delay(10);
+    }
     
-    delay(1000);
-    
-    unsigned long blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
-    Blinker.begin(blinker_intervals);
+    //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
+    //  Blinker.begin(0, blinker_intervals);
 
     BTserial.begin(9600);
 
     BTmenu.begin();
     BTmenu.resetAdmin(2);
 
-    RDM6300.begin(9600);
+    RfidSerial.begin(9600);
     Rfid.begin();
 
     //RdmExample.begin();
@@ -62,9 +65,9 @@
       BTmenu.loop();
       
     } else {
-      RDM6300.listen();
+      RfidSerial.listen();
       Rfid.loop();
-      delay(20);
+      delay(1);
 
       //RdmExample.rdm6300._software_serial->listen();
       //RdmExample.loop();
