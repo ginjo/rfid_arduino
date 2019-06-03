@@ -19,36 +19,39 @@
   void RFID::loop() {
     unsigned long current_ms = millis();
     unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
-    
-    if (serial_port->available() && ms_since_last_tag_read > TAG_READ_INTERVAL) {
-      buff[buff_index] = serial_port->read();
 
-      Serial.print("(");
-      Serial.print(buff_index);
-      Serial.print(")");
-      Serial.print(buff[buff_index], HEX);
-      Serial.print(":");
-      Serial.print(buff[buff_index], DEC);
-
-      int final_index = RAW_TAG_LENGTH - 1;
-
-      if (buff_index == 0 && buff[0] != 2) { // reset bogus read
-        resetBuffer();
-      } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
-        resetBuffer();
-        Serial.println("");
-      } else if (buff_index < final_index) { // good read, add comma to log and keep reading
-        buff_index++;
-        Serial.print(",");
-      } else { // tag complete, now process it
-        Serial.println("");
-        processTagData(*buff);
-        last_tag_read_ms = current_ms;
-        resetBuffer();
-      }
+    if (ms_since_last_tag_read > TAG_READ_INTERVAL) {
       
-    } else if (ms_since_last_tag_read > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION) {
-      cycleReaderPower();
+      if (serial_port->available()) {
+        buff[buff_index] = serial_port->read();
+  
+        Serial.print("(");
+        Serial.print(buff_index);
+        Serial.print(")");
+        Serial.print(buff[buff_index], HEX);
+        Serial.print(":");
+        Serial.print(buff[buff_index], DEC);
+  
+        int final_index = RAW_TAG_LENGTH - 1;
+  
+        if (buff_index == 0 && buff[0] != 2) { // reset bogus read
+          resetBuffer();
+        } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
+          resetBuffer();
+          Serial.println("");
+        } else if (buff_index < final_index) { // good read, add comma to log and keep reading
+          buff_index++;
+          Serial.print(",");
+        } else { // tag complete, now process it
+          Serial.println("");
+          processTagData(*buff);
+          last_tag_read_ms = current_ms;
+          resetBuffer();
+        }
+        
+      } else if (ms_since_last_tag_read > READER_CYCLE_HIGH_DURATION) {
+        cycleReaderPower();
+      }
     }
 
     // Check fuel pump timeout
@@ -105,7 +108,7 @@
     } else if (current_ms > ms_a && current_ms < ms_b) {
       //Serial.println(F("cycleReaderPower() setting reader power HIGH"));
       digitalWrite(READER_POWER_CONTROL_PIN, HIGH);
-    } else {
+    } else if (current_ms > ms_b) {
       Serial.print(F("cycleReaderPower() updating last_reader_power_cycle, last tag read: "));
       Serial.print((current_ms - last_tag_read_ms)/1000);
       Serial.println(F(" seconds ago"));
@@ -116,17 +119,17 @@
   void RFID::timeoutFuelPump() {
     unsigned long current_ms = millis();
     
-    if (current_ms - last_tag_read_ms > 15000) {
+    if (current_ms - last_tag_read_ms > (TAG_LAST_READ_TIMEOUT * 1000)) {
       if (fuel_pump_state != 0) {
         int slow_blink[INTERVALS_LENGTH] = {500,500};
         blinker->update(0, slow_blink);
       }
       fuel_pump_state = 0;
       
-    } else if (current_ms - last_tag_read_ms <= 15000) {
+    } else if (current_ms - last_tag_read_ms <= (TAG_LAST_READ_TIMEOUT * 1000)) {
       fuel_pump_state = 1;
 
-      if (current_ms - last_tag_read_ms > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION) {
+      if (current_ms - last_tag_read_ms > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION + TAG_READ_INTERVAL) {
         int fast_blink[INTERVALS_LENGTH] = {100,100};
         blinker->update(0, fast_blink);
       }

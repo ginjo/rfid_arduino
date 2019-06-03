@@ -11,6 +11,9 @@
  //       until a valid tag is read (then clear the 'fatal' event from EEPROM.
  // TODO: LED blinker needs a refactor: 1. Simplify, 2. Allow cycle count passed to begin();
  // TODO: I think macros need to be coordinated between each file, since they can clobber each other.
+ // TODO: Implement blinker cycle limit setting.
+ // TODO: Create menu options to set global variables.
+ // TODO: Create var-to-eeprom address mapping for common settings (to be editable by menu).
  
 
   #include <SoftwareSerial.h>
@@ -41,7 +44,8 @@
     }
     
     //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
-    //  Blinker.begin(0, blinker_intervals);
+    int blinker_intervals[INTERVALS_LENGTH] = {485,15};
+    Blinker.begin(0, blinker_intervals);
 
     BTserial.begin(9600);
 

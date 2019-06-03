@@ -66,8 +66,9 @@
   }
 
   void Led::on() {
-    int mostly_on[INTERVALS_LENGTH] = {980,20};
-    update(0, mostly_on);
+    //int mostly_on[INTERVALS_LENGTH] = {980,20};
+    //update(0, mostly_on);
+    update(0, 1000);
     //digitalWrite(led_pin, HIGH);
   }
 
