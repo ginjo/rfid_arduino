@@ -17,6 +17,8 @@
  // TODO: Provide standard message when admin menu exits/transitions to run mode.
  // TODO: Sort out git repos in Documents/Arduino folder.
  // TODO: Better code documentation. User documentation.
+ // TODO: Don't allow admin mode to extend the startup grace period.
+ 
 
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
@@ -72,13 +74,15 @@
       BTmenu.loop();
       
     } else {
-      RfidSerial.listen();
-      Rfid.loop();
-      delay(1);
-
       //RdmExample.rdm6300._software_serial->listen();
       //RdmExample.loop();
+      RfidSerial.listen();
     }
+
+    // Keeping this outside the run_mode conditional ensures that
+    // the startup grace period will always timeout, even during admin mode.
+    Rfid.loop();
+    delay(1);
   }
 
   

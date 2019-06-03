@@ -120,10 +120,10 @@
     unsigned long current_ms = millis();
     
     if (current_ms - last_tag_read_ms > (TAG_LAST_READ_TIMEOUT * 1000)) {
-      if (fuel_pump_state != 0) {
-        int slow_blink[INTERVALS_LENGTH] = {500,500};
-        blinker->update(0, slow_blink);
-      }
+      //if (fuel_pump_state != 0) { // this reduces calls to blinker->update but blocks led recovery after admin timeout
+      int slow_blink[INTERVALS_LENGTH] = {500,500};
+      blinker->update(0, slow_blink);
+      //}
       fuel_pump_state = 0;
       
     } else if (current_ms - last_tag_read_ms <= (TAG_LAST_READ_TIMEOUT * 1000)) {
