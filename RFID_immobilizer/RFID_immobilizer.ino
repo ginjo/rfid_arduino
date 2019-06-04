@@ -18,6 +18,7 @@
  // TODO: Sort out git repos in Documents/Arduino folder.
  // TODO: Better code documentation. User documentation.
  // TODO: √ Don't allow admin mode to extend the startup grace period.
+ // TODO: Implement a beeper/buzzer.
  
 
   #include <SoftwareSerial.h>

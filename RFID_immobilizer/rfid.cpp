@@ -7,7 +7,7 @@
     last_tag_read_ms(0),
     serial_port(_serial_port),
     blinker(_blinker),
-    fuel_pump_state(1)
+    proximity_state(S.proximity_state)
   {
     ;
   }
@@ -55,7 +55,7 @@
     }
 
     // Check fuel pump timeout
-    timeoutFuelPump();
+    proximityStateController();
   }
 
   void RFID::processTagData(uint8_t * _tag[RAW_TAG_LENGTH]) {    
@@ -82,8 +82,10 @@
     Serial.println((char *)tmp_str);
     Serial.println(strtol((char *)tmp_str, NULL, 16));
     strncpy(tmp_str, NULL, id_len);
-  
+
+    // assuming successful tag at this point
     blinker->on();
+    S.setProximityState(1);
   }
 
   void RFID::resetBuffer() {
@@ -116,18 +118,23 @@
     }
   }
 
-  void RFID::timeoutFuelPump() {
+  void RFID::proximityStateController() {
     unsigned long current_ms = millis();
     
     if (current_ms - last_tag_read_ms > (TAG_LAST_READ_TIMEOUT * 1000)) {
-      //if (fuel_pump_state != 0) { // this reduces calls to blinker->update but blocks led recovery after admin timeout
+      //if (proximity_state != 0) { // this reduces calls to blinker->update but blocks led recovery after admin timeout
       int slow_blink[INTERVALS_LENGTH] = {500,500};
       blinker->update(0, slow_blink);
+
+      proximity_state = 0;
+      S.setProximityState(proximity_state);
       //}
-      fuel_pump_state = 0;
       
     } else if (current_ms - last_tag_read_ms <= (TAG_LAST_READ_TIMEOUT * 1000)) {
-      fuel_pump_state = 1;
+      
+      if (S.proximity_state == 1) {
+        proximity_state = 1;
+      }
 
       if (current_ms - last_tag_read_ms > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION + TAG_READ_INTERVAL) {
         int fast_blink[INTERVALS_LENGTH] = {70,70};
@@ -135,5 +142,6 @@
       }
     }
 
-    // digitalWrite(fuel-pump-pin, fuel_pump_state);
+    // TODO: Replace 13 with a S.<setting>
+    digitalWrite(13, proximity_state);
   }

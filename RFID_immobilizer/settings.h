@@ -11,8 +11,10 @@
 
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
-  
+
+  #include <Arduino.h>
   #include <string.h>
+  #include <EEPROM.h>
 
   // TODO: Integrate loading of GlobalSettings from EEPROM,
   // maybe putting defaults in the .h struct definition.
@@ -21,7 +23,7 @@
   // settings from eeprom, giving you a chance to 'resetToDefaults' if
   // something goes wrong with settings.
   //
-  // If you do this, you definitely want to store 'proximity_failure_timeout'
+  // If you do this, you definitely want to store 'proximity_state_timeout'
   // condition as a separate eeprom byte.
   // On second thought... actually, you will need to load settings, 'reasonable-defaults',
   // at the very least, whenever you startup. Even if just using the admin mode.
@@ -38,11 +40,15 @@
     //int RAW_TAG_LENGTH 14  // RDM63000
     //int RAW_TAG_LENGTH;  // 7941E
     
+    // Mostly time data
     int TAG_LAST_READ_TIMEOUT;
     int TAG_READ_INTERVAL;
     int READER_CYCLE_LOW_DURATION;
     int READER_CYCLE_HIGH_DURATION;
     int READER_POWER_CONTROL_PIN;
+    
+    // Temp, for testing
+    int proximity_state;
 
 
     // for class Led
@@ -55,10 +61,12 @@
     //  int INPUT_MODE_LENGTH;
     //  int CURRENT_FUNCTION_LENGTH;
     //  int TAG_LIST_SIZE;
+
+    int setProximityState(int);
   };  
 
-  extern const Storage Settings;
-  extern const Storage& S;
+  extern Storage Settings;
+  extern Storage& S;
   
   extern const int TAG_LAST_READ_TIMEOUT;
   extern const int TAG_READ_INTERVAL;

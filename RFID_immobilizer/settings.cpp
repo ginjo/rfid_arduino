@@ -1,16 +1,35 @@
 #include "settings.h"
 
-  extern const Storage Settings = {
+  int Storage::setProximityState(int _state) {
+    int previous_proximity_state = proximity_state;
+    proximity_state = _state;
+    if (proximity_state != previous_proximity_state) {
+      Serial.print(F("Calling EEPROM.update with proximity_state: "));
+      Serial.println(_state);
+      EEPROM.update(0, _state);
+    }
+    return _state;
+  }
+
+  // TODO: This is temp for testing.
+  // The data should ultimately be pulled from EEPROM.
+  // Defaults should be in constructor, if that works.
+  extern Storage Settings = {
 
     // RFID class constants
     //  14,  // RDM63000
     //  10,    // 7941E
     
-    20,    // TAG_LAST_READ_TIMEOUT       seconds
+    25,    // TAG_LAST_READ_TIMEOUT       seconds
     1000,  // TAG_READ_INTERVAL           ms
     150,   // READER_CYCLE_LOW_DURATION   ms
     5000,  // READER_CYCLE_HIGH_DURATION  ms
     6,     // READER_POWER_CONTROL_PIN    ms
+
+    // TODO: Temp for testing only.
+    // Ultimately this should have its own eeprom space
+    // and not be part of Settings.
+    EEPROM.read(0)      // proximity_state             boolean (0 or 1)
 
     // Led class constants
     //  10,    //
@@ -22,7 +41,8 @@
     //  5      //
   };
 
-  extern const Storage& S = Settings;
+  // a reference (alias?) from S to Settings
+  extern Storage& S = Settings;
 
   extern const int TAG_LAST_READ_TIMEOUT = S.TAG_LAST_READ_TIMEOUT;
   extern const int TAG_READ_INTERVAL = S.TAG_READ_INTERVAL;

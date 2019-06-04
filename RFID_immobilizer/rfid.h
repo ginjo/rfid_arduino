@@ -36,7 +36,7 @@
   public:
     uint8_t buff[RAW_TAG_LENGTH];
     int buff_index;
-    int fuel_pump_state;
+    int proximity_state;
     unsigned long last_tag_read_ms;
     unsigned long last_reader_power_cycle;
     Stream * serial_port;
@@ -49,7 +49,7 @@
     void loop();
     void resetBuffer();
     void cycleReaderPower();
-    void timeoutFuelPump();
+    void proximityStateController();
     void processTagData(uint8_t * []);
   };
 
