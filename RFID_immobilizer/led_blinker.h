@@ -1,13 +1,27 @@
 // LED Blinker Class
 
 
+
 #ifndef __LED_BLINKER_H__
 #define __LED_BLINKER_H__
 
   #include <Arduino.h>
   #include <string.h>
-  #define INTERVALS_LENGTH 10
 
+  #include "settings.h"
+  
+  
+  // NONE of these work for defining array bounds for global constants.
+  // (because they're not resolved at compile-time)
+  //
+  //extern const int INTERVALS_LENGTH;
+  //extern const int INTERVALS_LENGTH = Settings.INTERVALS_LENGTH;
+  //extern const int Settings.INTERVALS_LENGTH;
+  //
+  // Therefore it is necessary to use a macro, but not sure why it works.
+  #define INTERVALS_LENGTH 20 // for a max of 10 on/off cycles
+  
+  
   class Led {
   public:
     // Sets the pin number
@@ -31,6 +45,8 @@
     
     int intervals_count;
     int intervals[INTERVALS_LENGTH];
+    //int intervals[10];
+
 
     // constructor
     Led(int);

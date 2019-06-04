@@ -1,45 +1,33 @@
-  #include "settings.h"
+#include "settings.h"
 
-  extern const char SettingNames[16][24] = {
-      "failure_status",
-      "timeout_s",
-      "rfid_skip_cycle_ms",
-      "rfid_power_cycle_ms"
+  extern const Storage Settings = {
+
+    // RFID class constants
+    //  14,  // RDM63000
+    //  10,    // 7941E
+    
+    20,    // TAG_LAST_READ_TIMEOUT       seconds
+    1000,  // TAG_READ_INTERVAL           ms
+    150,   // READER_CYCLE_LOW_DURATION   ms
+    5000,  // READER_CYCLE_HIGH_DURATION  ms
+    6,     // READER_POWER_CONTROL_PIN    ms
+
+    // Led class constants
+    //  10,    //
+
+    // SerlialMenu class constants
+    //  16,    //
+    //  8,     //
+    //  20,    //
+    //  5      //
   };
+
+  extern const Storage& S = Settings;
+
+  extern const int TAG_LAST_READ_TIMEOUT = S.TAG_LAST_READ_TIMEOUT;
+  extern const int TAG_READ_INTERVAL = S.TAG_READ_INTERVAL;
+  extern const int READER_CYCLE_LOW_DURATION = S.READER_CYCLE_LOW_DURATION;
+  extern const int READER_CYCLE_HIGH_DURATION = S.READER_CYCLE_HIGH_DURATION;
+  extern const int READER_POWER_CONTROL_PIN = S.READER_POWER_CONTROL_PIN;
+
   
-  extern const int MySettings[16] = {
-      1, 20, 1000, 5000
-  };
-
-
-  extern const int my_setting(int val = 0) {
-    return val;
-  }
-
-  extern const int index_of(char _name[], char _names[16][24]) {
-      for (int n = 0; n < 16; n++) {
-          if (strcmp(_name, _names[n]) == 0) {
-              return n;
-          }
-      }
-      return -1;
-  }
-  
-  extern const int value_of(char _name[], char _names[16][24], int _settings[]) {
-      int index = index_of(_name, _names);
-      return _settings[index];
-  }
-
-
-  // This was first prototyped in onlinegbd.com
-  //
-  //  int main()
-  //  {
-  //      printf("Name at 3: %s\n", names[3]);
-  //      printf("Index of 'timeout_s' in names[]: %i\n", index_of("timeout_s", names));
-  //      printf("value_of of 'rfid_power_cycle_ms' in MySettings: %i\n",
-  //          value_of("rfid_power_cycle_ms", names, MySettings)
-  //      );
-  //  
-  //      return 0;
-  //  }

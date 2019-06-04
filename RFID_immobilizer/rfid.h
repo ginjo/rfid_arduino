@@ -19,16 +19,18 @@
   #include <Arduino.h>
   //#include <Stream.h>
   #include <SoftwareSerial.h>
-  #include "led_blinker.h"
+
   #include "settings.h"
+  #include "led_blinker.h"
   
   //#define RAW_TAG_LENGTH 14  // RDM63000
   #define RAW_TAG_LENGTH 10  // 7941E
-  #define TAG_LAST_READ_TIMEOUT 20 // seconds
-  #define TAG_READ_INTERVAL 1000
-  #define READER_CYCLE_LOW_DURATION 150
-  #define READER_CYCLE_HIGH_DURATION 5000
-  #define READER_POWER_CONTROL_PIN 6
+  
+  //#define TAG_LAST_READ_TIMEOUT 20 // seconds
+  //#define TAG_READ_INTERVAL 1000
+  //#define READER_CYCLE_LOW_DURATION 150
+  //#define READER_CYCLE_HIGH_DURATION 5000
+  //#define READER_POWER_CONTROL_PIN 6
 
   class RFID {
   public:

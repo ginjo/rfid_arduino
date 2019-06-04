@@ -28,9 +28,9 @@
 
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
   #include "settings.h";
-  const char astring[] = "this is some text";
-  const int MY_SETTING = my_setting(5);
-
+  //const char astring[] = "this is some text";
+  //const bool FAILURE_DETECTED = Settings.failure_detected;
+  
 
   // Brings up a simple menu cli on a BT serial port.
 
@@ -52,6 +52,9 @@
     while (! Serial) {
       delay(10);
     }
+
+    //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
+    //Serial.println(Settings.reader_cycle_timeout_ms);
     
     //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
     int blinker_intervals[INTERVALS_LENGTH] = {485,15};

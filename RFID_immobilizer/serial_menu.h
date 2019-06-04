@@ -7,6 +7,8 @@
   //#include <Stream.h>
   #include <SoftwareSerial.h>
   #include <string.h>
+
+  #include "settings.h"
   #include "led_blinker.h"
   
   #define INPUT_BUFFER_LENGTH 16
