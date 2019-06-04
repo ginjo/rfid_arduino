@@ -20,6 +20,7 @@
   //#include <Stream.h>
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
+  #include "settings.h"
   
   //#define RAW_TAG_LENGTH 14  // RDM63000
   #define RAW_TAG_LENGTH 10  // 7941E

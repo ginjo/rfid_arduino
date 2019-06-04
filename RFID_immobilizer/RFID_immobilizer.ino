@@ -17,7 +17,7 @@
  // TODO: Provide standard message when admin menu exits/transitions to run mode.
  // TODO: Sort out git repos in Documents/Arduino folder.
  // TODO: Better code documentation. User documentation.
- // TODO: Don't allow admin mode to extend the startup grace period.
+ // TODO: √ Don't allow admin mode to extend the startup grace period.
  
 
   #include <SoftwareSerial.h>
@@ -25,6 +25,11 @@
   #include "serial_menu.h"
   #include "rfid.h"
   #include "rdm6300_lib_example.cpp"
+
+  // TODO: Implement settings with eeprom, instead of #define macros, something like this:
+  #include "settings.h";
+  const char astring[] = "this is some text";
+  const int MY_SETTING = my_setting(5);
 
 
   // Brings up a simple menu cli on a BT serial port.
