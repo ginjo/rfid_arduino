@@ -68,6 +68,11 @@
     serial_port->println(F("SerialMenu Admin Console\r\n"));
     showInfo();
     setAdminWithTimeout(2);
+    resetInputBuffer();
+    
+    setInputMode("char");
+    setCallbackFunction("menuSelectedMainItem");
+    
     //menuListTags();
 	}
 
@@ -88,45 +93,11 @@
 
 	// check serial_port every cycle
   //
-  //	void SerialMenu::checkSerialPort() {
-  //	  if (serial_port->available()) {
-  //      setAdminWithTimeout(); //(S.admin_timeout) // See header for default function values.
-  //      
-  //      Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
-  //	    uint8_t byt = serial_port->read();
-  //      
-  //      //  Serial.print("checkSerialPort received byte: ");
-  //      //  Serial.println(char(byt));
-  //      //  Serial.print("checkSerialPort input_mode is: ");
-  //      //  Serial.println(input_mode);
-  //      
-  //	    if (matchInputMode("menu")) {
-  //        // sends incoming byt to menu selector
-  //        Serial.println(F("checkSerialPort() matchInputMode('menu') is TRUE"));
-  //        menuSelectedMainItem(byt);
-  //	    } else if (matchInputMode("menu_settings")) {
-  //        // sends incoming byt to settings selector
-  //        Serial.println(F("checkSerialPort() matchInputMode('menu_settings') is TRUE"));
-  //        menuSelectedSetting(byt);
-  //	    } else if (matchInputMode("line")) {
-  //        // sends incoming byte to getLine()
-  //        Serial.println(F("checkSerialPort() matchInputMode('line') is TRUE"));
-  //        getLine(byt);
-  //	    } else {
-  //        // last-resort default just writes byt to serial_port
-  //        // this should not happen under normal circumstances
-  //        Serial.println(F("checkSerialPort() no matching input mode, using default"));
-  //	      serial_port->write(byt);
-  //	    }
-  //     
-  //	  } // done with available serial_port input
-  //	}
-  //
   void SerialMenu::checkSerialPort() {
     if (serial_port->available()) {
       setAdminWithTimeout(); //(S.admin_timeout) // See header for default function values.
       
-      Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
+      //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
       uint8_t byt = serial_port->read();
       
       //  Serial.print("checkSerialPort received byte: ");
@@ -163,35 +134,38 @@
       //Serial.println(inputAvailableFor());
 
       if (inputAvailable("menuAddTag")) {
-        Serial.println(F("runCallbacks() inputAvailable for menuAddTag"));
+        Serial.println(F("runCallbacks() inputAvailable for addTagString"));
         if (addTagString(buff)) { 
           menuListTags();
         } else {
           Serial.println(F("runCallbacks() call to addTagString(buff) failed"));
         }
-        resetInputBuffer();
-        setCurrentFunction("");
 
-      } else if (inputAvailable("menuMain")) {
-        Serial.println(F("runCallbacks() inputAvailable for menuMain"));
+      } else if (inputAvailable("menuSelectedMainItem")) {
+        Serial.println(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
         menuSelectedMainItem(buff[0]);
-        
-      } else if (inputAvailable("menuSettings")) {
-        Serial.println(F("runCallbacks() inputAvailable for menuSettings"));
+
+      //  } else if (inputAvailable("menuMain")) {
+      //    Serial.println(F("runCallbacks() inputAvailable for menuMain"));
+      //    menuMain();
+
+      } else if (inputAvailable("menuSelectedSetting")) {
+        Serial.println(F("runCallbacks() inputAvailable for menuSelectedSetting"));
         menuSelectedSetting(buff[0]);
-        
-      
-      // } else if {
-      //   ...
       
       } else {
         Serial.println(F("runCallbacks() no condition was selected"));
         
-        setInputMode("menu");
-        setCurrentFunction("");
-        buff_index = 0;
-        strncpy(buff, "", INPUT_BUFFER_LENGTH);
+        //  setInputMode("char");
+        //  setCallbackFunction("");
+        //  buff_index = 0;
+        //  strncpy(buff, "", INPUT_BUFFER_LENGTH);
+
+        setInputMode("char");
+        setCallbackFunction("menuSelectedMainItem");
       }
+
+      resetInputBuffer();
     }
   }
 
@@ -216,7 +190,6 @@
       serial_port->println("");
 
       buff_index = 0;
-      setInputMode("char");
     }
   }
 
@@ -238,18 +211,23 @@
     return strcmp(mode, input_mode) == 0;
   }
 
-  void SerialMenu::setCurrentFunction(char func[]) {
+  // TODO: Find all of these and make sure they operate correctly,
+  // since the recent changes have broken soft-coded links.
+  // Update the soft-coded links to fix.
+  
+  // TODO: Maybe change this to setCallbackFunction()
+  void SerialMenu::setCallbackFunction(char func[]) {
     strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
 
-    Serial.print(F("setCurrentFunction() to: "));
+    Serial.print(F("setCallbackFunction() to: "));
     Serial.println(current_function);
   }
 
   bool SerialMenu::matchCurrentFunction(char func[]) {
-    Serial.print(F("matchCurrentFunction() with: "));
-    Serial.print(func);
-    Serial.print(", ");
-    Serial.println(current_function);
+    //  Serial.print(F("matchCurrentFunction() with: "));
+    //  Serial.print(func);
+    //  Serial.print(", ");
+    //  Serial.println(current_function);
     
     return strcmp(current_function, func) == 0;
   }
@@ -299,7 +277,7 @@
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
       if (! tags[i] > 0) {
         tags[i] = tag_num;
-        setCurrentFunction("");
+        setCallbackFunction("");
         return true;
       }
     }
@@ -311,7 +289,6 @@
   void SerialMenu::resetInputBuffer() {
     strncpy(buff, "", INPUT_BUFFER_LENGTH);
     buff_index = 0;
-    setInputMode("menu");
   }
 
   // Starts, restarts, resets admin with timeout.
@@ -343,8 +320,34 @@
     }
   }
 
+  // This is just for logging.
+  void SerialMenu::showInfo() {
+    //serial_port->println("serial_port is active!");
+    Serial.print(F("SerialMenu::setup input_mode: "));
+    Serial.println(input_mode);
+    Serial.print(F("SerialMenu::setup buff_index: "));
+    Serial.println(buff_index);
+    Serial.print(F("SerialMenu::setup tags[2]: "));
+    Serial.println(tags[2]);
+  }
+
 
   /*** Draw Menu Items and Log Messages ***/
+
+  
+  void SerialMenu::menuMain() {
+    serial_port->println(F("Menu"));
+    serial_port->println(F("0. Exit"));
+    serial_port->println(F("1. List tags"));
+    serial_port->println(F("2. Add tag"));
+    serial_port->println(F("3. Delete tag"));
+    serial_port->println(F("4. Show free memory"));
+    serial_port->println(F("5. Settings"));
+    serial_port->println("");
+
+    setInputMode("char");
+    setCallbackFunction("menuSelectedMainItem");
+  }
 
   // Activates an incoming menu selection.
   void SerialMenu::menuSelectedMainItem(uint8_t byt) {
@@ -352,7 +355,7 @@
     Serial.println(char(byt));
     
     switch (char(byt)) {
-      // NOTE: A missing 'break' will allow
+      // warn: a missing 'break' will allow
       // drop-thru to the next case.
       case '0':
         serial_port->println(F("Exiting admin console\r\n\r\n"));
@@ -378,30 +381,6 @@
     }
   }
 
-  // This is just for logging.
-  void SerialMenu::showInfo() {
-    //serial_port->println("serial_port is active!");
-    Serial.print(F("SerialMenu::setup input_mode: "));
-    Serial.println(input_mode);
-    Serial.print(F("SerialMenu::setup buff_index: "));
-    Serial.println(buff_index);
-    Serial.print(F("SerialMenu::setup tags[2]: "));
-    Serial.println(tags[2]);
-  }
-
-  // The rest of these are menu functions.
-  
-  void SerialMenu::menuMain() {
-    serial_port->println(F("Menu"));
-    serial_port->println(F("0. Exit"));
-    serial_port->println(F("1. List tags"));
-    serial_port->println(F("2. Add tag"));
-    serial_port->println(F("3. Delete tag"));
-    serial_port->println(F("4. Show free memory"));
-    serial_port->println(F("5. Settings"));
-    serial_port->println("");
-  }
-
   // Lists tags for menu.
   void SerialMenu::menuListTags() {
     serial_port->println("Tags");
@@ -416,16 +395,20 @@
       }
     }
     serial_port->println("");
+    
+    setInputMode("char");
+    setCallbackFunction("menuSelectedMainItem");
   }
 
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
-    setInputMode("line");
-    setCurrentFunction(__FUNCTION__);
     serial_port->println(F("Add Tag"));
     serial_port->print(F("Enter a tag number (unsigned long) to store: "));
+
+    setInputMode("line");
+    setCallbackFunction(__FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.
@@ -441,8 +424,6 @@
   }
 
   void SerialMenu::menuSettings() {
-    setInputMode("char");
-    setCurrentFunction(__FUNCTION__);
     serial_port->println(F("Settings"));
     serial_port->println(F("0. Return to main menu"));
     serial_port->println(F("1. TAG_LAST_READ_TIMEOUT"));
@@ -452,6 +433,9 @@
     serial_port->println(F("5. READER_POWER_CONTROL_PIN"));
     serial_port->println(F("6. proximity_state"));
     serial_port->println("");
+
+    setInputMode("char");
+    setCallbackFunction("menuSelectedSetting");
   }
 
   // Handle selected setting.
@@ -490,7 +474,7 @@
         serial_port->println(S.proximity_state);
         break;
       default:
-        menuMain();
+        menuSettings();
         break;
     }
   }

@@ -23,7 +23,8 @@
  // TODO: Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
  // TODO: Create exitAdmin() function for cleanup & logging.
- 
+ // TODO: Make the common blink patterns into constants or S.<setting>.
+ //       fast_blink_intervals[], slow_blink_intervals, startup_admin_timeout_intervals[], etc..
 
   #include <SoftwareSerial.h>
   #include "led_blinker.h"

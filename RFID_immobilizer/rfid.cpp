@@ -17,7 +17,10 @@
     // Protects against thief using 'admin' to move
     // in fits and starts, since a failed proximity
     // timeout will set S.proximity_state to 0.
-    digitalWrite(13, S.proximity_state);
+    // This also tells the proximityStateController
+    // where we left off at power-down (or reset).
+    proximity_state = S.proximity_state;
+    digitalWrite(13, proximity_state);
     
     // Starts up the RFID reader.
     digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
@@ -127,8 +130,10 @@
 
   void RFID::proximityStateController() {
     unsigned long current_ms = millis();
-    
-    if (current_ms - last_tag_read_ms > (S.TAG_LAST_READ_TIMEOUT * 1000)) {
+
+    // if last read was too long ago, or if starting up and proximity_state is 0
+    if (current_ms - last_tag_read_ms > (S.TAG_LAST_READ_TIMEOUT * 1000) ||
+        last_tag_read_ms == 0 && proximity_state == 0) {
       //if (proximity_state != 0) { // this reduces calls to blinker->update but blocks led recovery after admin timeout
       int slow_blink[INTERVALS_LENGTH] = {500,500};
       blinker->update(0, slow_blink);
@@ -136,13 +141,16 @@
       proximity_state = 0;
       S.updateProximityState(proximity_state);
       //}
-      
+
+    // if last read was less than final timeout
     } else if (current_ms - last_tag_read_ms <= (S.TAG_LAST_READ_TIMEOUT * 1000)) {
-      
+
+      // only set prox-state to 1 if we're in good standing with S.
       if (S.proximity_state == 1) {
         proximity_state = 1;
       }
 
+      // fast blink if last read is growing older, but not too old
       if (current_ms - last_tag_read_ms > S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION + S.TAG_READ_INTERVAL) {
         int fast_blink[INTERVALS_LENGTH] = {70,70};
         blinker->update(0, fast_blink);

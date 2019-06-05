@@ -13,8 +13,7 @@
   
   #define INPUT_BUFFER_LENGTH 16
   #define INPUT_MODE_LENGTH 16
-  #define CURRENT_FUNCTION_LENGTH 20
-  //#define TAG_LENGTH 8 // this may no longer be necessary
+  #define CURRENT_FUNCTION_LENGTH 24
   #define TAG_LIST_SIZE 5
 
   class SerialMenu {
@@ -59,7 +58,7 @@
     void receiveTagInput(uint8_t);
     void setInputMode(char[]);
     bool matchInputMode(char[]);
-    void setCurrentFunction(char[]);
+    void setCallbackFunction(char[]);
     bool matchCurrentFunction(char[]);
     bool inputAvailable();
     bool inputAvailable(char[]);
