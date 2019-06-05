@@ -129,6 +129,8 @@
 
   // check for callbacks every cycle
   void SerialMenu::runCallbacks() {
+    // If completed input, ready for processing, is available.
+    // Either a string (with a LF ending), of a char.
     if (inputAvailable()) {
       //Serial.print(F("runCallbacks() inputAvailableFor(): "));
       //Serial.println(inputAvailableFor());
@@ -139,15 +141,12 @@
           menuListTags();
         } else {
           Serial.println(F("runCallbacks() call to addTagString(buff) failed"));
+          menuMain();
         }
 
       } else if (inputAvailable("menuSelectedMainItem")) {
         Serial.println(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
         menuSelectedMainItem(buff[0]);
-
-      //  } else if (inputAvailable("menuMain")) {
-      //    Serial.println(F("runCallbacks() inputAvailable for menuMain"));
-      //    menuMain();
 
       } else if (inputAvailable("menuSelectedSetting")) {
         Serial.println(F("runCallbacks() inputAvailable for menuSelectedSetting"));
@@ -182,7 +181,7 @@
     buff_index ++;
     serial_port->write(byt);
   
-    if (int(byt) == 13) {
+    if (int(byt) == 13 || int(byt) == 10) {
       serial_port->println("");
   
       serial_port->print(F("You entered: "));
@@ -256,18 +255,21 @@
     // OR, if it's a valid hex string, use that.
     //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
     //if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
-    if (buff[0] == 13) {
-      strncpy(input_mode, "menu", INPUT_MODE_LENGTH);
-      buff_index = 0;
-      serial_port->println("");
+    if (str[0] == 13 || str[0] == 10) {
+      //strncpy(input_mode, "menu", INPUT_MODE_LENGTH);
+      //setInputMode("char");
+      //setCallbackFunction("menuSelectedMainItem");
+      //buff_index = 0;
+      //resetInputBuffer();
+      //serial_port->println("");
       return false;
     }
   
     serial_port->print(F("Tag entered: "));
-    serial_port->println((char*)buff);
+    serial_port->println((char*)str);
     serial_port->println("");
 
-    return addTagNum(strtol(buff, NULL, 10));
+    return addTagNum(strtol(str, NULL, 10));
   }
   
   // Adds tag number to tag list.
@@ -345,6 +347,7 @@
     serial_port->println(F("5. Settings"));
     serial_port->println("");
 
+    resetInputBuffer(); // just to be safe, since it's the home position
     setInputMode("char");
     setCallbackFunction("menuSelectedMainItem");
   }
@@ -359,7 +362,8 @@
       // drop-thru to the next case.
       case '0':
         serial_port->println(F("Exiting admin console\r\n\r\n"));
-        setAdminWithTimeout(0);     
+        setAdminWithTimeout(0);
+        break;
       case '1':
         menuListTags();
         break;

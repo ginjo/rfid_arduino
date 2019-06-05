@@ -7,7 +7,7 @@
     last_tag_read_ms(0),
     serial_port(_serial_port),
     blinker(_blinker),
-    proximity_state(S.proximity_state)
+    proximity_state(0)
   {
     ;
   }
@@ -146,18 +146,13 @@
     } else if (current_ms - last_tag_read_ms <= (S.TAG_LAST_READ_TIMEOUT * 1000)) {
 
       // only set prox-state to 1 if we're in good standing with S.
-      if (S.proximity_state == 1) {
-        proximity_state = 1;
-        // tmp experimental
-        //blinker->on();
-      }
+      (S.proximity_state == 1) && (proximity_state = 1);
 
       // fast blink if last read is growing older, but not too old
       if (current_ms - last_tag_read_ms > S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION + S.TAG_READ_INTERVAL) {
         int fast_blink[INTERVALS_LENGTH] = {70,70};
         blinker->update(0, fast_blink);
 
-      // tmp experimental
       } else {
         blinker->on();
       }

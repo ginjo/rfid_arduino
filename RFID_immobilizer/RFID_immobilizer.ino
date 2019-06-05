@@ -25,6 +25,14 @@
  // TODO: Create exitAdmin() function for cleanup & logging.
  // TODO: Make the common blink patterns into constants or S.<setting>.
  //       fast_blink_intervals[], slow_blink_intervals, startup_admin_timeout_intervals[], etc..
+ // TODO: Startup grace period needs to END immediately after startup,
+ //       if NO tags are found after the FIRST reader power cycle.
+ //       At this point, proximity_state and S.proximity_state need to be fully timed-out.
+ // TODO: Consider renaming S.proximity_state to S.last_proximity_state.
+ // TODO: Fix bug in addTagString (I think it's input_mode issue).
+ // TODO: Consider a function setProximityState(on-or-off, hight-or-low, whatever).
+ 
+ 
 
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
