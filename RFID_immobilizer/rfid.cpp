@@ -94,7 +94,7 @@
     strncpy(tmp_str, NULL, id_len);
 
     // assuming successful tag at this point
-    blinker->on();
+    //blinker->on(); // moved to proximityStateController experimentally
     S.updateProximityState(1);
   }
 
@@ -148,12 +148,18 @@
       // only set prox-state to 1 if we're in good standing with S.
       if (S.proximity_state == 1) {
         proximity_state = 1;
+        // tmp experimental
+        //blinker->on();
       }
 
       // fast blink if last read is growing older, but not too old
       if (current_ms - last_tag_read_ms > S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION + S.TAG_READ_INTERVAL) {
         int fast_blink[INTERVALS_LENGTH] = {70,70};
         blinker->update(0, fast_blink);
+
+      // tmp experimental
+      } else {
+        blinker->on();
       }
     }
 
