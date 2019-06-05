@@ -17,7 +17,8 @@
     READER_CYCLE_LOW_DURATION(150),
     READER_CYCLE_HIGH_DURATION(5000),
     READER_POWER_CONTROL_PIN(6),
-    proximity_state(EEPROM.read(0))
+    proximity_state(EEPROM.read(0)),
+    admin_timeout(15)
   {;}
 
   // TODO: This is temp for testing.

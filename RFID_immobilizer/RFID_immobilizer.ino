@@ -22,6 +22,7 @@
  // TODO: I think SerialMenu.run_mode should be a global, since it's needed in RFID class.
  // TODO: Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
+ // TODO: Create exitAdmin() function for cleanup & logging.
  
 
   #include <SoftwareSerial.h>
@@ -57,20 +58,21 @@
     //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
     //Serial.println(Settings.reader_cycle_timeout_ms);
     
-    //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880};
-    int blinker_intervals[INTERVALS_LENGTH] = {485,15};
+    //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880}; // slow pilot light
+    int blinker_intervals[INTERVALS_LENGTH] = {485,15}; // moderate mostly-on twinkle
     Blinker.begin(0, blinker_intervals);
 
     BTserial.begin(9600);
 
     BTmenu.begin();
-    BTmenu.resetAdmin(2);
+    //BTmenu.setAdminWithTimeout(2);
 
     RfidSerial.begin(9600);
     Rfid.begin();
 
     //RdmExample.begin();
-  }
+    
+  } // end setup
   
   void loop() {
     // here is where you put code that needs to be running all the time.
@@ -85,16 +87,12 @@
     } else {
       //RdmExample.rdm6300._software_serial->listen();
       //RdmExample.loop();
-      RfidSerial.listen();
       
+      RfidSerial.listen();
       Rfid.loop();
       delay(1);
     }
 
-    // Keeping this outside the run_mode conditional ensures that
-    // the startup grace period will always timeout, even during admin mode.
-    //Rfid.loop();
-    //delay(1);
-  }
+  } // end loop
 
   

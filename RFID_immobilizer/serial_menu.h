@@ -47,7 +47,7 @@
     void begin();
     void showInfo();
     void checkSerialPort();
-    void selectMenuItem(uint8_t);
+    void menuSelectedMainItem(uint8_t);
     void menuMain();
     void menuListTags();
     void menuAddTag();
@@ -69,7 +69,7 @@
     bool addTagNum(unsigned long);
     void resetInputBuffer();
     void adminTimeout();
-    void resetAdmin(int); // seconds
+    void setAdminWithTimeout(int = S.admin_timeout); // seconds
     void loop();
   
   };

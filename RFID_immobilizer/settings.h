@@ -47,8 +47,9 @@
     int READER_CYCLE_HIGH_DURATION;
     int READER_POWER_CONTROL_PIN;
     
-    // Temp, for testing
+    // TNew various settings
     int proximity_state;
+    int admin_timeout;
 
 
     // for class Led

@@ -52,7 +52,7 @@
     current_function(""),
     input_mode("menu"),
     blinker(_blinker),
-    // See resetAdmin()
+    // See setAdminWithTimeout()
     //  run_mode(1), // 0=run, 1=admin
     //  admin_timeout(3), // seconds
     //  previous_ms(millis());
@@ -67,7 +67,7 @@
   void SerialMenu::begin() {
     serial_port->println(F("SerialMenu Admin Console\r\n"));
     showInfo();
-    //resetAdmin(5);
+    setAdminWithTimeout(2);
     //menuListTags();
 	}
 
@@ -76,54 +76,94 @@
 
   void SerialMenu::loop() {
     //serial_port->println("SerialMenu::loop() calling serial_port->println()");
+
+    // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
+    // TODO: Create a Switch object that handles all switch actions (start, stop, initial, cleanup, etc).
+    if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(13, 0); }
+    
     adminTimeout();
     checkSerialPort();
     runCallbacks();
   }
 
 	// check serial_port every cycle
-	void SerialMenu::checkSerialPort() {
-	  if (serial_port->available()) {
-      resetAdmin(15);
+  //
+  //	void SerialMenu::checkSerialPort() {
+  //	  if (serial_port->available()) {
+  //      setAdminWithTimeout(); //(S.admin_timeout) // See header for default function values.
+  //      
+  //      Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
+  //	    uint8_t byt = serial_port->read();
+  //      
+  //      //  Serial.print("checkSerialPort received byte: ");
+  //      //  Serial.println(char(byt));
+  //      //  Serial.print("checkSerialPort input_mode is: ");
+  //      //  Serial.println(input_mode);
+  //      
+  //	    if (matchInputMode("menu")) {
+  //        // sends incoming byt to menu selector
+  //        Serial.println(F("checkSerialPort() matchInputMode('menu') is TRUE"));
+  //        menuSelectedMainItem(byt);
+  //	    } else if (matchInputMode("menu_settings")) {
+  //        // sends incoming byt to settings selector
+  //        Serial.println(F("checkSerialPort() matchInputMode('menu_settings') is TRUE"));
+  //        menuSelectedSetting(byt);
+  //	    } else if (matchInputMode("line")) {
+  //        // sends incoming byte to getLine()
+  //        Serial.println(F("checkSerialPort() matchInputMode('line') is TRUE"));
+  //        getLine(byt);
+  //	    } else {
+  //        // last-resort default just writes byt to serial_port
+  //        // this should not happen under normal circumstances
+  //        Serial.println(F("checkSerialPort() no matching input mode, using default"));
+  //	      serial_port->write(byt);
+  //	    }
+  //     
+  //	  } // done with available serial_port input
+  //	}
+  //
+  void SerialMenu::checkSerialPort() {
+    if (serial_port->available()) {
+      setAdminWithTimeout(); //(S.admin_timeout) // See header for default function values.
       
       Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
-	    uint8_t byt = serial_port->read();
+      uint8_t byt = serial_port->read();
       
       //  Serial.print("checkSerialPort received byte: ");
       //  Serial.println(char(byt));
       //  Serial.print("checkSerialPort input_mode is: ");
       //  Serial.println(input_mode);
       
-	    if (matchInputMode("menu")) {
-        // sends incoming byt to menu selector
-        Serial.println(F("checkSerialPort() matchInputMode('menu') is TRUE"));
-        selectMenuItem(byt);
-	    } else if (matchInputMode("menu_settings")) {
-        // sends incoming byt to settings selector
-        Serial.println(F("checkSerialPort() matchInputMode('menu_settings') is TRUE"));
-        menuSelectedSetting(byt);
-	    } else if (matchInputMode("line")) {
+      if (matchInputMode("char")) {
+        // sends incoming byt to callback selector
+        Serial.println(F("checkSerialPort() matchInputMode('char') is TRUE"));
+        //menuSelectedMainItem(byt);
+
+        buff[0] = byt;
+
+      } else if (matchInputMode("line")) {
         // sends incoming byte to getLine()
         Serial.println(F("checkSerialPort() matchInputMode('line') is TRUE"));
         getLine(byt);
-	    } else {
+        
+      } else {
         // last-resort default just writes byt to serial_port
         // this should not happen under normal circumstances
-        Serial.println(F("checkSerialPort() no matching input mode, using default"));
-	      serial_port->write(byt);
-	    }
+        Serial.println(F("checkSerialPort() user input with no matching input mode: "));
+        serial_port->write(byt); serial_port->println("");
+      }
      
-	  } // done with available serial_port input
-	}
+    } // done with available serial_port input
+  }
 
   // check for callbacks every cycle
   void SerialMenu::runCallbacks() {
     if (inputAvailable()) {
-      Serial.print(F("runCallbacks() inputAvailableFor(): "));
-      Serial.println(inputAvailableFor());
+      //Serial.print(F("runCallbacks() inputAvailableFor(): "));
+      //Serial.println(inputAvailableFor());
 
       if (inputAvailable("menuAddTag")) {
-        Serial.println(F("runCallbacks() selected menuAddTag"));
+        Serial.println(F("runCallbacks() inputAvailable for menuAddTag"));
         if (addTagString(buff)) { 
           menuListTags();
         } else {
@@ -132,11 +172,20 @@
         resetInputBuffer();
         setCurrentFunction("");
 
+      } else if (inputAvailable("menuMain")) {
+        Serial.println(F("runCallbacks() inputAvailable for menuMain"));
+        menuSelectedMainItem(buff[0]);
+        
+      } else if (inputAvailable("menuSettings")) {
+        Serial.println(F("runCallbacks() inputAvailable for menuSettings"));
+        menuSelectedSetting(buff[0]);
+        
+      
       // } else if {
       //   ...
       
       } else {
-        Serial.println(F("runCallbacks() inputAvailableFor() 'none/default' "));
+        Serial.println(F("runCallbacks() no condition was selected"));
         
         setInputMode("menu");
         setCurrentFunction("");
@@ -149,42 +198,10 @@
 
   /*** Menu and State Logic ***/
 
-  // Activates an incoming menu selection.
-  void SerialMenu::selectMenuItem(uint8_t byt) {
-    Serial.print(F("selectMenuItem received byte: "));
-    Serial.println(char(byt));
-    
-    switch (char(byt)) {
-      // NOTE: A missing 'break' will allow
-      // drop-thru to the next case.
-      case '0':
-        serial_port->println(F("Exiting admin console\r\n\r\n"));
-        resetAdmin(0);     
-      case '1':
-        menuListTags();
-        break;
-      case '2':
-        menuAddTag();
-        break;
-      case '3':
-        menuDeleteTag();
-        break;
-      case '4':
-        menuShowFreeMemory();
-        break;
-      case '5':
-        menuSettings();
-        break;
-      default:
-        menuMain();
-        break;
-    }
-  }
-
   void SerialMenu::getLine(uint8_t byt) {
-    Serial.print(F("getLine() byt: "));
-    Serial.println(char(byt));
-    Serial.print("getLine() buff: ");
+    Serial.print(F("getLine() byt, buff: "));
+    Serial.print(char(byt));
+    Serial.print(", ");
     Serial.println((char *)buff);
     
     buff[buff_index] = byt;
@@ -199,7 +216,7 @@
       serial_port->println("");
 
       buff_index = 0;
-      setInputMode("menu");
+      setInputMode("char");
     }
   }
 
@@ -297,6 +314,17 @@
     setInputMode("menu");
   }
 
+  // Starts, restarts, resets admin with timeout.
+  void SerialMenu::setAdminWithTimeout(int seconds) {
+    Serial.print(F("setAdminWithTimeout() seconds: "));
+    Serial.println(seconds);
+    
+    admin_timeout = seconds;
+    run_mode = 1;
+    previous_ms = millis();
+  }
+
+  // Checks timer for admin timeout and enters run_mode 0 if true.
   void SerialMenu::adminTimeout() {
     unsigned long current_ms = millis();
     
@@ -305,29 +333,50 @@
     //  Serial.print(admin_timeout); Serial.print(" ");
     //  Serial.print(current_ms); Serial.print(" ");
     //  Serial.println(previous_ms);
-    
+
+    // TODO: Create a exitAdmin() funtion that handles timeout and manual exit of admin mode.
     if (run_mode == 0) { return; }
     if ( (current_ms - previous_ms)/1000 > admin_timeout ) {
       Serial.println(F("adminTimeout() setting run_mode to 0 'run'"));
       blinker->off();
       run_mode = 0;
     }
-
-    // Sets proximity_state to 0 (false or shutdown) if active admin mode.
-    if (run_mode == 1) { digitalWrite(13, 0); }
-  }
-
-  void SerialMenu::resetAdmin(int seconds) {
-    Serial.print(F("resetAdmin() seconds: "));
-    Serial.println(seconds);
-    
-    admin_timeout = seconds;
-    run_mode = 1;
-    previous_ms = millis();
   }
 
 
   /*** Draw Menu Items and Log Messages ***/
+
+  // Activates an incoming menu selection.
+  void SerialMenu::menuSelectedMainItem(uint8_t byt) {
+    Serial.print(F("menuSelectedMainItem received byte: "));
+    Serial.println(char(byt));
+    
+    switch (char(byt)) {
+      // NOTE: A missing 'break' will allow
+      // drop-thru to the next case.
+      case '0':
+        serial_port->println(F("Exiting admin console\r\n\r\n"));
+        setAdminWithTimeout(0);     
+      case '1':
+        menuListTags();
+        break;
+      case '2':
+        menuAddTag();
+        break;
+      case '3':
+        menuDeleteTag();
+        break;
+      case '4':
+        menuShowFreeMemory();
+        break;
+      case '5':
+        menuSettings();
+        break;
+      default:
+        menuMain();
+        break;
+    }
+  }
 
   // This is just for logging.
   void SerialMenu::showInfo() {
@@ -392,7 +441,7 @@
   }
 
   void SerialMenu::menuSettings() {
-    setInputMode("menu_settings");
+    setInputMode("char");
     setCurrentFunction(__FUNCTION__);
     serial_port->println(F("Settings"));
     serial_port->println(F("0. Return to main menu"));
@@ -445,3 +494,5 @@
         break;
     }
   }
+
+  
