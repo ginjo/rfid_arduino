@@ -13,14 +13,21 @@
   }
 
   void RFID::begin() {
-    digitalWrite(READER_POWER_CONTROL_PIN, HIGH);
+    // Starts up with whatever state we left off in.
+    // Protects against thief using 'admin' to move
+    // in fits and starts, since a failed proximity
+    // timeout will set S.proximity_state to 0.
+    digitalWrite(13, S.proximity_state);
+    
+    // Starts up the RFID reader.
+    digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
   }
 
   void RFID::loop() {
     unsigned long current_ms = millis();
     unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
 
-    if (ms_since_last_tag_read > TAG_READ_INTERVAL) {
+    if (ms_since_last_tag_read > S.TAG_READ_INTERVAL) {
       
       if (serial_port->available()) {
         buff[buff_index] = serial_port->read();
@@ -49,7 +56,7 @@
           resetBuffer();
         }
         
-      } else if (ms_since_last_tag_read > READER_CYCLE_HIGH_DURATION) {
+      } else if (ms_since_last_tag_read > S.READER_CYCLE_HIGH_DURATION) {
         cycleReaderPower();
       }
     }
@@ -85,7 +92,7 @@
 
     // assuming successful tag at this point
     blinker->on();
-    S.setProximityState(1);
+    S.updateProximityState(1);
   }
 
   void RFID::resetBuffer() {
@@ -95,8 +102,8 @@
 
   void RFID::cycleReaderPower() {
     unsigned long current_ms = millis();
-    unsigned long ms_a = last_reader_power_cycle + READER_CYCLE_LOW_DURATION;
-    unsigned long ms_b = last_reader_power_cycle + READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION;
+    unsigned long ms_a = last_reader_power_cycle + S.READER_CYCLE_LOW_DURATION;
+    unsigned long ms_b = last_reader_power_cycle + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION;
     
     //  Serial.print("cycleReaderPower() current, last, ms_a, ms_b: ");
     //  Serial.print(current_ms); Serial.print(",");
@@ -106,10 +113,10 @@
     
     if (current_ms > last_reader_power_cycle && current_ms < ms_a) {
       //Serial.println("cycleReaderPower() setting reader power LOW");
-      digitalWrite(READER_POWER_CONTROL_PIN, LOW);
+      digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
     } else if (current_ms > ms_a && current_ms < ms_b) {
       //Serial.println(F("cycleReaderPower() setting reader power HIGH"));
-      digitalWrite(READER_POWER_CONTROL_PIN, HIGH);
+      digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
     } else if (current_ms > ms_b) {
       Serial.print(F("cycleReaderPower() updating last_reader_power_cycle, last tag read: "));
       Serial.print((current_ms - last_tag_read_ms)/1000);
@@ -121,22 +128,22 @@
   void RFID::proximityStateController() {
     unsigned long current_ms = millis();
     
-    if (current_ms - last_tag_read_ms > (TAG_LAST_READ_TIMEOUT * 1000)) {
+    if (current_ms - last_tag_read_ms > (S.TAG_LAST_READ_TIMEOUT * 1000)) {
       //if (proximity_state != 0) { // this reduces calls to blinker->update but blocks led recovery after admin timeout
       int slow_blink[INTERVALS_LENGTH] = {500,500};
       blinker->update(0, slow_blink);
 
       proximity_state = 0;
-      S.setProximityState(proximity_state);
+      S.updateProximityState(proximity_state);
       //}
       
-    } else if (current_ms - last_tag_read_ms <= (TAG_LAST_READ_TIMEOUT * 1000)) {
+    } else if (current_ms - last_tag_read_ms <= (S.TAG_LAST_READ_TIMEOUT * 1000)) {
       
       if (S.proximity_state == 1) {
         proximity_state = 1;
       }
 
-      if (current_ms - last_tag_read_ms > READER_CYCLE_LOW_DURATION + READER_CYCLE_HIGH_DURATION + TAG_READ_INTERVAL) {
+      if (current_ms - last_tag_read_ms > S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION + S.TAG_READ_INTERVAL) {
         int fast_blink[INTERVALS_LENGTH] = {70,70};
         blinker->update(0, fast_blink);
       }

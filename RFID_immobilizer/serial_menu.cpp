@@ -96,11 +96,15 @@
       
 	    if (matchInputMode("menu")) {
         // sends incoming byt to menu selector
-        Serial.println("checkSerialPort() matchInputMode('menu') is TRUE");
+        Serial.println(F("checkSerialPort() matchInputMode('menu') is TRUE"));
         selectMenuItem(byt);
+	    } else if (matchInputMode("menu_settings")) {
+        // sends incoming byt to settings selector
+        Serial.println(F("checkSerialPort() matchInputMode('menu_settings') is TRUE"));
+        menuSelectedSetting(byt);
 	    } else if (matchInputMode("line")) {
         // sends incoming byte to getLine()
-        Serial.println("checkSerialPort() matchInputMode('line') is TRUE");
+        Serial.println(F("checkSerialPort() matchInputMode('line') is TRUE"));
         getLine(byt);
 	    } else {
         // last-resort default just writes byt to serial_port
@@ -153,6 +157,9 @@
     switch (char(byt)) {
       // NOTE: A missing 'break' will allow
       // drop-thru to the next case.
+      case '0':
+        serial_port->println(F("Exiting admin console\r\n\r\n"));
+        resetAdmin(0);     
       case '1':
         menuListTags();
         break;
@@ -166,8 +173,7 @@
         menuShowFreeMemory();
         break;
       case '5':
-        serial_port->println(F("Exiting admin console\r\n\r\n"));
-        resetAdmin(0);
+        menuSettings();
         break;
       default:
         menuMain();
@@ -302,10 +308,13 @@
     
     if (run_mode == 0) { return; }
     if ( (current_ms - previous_ms)/1000 > admin_timeout ) {
-      Serial.println(F("adminTimeout() setting run_mode to 0"));
+      Serial.println(F("adminTimeout() setting run_mode to 0 'run'"));
       blinker->off();
       run_mode = 0;
     }
+
+    // Sets proximity_state to 0 (false or shutdown) if active admin mode.
+    if (run_mode == 1) { digitalWrite(13, 0); }
   }
 
   void SerialMenu::resetAdmin(int seconds) {
@@ -320,6 +329,7 @@
 
   /*** Draw Menu Items and Log Messages ***/
 
+  // This is just for logging.
   void SerialMenu::showInfo() {
     //serial_port->println("serial_port is active!");
     Serial.print(F("SerialMenu::setup input_mode: "));
@@ -330,13 +340,16 @@
     Serial.println(tags[2]);
   }
 
+  // The rest of these are menu functions.
+  
   void SerialMenu::menuMain() {
     serial_port->println(F("Menu"));
+    serial_port->println(F("0. Exit"));
     serial_port->println(F("1. List tags"));
     serial_port->println(F("2. Add tag"));
     serial_port->println(F("3. Delete tag"));
     serial_port->println(F("4. Show free memory"));
-    serial_port->println(F("5. Exit"));
+    serial_port->println(F("5. Settings"));
     serial_port->println("");
   }
 
@@ -378,4 +391,57 @@
     serial_port->println();
   }
 
- 
+  void SerialMenu::menuSettings() {
+    setInputMode("menu_settings");
+    setCurrentFunction(__FUNCTION__);
+    serial_port->println(F("Settings"));
+    serial_port->println(F("0. Return to main menu"));
+    serial_port->println(F("1. TAG_LAST_READ_TIMEOUT"));
+    serial_port->println(F("2. TAG_READ_INTERVAL"));
+    serial_port->println(F("3. READER_CYCLE_LOW_DURATION"));
+    serial_port->println(F("4. READER_CYCLE_HIGH_DURATION"));
+    serial_port->println(F("5. READER_POWER_CONTROL_PIN"));
+    serial_port->println(F("6. proximity_state"));
+    serial_port->println("");
+  }
+
+  // Handle selected setting.
+  void SerialMenu::menuSelectedSetting(uint8_t byt) {
+    Serial.print(F("menuSelectedSetting received byte: "));
+    Serial.println(char(byt));
+    
+    switch (char(byt)) {
+      // NOTE: A missing 'break' will allow
+      // drop-thru to the next case.
+      case '0':
+        menuMain();
+        break;
+      case '1':
+        serial_port->print(F("TAG_LAST_READ_TIMEOUT: "));
+        serial_port->println(S.TAG_LAST_READ_TIMEOUT);
+        break;
+      case '2':
+        serial_port->print(F("TAG_READ_INTERVAL: "));
+        serial_port->println(S.TAG_READ_INTERVAL);
+        break;
+      case '3':
+        serial_port->print(F("READER_CYCLE_LOW_DURATION: "));
+        serial_port->println(S.READER_CYCLE_LOW_DURATION);
+        break;
+      case '4':
+        serial_port->print(F("READER_CYCLE_HIGH_DURATION: "));
+        serial_port->println(S.READER_CYCLE_HIGH_DURATION);
+        break;
+      case '5':
+        serial_port->print(F("READER_POWER_CONTROL_PIN: "));
+        serial_port->println(S.READER_POWER_CONTROL_PIN);
+        break;
+      case '6':
+        serial_port->print(F("proximity_state: "));
+        serial_port->println(S.proximity_state);
+        break;
+      default:
+        menuMain();
+        break;
+    }
+  }

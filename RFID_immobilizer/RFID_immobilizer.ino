@@ -19,6 +19,9 @@
  // TODO: Better code documentation. User documentation.
  // TODO: √ Don't allow admin mode to extend the startup grace period.
  // TODO: Implement a beeper/buzzer.
+ // TODO: I think SerialMenu.run_mode should be a global, since it's needed in RFID class.
+ // TODO: Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
+ //       so basically everything should be a callback.
  
 
   #include <SoftwareSerial.h>
@@ -28,10 +31,7 @@
   #include "rdm6300_lib_example.cpp"
 
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
-  #include "settings.h";
-  //const char astring[] = "this is some text";
-  //const bool FAILURE_DETECTED = Settings.failure_detected;
-  
+  #include "settings.h";  
 
   // Brings up a simple menu cli on a BT serial port.
 
@@ -86,12 +86,15 @@
       //RdmExample.rdm6300._software_serial->listen();
       //RdmExample.loop();
       RfidSerial.listen();
+      
+      Rfid.loop();
+      delay(1);
     }
 
     // Keeping this outside the run_mode conditional ensures that
     // the startup grace period will always timeout, even during admin mode.
-    Rfid.loop();
-    delay(1);
+    //Rfid.loop();
+    //delay(1);
   }
 
   

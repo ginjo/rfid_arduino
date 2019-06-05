@@ -62,17 +62,19 @@
     //  int CURRENT_FUNCTION_LENGTH;
     //  int TAG_LIST_SIZE;
 
-    int setProximityState(int);
+    int updateProximityState(int);
+
+    Storage::Storage();
   };  
 
   extern Storage Settings;
   extern Storage& S;
   
-  extern const int TAG_LAST_READ_TIMEOUT;
-  extern const int TAG_READ_INTERVAL;
-  extern const int READER_CYCLE_LOW_DURATION;
-  extern const int READER_CYCLE_HIGH_DURATION;
-  extern const int READER_POWER_CONTROL_PIN;
+  //  extern const int TAG_LAST_READ_TIMEOUT;
+  //  extern const int TAG_READ_INTERVAL;
+  //  extern const int READER_CYCLE_LOW_DURATION;
+  //  extern const int READER_CYCLE_HIGH_DURATION;
+  //  extern const int READER_POWER_CONTROL_PIN;
   
 
 #endif
