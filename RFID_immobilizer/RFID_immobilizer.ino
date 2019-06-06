@@ -31,7 +31,9 @@
  // TODO: Consider renaming S.proximity_state to S.last_proximity_state.
  // TODO: Fix bug in addTagString (I think it's input_mode issue).
  // TODO: Consider a function setProximityState(on-or-off, hight-or-low, whatever).
- 
+ // TODO: Add status_text and updateStatusText() to efficiently display status change in logs.
+ //       This should display proximity_state status as text-label, whenever it changes.
+ //       Use enum StatusText {recent, aging, expired}
  
 
   #include <SoftwareSerial.h>

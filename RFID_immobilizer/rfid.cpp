@@ -138,16 +138,20 @@
 
     // if last read was too long ago
     if (ms_since_last_tag_read > S.TAG_LAST_READ_TIMEOUT * 1000) {
+
+      //Serial.println(F("proximityStateController() in 'timeout' stage"));
         
       int slow_blink[INTERVALS_LENGTH] = {500,500};
       blinker->update(0, slow_blink);
       setProximityState(0);
 
     // if last read was less than final timeout but greater than the first reader-power-cycle.
-    // basically, if we're in the "ageing" zone.
+    // basically, if we're in the "aging" zone.
     } else if (ms_since_last_tag_read <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
         ms_since_last_tag_read > S.TAG_READ_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
       ) {
+
+      //Serial.println(F("proximityStateController() in 'aging' stage"));
 
       if (proximity_state == 0 || last_tag_read_ms == 0) {
         int slow_blink[INTERVALS_LENGTH] = {500,500};
@@ -166,6 +170,8 @@
         blinker->on();
         setProximityState(1);
       }
+    } else {
+      Serial.println(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
     // TODO: Replace 13 with a S.<setting>
