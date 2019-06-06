@@ -30,6 +30,7 @@
     unsigned long current_ms = millis();
     unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
 
+    // TODO: Put this block in a pollReader() function.
     if (ms_since_last_tag_read > S.TAG_READ_INTERVAL) {
       
       if (serial_port->available()) {
@@ -64,7 +65,7 @@
       }
     }
 
-    // Check fuel pump timeout
+    // Check fuel pump timeout on every loop
     proximityStateController();
   }
 
@@ -128,36 +129,50 @@
     }
   }
 
+  // The proximity_state var determines physical switch state
+  // while this function is actively looping.
+  // 
   void RFID::proximityStateController() {
     unsigned long current_ms = millis();
+    unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
 
-    // if last read was too long ago, or if starting up and proximity_state is 0
-    if (current_ms - last_tag_read_ms > (S.TAG_LAST_READ_TIMEOUT * 1000) ||
-        last_tag_read_ms == 0 && proximity_state == 0) {
-      //if (proximity_state != 0) { // this reduces calls to blinker->update but blocks led recovery after admin timeout
+    // if last read was too long ago
+    if (ms_since_last_tag_read > S.TAG_LAST_READ_TIMEOUT * 1000) {
+        
       int slow_blink[INTERVALS_LENGTH] = {500,500};
       blinker->update(0, slow_blink);
+      setProximityState(0);
 
-      proximity_state = 0;
-      S.updateProximityState(proximity_state);
-      //}
+    // if last read was less than final timeout but greater than the first reader-power-cycle.
+    // basically, if we're in the "ageing" zone.
+    } else if (ms_since_last_tag_read <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
+        ms_since_last_tag_read > S.TAG_READ_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
+      ) {
 
-    // if last read was less than final timeout
-    } else if (current_ms - last_tag_read_ms <= (S.TAG_LAST_READ_TIMEOUT * 1000)) {
-
-      // only set prox-state to 1 if we're in good standing with S.
-      (S.proximity_state == 1) && (proximity_state = 1);
-
-      // fast blink if last read is growing older, but not too old
-      if (current_ms - last_tag_read_ms > S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION + S.TAG_READ_INTERVAL) {
+      if (proximity_state == 0 || last_tag_read_ms == 0) {
+        int slow_blink[INTERVALS_LENGTH] = {500,500};
+        blinker->update(0, slow_blink);
+        setProximityState(0);
+      } else if (S.proximity_state == 1) {
         int fast_blink[INTERVALS_LENGTH] = {70,70};
         blinker->update(0, fast_blink);
+        setProximityState(1);
+      }
 
-      } else {
+    // if we're still young (haven't had time for a reader-power-cycle yet)..
+    } else if (ms_since_last_tag_read <= S.TAG_READ_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION) {
+      
+      if (S.proximity_state == 1) {
         blinker->on();
+        setProximityState(1);
       }
     }
 
     // TODO: Replace 13 with a S.<setting>
     digitalWrite(13, proximity_state);
+  }
+
+  void RFID::setProximityState(int _state) {
+    proximity_state = _state;
+    S.updateProximityState(_state);
   }

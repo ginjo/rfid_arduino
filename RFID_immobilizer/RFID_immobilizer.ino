@@ -64,6 +64,8 @@
       delay(10);
     }
 
+    Serial.println("RFID_Immobilizer booting...");
+
     //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
     //Serial.println(Settings.reader_cycle_timeout_ms);
     

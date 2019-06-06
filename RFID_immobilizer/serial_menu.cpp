@@ -42,6 +42,9 @@
   //      printf("%u", num);
   //  }
 
+  // Instanciate the built-in reset function
+  void(* resetFunc) (void) = 0;
+
 
   /*** Constructor and Setup ***/
 
@@ -303,9 +306,10 @@
     previous_ms = millis();
   }
 
-  // Checks timer for admin timeout and enters run_mode 0 if true.
+  // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
   void SerialMenu::adminTimeout() {
     unsigned long current_ms = millis();
+    unsigned long elapsed_ms = current_ms - previous_ms;
     
     //  Serial.print("adminTimeout() run_mode, admin_timeout, now, previous_ms: ");
     //  Serial.print(run_mode); Serial.print(" ");
@@ -315,10 +319,16 @@
 
     // TODO: Create a exitAdmin() funtion that handles timeout and manual exit of admin mode.
     if (run_mode == 0) { return; }
-    if ( (current_ms - previous_ms)/1000 > admin_timeout ) {
-      Serial.println(F("adminTimeout() setting run_mode to 0 'run'"));
-      blinker->off();
-      run_mode = 0;
+    if ( elapsed_ms/1000 > admin_timeout ) {
+      if (admin_timeout == 2) {
+        Serial.println(F("adminTimeout() setting run_mode to 0 'run'"));
+        blinker->off();
+        run_mode = 0;
+      } else {
+        Serial.println(F("\r\nadminTimeout() rebooting arduino"));
+        delay(100);
+        resetFunc();
+      }
     }
   }
 

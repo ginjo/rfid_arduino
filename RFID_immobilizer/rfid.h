@@ -49,6 +49,7 @@
     void loop();
     void resetBuffer();
     void cycleReaderPower();
+    void setProximityState(int);
     void proximityStateController();
     void processTagData(uint8_t * []);
   };
