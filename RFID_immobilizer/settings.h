@@ -42,7 +42,7 @@
     
     // Mostly time data
     int TAG_LAST_READ_TIMEOUT;
-    int TAG_READ_INTERVAL;
+    int TAG_READ_SLEEP_INTERVAL;
     int READER_CYCLE_LOW_DURATION;
     int READER_CYCLE_HIGH_DURATION;
     int READER_POWER_CONTROL_PIN;
@@ -72,7 +72,7 @@
   extern Storage& S;
   
   //  extern const int TAG_LAST_READ_TIMEOUT;
-  //  extern const int TAG_READ_INTERVAL;
+  //  extern const int TAG_READ_SLEEP_INTERVAL;
   //  extern const int READER_CYCLE_LOW_DURATION;
   //  extern const int READER_CYCLE_HIGH_DURATION;
   //  extern const int READER_POWER_CONTROL_PIN;

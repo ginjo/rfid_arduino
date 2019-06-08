@@ -48,13 +48,13 @@
   // Brings up a simple menu cli on a BT serial port.
 
   // Brings up a blinker LED.
-  Led Blinker(9);
+  Led Blinker(8);
   
   SoftwareSerial BTserial(2, 3); // RX | TX
   SerialMenu BTmenu(&BTserial, &Blinker);
 
   // The RFID reader.
-  SoftwareSerial RfidSerial(5,4);
+  SoftwareSerial RfidSerial(4,6); // not sending anything to reader, tx on unused pin
   RFID Rfid(&RfidSerial, &Blinker);
 
   // Rdm3600 library example
@@ -72,7 +72,7 @@
     //Serial.println(Settings.reader_cycle_timeout_ms);
     
     //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880}; // slow pilot light
-    int blinker_intervals[INTERVALS_LENGTH] = {485,15}; // moderate mostly-on twinkle
+    int blinker_intervals[INTERVALS_LENGTH] = {480,20}; // 120bpm mostly-on twinkle
     Blinker.begin(0, blinker_intervals);
 
     BTserial.begin(9600);

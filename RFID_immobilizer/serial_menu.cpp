@@ -441,7 +441,7 @@
     serial_port->println(F("Settings"));
     serial_port->println(F("0. Return to main menu"));
     serial_port->println(F("1. TAG_LAST_READ_TIMEOUT"));
-    serial_port->println(F("2. TAG_READ_INTERVAL"));
+    serial_port->println(F("2. TAG_READ_SLEEP_INTERVAL"));
     serial_port->println(F("3. READER_CYCLE_LOW_DURATION"));
     serial_port->println(F("4. READER_CYCLE_HIGH_DURATION"));
     serial_port->println(F("5. READER_POWER_CONTROL_PIN"));
@@ -468,8 +468,8 @@
         serial_port->println(S.TAG_LAST_READ_TIMEOUT);
         break;
       case '2':
-        serial_port->print(F("TAG_READ_INTERVAL: "));
-        serial_port->println(S.TAG_READ_INTERVAL);
+        serial_port->print(F("TAG_READ_SLEEP_INTERVAL: "));
+        serial_port->println(S.TAG_READ_SLEEP_INTERVAL);
         break;
       case '3':
         serial_port->print(F("READER_CYCLE_LOW_DURATION: "));

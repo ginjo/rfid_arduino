@@ -30,8 +30,13 @@
     unsigned long current_ms = millis();
     unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
 
-    // TODO: Put this block in a pollReader() function.
-    if (ms_since_last_tag_read > S.TAG_READ_INTERVAL) {
+    // TODO: Put this block (or at least part of it) in a pollReader() function.
+    // Then create a local while() loop to gather all avail serial data
+    // and pass it to the function, all in the same processor loop cycle.
+    
+    if (ms_since_last_tag_read > S.TAG_READ_SLEEP_INTERVAL) {
+      //  Serial.print(F("LAST TAG READ: "));
+      //  Serial.println(ms_since_last_tag_read/1000);
       
       if (serial_port->available()) {
         buff[buff_index] = serial_port->read();
@@ -63,10 +68,14 @@
       } else if (ms_since_last_tag_read > S.READER_CYCLE_HIGH_DURATION) {
         cycleReaderPower();
       }
+
+      // Check fuel pump timeout on every loop
+      // TODO: Is this appropriate here? It was outside the sleep loop before (see below).
+      proximityStateController();
     }
 
-    // Check fuel pump timeout on every loop
-    proximityStateController();
+    //  // Check fuel pump timeout on every loop
+    //  proximityStateController();
   }
 
   void RFID::processTagData(uint8_t * _tag[RAW_TAG_LENGTH]) {    
@@ -148,7 +157,7 @@
     // if last read was less than final timeout but greater than the first reader-power-cycle.
     // basically, if we're in the "aging" zone.
     } else if (ms_since_last_tag_read <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
-        ms_since_last_tag_read > S.TAG_READ_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
+        ms_since_last_tag_read > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
       ) {
 
       //Serial.println(F("proximityStateController() in 'aging' stage"));
@@ -164,7 +173,7 @@
       }
 
     // if we're still young (haven't had time for a reader-power-cycle yet)..
-    } else if (ms_since_last_tag_read <= S.TAG_READ_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION) {
+    } else if (ms_since_last_tag_read <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION) {
       
       if (S.proximity_state == 1) {
         blinker->on();
