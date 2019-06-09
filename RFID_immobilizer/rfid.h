@@ -37,6 +37,7 @@
     uint8_t buff[RAW_TAG_LENGTH];
     int buff_index;
     int proximity_state;
+    unsigned long current_ms;
     unsigned long last_tag_read_ms;
     unsigned long last_reader_power_cycle;
     Stream * serial_port;
@@ -48,10 +49,12 @@
     void begin();
     void loop();
     void resetBuffer();
+    void pollReader();
     void cycleReaderPower();
     void setProximityState(int);
     void proximityStateController();
     void processTagData(uint8_t * []);
+    unsigned long msSinceLastTagRead();
   };
 
 #endif

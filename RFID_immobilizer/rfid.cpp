@@ -28,54 +28,59 @@
 
   void RFID::loop() {
     unsigned long current_ms = millis();
-    unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
 
     // TODO: Put this block (or at least part of it) in a pollReader() function.
     // Then create a local while() loop to gather all avail serial data
     // and pass it to the function, all in the same processor loop cycle.
     
-    if (ms_since_last_tag_read > S.TAG_READ_SLEEP_INTERVAL) {
+    if (msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL) {
       //  Serial.print(F("LAST TAG READ: "));
-      //  Serial.println(ms_since_last_tag_read/1000);
-      
-      if (serial_port->available()) {
-        buff[buff_index] = serial_port->read();
-  
-        Serial.print("(");
-        Serial.print(buff_index);
-        Serial.print(")");
-        Serial.print(buff[buff_index], HEX);
-        Serial.print(":");
-        Serial.print(buff[buff_index], DEC);
-  
-        int final_index = RAW_TAG_LENGTH - 1;
-  
-        if (buff_index == 0 && buff[0] != 2) { // reset bogus read
-          resetBuffer();
-        } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
-          resetBuffer();
-          Serial.println("");
-        } else if (buff_index < final_index) { // good read, add comma to log and keep reading
-          buff_index++;
-          Serial.print(",");
-        } else { // tag complete, now process it
-          Serial.println("");
-          processTagData(*buff);
-          last_tag_read_ms = current_ms;
-          resetBuffer();
-        }
-        
-      } else if (ms_since_last_tag_read > S.READER_CYCLE_HIGH_DURATION) {
-        cycleReaderPower();
-      }
+      //  Serial.println(msSinceLastTagRead()/1000);
 
-      // Check fuel pump timeout on every loop
-      // TODO: Is this appropriate here? It was outside the sleep loop before (see below).
+      // Checks the rfid reader for new data.
+      pollReader();
+
+      // Check fuel pump timeout on every loop.
+      // TODO: Is this appropriate here? It was outside (below) the sleep block before.
       proximityStateController();
     }
+  }
 
-    //  // Check fuel pump timeout on every loop
-    //  proximityStateController();
+  unsigned long RFID::msSinceLastTagRead() {
+    current_ms - last_tag_read_ms;
+  }
+
+  void RFID::pollReader() {
+    if (serial_port->available()) {
+      buff[buff_index] = serial_port->read();
+
+      Serial.print("(");
+      Serial.print(buff_index);
+      Serial.print(")");
+      Serial.print(buff[buff_index], HEX);
+      Serial.print(":");
+      Serial.print(buff[buff_index], DEC);
+
+      int final_index = RAW_TAG_LENGTH - 1;
+
+      if (buff_index == 0 && buff[0] != 2) { // reset bogus read
+        resetBuffer();
+      } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
+        resetBuffer();
+        Serial.println("");
+      } else if (buff_index < final_index) { // good read, add comma to log and keep reading
+        buff_index++;
+        Serial.print(",");
+      } else { // tag complete, now process it
+        Serial.println("");
+        processTagData(*buff);
+        last_tag_read_ms = millis();   // was 'current_ms' before;
+        resetBuffer();
+      }
+      
+    } else if (msSinceLastTagRead() > S.READER_CYCLE_HIGH_DURATION) {
+      cycleReaderPower();
+    }    
   }
 
   void RFID::processTagData(uint8_t * _tag[RAW_TAG_LENGTH]) {    
@@ -114,7 +119,6 @@
   }
 
   void RFID::cycleReaderPower() {
-    unsigned long current_ms = millis();
     unsigned long ms_a = last_reader_power_cycle + S.READER_CYCLE_LOW_DURATION;
     unsigned long ms_b = last_reader_power_cycle + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION;
     
@@ -132,7 +136,8 @@
       digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
     } else if (current_ms > ms_b) {
       Serial.print(F("cycleReaderPower() updating last_reader_power_cycle, last tag read: "));
-      Serial.print((current_ms - last_tag_read_ms)/1000);
+      //Serial.print((current_ms - last_tag_read_ms)/1000);
+      Serial.print((msSinceLastTagRead())/1000);
       Serial.println(F(" seconds ago"));
       last_reader_power_cycle = millis();
     }
@@ -142,11 +147,8 @@
   // while this function is actively looping.
   // 
   void RFID::proximityStateController() {
-    unsigned long current_ms = millis();
-    unsigned long ms_since_last_tag_read = current_ms - last_tag_read_ms;
-
     // if last read was too long ago
-    if (ms_since_last_tag_read > S.TAG_LAST_READ_TIMEOUT * 1000) {
+    if (msSinceLastTagRead() > S.TAG_LAST_READ_TIMEOUT * 1000) {
 
       //Serial.println(F("proximityStateController() in 'timeout' stage"));
         
@@ -156,8 +158,8 @@
 
     // if last read was less than final timeout but greater than the first reader-power-cycle.
     // basically, if we're in the "aging" zone.
-    } else if (ms_since_last_tag_read <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
-        ms_since_last_tag_read > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
+    } else if (msSinceLastTagRead() <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
+        msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
       ) {
 
       //Serial.println(F("proximityStateController() in 'aging' stage"));
@@ -173,7 +175,7 @@
       }
 
     // if we're still young (haven't had time for a reader-power-cycle yet)..
-    } else if (ms_since_last_tag_read <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION) {
+    } else if (msSinceLastTagRead() <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION) {
       
       if (S.proximity_state == 1) {
         blinker->on();
