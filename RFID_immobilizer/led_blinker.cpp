@@ -26,7 +26,7 @@
       }
     }
 
-      Serial.print(F("Led::intervals[]: "));
+      Serial.print(F("Led::begin with intervals[]: "));
       Serial.print(intervals_count);
       Serial.print(",");
       for (int n = 0; n < INTERVALS_LENGTH; n ++) {
@@ -50,9 +50,9 @@
         memcmp(_intervals, intervals, sizeof(_intervals)) == 0
        )
     {
-      //Serial.println("Led::update() skipping begin()");
+      //Serial.println(F("Led::update() skipping begin()"));
     } else {
-      //Serial.println("Led::update() calling begin()");
+      //Serial.println(F("Led::update() calling begin()"));
       begin(_num_cycles, _intervals);      
     }
   }
@@ -81,7 +81,22 @@
     int intervals[INTERVALS_LENGTH] = {0,1000};
     update(0, intervals);
   }
-  
+
+  void Led::slowBlink() {
+    int intervals[INTERVALS_LENGTH] = {500,500};
+    update(0, intervals);
+  }
+
+  void Led::fastBlink() {
+    int intervals[INTERVALS_LENGTH] = {70,70};
+    update(0, intervals);
+  }
+
+  void Led::startupBlink() {
+    int intervals[INTERVALS_LENGTH] = {480,20};
+    update(0, intervals);
+  }
+    
   // Handles start-stop blinker and blinker cycling
   void Led::handleBlinker() {
     unsigned long current_ms = millis();

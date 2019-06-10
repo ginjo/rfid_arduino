@@ -58,6 +58,9 @@
     void handleBlinker();
     void on();
     void off();
+    void slowBlink();
+    void fastBlink();
+    void startupBlink();
   
   };
 

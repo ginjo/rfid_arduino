@@ -39,7 +39,7 @@
     int proximity_state;
     unsigned long current_ms;
     unsigned long last_tag_read_ms;
-    unsigned long last_reader_power_cycle;
+    unsigned long last_reader_power_cycle_ms;
     Stream * serial_port;
     Led * blinker;
 

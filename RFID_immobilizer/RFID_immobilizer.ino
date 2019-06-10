@@ -9,9 +9,10 @@
  //       But track if there was a 'fatal' missing-tag timeout, using EEPROM.
  //       If there WAS a previous timeout, keep fuel switch OPEN at startup,
  //       until a valid tag is read (then clear the 'fatal' event from EEPROM.
- // TODO: LED blinker needs a refactor: 1. Simplify, 2. Allow cycle count passed to begin();
- // TODO: I think macros need to be coordinated between each file, since they can clobber each other.
+ // TODO: √ LED blinker needs a refactor: 1. Simplify, 2. Allow cycle count passed to begin();
+ //       Done except for cycle count.
  // TODO: Implement blinker cycle limit setting.
+ // TODO: I think macros need to be coordinated between each file, since they can clobber each other.
  // TODO: Create menu options to set global variables.
  // TODO: Create var-to-eeprom address mapping for common settings (to be editable by menu).
  // TODO: Provide standard message when admin menu exits/transitions to run mode.
@@ -23,17 +24,22 @@
  // TODO: Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
  // TODO: Create exitAdmin() function for cleanup & logging.
- // TODO: Make the common blink patterns into constants or S.<setting>.
+ // TODO: √ Make the common blink patterns into constants or S.<setting>.
  //       fast_blink_intervals[], slow_blink_intervals, startup_admin_timeout_intervals[], etc..
- // TODO: Startup grace period needs to END immediately after startup,
+ //       Still need to store these common intervals in S.<settings>.
+ // TODO: √ Startup grace period needs to END immediately after startup,
  //       if NO tags are found after the FIRST reader power cycle.
- //       At this point, proximity_state and S.proximity_state need to be fully timed-out.
+ //       √ At this point, proximity_state and S.proximity_state need to be fully timed-out.
  // TODO: Consider renaming S.proximity_state to S.last_proximity_state.
- // TODO: Fix bug in addTagString (I think it's input_mode issue).
- // TODO: Consider a function setProximityState(on-or-off, hight-or-low, whatever).
+ // TODO: √ Fix bug in addTagString (I think it's input_mode issue).
+ // TODO: √ Consider a function setProximityState(on-or-off, hight-or-low, whatever).
  // TODO: Add status_text and updateStatusText() to efficiently display status change in logs.
  //       This should display proximity_state status as text-label, whenever it changes.
  //       Use enum StatusText {recent, aging, expired}
+ // TODO: Reduce active logging lines in SerialMenu serial port reading.
+ // TODO: Show S.<settings> values along with list (in admin mode).
+ // TODO: Complete add-tag and delete-tag processes.
+ // TODO: Also implement add-tag-from-scan option.
  
 
   #include <SoftwareSerial.h>
@@ -66,14 +72,15 @@
       delay(10);
     }
 
-    Serial.println("RFID_Immobilizer booting...");
+    Serial.println(F("Booting RFID Immobilizer..."));
 
     //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
     //Serial.println(Settings.reader_cycle_timeout_ms);
     
     //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880}; // slow pilot light
-    int blinker_intervals[INTERVALS_LENGTH] = {480,20}; // 120bpm mostly-on twinkle
-    Blinker.begin(0, blinker_intervals);
+    //int blinker_intervals[INTERVALS_LENGTH] = {480,20}; // 120bpm mostly-on twinkle
+    //Blinker.begin(0, blinker_intervals);
+    Blinker.startupBlink();
 
     BTserial.begin(9600);
 

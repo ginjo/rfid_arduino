@@ -34,6 +34,7 @@
   
 
   struct Storage {
+    int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 
     // for class RFID
     //

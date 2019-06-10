@@ -3,12 +3,17 @@
   int Storage::updateProximityState(int _state) {
     int previous_proximity_state = proximity_state;
     proximity_state = _state;
+    //  Serial.print(F("Storing proximity_state: "));
+    //  Serial.println(proximity_state);
     if (proximity_state != previous_proximity_state) {
       Serial.print(F("Calling EEPROM.update with proximity_state: "));
-      Serial.println(_state);
-      EEPROM.update(0, _state);
+      Serial.println(proximity_state);
+      // Disable this for debugging,
+      EEPROM.update(0, proximity_state);
+      // and enable this for debugging.
+      //state_dev_tmp = proximity_state;
     }
-    return _state;
+    return proximity_state;
   }
 
   Storage::Storage() :

@@ -69,7 +69,10 @@
 	//void SerialMenu::begin(unsigned long baud) {
   void SerialMenu::begin() {
     serial_port->println(F("SerialMenu Admin Console\r\n"));
-    showInfo();
+    
+    //showInfo();
+    Serial.println(F("Starting SerialMenu"));
+    
     setAdminWithTimeout(2);
     resetInputBuffer();
     
