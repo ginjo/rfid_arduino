@@ -68,10 +68,16 @@
 	
 	//void SerialMenu::begin(unsigned long baud) {
   void SerialMenu::begin() {
-    serial_port->println(F("SerialMenu Admin Console\r\n"));
+    //serial_port->println(F("SerialMenu Admin Console\r\n"));
     
     //showInfo();
     Serial.println(F("Starting SerialMenu"));
+
+    serial_port->print(F("RFID Immobilizer admin console, "));
+    serial_port->print(VERSION);
+    serial_port->print(", ");
+    serial_port->println(TIMESTAMP);
+    serial_port->println("");
     
     setAdminWithTimeout(2);
     resetInputBuffer();
@@ -134,6 +140,8 @@
   }
 
   // check for callbacks every cycle
+  // TODO: I think enum's can be used here instead of matching strings.
+  // Could then use 'switch' statement.
   void SerialMenu::runCallbacks() {
     // If completed input, ready for processing, is available.
     // Either a string (with a LF ending), of a char.
@@ -320,18 +328,23 @@
     //  Serial.print(current_ms); Serial.print(" ");
     //  Serial.println(previous_ms);
 
-    // TODO: Create a exitAdmin() funtion that handles timeout and manual exit of admin mode.
     if (run_mode == 0) { return; }
     if ( elapsed_ms/1000 > admin_timeout ) {
-      if (admin_timeout == 2) {
-        Serial.println(F("adminTimeout() setting run_mode to 0 'run'"));
-        blinker->off();
-        run_mode = 0;
-      } else {
-        Serial.println(F("\r\nadminTimeout() rebooting arduino"));
-        delay(100);
-        resetFunc();
-      }
+      exitAdmin();
+    }
+  }
+
+  void SerialMenu::exitAdmin() {
+    if (admin_timeout == 2) {
+      Serial.println(F("\r\nSerialMenu setting run_mode to 0 'run'"));
+      serial_port->println(F("Entering run mode\r\n"));
+      blinker->off();
+      run_mode = 0;
+    } else {
+      Serial.println(F("\r\nSerialMenu rebooting arduino"));
+      serial_port->println(F("Exiting admin console\r\n"));
+      delay(100);
+      resetFunc();
     }
   }
 
@@ -374,7 +387,7 @@
       // warn: a missing 'break' will allow
       // drop-thru to the next case.
       case '0':
-        serial_port->println(F("Exiting admin console\r\n\r\n"));
+        //serial_port->println(F("Exiting admin console\r\n\r\n"));
         setAdminWithTimeout(0);
         break;
       case '1':
@@ -440,15 +453,17 @@
     serial_port->println();
   }
 
+  // TODO: Should this be moved to settings.cpp?
   void SerialMenu::menuSettings() {
     serial_port->println(F("Settings"));
-    serial_port->println(F("0. Return to main menu"));
-    serial_port->println(F("1. TAG_LAST_READ_TIMEOUT"));
-    serial_port->println(F("2. TAG_READ_SLEEP_INTERVAL"));
-    serial_port->println(F("3. READER_CYCLE_LOW_DURATION"));
-    serial_port->println(F("4. READER_CYCLE_HIGH_DURATION"));
-    serial_port->println(F("5. READER_POWER_CONTROL_PIN"));
-    serial_port->println(F("6. proximity_state"));
+    serial_port->println(F("0. Return to main menu: "));
+    serial_port->print(F("1. TAG_LAST_READ_TIMEOUT: ")); serial_port->println(S.TAG_LAST_READ_TIMEOUT);
+    serial_port->print(F("2. TAG_READ_SLEEP_INTERVAL: ")); serial_port->println(S.TAG_READ_SLEEP_INTERVAL);
+    serial_port->print(F("3. READER_CYCLE_LOW_DURATION: ")); serial_port->println(S.READER_CYCLE_LOW_DURATION);
+    serial_port->print(F("4. READER_CYCLE_HIGH_DURATION: ")); serial_port->println(S.READER_CYCLE_HIGH_DURATION);
+    serial_port->print(F("5. READER_POWER_CONTROL_PIN: ")); serial_port->println(S.READER_POWER_CONTROL_PIN);
+    serial_port->print(F("6. proximity_state: ")); serial_port->println(S.proximity_state);
+    serial_port->print(F("7. admin_timeout: ")); serial_port->println(S.admin_timeout);
     serial_port->println("");
 
     setInputMode("char");
@@ -459,7 +474,8 @@
   void SerialMenu::menuSelectedSetting(uint8_t byt) {
     Serial.print(F("menuSelectedSetting received byte: "));
     Serial.println(char(byt));
-    
+
+    // TODO: I'm pretty sure switch can only work with integers.
     switch (char(byt)) {
       // NOTE: A missing 'break' will allow
       // drop-thru to the next case.
@@ -489,6 +505,10 @@
       case '6':
         serial_port->print(F("proximity_state: "));
         serial_port->println(S.proximity_state);
+        break;
+      case '7':
+        serial_port->print(F("admin_timeout: "));
+        serial_port->println(S.admin_timeout);
         break;
       default:
         menuSettings();

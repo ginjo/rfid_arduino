@@ -5,25 +5,28 @@
  */
 
  // TODO: Change all 'previous_ms' to 'last_<whatever>'.
- // TODO: Close fuel switch at startup, so we don't have to wait for software load.
+ // TODO: √ Close fuel switch at startup, so we don't have to wait for software load.
  //       But track if there was a 'fatal' missing-tag timeout, using EEPROM.
  //       If there WAS a previous timeout, keep fuel switch OPEN at startup,
  //       until a valid tag is read (then clear the 'fatal' event from EEPROM.
  // TODO: √ LED blinker needs a refactor: 1. Simplify, 2. Allow cycle count passed to begin();
  //       Done except for cycle count.
  // TODO: Implement blinker cycle limit setting.
- // TODO: I think macros need to be coordinated between each file, since they can clobber each other.
- // TODO: Create menu options to set global variables.
- // TODO: Create var-to-eeprom address mapping for common settings (to be editable by menu).
- // TODO: Provide standard message when admin menu exits/transitions to run mode.
+ // TODO: √ I think macros need to be coordinated between each file, since they can clobber each other.
+ //       Most macros can be turned into settings (S.<setting>).
+ // TODO: √ Create menu options to set global variables. See above about macros.
+ // TODO: - Create var-to-eeprom address mapping for common settings (to be editable by menu).
+ //       I think this is no longer needed, since we're using EEPROM.put(<a-struct-object>).
+ // TODO: √ Provide standard message when admin menu exits/transitions to run mode.
  // TODO: Sort out git repos in Documents/Arduino folder.
  // TODO: Better code documentation. User documentation.
  // TODO: √ Don't allow admin mode to extend the startup grace period.
  // TODO: Implement a beeper/buzzer.
  // TODO: I think SerialMenu.run_mode should be a global, since it's needed in RFID class.
- // TODO: Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
+ //       But where should it live?
+ // TODO: √ Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
- // TODO: Create exitAdmin() function for cleanup & logging.
+ // TODO: √ Create exitAdmin() function for cleanup & logging.
  // TODO: √ Make the common blink patterns into constants or S.<setting>.
  //       fast_blink_intervals[], slow_blink_intervals, startup_admin_timeout_intervals[], etc..
  //       Still need to store these common intervals in S.<settings>.
@@ -36,11 +39,14 @@
  // TODO: Add status_text and updateStatusText() to efficiently display status change in logs.
  //       This should display proximity_state status as text-label, whenever it changes.
  //       Use enum StatusText {recent, aging, expired}
- // TODO: Reduce active logging lines in SerialMenu serial port reading.
- // TODO: Show S.<settings> values along with list (in admin mode).
+ // TODO: √ Reduce active logging lines in SerialMenu serial port reading.
+ // TODO: √ Show S.<settings> values along with list (in admin mode).
  // TODO: Complete add-tag and delete-tag processes.
  // TODO: Also implement add-tag-from-scan option.
- // TODO: Create version & date-time handling.
+ // TODO: √ Create version & date-time handling.
+ // TODO: Reorganize funtions so that rfid tag functions are in RFID class,
+ //       menu functions in SerialMenu class, and settings functions in Settings class.
+ //
  
 
   #include <SoftwareSerial.h>
@@ -52,8 +58,8 @@
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
   #include "settings.h";
 
-  #define VERSION "0.1.0"
-  #define TIMESTAMP __DATE__ ", " __TIME__
+  //  #define VERSION "0.1.0"
+  //  #define TIMESTAMP __DATE__ ", " __TIME__
 
   // Brings up a simple menu cli on a BT serial port.
 

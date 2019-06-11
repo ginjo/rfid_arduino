@@ -69,6 +69,7 @@
     void resetInputBuffer();
     void adminTimeout();
     void setAdminWithTimeout(int = S.admin_timeout); // seconds
+    void exitAdmin();
     void loop();
   
   };
