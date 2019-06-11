@@ -40,6 +40,7 @@
  // TODO: Show S.<settings> values along with list (in admin mode).
  // TODO: Complete add-tag and delete-tag processes.
  // TODO: Also implement add-tag-from-scan option.
+ // TODO: Create version & date-time handling.
  
 
   #include <SoftwareSerial.h>
@@ -49,7 +50,10 @@
   #include "rdm6300_lib_example.cpp"
 
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
-  #include "settings.h";  
+  #include "settings.h";
+
+  #define VERSION "0.1.0"
+  #define TIMESTAMP __DATE__ ", " __TIME__
 
   // Brings up a simple menu cli on a BT serial port.
 
@@ -72,7 +76,10 @@
       delay(10);
     }
 
-    Serial.println(F("Booting RFID Immobilizer..."));
+    Serial.print(F("Booting RFID Immobilizer, "));
+    Serial.print(VERSION);
+    Serial.print(", ");
+    Serial.println(TIMESTAMP);
 
     //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
     //Serial.println(Settings.reader_cycle_timeout_ms);
