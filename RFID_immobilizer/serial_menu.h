@@ -32,6 +32,7 @@
   	int buff_index;
     char current_function[CURRENT_FUNCTION_LENGTH];
   	unsigned long tags[TAG_LIST_SIZE];
+    int selected_menu_item;
 
     Led * blinker;
 
@@ -54,6 +55,7 @@
     void menuShowFreeMemory();
     void menuSettings();
     void menuSelectedSetting(uint8_t);
+    int  byteToAsciiChrNum(char*);
     void getLine(uint8_t);
     void receiveTagInput(uint8_t);
     void setInputMode(char[]);

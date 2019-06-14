@@ -46,7 +46,9 @@
  // TODO: √ Create version & date-time handling.
  // TODO: Reorganize funtions so that rfid tag functions are in RFID class,
  //       menu functions in SerialMenu class, and settings functions in Settings class.
- //
+ // TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
+ //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
+
  
 
   #include <SoftwareSerial.h>

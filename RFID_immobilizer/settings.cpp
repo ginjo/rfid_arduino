@@ -1,5 +1,24 @@
 #include "settings.h"
 
+  Storage::Storage() :
+    TAG_LAST_READ_TIMEOUT(25),
+    TAG_READ_SLEEP_INTERVAL(1000),
+    READER_CYCLE_LOW_DURATION(150),
+    READER_CYCLE_HIGH_DURATION(5000),
+    READER_POWER_CONTROL_PIN(5),
+    proximity_state(EEPROM.read(0)),
+    admin_timeout(15)
+  {;}
+
+  // TODO: This is temp for testing.
+  // The data should ultimately be pulled from EEPROM.
+  // Defaults should be in constructor, if that works.
+  extern Storage Settings = {};
+
+  // a reference (alias?) from S to Settings
+  extern Storage& S = Settings;
+
+
   int Storage::updateProximityState(int _state) {
     int previous_proximity_state = proximity_state;
     proximity_state = _state;
@@ -16,54 +35,56 @@
     return proximity_state;
   }
 
-  Storage::Storage() :
-    TAG_LAST_READ_TIMEOUT(25),
-    TAG_READ_SLEEP_INTERVAL(1000),
-    READER_CYCLE_LOW_DURATION(150),
-    READER_CYCLE_HIGH_DURATION(5000),
-    READER_POWER_CONTROL_PIN(5),
-    proximity_state(EEPROM.read(0)),
-    admin_timeout(15)
-  {;}
+  // Updates a setting given setting index and data.
+  // TODO: Figure out how to convert selecte_setting from ascii '7' to int 7,
+  // then make sure to store that in selected_setting (in SerialMenu).
 
-  // TODO: This is temp for testing.
-  // The data should ultimately be pulled from EEPROM.
-  // Defaults should be in constructor, if that works.
-  extern Storage Settings = {};
-  //  extern Storage Settings = {
+  // Using Variadic Arguments:
   //
-  //    // RFID class constants
-  //    //  14,  // RDM63000
-  //    //  10,    // 7941E
+  //  bool Storage::updateSetting(char _index, ...) {
+  //    va_list args;
+  //    va_start(args, _index);
+  //
+  //    Serial.print("S.updateSetting() with index: ");
+  //    Serial.println(_index);
   //    
-  //    25,    // TAG_LAST_READ_TIMEOUT       seconds
-  //    1000,  // TAG_READ_SLEEP_INTERVAL           ms
-  //    150,   // READER_CYCLE_LOW_DURATION   ms
-  //    5000,  // READER_CYCLE_HIGH_DURATION  ms
-  //    6,     // READER_POWER_CONTROL_PIN    ms
+  //    switch (_index) {
+  //      case '7':
+  //        Serial.print("S.updateSetting() updating 'admin_timeout' with: ");
+  //        admin_timeout = va_arg(args, char);
+  //        Serial.println(admin_timeout);
+  //        break;
+  //      case '1':
+  //        break;
   //
-  //    // TODO: Temp for testing only.
-  //    // Ultimately this should have its own eeprom space
-  //    // and not be part of Settings.
-  //    EEPROM.read(0)      // proximity_state             boolean (0 or 1)
-  //
-  //    // Led class constants
-  //    //  10,    //
-  //
-  //    // SerlialMenu class constants
-  //    //  16,    //
-  //    //  8,     //
-  //    //  20,    //
-  //    //  5      //
-  //  };
+  //      // case ...
+  //      //   break;
+  //    }
+  //  }
 
-  // a reference (alias?) from S to Settings
-  extern Storage& S = Settings;
 
-  //  extern const int TAG_LAST_READ_TIMEOUT = S.TAG_LAST_READ_TIMEOUT;
-  //  extern const int TAG_READ_SLEEP_INTERVAL = S.TAG_READ_SLEEP_INTERVAL;
-  //  extern const int READER_CYCLE_LOW_DURATION = S.READER_CYCLE_LOW_DURATION;
-  //  extern const int READER_CYCLE_HIGH_DURATION = S.READER_CYCLE_HIGH_DURATION;
-  //  extern const int READER_POWER_CONTROL_PIN = S.READER_POWER_CONTROL_PIN;
+  bool Storage::updateSetting(int _index, char _data[]) {
 
+    Serial.print("S.updateSetting() with index: ");
+    Serial.println(_index);
+    
+    switch (_index) {
+      case 7:
+        Serial.print("S.updateSetting() updating 'admin_timeout' with: ");
+        admin_timeout = strtol(_data, NULL, 10);
+        Serial.println(admin_timeout);
+        return true;
+        break;
+      case 1:
+        break;
+
+      // case ...
+      //   break;
+    }
+
+    return false;
+  }
+
+
+  
   

@@ -18,6 +18,7 @@
   #include <Arduino.h>
   #include <string.h>
   #include <EEPROM.h>
+  #include <stdarg.h>
 
   // TODO: Integrate loading of GlobalSettings from EEPROM,
   // maybe putting defaults in the .h struct definition.
@@ -68,6 +69,7 @@
     //  int TAG_LIST_SIZE;
 
     int updateProximityState(int);
+    bool updateSetting(int, char[]);
 
     Storage::Storage();
   };  
