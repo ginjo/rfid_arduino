@@ -12,7 +12,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre04"
+  #define VERSION "0.1.0.pre05"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>

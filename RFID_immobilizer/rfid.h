@@ -53,7 +53,7 @@
     void cycleReaderPower();
     void setProximityState(int);
     void proximityStateController();
-    void processTagData(uint8_t * []);
+    void processTagData(uint8_t []);
     unsigned long msSinceLastTagRead();
   };
 

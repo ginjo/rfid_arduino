@@ -91,7 +91,7 @@
         //Serial.print(",");
       } else { // tag complete, now process it
         //Serial.println("");
-        processTagData(*buff);
+        processTagData(buff);
         last_tag_read_ms = current_ms;
         resetBuffer();
       }
@@ -101,7 +101,7 @@
     }    
   }
 
-  void RFID::processTagData(uint8_t * _tag[RAW_TAG_LENGTH]) {    
+  void RFID::processTagData(uint8_t _tag[RAW_TAG_LENGTH]) {    
     int id_begin;
     int id_end;
      
@@ -122,7 +122,8 @@
     for(int n=id_begin; n<=id_end; n++) {
       sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
     }
-    
+
+    Serial.print("Tag success: ");
     Serial.print((char *)tmp_str);
     Serial.print(", ");
     Serial.println(strtol((char *)tmp_str, NULL, 16));

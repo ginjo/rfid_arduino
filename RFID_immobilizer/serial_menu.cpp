@@ -263,7 +263,7 @@
     return inputAvailable() && matchCurrentFunction(func);
   }
 
-  char * SerialMenu::inputAvailableFor() {
+  char SerialMenu::inputAvailableFor() {
     if(inputAvailable()) {
       return current_function;
     } else {
@@ -271,6 +271,8 @@
     }
   }
 
+  // Converts byte (some kind of integer) to the integer represented
+  // by the ascii character of byte. This only works for ascii 48-57.
   int SerialMenu::byteToAsciiChrNum(uint8_t byt) {
     Serial.print(F("SerialMenu::byteToAsciiChrNum received byte: "));
     Serial.print(char(byt));
@@ -334,8 +336,10 @@
 
   // Starts, restarts, resets admin with timeout.
   void SerialMenu::setAdminWithTimeout(int seconds) {
-    //Serial.print(F("setAdminWithTimeout() seconds: "));
-    //Serial.println(seconds);
+    if (admin_timeout != seconds) {
+      Serial.print(F("setAdminWithTimeout() seconds: "));
+      Serial.println(seconds);
+    }
     
     admin_timeout = seconds;
     run_mode = 1;
@@ -415,6 +419,12 @@
     Serial.print(F("menuSelectedMainItem converted byte: "));
     Serial.println(selected_menu_item);
 
+    // Note that we're still using byt and character ascii codes in
+    // the switch statement, instead of using selected_menu_item and
+    // literal integers. This gives us more range of what we can compare.
+    // For example, if the user hits Enter key, we don't have a
+    // selected_menu_item index to correspond with that (since the ascii
+    // Enter character doesn't represent a specific integer).
     switch (byt) {
       // warn: a missing 'break' will allow
       // drop-thru to the next case.
@@ -521,14 +531,14 @@
     Serial.print(F("menuSelectedSetting set selected_menu_item to: "));
     Serial.println(selected_menu_item);
 
-    // TODO: I'm pretty sure switch can only work with integers.
+    // See note for menuSelectedMainItem().
     switch (byt) {
       // NOTE: A missing 'break' will allow
-      // drop-thru to the next case.
+      // drop-thru to the next case. It's weird, don't do it.
       case '0':
         menuMain();
-        //break;
         return;
+        break; // probbly not necessary, but just being safe.
       case '1':
         serial_port->print(F("TAG_LAST_READ_TIMEOUT: "));
         serial_port->println(S.TAG_LAST_READ_TIMEOUT);
@@ -559,7 +569,6 @@
         break;
       default:
         menuSettings();
-        //break;
         return;
     }
     

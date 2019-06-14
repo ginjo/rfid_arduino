@@ -48,7 +48,8 @@
  //       menu functions in SerialMenu class, and settings functions in Settings class.
  // TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
  //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
-
+ // TODO: Tag output to serial console is always the same tag, regardless of what was scanned.
+ //       This holds true even after cold restart of entire board.
  
 
   #include <SoftwareSerial.h>

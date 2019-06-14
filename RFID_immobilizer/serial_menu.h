@@ -34,7 +34,7 @@
   	unsigned long tags[TAG_LIST_SIZE];
     int selected_menu_item;
 
-    Led * blinker;
+    Led *blinker;
 
     // constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
@@ -64,7 +64,7 @@
     bool matchCurrentFunction(char[]);
     bool inputAvailable();
     bool inputAvailable(char[]);
-    char * inputAvailableFor(); // returns char array
+    char inputAvailableFor();
     void runCallbacks();
     bool addTagString(uint8_t[]);
     bool addTagNum(unsigned long);
