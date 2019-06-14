@@ -1,12 +1,32 @@
 #include "settings.h"
 
+  // TODO: I think Storage should be generic storage class,
+  // and Settings, State, whatever should be subclassed.
+
+  // TODO: Implement actual EEPROM storage.
+
   Storage::Storage() :
+    // ultimate valid-tag timeout
     TAG_LAST_READ_TIMEOUT(25),
+
+    // time between attempts to listen to reader
     TAG_READ_SLEEP_INTERVAL(1000),
+
+    // off duration during reader power cycle
     READER_CYCLE_LOW_DURATION(150),
+
+    // on duration before reader next power cycle
+    // also is duration before 'aging' stage begins
     READER_CYCLE_HIGH_DURATION(5000),
+
+    // controls reader power thru mosfet
     READER_POWER_CONTROL_PIN(5),
+
+    // saved proximity state (TODO: should be separate setting)
     proximity_state(EEPROM.read(0)),
+
+    // idle time before admin mode switches to run mode
+    // should be greater than READER_CYCLE_HIGH_DURATION
     admin_timeout(15)
   {;}
 
@@ -36,33 +56,6 @@
   }
 
   // Updates a setting given setting index and data.
-  // TODO: Figure out how to convert selecte_setting from ascii '7' to int 7,
-  // then make sure to store that in selected_setting (in SerialMenu).
-
-  // Using Variadic Arguments:
-  //
-  //  bool Storage::updateSetting(char _index, ...) {
-  //    va_list args;
-  //    va_start(args, _index);
-  //
-  //    Serial.print("S.updateSetting() with index: ");
-  //    Serial.println(_index);
-  //    
-  //    switch (_index) {
-  //      case '7':
-  //        Serial.print("S.updateSetting() updating 'admin_timeout' with: ");
-  //        admin_timeout = va_arg(args, char);
-  //        Serial.println(admin_timeout);
-  //        break;
-  //      case '1':
-  //        break;
-  //
-  //      // case ...
-  //      //   break;
-  //    }
-  //  }
-
-
   bool Storage::updateSetting(int _index, char _data[]) {
 
     Serial.print("S.updateSetting() with index: ");
@@ -76,10 +69,17 @@
         return true;
         break;
       case 1:
+        Serial.print("S.updateSetting() updating 'TAG_LAST_READ_TIMEOUT' with: ");
+        TAG_LAST_READ_TIMEOUT = strtol(_data, NULL, 10);
+        Serial.println(TAG_LAST_READ_TIMEOUT);
+        return true;
         break;
-
-      // case ...
-      //   break;
+      case 4:
+        Serial.print("S.updateSetting() updating 'READER_CYCLE_HIGH_DURATION' with: ");
+        READER_CYCLE_HIGH_DURATION = strtol(_data, NULL, 10);
+        Serial.println(READER_CYCLE_HIGH_DURATION);
+        return true;
+        break;
     }
 
     return false;
