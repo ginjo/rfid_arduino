@@ -271,7 +271,16 @@
     }
   }
 
-  int SerialMenu::byteToAsciiChrNum(char * byt) {
+  int SerialMenu::byteToAsciiChrNum(uint8_t byt) {
+    Serial.print(F("SerialMenu::byteToAsciiChrNum received byte: "));
+    Serial.print(char(byt));
+    Serial.print(" (");
+    Serial.print(byt);
+    Serial.println(")");
+    
+    if (byt < 48 || byt > 57) {
+      return NULL;
+    }
     char str[3]; // ascii only uses 3 digits in base-10.
     sprintf(str, "%c", byt); // convert the byte to ascii string.
     return strtol(str, NULL, 10); // convert the string of digits to int.
@@ -325,8 +334,8 @@
 
   // Starts, restarts, resets admin with timeout.
   void SerialMenu::setAdminWithTimeout(int seconds) {
-    Serial.print(F("setAdminWithTimeout() seconds: "));
-    Serial.println(seconds);
+    //Serial.print(F("setAdminWithTimeout() seconds: "));
+    //Serial.println(seconds);
     
     admin_timeout = seconds;
     run_mode = 1;
@@ -351,7 +360,7 @@
   }
 
   void SerialMenu::exitAdmin() {
-    if (admin_timeout == 2) {
+    if (true || admin_timeout == 2) {
       Serial.println(F("\r\nSerialMenu setting run_mode to 0 'run'"));
       serial_port->println(F("Entering run mode\r\n"));
       blinker->off();
@@ -397,30 +406,35 @@
   // Activates an incoming menu selection.
   void SerialMenu::menuSelectedMainItem(uint8_t byt) {
     Serial.print(F("menuSelectedMainItem received byte: "));
-    Serial.println(char(byt));
+    Serial.print(char(byt));
+    Serial.print(" (");
+    Serial.print(byt);
+    Serial.println(")");
 
-    selected_menu_item = byteToAsciiChrNum(&byt);
-    
-    switch (selected_menu_item) {
+    selected_menu_item = byteToAsciiChrNum(byt);
+    Serial.print(F("menuSelectedMainItem converted byte: "));
+    Serial.println(selected_menu_item);
+
+    switch (byt) {
       // warn: a missing 'break' will allow
       // drop-thru to the next case.
-      case 0:
+      case '0':
         //serial_port->println(F("Exiting admin console\r\n\r\n"));
         setAdminWithTimeout(0);
         break;
-      case 1:
+      case '1':
         menuListTags();
         break;
-      case 2:
+      case '2':
         menuAddTag();
         break;
-      case 3:
+      case '3':
         menuDeleteTag();
         break;
-      case 4:
+      case '4':
         menuShowFreeMemory();
         break;
-      case 5:
+      case '5':
         menuSettings();
         break;
       default:
@@ -502,44 +516,44 @@
     //char str[3]; // ascii only uses 3 digits in base-10.
     //sprintf(str, "%c", byt); // convert the byte to ascii string.
     //selected_menu_item = strtol(str, NULL, 10); // convert the string of digits to int.
-    selected_menu_item = byteToAsciiChrNum(&byt);
+    selected_menu_item = byteToAsciiChrNum(byt);
     
     Serial.print(F("menuSelectedSetting set selected_menu_item to: "));
     Serial.println(selected_menu_item);
 
     // TODO: I'm pretty sure switch can only work with integers.
-    switch (selected_menu_item) {
+    switch (byt) {
       // NOTE: A missing 'break' will allow
       // drop-thru to the next case.
-      case 0:
+      case '0':
         menuMain();
         //break;
         return;
-      case 1:
+      case '1':
         serial_port->print(F("TAG_LAST_READ_TIMEOUT: "));
         serial_port->println(S.TAG_LAST_READ_TIMEOUT);
         break;
-      case 2:
+      case '2':
         serial_port->print(F("TAG_READ_SLEEP_INTERVAL: "));
         serial_port->println(S.TAG_READ_SLEEP_INTERVAL);
         break;
-      case 3:
+      case '3':
         serial_port->print(F("READER_CYCLE_LOW_DURATION: "));
         serial_port->println(S.READER_CYCLE_LOW_DURATION);
         break;
-      case 4:
+      case '4':
         serial_port->print(F("READER_CYCLE_HIGH_DURATION: "));
         serial_port->println(S.READER_CYCLE_HIGH_DURATION);
         break;
-      case 5:
+      case '5':
         serial_port->print(F("READER_POWER_CONTROL_PIN: "));
         serial_port->println(S.READER_POWER_CONTROL_PIN);
         break;
-      case 6:
+      case '6':
         serial_port->print(F("proximity_state: "));
         serial_port->println(S.proximity_state);
         break;
-      case 7:
+      case '7':
         serial_port->print(F("admin_timeout: "));
         serial_port->println(S.admin_timeout);
         break;

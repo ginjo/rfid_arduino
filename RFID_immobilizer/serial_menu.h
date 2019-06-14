@@ -55,7 +55,7 @@
     void menuShowFreeMemory();
     void menuSettings();
     void menuSelectedSetting(uint8_t);
-    int  byteToAsciiChrNum(char*);
+    int  byteToAsciiChrNum(uint8_t);
     void getLine(uint8_t);
     void receiveTagInput(uint8_t);
     void setInputMode(char[]);
