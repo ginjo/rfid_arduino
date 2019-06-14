@@ -7,27 +7,27 @@
 
   Storage::Storage() :
     // ultimate valid-tag timeout
-    TAG_LAST_READ_TIMEOUT(25),
+    TAG_LAST_READ_TIMEOUT(25), // seconds
 
     // time between attempts to listen to reader
-    TAG_READ_SLEEP_INTERVAL(1000),
+    TAG_READ_SLEEP_INTERVAL(1000), // millis
 
     // off duration during reader power cycle
-    READER_CYCLE_LOW_DURATION(150),
+    READER_CYCLE_LOW_DURATION(150), // millis
 
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
-    READER_CYCLE_HIGH_DURATION(5000),
+    READER_CYCLE_HIGH_DURATION(5), // seconds
 
     // controls reader power thru mosfet
     READER_POWER_CONTROL_PIN(5),
 
     // saved proximity state (TODO: should be separate setting)
-    proximity_state(EEPROM.read(0)),
+    proximity_state(EEPROM.read(0)), // 0 = false, 1 = true
 
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
-    admin_timeout(15)
+    admin_timeout(15) // seconds
   {;}
 
   // TODO: This is temp for testing.

@@ -96,7 +96,7 @@
         resetBuffer();
       }
       
-    } else if (msSinceLastTagRead() > S.READER_CYCLE_HIGH_DURATION) {
+    } else if (msSinceLastTagRead() > S.READER_CYCLE_HIGH_DURATION * 1000) {
       cycleReaderPower();
     }    
   }
@@ -141,7 +141,7 @@
 
   void RFID::cycleReaderPower() {
     unsigned long cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
-    unsigned long cycle_high_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION;
+    unsigned long cycle_high_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
     
     //  Serial.print(F("cycleReaderPower() current, last, cycle_low_finish_ms, cycle_high_finish_ms: "));
     //  Serial.print(current_ms); Serial.print(",");
@@ -182,7 +182,7 @@
     // if last read was less than final timeout but greater than the first reader-power-cycle.
     // basically, if we're in the "aging" zone.
     } else if (msSinceLastTagRead() <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
-        msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION
+        msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000)
       ) {
 
       //Serial.println(F("proximityStateController() in 'aging'"));
@@ -198,7 +198,7 @@
       }
 
     // if we're still young (haven't had time for a reader-power-cycle yet)..
-    } else if (msSinceLastTagRead() <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION) {
+    } else if (msSinceLastTagRead() <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000)) {
       
       if (S.proximity_state == 1) {
         //Serial.println(F("proximityStateController() still young with S.proximity_state == 1"));
