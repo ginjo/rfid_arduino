@@ -96,7 +96,7 @@
         resetBuffer();
       }
       
-    } else if (msSinceLastTagRead() > S.READER_CYCLE_HIGH_DURATION * 1000) {
+    } else if (msSinceLastTagRead() > (S.READER_CYCLE_HIGH_DURATION * 1000)) {
       cycleReaderPower();
     }    
   }
@@ -172,7 +172,7 @@
   // 
   void RFID::proximityStateController() {
     // if last read was too long ago
-    if (msSinceLastTagRead() > S.TAG_LAST_READ_TIMEOUT * 1000) {
+    if (msSinceLastTagRead() > (S.TAG_LAST_READ_TIMEOUT * 1000)) {
 
       //Serial.println(F("proximityStateController() in 'timeout'"));
         

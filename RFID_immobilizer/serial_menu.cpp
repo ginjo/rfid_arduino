@@ -55,7 +55,7 @@
     current_function(""),
     input_mode("menu"),
     blinker(_blinker),
-    // See setAdminWithTimeout()
+    // See updateAdminTimeout()
     //  run_mode(1), // 0=run, 1=admin
     //  admin_timeout(3), // seconds
     //  previous_ms(millis());
@@ -79,7 +79,7 @@
     serial_port->println(TIMESTAMP);
     serial_port->println("");
     
-    setAdminWithTimeout(2);
+    updateAdminTimeout(2);
     resetInputBuffer();
     
     setInputMode("char");
@@ -107,7 +107,7 @@
   //
   void SerialMenu::checkSerialPort() {
     if (serial_port->available()) {
-      setAdminWithTimeout(); //(S.admin_timeout) // See header for default function values.
+      //updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
       
       //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
       uint8_t byt = serial_port->read();
@@ -131,7 +131,8 @@
         Serial.println(F("checkSerialPort() user input with no matching input mode: "));
         serial_port->write(byt); serial_port->println("");
       }
-     
+
+      updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
     } // done with available serial_port input
   }
 
@@ -335,9 +336,9 @@
   }
 
   // Starts, restarts, resets admin with timeout.
-  void SerialMenu::setAdminWithTimeout(int seconds) {
+  void SerialMenu::updateAdminTimeout(int seconds) {
     if (admin_timeout != seconds) {
-      Serial.print(F("setAdminWithTimeout() seconds: "));
+      Serial.print(F("updateAdminTimeout() seconds: "));
       Serial.println(seconds);
     }
     
@@ -430,7 +431,7 @@
       // drop-thru to the next case.
       case '0':
         //serial_port->println(F("Exiting admin console\r\n\r\n"));
-        setAdminWithTimeout(0);
+        updateAdminTimeout(0);
         break;
       case '1':
         menuListTags();

@@ -70,7 +70,8 @@
     bool addTagNum(unsigned long);
     void resetInputBuffer();
     void adminTimeout();
-    void setAdminWithTimeout(int = S.admin_timeout); // seconds
+    // argument defaults must be declared here, not defined in implementation.
+    void updateAdminTimeout(int = S.admin_timeout); // seconds
     void exitAdmin();
     void loop();
   

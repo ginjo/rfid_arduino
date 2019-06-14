@@ -101,7 +101,7 @@
     BTserial.begin(9600);
 
     BTmenu.begin();
-    //BTmenu.setAdminWithTimeout(2);
+    //BTmenu.updateAdminTimeout(2);
 
     RfidSerial.begin(9600);
     Rfid.begin();
