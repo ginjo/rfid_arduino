@@ -169,13 +169,16 @@
         Serial.print(", ");
         Serial.println((char *)buff);
         
-        if (S.updateSetting(selected_menu_item, buff)) { 
-          menuSettings();
+        if (S.updateSetting(selected_menu_item, buff)) {
+          // Because we need this after updating any SerialMenu settings
+          // and there isn't a better place for this (yet?).
+          updateAdminTimeout();          
         } else {
           Serial.println(F("runCallbacks() call to S.updateSetting() failed"));
-          menuMain();
         }
+        
         selected_menu_item = NULL;
+        menuSettings();
       
       } else {
         Serial.println(F("runCallbacks() no condition was selected"));
