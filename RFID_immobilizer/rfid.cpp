@@ -69,7 +69,7 @@
   }
 
   unsigned long RFID::msReaderCycleTotal() {
-    return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
+    return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION * 1000;
   }
 
   void RFID::pollReader() {
@@ -84,7 +84,7 @@
         //  DPRINT(":");
         //  DPRINT(buff[buff_index], DEC);
   
-        int final_index = RAW_TAG_LENGTH - 1;
+        uint8_t final_index = RAW_TAG_LENGTH - 1;
   
         if (buff_index == 0 && buff[0] != 2) { // reset bogus read
           resetBuffer();
@@ -104,7 +104,7 @@
       }
 
     } else if (
-      msSinceLastTagRead() > (S.READER_CYCLE_HIGH_DURATION * 1000) ||
+      msSinceLastTagRead() > S.READER_CYCLE_HIGH_DURATION * 1000 ||
       last_tag_read_ms == 0
     ) {
       cycleReaderPower();
@@ -112,8 +112,8 @@
   }
 
   void RFID::processTagData(uint8_t _tag[RAW_TAG_LENGTH]) {    
-    int id_begin;
-    int id_end;
+    uint8_t id_begin;
+    uint8_t id_end;
      
     if (RAW_TAG_LENGTH == 14) {  // RDM6300 reader
       Serial.println((char *)_tag);
@@ -126,7 +126,7 @@
       id_end   = 7;
     }
   
-    int id_len = id_end - id_begin;
+    uint8_t id_len = id_end - id_begin;
     char tmp_str[id_len] = "";
     
     for(int n=id_begin; n<=id_end; n++) {
@@ -151,21 +151,17 @@
     strncpy(buff, NULL, RAW_TAG_LENGTH);
   }
 
-  // TODO: This should not wait to cycle reader at beginning of run mode,
-  // otherwise we could have a very long grace period if READER_CYCLE_HIGH_DURATION is set really high.
-  // See main ino file TODO.
-  // Hmmm, is this situation actually already handled (see the first condition)?
-  // Actually, this might need to be fixed in the proximityStateController(), in
-  // the 'aging' conditions.
   void RFID::cycleReaderPower() {
     unsigned long cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
-    unsigned long cycle_high_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
+    unsigned long cycle_high_finish_ms = cycle_low_finish_ms + S.READER_CYCLE_HIGH_DURATION * 1000;
 
-    DPRINT(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, cycle_high_finish_ms: "));
+    DPRINT(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, S.READER_CYCLE_HIGH_DURATION, RCHD * 1000, cycle_high_finish_ms: "));
     DPRINT(current_ms); DPRINT(",");
     DPRINT(last_tag_read_ms); DPRINT(",");
     DPRINT(last_reader_power_cycle_ms); DPRINT(",");
     DPRINT(cycle_low_finish_ms); DPRINT(",");
+    DPRINT(S.READER_CYCLE_HIGH_DURATION); DPRINT(",");
+    DPRINT(S.READER_CYCLE_HIGH_DURATION * 1000); DPRINT(",");
     DPRINTLN(cycle_high_finish_ms);
     
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0) {
@@ -194,18 +190,19 @@
     DPRINT(last_tag_read_ms); DPRINT(",");
     DPRINTLN(last_reader_power_cycle_ms);
     
-    // if last read was too long ago
-    if (msSinceLastTagRead() > (S.TAG_LAST_READ_TIMEOUT * 1000)) {
-      
-      DPRINTLN(F("proximityStateController() timeout"));
-      blinker->slowBlink();
-      setProximityState(0);
 
     // If no tag-read yet and reader has recently power cycled
     // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
-    } else if (last_tag_read_ms == 0 && last_reader_power_cycle_ms > 0 && msSinceLastReaderPowerCycle() > 2000) {
+    if (last_tag_read_ms == 0 && last_reader_power_cycle_ms > 0 && msSinceLastReaderPowerCycle() > 2000) {
       
       DPRINTLN(F("proximityStateController() startup grace period timeout, no tag found"));
+      blinker->slowBlink();
+      setProximityState(0);
+    
+    // if last read was too long ago, and we've cycled reader at least once in that interval.
+    } else if (msSinceLastTagRead() > S.TAG_LAST_READ_TIMEOUT * 1000 && last_reader_power_cycle_ms > 0 && msSinceLastTagRead() > msSinceLastReaderPowerCycle()) {
+      
+      DPRINTLN(F("proximityStateController() timeout"));
       blinker->slowBlink();
       setProximityState(0);
 

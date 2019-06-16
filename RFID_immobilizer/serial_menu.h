@@ -22,8 +22,8 @@
     
   public:
     int run_mode; // 0=run, 1=admin
-    unsigned long previous_ms;
-    int admin_timeout; // seconds
+    uint32_t previous_ms;
+    uint32_t admin_timeout; // seconds
   	
   	char input_mode[INPUT_MODE_LENGTH];
   
@@ -31,7 +31,7 @@
   	uint8_t buff[INPUT_BUFFER_LENGTH];
   	int buff_index;
     char current_function[CURRENT_FUNCTION_LENGTH];
-  	unsigned long tags[TAG_LIST_SIZE];
+  	uint32_t tags[TAG_LIST_SIZE];
     int selected_menu_item;
 
     Led *blinker;
@@ -55,7 +55,7 @@
     void menuShowFreeMemory();
     void menuSettings();
     void menuSelectedSetting(uint8_t);
-    int  byteToAsciiChrNum(uint8_t);
+    uint8_t  byteToAsciiChrNum(uint8_t);
     void getLine(uint8_t);
     void receiveTagInput(uint8_t);
     void setInputMode(char[]);

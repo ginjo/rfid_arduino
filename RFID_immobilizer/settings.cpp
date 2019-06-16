@@ -7,7 +7,7 @@
 
   Storage::Storage() :
     // ultimate valid-tag timeout
-    TAG_LAST_READ_TIMEOUT(30), // seconds
+    TAG_LAST_READ_TIMEOUT(25), // seconds
 
     // time between attempts to listen to reader
     TAG_READ_SLEEP_INTERVAL(1000), // millis
@@ -17,7 +17,7 @@
 
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
-    READER_CYCLE_HIGH_DURATION(15), // seconds
+    READER_CYCLE_HIGH_DURATION(5), // seconds
 
     // controls reader power thru mosfet
     READER_POWER_CONTROL_PIN(5),
@@ -81,7 +81,7 @@
         break;
       case 4:
         Serial.print(F("S.updateSetting() updating 'READER_CYCLE_HIGH_DURATION' with: "));
-        READER_CYCLE_HIGH_DURATION = strtol(_data, NULL, 10);
+        READER_CYCLE_HIGH_DURATION = (int)strtol(_data, NULL, 10);
         Serial.println(READER_CYCLE_HIGH_DURATION);
         return true;
         break;

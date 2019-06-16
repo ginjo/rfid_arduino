@@ -22,24 +22,19 @@
 
   #include "settings.h"
   #include "led_blinker.h"
-  
+
+  // TODO: Should these be stored in Settigs?
   //#define RAW_TAG_LENGTH 14  // RDM63000
   #define RAW_TAG_LENGTH 10  // 7941E
-  
-  //#define TAG_LAST_READ_TIMEOUT 20 // seconds
-  //#define TAG_READ_SLEEP_INTERVAL 1000
-  //#define READER_CYCLE_LOW_DURATION 150
-  //#define READER_CYCLE_HIGH_DURATION 5000
-  //#define READER_POWER_CONTROL_PIN 6
 
   class RFID {
   public:
     uint8_t buff[RAW_TAG_LENGTH];
     int buff_index;
     int proximity_state;
-    unsigned long current_ms;
-    unsigned long last_tag_read_ms;
-    unsigned long last_reader_power_cycle_ms;
+    uint32_t current_ms;
+    uint32_t last_tag_read_ms;
+    uint32_t last_reader_power_cycle_ms;
     Stream * serial_port;
     Led * blinker;
 
@@ -54,9 +49,9 @@
     void setProximityState(int);
     void proximityStateController();
     void processTagData(uint8_t []);
-    unsigned long msSinceLastTagRead();
-    unsigned long msSinceLastReaderPowerCycle();
-    unsigned long msReaderCycleTotal();
+    uint32_t msSinceLastTagRead();
+    uint32_t msSinceLastReaderPowerCycle();
+    uint32_t msReaderCycleTotal();
   };
 
 #endif

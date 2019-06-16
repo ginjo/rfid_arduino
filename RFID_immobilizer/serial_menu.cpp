@@ -277,7 +277,7 @@
 
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
-  int SerialMenu::byteToAsciiChrNum(uint8_t byt) {
+  uint8_t SerialMenu::byteToAsciiChrNum(uint8_t byt) {
     DPRINT(F("SerialMenu::byteToAsciiChrNum received byte: "));
     DPRINT(char(byt));
     DPRINT(" (");

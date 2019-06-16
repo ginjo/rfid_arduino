@@ -12,7 +12,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre20"
+  #define VERSION "0.1.0.pre23"
   #define TIMESTAMP __DATE__ ", " __TIME__
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
@@ -55,28 +55,16 @@
     //int RAW_TAG_LENGTH;  // 7941E
     
     // Mostly time data
-    int TAG_LAST_READ_TIMEOUT;
-    int TAG_READ_SLEEP_INTERVAL;
-    int READER_CYCLE_LOW_DURATION;
-    int READER_CYCLE_HIGH_DURATION;
-    int READER_POWER_CONTROL_PIN;
+    uint32_t TAG_LAST_READ_TIMEOUT;
+    uint32_t TAG_READ_SLEEP_INTERVAL;
+    uint32_t READER_CYCLE_LOW_DURATION;
+    uint32_t READER_CYCLE_HIGH_DURATION;
+    uint8_t READER_POWER_CONTROL_PIN;
     
     // New various settings
     int proximity_state;
-    int admin_timeout;
+    uint32_t admin_timeout;
     int enable_debug;
-
-
-    // for class Led
-    //
-    //  int INTERVALS_LENGTH;
-
-    // for class SerlialMenu
-    //
-    //  int INPUT_BUFFER_LENGTH;
-    //  int INPUT_MODE_LENGTH;
-    //  int CURRENT_FUNCTION_LENGTH;
-    //  int TAG_LIST_SIZE;
 
     int updateProximityState(int);
     bool updateSetting(int, char[]);
