@@ -32,7 +32,7 @@
     admin_timeout(30), // seconds
 
     // enables debug (if #define DEBUG was active at compile time).
-    enable_debug(1)
+    enable_debug(0)
   {;}
 
   // TODO: This is temp for testing.
@@ -63,30 +63,30 @@
   // Updates a setting given setting index and data.
   bool Storage::updateSetting(int _index, char _data[]) {
 
-    Serial.print("S.updateSetting() with index: ");
-    Serial.println(_index);
+    DPRINT(F("S.updateSetting() called with index: "));
+    DPRINTLN(_index);
     
     switch (_index) {
       case 7:
-        Serial.print("S.updateSetting() updating 'admin_timeout' with: ");
+        Serial.print(F("S.updateSetting() updating 'admin_timeout' with: "));
         admin_timeout = strtol(_data, NULL, 10);
         Serial.println(admin_timeout);
         return true;
         break;
       case 1:
-        Serial.print("S.updateSetting() updating 'TAG_LAST_READ_TIMEOUT' with: ");
+        Serial.print(F("S.updateSetting() updating 'TAG_LAST_READ_TIMEOUT' with: "));
         TAG_LAST_READ_TIMEOUT = strtol(_data, NULL, 10);
         Serial.println(TAG_LAST_READ_TIMEOUT);
         return true;
         break;
       case 4:
-        Serial.print("S.updateSetting() updating 'READER_CYCLE_HIGH_DURATION' with: ");
+        Serial.print(F("S.updateSetting() updating 'READER_CYCLE_HIGH_DURATION' with: "));
         READER_CYCLE_HIGH_DURATION = strtol(_data, NULL, 10);
         Serial.println(READER_CYCLE_HIGH_DURATION);
         return true;
         break;
       case 8:
-        Serial.print("S.updateSetting() updating 'enable_debug' with: ");
+        Serial.print(F("S.updateSetting() updating 'enable_debug' with: "));
         enable_debug = strtol(_data, NULL, 10);
         Serial.println(enable_debug);
         return true;

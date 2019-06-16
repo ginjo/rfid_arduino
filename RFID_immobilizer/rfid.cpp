@@ -51,15 +51,15 @@
   unsigned long RFID::msSinceLastTagRead() {
     unsigned long result = current_ms - last_tag_read_ms;
 
-    //  Serial.print(F("RFID::msSinceLastTagRead(): last-read-ms-ago, curr-ms, last-ms: "));
-    //  Serial.print(result);
-    //  Serial.print(", ");
-    //  Serial.print(current_ms);
-    //  Serial.print(", ");
-    //  Serial.println(last_tag_read_ms);
+    //  DPRINT(F("RFID::msSinceLastTagRead(): last-read-ms-ago, curr-ms, last-ms: "));
+    //  DPRINT(result);
+    //  DPRINT(", ");
+    //  DPRINT(current_ms);
+    //  DPRINT(", ");
+    //  DPRINTLN(last_tag_read_ms);
     
-    //  Serial.print("RFID::msSinceLastTagRead(): ");
-    //  Serial.println(result);
+    //  DPRINT(F("RFID::msSinceLastTagRead(): "));
+    //  DPRINTLN(result);
 
     return result;
   }
@@ -133,11 +133,11 @@
       sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
     }
 
-    Serial.print("Tag success: ");
+    Serial.print(F("Tag success: "));
     Serial.print((char *)tmp_str);
     Serial.print(", ");
     Serial.print(strtol((char *)tmp_str, NULL, 16));
-    Serial.print(", at ms ");
+    Serial.print(F(", at ms "));
     Serial.println(current_ms);
     
     strncpy(tmp_str, NULL, id_len);
@@ -162,10 +162,10 @@
     unsigned long cycle_high_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
 
     DPRINT(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, cycle_high_finish_ms: "));
-    DPRINT(current_ms); Serial.print(",");
-    DPRINT(last_tag_read_ms); Serial.print(",");
-    DPRINT(last_reader_power_cycle_ms); Serial.print(",");
-    DPRINT(cycle_low_finish_ms); Serial.print(",");
+    DPRINT(current_ms); DPRINT(",");
+    DPRINT(last_tag_read_ms); DPRINT(",");
+    DPRINT(last_reader_power_cycle_ms); DPRINT(",");
+    DPRINT(cycle_low_finish_ms); DPRINT(",");
     DPRINTLN(cycle_high_finish_ms);
     
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0) {
@@ -189,9 +189,9 @@
   // 
   void RFID::proximityStateController() {
     DPRINT(F("proximityStateController() msSinceLastTagRead, msSinceLastReaderPowerCycle, last-tag-read, last-p-cycle: "));
-    DPRINT(msSinceLastTagRead()); Serial.print(",");
-    DPRINT(msSinceLastReaderPowerCycle()); Serial.print(",");
-    DPRINT(last_tag_read_ms); Serial.print(",");
+    DPRINT(msSinceLastTagRead()); DPRINT(",");
+    DPRINT(msSinceLastReaderPowerCycle()); DPRINT(",");
+    DPRINT(last_tag_read_ms); DPRINT(",");
     DPRINTLN(last_reader_power_cycle_ms);
     
     // if last read was too long ago

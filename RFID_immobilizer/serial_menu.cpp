@@ -581,7 +581,7 @@
         return;
     }
     
-    serial_port->print("Type a new value for setting: ");
+    serial_port->print(F("Type a new value for setting: "));
     setInputMode("line");
     setCallbackFunction("updateSetting");
   }
