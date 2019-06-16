@@ -168,8 +168,20 @@
       DPRINTLN(F("cycleReaderPower() setting reader power LOW"));
       
       Serial.print(F("cycleReaderPower(), last tag read: "));
-      Serial.print((msSinceLastTagRead())/1000);
-      Serial.println(F(" seconds ago"));
+      if (last_tag_read_ms > 0) {
+        Serial.print((msSinceLastTagRead())/1000);
+        Serial.println(F(" seconds ago"));
+      } else {
+        Serial.println(F("Never!"));
+      }
+
+      Serial.print(F("cycleReaderPower(), last reader cycle: "));
+      if (last_reader_power_cycle_ms > 0) {
+        Serial.print((msSinceLastReaderPowerCycle())/1000);
+        Serial.println(F(" seconds ago"));
+      } else {
+        Serial.println(F("Never!"));
+      }
       
       last_reader_power_cycle_ms = current_ms;
       digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
