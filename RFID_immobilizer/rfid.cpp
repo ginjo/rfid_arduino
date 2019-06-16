@@ -34,10 +34,6 @@
 
   void RFID::loop() {
     current_ms = millis();
-
-    // TODO: Put this block (or at least part of it) in a pollReader() function.
-    // Then create a local while() loop to gather all avail serial data
-    // and pass it to the function, all in the same processor loop cycle.
     
     if (msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL) {
       //  Serial.print(F("LAST TAG READ: "));
@@ -68,6 +64,11 @@
     return result;
   }
 
+  unsigned long RFID::msSinceLastReaderPowerCycle() {
+    unsigned long result = current_ms - last_reader_power_cycle_ms;
+    return result;
+  }
+
   void RFID::pollReader() {
     if (serial_port->available()) {
       buff[buff_index] = serial_port->read();
@@ -95,8 +96,11 @@
         last_tag_read_ms = current_ms;
         resetBuffer();
       }
-      
-    } else if (msSinceLastTagRead() > (S.READER_CYCLE_HIGH_DURATION * 1000)) {
+
+    } else if (
+      msSinceLastTagRead() > (S.READER_CYCLE_HIGH_DURATION * 1000) ||
+      last_tag_read_ms == 0
+    ) {
       cycleReaderPower();
     }    
   }
@@ -130,7 +134,6 @@
     strncpy(tmp_str, NULL, id_len);
 
     // assuming successful tag at this point
-    //blinker->on(); // moved to proximityStateController experimentally
     S.updateProximityState(1);
   }
 
@@ -139,32 +142,37 @@
     strncpy(buff, NULL, RAW_TAG_LENGTH);
   }
 
+  // TODO: This should not wait to cycle reader at beginning of run mode,
+  // otherwise we could have a very long grace period if READER_CYCLE_HIGH_DURATION is set really high.
+  // See main ino file TODO.
+  // Hmmm, is this situation actually already handled (see the first condition)?
+  // Actually, this might need to be fixed in the proximityStateController(), in
+  // the 'aging' conditions.
   void RFID::cycleReaderPower() {
     unsigned long cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
     unsigned long cycle_high_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
-    
-    //  Serial.print(F("cycleReaderPower() current, last, cycle_low_finish_ms, cycle_high_finish_ms: "));
-    //  Serial.print(current_ms); Serial.print(",");
-    //  Serial.print(last_reader_power_cycle_ms); Serial.print(",");
-    //  Serial.print(cycle_low_finish_ms); Serial.print(",");
-    //  Serial.println(cycle_high_finish_ms);
+
+    #ifdef DEBUG
+      Serial.print(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, cycle_high_finish_ms: "));
+      Serial.print(current_ms); Serial.print(",");
+      Serial.print(last_tag_read_ms); Serial.print(",");
+      Serial.print(last_reader_power_cycle_ms); Serial.print(",");
+      Serial.print(cycle_low_finish_ms); Serial.print(",");
+      Serial.println(cycle_high_finish_ms);
+    #endif
     
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0) {
-      // Serial.println("cycleReaderPower() setting reader power LOW");
+      DPRINTLN(F("cycleReaderPower() setting reader power LOW"));
       Serial.print(F("cycleReaderPower(), last tag read: "));
       Serial.print((msSinceLastTagRead())/1000);
       Serial.println(F(" seconds ago"));
       last_reader_power_cycle_ms = current_ms;
       digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
+      
     } else if (current_ms >= cycle_low_finish_ms) {
-      // Serial.println(F("cycleReaderPower() setting reader power HIGH"));
+      DPRINTLN(F("cycleReaderPower() setting reader power HIGH"));
       digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
-    } //else if (current_ms > cycle_high_finish_ms) {
-    //  Serial.print(F("cycleReaderPower() updating last_reader_power_cycle_ms, last tag read: "));
-    //  Serial.print((msSinceLastTagRead())/1000);
-    //  Serial.println(F(" seconds ago"));
-    //  last_reader_power_cycle_ms = current_ms;   //millis();
-    //}
+    }
   }
 
   // The proximity_state var determines physical switch state
@@ -172,10 +180,13 @@
   // 
   void RFID::proximityStateController() {
     // if last read was too long ago
-    if (msSinceLastTagRead() > (S.TAG_LAST_READ_TIMEOUT * 1000)) {
+    if (
+      msSinceLastTagRead() > (S.TAG_LAST_READ_TIMEOUT * 1000) ||
+      last_tag_read_ms == 0 && msSinceLastReaderPowerCycle() > 2000 && last_reader_power_cycle_ms > 0 // this should probably calculate appropriate time since last power cycle.
+    ) {
 
-      //Serial.println(F("proximityStateController() in 'timeout'"));
-        
+      DPRINTLN(F("proximityStateController() in 'timeout'"));
+      
       blinker->slowBlink();
       setProximityState(0);
 
@@ -185,14 +196,14 @@
         msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000)
       ) {
 
-      //Serial.println(F("proximityStateController() in 'aging'"));
+      DPRINTLN(F("proximityStateController() in 'aging'"));
 
       if (proximity_state == 0 || last_tag_read_ms == 0) {
-        //Serial.println(F("proximityStateController() aging with no previous tag read"));
+        DPRINTLN(F("proximityStateController() aging with no previous tag read"));
         blinker->slowBlink();
         setProximityState(0);
       } else if (S.proximity_state == 1) {
-        //Serial.println(F("proximityStateController() aging with S.proximity_state == 1"));
+        DPRINTLN(F("proximityStateController() aging with S.proximity_state == 1"));
         blinker->fastBlink();
         setProximityState(1);
       }
@@ -201,10 +212,13 @@
     } else if (msSinceLastTagRead() <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000)) {
       
       if (S.proximity_state == 1) {
-        //Serial.println(F("proximityStateController() still young with S.proximity_state == 1"));
+        DPRINTLN(F("proximityStateController() still young with S.proximity_state == 1"));
+        
         blinker->on();
         setProximityState(1);
       }
+
+    // no expected condition was met (not sure what to do here yet).
     } else {
       Serial.println(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }

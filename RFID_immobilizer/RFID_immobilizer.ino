@@ -50,8 +50,21 @@
  //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
  // TODO: Tag output to serial console is always the same tag, regardless of what was scanned.
  //       This holds true even after cold restart of entire board.
+ // TODO: Need to ignore READER_CYCLE_HIGH_DURATION at beginning of run mode,
+ //       and cycle reader immediately if no tag found yet. Then immediately
+ //       timeout the tag if still not found.
+ //       This is all because READER_CYCLE_HIGH_DURATION could be set rather high,
+ //       and would allow too much grace period at startup.
+ // TODO: cycleReaderPower() isn't triggering when READER_CYCLE_HIGH_DURATION is set to 50,
+ //       and tag-timeout is set to 60. So there's a timing issue when settings are not 5, 25 respectively.
+ // TODO: Maybe refactor proximityStateController() to have smaller conditions and more else-if blocks.
+ //       Also move the subconditions to a single flat if-then-else statement.
+ // TODO: Require a CR or CR/LF to enter single characters for SerialMenu.
+ //       This might just be a matter of always using 'line' mode instead of 'char' mode.
+ //       This is necessary to use some terminal apps like BLE-Terminal on ios
+ //       to use the BLE (HM-10) adapter on arduino.
  
-
+ 
   #include <SoftwareSerial.h>
   #include "led_blinker.h"
   #include "serial_menu.h"
