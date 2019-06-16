@@ -62,7 +62,7 @@
  // TODO: Require a CR or CR/LF to enter single characters for SerialMenu.
  //       This might just be a matter of always using 'line' mode instead of 'char' mode.
  //       This is necessary to use some terminal apps like BLE-Terminal on ios
- //       to use the BLE (HM-10) adapter on arduino.
+ //       to use the BLE (HM-10) adapter on arduino. Also consider HM-12 for dual BT access (2.1, 4.0).
  
  
   #include <SoftwareSerial.h>

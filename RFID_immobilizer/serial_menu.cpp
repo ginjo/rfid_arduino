@@ -112,17 +112,17 @@
       //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
       uint8_t byt = serial_port->read();
       
-      //  Serial.print("checkSerialPort received byte: ");
-      //  Serial.println(char(byt));
-      //  Serial.print("checkSerialPort input_mode is: ");
-      //  Serial.println(input_mode);
+      //  DPRINT("checkSerialPort received byte: ");
+      //  DPRINTLN(char(byt));
+      //  DPRINT("checkSerialPort input_mode is: ");
+      //  DPRINTLN(input_mode);
       
       if (matchInputMode("char")) {
-        Serial.println(F("checkSerialPort() matchInputMode('char') is TRUE"));
+        DPRINTLN(F("checkSerialPort() matchInputMode('char') is TRUE"));
         buff[0] = byt;
 
       } else if (matchInputMode("line")) {
-        Serial.println(F("checkSerialPort() matchInputMode('line') is TRUE"));
+        DPRINTLN(F("checkSerialPort() matchInputMode('line') is TRUE"));
         getLine(byt);
         
       } else {
@@ -147,7 +147,7 @@
       //Serial.println(inputAvailableFor());
 
       if (inputAvailable("menuAddTag")) {
-        Serial.println(F("runCallbacks() inputAvailable for addTagString"));
+        DPRINTLN(F("runCallbacks() inputAvailable for addTagString"));
         if (addTagString(buff)) { 
           menuListTags();
         } else {
@@ -156,18 +156,18 @@
         }
 
       } else if (inputAvailable("menuSelectedMainItem")) {
-        Serial.println(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
+        DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
         menuSelectedMainItem(buff[0]);
 
       } else if (inputAvailable("menuSelectedSetting")) {
-        Serial.println(F("runCallbacks() inputAvailable for menuSelectedSetting"));
+        DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedSetting"));
         menuSelectedSetting(buff[0]);
 
       } else if (inputAvailable("updateSetting")) {
-        Serial.print(F("runCallbacks() inputAvailable for updateSetting: "));
-        Serial.print(selected_menu_item);
-        Serial.print(", ");
-        Serial.println((char *)buff);
+        DPRINT(F("runCallbacks() inputAvailable for updateSetting: "));
+        DPRINT(selected_menu_item);
+        DPRINT(", ");
+        DPRINTLN((char *)buff);
         
         if (S.updateSetting(selected_menu_item, buff)) {
           // Because we need this after updating any SerialMenu settings
@@ -200,10 +200,10 @@
   /*** Menu and State Logic ***/
 
   void SerialMenu::getLine(uint8_t byt) {
-    Serial.print(F("getLine() byt, buff: "));
-    Serial.print(char(byt));
-    Serial.print(", ");
-    Serial.println((char *)buff);
+    DPRINT(F("getLine() byt, buff: "));
+    DPRINT(char(byt));
+    DPRINT(", ");
+    DPRINTLN((char *)buff);
     
     buff[buff_index] = byt;
     buff_index ++;
@@ -225,8 +225,8 @@
   void SerialMenu::setInputMode(char str[]) {
     strncpy(input_mode, str, INPUT_MODE_LENGTH);
     
-    Serial.print(F("setInputMode() to: "));
-    Serial.println(input_mode);
+    DPRINT(F("setInputMode() to: "));
+    DPRINTLN(input_mode);
   }
 
   bool SerialMenu::matchInputMode(char mode[]) {
@@ -246,8 +246,8 @@
   void SerialMenu::setCallbackFunction(char func[]) {
     strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
 
-    Serial.print(F("setCallbackFunction() to: "));
-    Serial.println(current_function);
+    DPRINT(F("setCallbackFunction() to: "));
+    DPRINTLN(current_function);
   }
 
   bool SerialMenu::matchCurrentFunction(char func[]) {
@@ -278,11 +278,11 @@
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
   int SerialMenu::byteToAsciiChrNum(uint8_t byt) {
-    Serial.print(F("SerialMenu::byteToAsciiChrNum received byte: "));
-    Serial.print(char(byt));
-    Serial.print(" (");
-    Serial.print(byt);
-    Serial.println(")");
+    DPRINT(F("SerialMenu::byteToAsciiChrNum received byte: "));
+    DPRINT(char(byt));
+    DPRINT(" (");
+    DPRINT(byt);
+    DPRINTLN(")");
     
     if (byt < 48 || byt > 57) {
       return NULL;
@@ -413,15 +413,15 @@
 
   // Activates an incoming menu selection.
   void SerialMenu::menuSelectedMainItem(uint8_t byt) {
-    Serial.print(F("menuSelectedMainItem received byte: "));
-    Serial.print(char(byt));
-    Serial.print(" (");
-    Serial.print(byt);
-    Serial.println(")");
+    DPRINT(F("menuSelectedMainItem received byte: "));
+    DPRINT(char(byt));
+    DPRINT(" (");
+    DPRINT(byt);
+    DPRINTLN(")");
 
     selected_menu_item = byteToAsciiChrNum(byt);
-    Serial.print(F("menuSelectedMainItem converted byte: "));
-    Serial.println(selected_menu_item);
+    DPRINT(F("menuSelectedMainItem converted byte: "));
+    DPRINTLN(selected_menu_item);
 
     // Note that we're still using byt and character ascii codes in
     // the switch statement, instead of using selected_menu_item and
@@ -512,6 +512,7 @@
     serial_port->print(F("5. READER_POWER_CONTROL_PIN: ")); serial_port->println(S.READER_POWER_CONTROL_PIN);
     serial_port->print(F("6. proximity_state: ")); serial_port->println(S.proximity_state);
     serial_port->print(F("7. admin_timeout: ")); serial_port->println(S.admin_timeout);
+    serial_port->print(F("8. enable_debug: ")); serial_port->println(S.enable_debug);
     serial_port->println("");
 
     setInputMode("char");
@@ -520,8 +521,8 @@
 
   // Handle selected setting.
   void SerialMenu::menuSelectedSetting(uint8_t byt) {
-    Serial.print(F("menuSelectedSetting received byte: "));
-    Serial.println((char)byt);
+    DPRINT(F("menuSelectedSetting received byte: "));
+    DPRINTLN((char)byt);
 
     // NOTE: This is an example of converting a byte
     // to the integer represented by the ascii character of the byte.
@@ -532,8 +533,8 @@
     //selected_menu_item = strtol(str, NULL, 10); // convert the string of digits to int.
     selected_menu_item = byteToAsciiChrNum(byt);
     
-    Serial.print(F("menuSelectedSetting set selected_menu_item to: "));
-    Serial.println(selected_menu_item);
+    DPRINT(F("menuSelectedSetting set selected_menu_item to: "));
+    DPRINTLN(selected_menu_item);
 
     // See note for menuSelectedMainItem().
     switch (byt) {
@@ -570,6 +571,10 @@
       case '7':
         serial_port->print(F("admin_timeout: "));
         serial_port->println(S.admin_timeout);
+        break;
+      case '8':
+        serial_port->print(F("enable_debug: "));
+        serial_port->println(S.enable_debug);
         break;
       default:
         menuSettings();

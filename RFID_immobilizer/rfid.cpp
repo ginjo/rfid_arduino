@@ -65,36 +65,42 @@
   }
 
   unsigned long RFID::msSinceLastReaderPowerCycle() {
-    unsigned long result = current_ms - last_reader_power_cycle_ms;
-    return result;
+    return current_ms - last_reader_power_cycle_ms;
+  }
+
+  unsigned long RFID::msReaderCycleTotal() {
+    return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
   }
 
   void RFID::pollReader() {
     if (serial_port->available()) {
-      buff[buff_index] = serial_port->read();
-
-      //  Serial.print("(");
-      //  Serial.print(buff_index);
-      //  Serial.print(")");
-      //  Serial.print(buff[buff_index], HEX);
-      //  Serial.print(":");
-      //  Serial.print(buff[buff_index], DEC);
-
-      int final_index = RAW_TAG_LENGTH - 1;
-
-      if (buff_index == 0 && buff[0] != 2) { // reset bogus read
-        resetBuffer();
-      } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
-        resetBuffer();
-        //Serial.println("");
-      } else if (buff_index < final_index) { // good read, add comma to log and keep reading
-        buff_index++;
-        //Serial.print(",");
-      } else { // tag complete, now process it
-        //Serial.println("");
-        processTagData(buff);
-        last_tag_read_ms = current_ms;
-        resetBuffer();
+      while (serial_port->available()) {
+        buff[buff_index] = serial_port->read();
+  
+        //  DPRINT("(");
+        //  DPRINT(buff_index);
+        //  DPRINT(")");
+        //  DPRINT(buff[buff_index], HEX);
+        //  DPRINT(":");
+        //  DPRINT(buff[buff_index], DEC);
+  
+        int final_index = RAW_TAG_LENGTH - 1;
+  
+        if (buff_index == 0 && buff[0] != 2) { // reset bogus read
+          resetBuffer();
+        } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
+          resetBuffer();
+          //Serial.println("");
+        } else if (buff_index < final_index) { // good read, add comma to log and keep reading
+          buff_index++;
+          //Serial.print(",");
+        } else { // tag complete, now process it
+          //Serial.println("");
+          processTagData(buff);
+          last_tag_read_ms = current_ms;
+          resetBuffer();
+          return;
+        }
       }
 
     } else if (
@@ -130,7 +136,10 @@
     Serial.print("Tag success: ");
     Serial.print((char *)tmp_str);
     Serial.print(", ");
-    Serial.println(strtol((char *)tmp_str, NULL, 16));
+    Serial.print(strtol((char *)tmp_str, NULL, 16));
+    Serial.print(", at ms ");
+    Serial.println(current_ms);
+    
     strncpy(tmp_str, NULL, id_len);
 
     // assuming successful tag at this point
@@ -152,20 +161,20 @@
     unsigned long cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
     unsigned long cycle_high_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000);
 
-    #ifdef DEBUG
-      Serial.print(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, cycle_high_finish_ms: "));
-      Serial.print(current_ms); Serial.print(",");
-      Serial.print(last_tag_read_ms); Serial.print(",");
-      Serial.print(last_reader_power_cycle_ms); Serial.print(",");
-      Serial.print(cycle_low_finish_ms); Serial.print(",");
-      Serial.println(cycle_high_finish_ms);
-    #endif
+    DPRINT(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, cycle_high_finish_ms: "));
+    DPRINT(current_ms); Serial.print(",");
+    DPRINT(last_tag_read_ms); Serial.print(",");
+    DPRINT(last_reader_power_cycle_ms); Serial.print(",");
+    DPRINT(cycle_low_finish_ms); Serial.print(",");
+    DPRINTLN(cycle_high_finish_ms);
     
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0) {
       DPRINTLN(F("cycleReaderPower() setting reader power LOW"));
+      
       Serial.print(F("cycleReaderPower(), last tag read: "));
       Serial.print((msSinceLastTagRead())/1000);
       Serial.println(F(" seconds ago"));
+      
       last_reader_power_cycle_ms = current_ms;
       digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
       
@@ -179,48 +188,44 @@
   // while this function is actively looping.
   // 
   void RFID::proximityStateController() {
+    DPRINT(F("proximityStateController() msSinceLastTagRead, msSinceLastReaderPowerCycle, last-tag-read, last-p-cycle: "));
+    DPRINT(msSinceLastTagRead()); Serial.print(",");
+    DPRINT(msSinceLastReaderPowerCycle()); Serial.print(",");
+    DPRINT(last_tag_read_ms); Serial.print(",");
+    DPRINTLN(last_reader_power_cycle_ms);
+    
     // if last read was too long ago
-    if (
-      msSinceLastTagRead() > (S.TAG_LAST_READ_TIMEOUT * 1000) ||
-      last_tag_read_ms == 0 && msSinceLastReaderPowerCycle() > 2000 && last_reader_power_cycle_ms > 0 // this should probably calculate appropriate time since last power cycle.
-    ) {
-
-      DPRINTLN(F("proximityStateController() in 'timeout'"));
+    if (msSinceLastTagRead() > (S.TAG_LAST_READ_TIMEOUT * 1000)) {
       
+      DPRINTLN(F("proximityStateController() timeout"));
       blinker->slowBlink();
       setProximityState(0);
 
-    // if last read was less than final timeout but greater than the first reader-power-cycle.
-    // basically, if we're in the "aging" zone.
-    } else if (msSinceLastTagRead() <= (S.TAG_LAST_READ_TIMEOUT * 1000) &&
-        msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000)
-      ) {
-
-      DPRINTLN(F("proximityStateController() in 'aging'"));
-
-      if (proximity_state == 0 || last_tag_read_ms == 0) {
-        DPRINTLN(F("proximityStateController() aging with no previous tag read"));
-        blinker->slowBlink();
-        setProximityState(0);
-      } else if (S.proximity_state == 1) {
-        DPRINTLN(F("proximityStateController() aging with S.proximity_state == 1"));
-        blinker->fastBlink();
-        setProximityState(1);
-      }
-
-    // if we're still young (haven't had time for a reader-power-cycle yet)..
-    } else if (msSinceLastTagRead() <= S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + (S.READER_CYCLE_HIGH_DURATION * 1000)) {
+    // If no tag-read yet and reader has recently power cycled
+    // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
+    } else if (last_tag_read_ms == 0 && last_reader_power_cycle_ms > 0 && msSinceLastReaderPowerCycle() > 2000) {
       
-      if (S.proximity_state == 1) {
-        DPRINTLN(F("proximityStateController() still young with S.proximity_state == 1"));
-        
+      DPRINTLN(F("proximityStateController() startup grace period timeout, no tag found"));
+      blinker->slowBlink();
+      setProximityState(0);
+
+    // If last read is greater than reader-power-cycle-total AND less than final timeout total,
+    // we're in the "aging" zone.
+    } else if (last_tag_read_ms > 0 && msSinceLastTagRead() > msReaderCycleTotal() && msSinceLastTagRead() <= (S.TAG_LAST_READ_TIMEOUT * 1000)) {
+
+      DPRINTLN(F("proximityStateController() aging"));
+      blinker->fastBlink();
+      setProximityState(1);
+
+    // If we're still young.
+    } else if (last_tag_read_ms > 0 && msSinceLastTagRead() <= msReaderCycleTotal()) {
+        DPRINTLN(F("proximityStateController() still young"));
         blinker->on();
         setProximityState(1);
-      }
 
-    // no expected condition was met (not sure what to do here yet).
+    // No expected condition was met (not sure what to do here yet).
     } else {
-      Serial.println(F("proximityStateController() no condition was met (not necessarily a problem)"));
+      DPRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
     // TODO: Replace 13 with a S.<setting>

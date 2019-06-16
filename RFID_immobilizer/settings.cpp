@@ -29,7 +29,10 @@
     
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
-    admin_timeout(30) // seconds
+    admin_timeout(30), // seconds
+
+    // enables debug (if #define DEBUG was active at compile time).
+    enable_debug(1)
   {;}
 
   // TODO: This is temp for testing.
@@ -80,6 +83,12 @@
         Serial.print("S.updateSetting() updating 'READER_CYCLE_HIGH_DURATION' with: ");
         READER_CYCLE_HIGH_DURATION = strtol(_data, NULL, 10);
         Serial.println(READER_CYCLE_HIGH_DURATION);
+        return true;
+        break;
+      case 8:
+        Serial.print("S.updateSetting() updating 'enable_debug' with: ");
+        enable_debug = strtol(_data, NULL, 10);
+        Serial.println(enable_debug);
         return true;
         break;
     }

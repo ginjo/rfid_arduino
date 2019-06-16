@@ -56,6 +56,7 @@
     void processTagData(uint8_t []);
     unsigned long msSinceLastTagRead();
     unsigned long msSinceLastReaderPowerCycle();
+    unsigned long msReaderCycleTotal();
   };
 
 #endif
