@@ -107,8 +107,6 @@
   //
   void SerialMenu::checkSerialPort() {
     if (serial_port->available()) {
-      //updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
-      
       //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
       uint8_t byt = serial_port->read();
       
@@ -199,6 +197,8 @@
 
   /*** Menu and State Logic ***/
 
+  // Builds a line of input in variable 'buff' until CR or LF is detected,
+  // then resets buff_index to 0.
   void SerialMenu::getLine(uint8_t byt) {
     DPRINT(F("getLine() byt, buff: "));
     DPRINT(char(byt));
@@ -220,10 +220,11 @@
     }
   }
 
-  // TODO: Do parameter var declarations need size, or can they be variable?
-  
+  // Set input mode to character or line.
+  // NOTE: Migrating to line-mode for all functions.
   void SerialMenu::setInputMode(char str[]) {
-    strncpy(input_mode, str, INPUT_MODE_LENGTH);
+    //strncpy(input_mode, str, INPUT_MODE_LENGTH);
+    strncpy(input_mode, "line", INPUT_MODE_LENGTH);
     
     DPRINT(F("setInputMode() to: "));
     DPRINTLN(input_mode);
