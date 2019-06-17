@@ -107,27 +107,29 @@
   //
   void SerialMenu::checkSerialPort() {
     if (serial_port->available()) {
-      //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
-      uint8_t byt = serial_port->read();
-      
-      //  DPRINT("checkSerialPort received byte: ");
-      //  DPRINTLN(char(byt));
-      //  DPRINT("checkSerialPort input_mode is: ");
-      //  DPRINTLN(input_mode);
-      
-      if (matchInputMode("char")) {
-        DPRINTLN(F("checkSerialPort() matchInputMode('char') is TRUE"));
-        buff[0] = byt;
-
-      } else if (matchInputMode("line")) {
-        DPRINTLN(F("checkSerialPort() matchInputMode('line') is TRUE"));
-        getLine(byt);
+      while (serial_port->available()) {
+        //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
+        uint8_t byt = serial_port->read();
         
-      } else {
-        // last-resort default just writes byt to serial_port
-        // this should not happen under normal circumstances
-        Serial.println(F("checkSerialPort() user input with no matching input mode: "));
-        serial_port->write(byt); serial_port->println("");
+        DPRINT("checkSerialPort() received byte: ");
+        DPRINTLN(char(byt));
+        //  DPRINT("checkSerialPort input_mode is: ");
+        //  DPRINTLN(input_mode);
+        
+        if (matchInputMode("char")) {
+          //DPRINTLN(F("checkSerialPort() matchInputMode('char') is TRUE"));
+          buff[0] = byt;
+  
+        } else if (matchInputMode("line")) {
+          //DPRINTLN(F("checkSerialPort() matchInputMode('line') is TRUE"));
+          getLine(byt);
+          
+        } else {
+          // last-resort default just writes byt to serial_port
+          // this should not happen under normal circumstances
+          Serial.println(F("checkSerialPort() user input with no matching input mode: "));
+          serial_port->write(byt); serial_port->println("");
+        }
       }
 
       updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.

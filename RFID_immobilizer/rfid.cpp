@@ -82,16 +82,17 @@
   }
 
   void RFID::pollReader() {
+    // If data available on RFID serial port, do something.
     if (serial_port->available()) {
       while (serial_port->available()) {
         buff[buff_index] = serial_port->read();
   
-          DPRINT("(");
-          DPRINT(buff_index);
-          DPRINT(")");
-          DPRINT(buff[buff_index], HEX);
-          DPRINT(":");
-          DPRINT(buff[buff_index], DEC);
+        DPRINT("(");
+        DPRINT(buff_index);
+        DPRINT(")");
+        DPRINT(buff[buff_index], HEX);
+        DPRINT(":");
+        DPRINT(buff[buff_index], DEC);
   
         uint8_t final_index = S.RAW_TAG_LENGTH - 1;
   
@@ -112,6 +113,8 @@
         }
       }
 
+    // If no data on RFID serial port and sufficient conditions exist,
+    // then call cycle-reader-power.
     } else if (
       msSinceLastTagRead() > readerPowerCycleHighDuration() * 1000 ||
       last_tag_read_ms == 0
@@ -120,6 +123,9 @@
     }    
   }
 
+  // Processes received line of tag data.
+  // NOTE: array args in func definitions can only use absolute constants, not vars.
+  // TODO: create macro definition for max-tag-length that can be used in func definition array args.
   //void RFID::processTagData(uint8_t _tag[S.RAW_TAG_LENGTH]) {
   void RFID::processTagData(uint8_t _tag[24]) {
     uint8_t id_begin;
