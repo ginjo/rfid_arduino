@@ -63,6 +63,15 @@
  //       This might just be a matter of always using 'line' mode instead of 'char' mode.
  //       This is necessary to use some terminal apps like BLE-Terminal on ios
  //       to use the BLE (HM-10) adapter on arduino. Also consider HM-12 for dual BT access (2.1, 4.0).
+ // TODO: If proximity state goes low, set reader-cycle-high duration to 3 or 5 seconds.
+ //       Otherwise a flakey tag sitting on top of the reader may miss its only change to be read
+ //       in the scenario where tag-timeout and reader-cycle are both set very high.
+ //       May need a class-global variable for that purpose, so we don't have to mess
+ //       with the S.<setting>.
+ // TODO: In normal operation, after admin session timeout (or '0' quit),
+ //       proximity-state is being briefly set to 0, even though the reader hasn't cycled yet.
+ //       This needs to be fixed so startup grace-period NEVER times out without
+ //       first trying a reader power cycle.
  
  
   #include <SoftwareSerial.h>

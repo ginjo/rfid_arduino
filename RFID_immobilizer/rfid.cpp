@@ -172,7 +172,7 @@
         Serial.print((msSinceLastTagRead())/1000);
         Serial.print(F(" seconds ago"));
       } else {
-        Serial.print(F("Never!"));
+        Serial.print(F("never"));
       }
 
       Serial.print(F(", reader cycled: "));
@@ -180,7 +180,7 @@
         Serial.print((msSinceLastReaderPowerCycle())/1000);
         Serial.println(F(" seconds ago"));
       } else {
-        Serial.println(F("Never!"));
+        Serial.println(F("never"));
       }
       
       last_reader_power_cycle_ms = current_ms;
@@ -212,7 +212,7 @@
       setProximityState(0);
     
     // if last read was too long ago, and we've cycled reader at least once in that interval.
-    } else if (msSinceLastTagRead() > S.TAG_LAST_READ_TIMEOUT * 1000 && last_reader_power_cycle_ms > 0 && msSinceLastTagRead() > msSinceLastReaderPowerCycle()) {
+    } else if (msSinceLastTagRead() > S.TAG_LAST_READ_TIMEOUT * 1000 && last_reader_power_cycle_ms > 0 && msSinceLastTagRead() > msSinceLastReaderPowerCycle() && msSinceLastReaderPowerCycle() > 2000) {
       
       DPRINTLN(F("proximityStateController() timeout"));
       blinker->slowBlink();
