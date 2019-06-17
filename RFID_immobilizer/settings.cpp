@@ -43,7 +43,7 @@
   // a reference (alias?) from S to Settings
   extern Storage& S = Settings;
 
-
+  // TODO: I think this ultimately needs to be integrated into Storage class EEPROM handling.
   int Storage::updateProximityState(int _state) {
     int previous_proximity_state = proximity_state;
     proximity_state = _state;

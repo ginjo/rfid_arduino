@@ -7,6 +7,7 @@
     current_ms(millis()),
     last_tag_read_ms(0),
     last_reader_power_cycle_ms(0),
+    reader_power_cycle_high_duration(0),
     serial_port(_serial_port),
     blinker(_blinker),
     proximity_state(0)
@@ -48,8 +49,8 @@
     }
   }
 
-  unsigned long RFID::msSinceLastTagRead() {
-    unsigned long result = current_ms - last_tag_read_ms;
+  uint32_t RFID::msSinceLastTagRead() {
+    uint32_t result = current_ms - last_tag_read_ms;
 
     //  DPRINT(F("RFID::msSinceLastTagRead(): last-read-ms-ago, curr-ms, last-ms: "));
     //  DPRINT(result);
@@ -64,12 +65,20 @@
     return result;
   }
 
-  unsigned long RFID::msSinceLastReaderPowerCycle() {
+  uint32_t RFID::msSinceLastReaderPowerCycle() {
     return current_ms - last_reader_power_cycle_ms;
   }
 
-  unsigned long RFID::msReaderCycleTotal() {
-    return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION * 1000;
+  uint32_t RFID::msReaderCycleTotal() {
+    return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + readerPowerCycleHighDuration() * 1000;
+  }
+
+  uint32_t RFID::readerPowerCycleHighDuration() {
+    if (reader_power_cycle_high_duration > 0) {
+      return reader_power_cycle_high_duration;
+    } else {
+      return S.READER_CYCLE_HIGH_DURATION;
+    }
   }
 
   void RFID::pollReader() {
@@ -104,7 +113,7 @@
       }
 
     } else if (
-      msSinceLastTagRead() > S.READER_CYCLE_HIGH_DURATION * 1000 ||
+      msSinceLastTagRead() > readerPowerCycleHighDuration() * 1000 ||
       last_tag_read_ms == 0
     ) {
       cycleReaderPower();
@@ -152,16 +161,16 @@
   }
 
   void RFID::cycleReaderPower() {
-    unsigned long cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
-    unsigned long cycle_high_finish_ms = cycle_low_finish_ms + S.READER_CYCLE_HIGH_DURATION * 1000;
+    uint32_t cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
+    uint32_t cycle_high_finish_ms = cycle_low_finish_ms + readerPowerCycleHighDuration() * 1000;
 
-    DPRINT(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, S.READER_CYCLE_HIGH_DURATION, RCHD * 1000, cycle_high_finish_ms: "));
+    DPRINT(F("cycleReaderPower() current_MS, last_tag_read, last_p_cycle, cycle_low_finish_ms, readerPowerCycleHighDuration(), RCHD * 1000, cycle_high_finish_ms: "));
     DPRINT(current_ms); DPRINT(",");
     DPRINT(last_tag_read_ms); DPRINT(",");
     DPRINT(last_reader_power_cycle_ms); DPRINT(",");
     DPRINT(cycle_low_finish_ms); DPRINT(",");
-    DPRINT(S.READER_CYCLE_HIGH_DURATION); DPRINT(",");
-    DPRINT(S.READER_CYCLE_HIGH_DURATION * 1000); DPRINT(",");
+    DPRINT(readerPowerCycleHighDuration()); DPRINT(",");
+    DPRINT(readerPowerCycleHighDuration() * 1000); DPRINT(",");
     DPRINTLN(cycle_high_finish_ms);
     
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0) {
@@ -243,6 +252,13 @@
 
   void RFID::setProximityState(int _state) {
     proximity_state = _state;
+    
+    if (proximity_state == 0) {
+      reader_power_cycle_high_duration = 3;
+    } else {
+      reader_power_cycle_high_duration = 0;
+    }
+    
     S.updateProximityState(_state);
   }
 

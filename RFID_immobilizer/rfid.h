@@ -35,6 +35,7 @@
     uint32_t current_ms;
     uint32_t last_tag_read_ms;
     uint32_t last_reader_power_cycle_ms;
+    uint32_t reader_power_cycle_high_duration; // seconds
     Stream * serial_port;
     Led * blinker;
 
@@ -52,6 +53,9 @@
     uint32_t msSinceLastTagRead();
     uint32_t msSinceLastReaderPowerCycle();
     uint32_t msReaderCycleTotal();
+    uint32_t readerPowerCycleHighDuration();
   };
+
+  extern RFID Rfid;
 
 #endif

@@ -12,7 +12,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre26"
+  #define VERSION "0.1.0.pre29"
   #define TIMESTAMP __DATE__ ", " __TIME__
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
@@ -75,11 +75,4 @@
   extern Storage Settings;
   extern Storage& S;
   
-  //  extern const int TAG_LAST_READ_TIMEOUT;
-  //  extern const int TAG_READ_SLEEP_INTERVAL;
-  //  extern const int READER_CYCLE_LOW_DURATION;
-  //  extern const int READER_CYCLE_HIGH_DURATION;
-  //  extern const int READER_POWER_CONTROL_PIN;
-  
-
 #endif

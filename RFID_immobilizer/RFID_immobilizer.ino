@@ -22,7 +22,7 @@
  // TODO: Better code documentation. User documentation.
  // TODO: √ Don't allow admin mode to extend the startup grace period.
  // TODO: Implement a beeper/buzzer.
- // TODO: I think SerialMenu.run_mode should be a global, since it's needed in RFID class.
+ // TODO: I think SerialMenu.run_mode should be a global, since it's needed in multiple classes.
  //       But where should it live?
  // TODO: √ Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
@@ -44,44 +44,53 @@
  // TODO: Complete add-tag and delete-tag processes.
  // TODO: Also implement add-tag-from-scan option.
  // TODO: √ Create version & date-time handling.
- // TODO: Reorganize funtions so that rfid tag functions are in RFID class,
+ // TODO: Reorganize functions so that rfid tag functions are in RFID class,
  //       menu functions in SerialMenu class, and settings functions in Settings class.
  // TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
  //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
- // TODO: Tag output to serial console is always the same tag, regardless of what was scanned.
+ // TODO: √ Tag output to serial console is always the same tag, regardless of what was scanned.
  //       This holds true even after cold restart of entire board.
- // TODO: Need to ignore READER_CYCLE_HIGH_DURATION at beginning of run mode,
+ // TODO: √ Need to ignore READER_CYCLE_HIGH_DURATION at beginning of run mode,
  //       and cycle reader immediately if no tag found yet. Then immediately
  //       timeout the tag if still not found.
  //       This is all because READER_CYCLE_HIGH_DURATION could be set rather high,
  //       and would allow too much grace period at startup.
- // TODO: cycleReaderPower() isn't triggering when READER_CYCLE_HIGH_DURATION is set to 50,
+ // TODO: √ cycleReaderPower() isn't triggering when READER_CYCLE_HIGH_DURATION is set to 50,
  //       and tag-timeout is set to 60. So there's a timing issue when settings are not 5, 25 respectively.
- // TODO: Maybe refactor proximityStateController() to have smaller conditions and more else-if blocks.
+ //       This was an issue with integer arithmatic and not enough bits.
+ // TODO: √ Maybe refactor proximityStateController() to have smaller conditions and more else-if blocks.
  //       Also move the subconditions to a single flat if-then-else statement.
  // TODO: Require a CR or CR/LF to enter single characters for SerialMenu.
  //       This might just be a matter of always using 'line' mode instead of 'char' mode.
  //       This is necessary to use some terminal apps like BLE-Terminal on ios
  //       to use the BLE (HM-10) adapter on arduino. Also consider HM-12 for dual BT access (2.1, 4.0).
- // TODO: If proximity state goes low, set reader-cycle-high duration to 3 or 5 seconds.
+ // TODO: √ If proximity state goes low, set reader-cycle-high duration to 3 or 5 seconds.
  //       Otherwise a flakey tag sitting on top of the reader may miss its only change to be read
  //       in the scenario where tag-timeout and reader-cycle are both set very high.
  //       May need a class-global variable for that purpose, so we don't have to mess
  //       with the S.<setting>.
- // TODO: In normal operation, after admin session timeout (or '0' quit),
+ // TODO: √ In normal operation, after admin session timeout (or '0' quit),
  //       proximity-state is being briefly set to 0, even though the reader hasn't cycled yet.
  //       This needs to be fixed so startup grace-period NEVER times out without
  //       first trying a reader power cycle.
+ // TODO: √ Finish converting reader_power_cycle_high_duration to readerPowerCycleHighDuration()
+ // TODO: Create protection/failsafe against user-input of bad settings.
+ //       For example admin_timeout should NEVER go below 5s,
+ //       And the initial admin_timeout of 2s should not be modifiable by user.
+ //       Generally make sure the Arduino cannot be bricked (requiring a re-flash).
  
  
   #include <SoftwareSerial.h>
+  // TODO: Implement settings with eeprom, instead of #define macros, something like this:
+  #include "settings.h";
+  
   #include "led_blinker.h"
   #include "serial_menu.h"
   #include "rfid.h"
   #include "rdm6300_lib_example.cpp"
 
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
-  #include "settings.h";
+  //#include "settings.h";
 
   //  #define VERSION "0.1.0"
   //  #define TIMESTAMP __DATE__ ", " __TIME__
