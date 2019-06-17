@@ -513,6 +513,7 @@
     serial_port->print(F("6. proximity_state: ")); serial_port->println(S.proximity_state);
     serial_port->print(F("7. admin_timeout: ")); serial_port->println(S.admin_timeout);
     serial_port->print(F("8. enable_debug: ")); serial_port->println(S.enable_debug);
+    serial_port->print(F("9. RAW_TAG_LENGTH: ")); serial_port->println(S.RAW_TAG_LENGTH);
     serial_port->println("");
 
     setInputMode("char");
@@ -575,6 +576,10 @@
       case '8':
         serial_port->print(F("enable_debug: "));
         serial_port->println(S.enable_debug);
+        break;
+      case '9':
+        serial_port->print(F("RAW_TAG_LENGTH: "));
+        serial_port->println(S.RAW_TAG_LENGTH);
         break;
       default:
         menuSettings();

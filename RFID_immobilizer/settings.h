@@ -12,7 +12,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre29"
+  #define VERSION "0.1.0.pre33"
   #define TIMESTAMP __DATE__ ", " __TIME__
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
@@ -47,6 +47,9 @@
   
 
   struct Storage {
+    
+    /*  Variables  */
+    
     int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 
     // for class RFID
@@ -61,11 +64,15 @@
     uint32_t READER_CYCLE_HIGH_DURATION;
     uint8_t READER_POWER_CONTROL_PIN;
     
-    // New various settings
     int proximity_state;
     uint32_t admin_timeout;
     int enable_debug;
 
+    uint8_t RAW_TAG_LENGTH;
+
+
+    /*  Functions  */
+    
     int updateProximityState(int);
     bool updateSetting(int, char[]);
 

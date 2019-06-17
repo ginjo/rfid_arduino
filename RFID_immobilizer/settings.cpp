@@ -32,7 +32,10 @@
     admin_timeout(30), // seconds
 
     // enables debug (if #define DEBUG was active at compile time).
-    enable_debug(0)
+    enable_debug(0),
+
+    // this should be rolled into a Reader class or something.
+    RAW_TAG_LENGTH(10)
   {;}
 
   // TODO: This is temp for testing.
@@ -89,6 +92,12 @@
         Serial.print(F("S.updateSetting() updating 'enable_debug' with: "));
         enable_debug = strtol(_data, NULL, 10);
         Serial.println(enable_debug);
+        return true;
+        break;
+      case 9:
+        Serial.print(F("S.updateSetting() updating 'RAW_TAG_LENGTH' with: "));
+        RAW_TAG_LENGTH = strtol(_data, NULL, 10);
+        Serial.println(RAW_TAG_LENGTH);
         return true;
         break;
     }

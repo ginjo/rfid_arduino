@@ -25,11 +25,12 @@
 
   // TODO: Should these be stored in Settigs?
   //#define RAW_TAG_LENGTH 14  // RDM63000
-  #define RAW_TAG_LENGTH 10  // 7941E
+  //#define RAW_TAG_LENGTH 10  // 7941E
 
   class RFID {
   public:
-    uint8_t buff[RAW_TAG_LENGTH];
+    //uint8_t buff[RAW_TAG_LENGTH];
+    uint8_t buff[24];
     int buff_index;
     int proximity_state;
     uint32_t current_ms;

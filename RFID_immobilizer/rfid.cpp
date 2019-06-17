@@ -86,14 +86,14 @@
       while (serial_port->available()) {
         buff[buff_index] = serial_port->read();
   
-        //  DPRINT("(");
-        //  DPRINT(buff_index);
-        //  DPRINT(")");
-        //  DPRINT(buff[buff_index], HEX);
-        //  DPRINT(":");
-        //  DPRINT(buff[buff_index], DEC);
+          DPRINT("(");
+          DPRINT(buff_index);
+          DPRINT(")");
+          DPRINT(buff[buff_index], HEX);
+          DPRINT(":");
+          DPRINT(buff[buff_index], DEC);
   
-        uint8_t final_index = RAW_TAG_LENGTH - 1;
+        uint8_t final_index = S.RAW_TAG_LENGTH - 1;
   
         if (buff_index == 0 && buff[0] != 2) { // reset bogus read
           resetBuffer();
@@ -120,17 +120,18 @@
     }    
   }
 
-  void RFID::processTagData(uint8_t _tag[RAW_TAG_LENGTH]) {    
+  //void RFID::processTagData(uint8_t _tag[S.RAW_TAG_LENGTH]) {
+  void RFID::processTagData(uint8_t _tag[24]) {
     uint8_t id_begin;
     uint8_t id_end;
      
-    if (RAW_TAG_LENGTH == 14) {  // RDM6300 reader
+    if (S.RAW_TAG_LENGTH == 14) {  // RDM6300 reader
       Serial.println((char *)_tag);
       //Serial.println(strtol(buff, NULL, 16));
       id_begin = 3;
       id_end   = 10;
       
-    } else if (RAW_TAG_LENGTH == 10) {  // 7941E reader
+    } else if (S.RAW_TAG_LENGTH == 10) {  // 7941E reader
       id_begin = 4;
       id_end   = 7;
     }
@@ -157,7 +158,7 @@
 
   void RFID::resetBuffer() {
     buff_index = 0;
-    strncpy(buff, NULL, RAW_TAG_LENGTH);
+    strncpy(buff, NULL, S.RAW_TAG_LENGTH);
   }
 
   void RFID::cycleReaderPower() {
