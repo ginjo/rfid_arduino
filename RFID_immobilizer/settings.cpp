@@ -73,6 +73,8 @@
       case 7:
         Serial.print(F("S.updateSetting() updating 'admin_timeout' with: "));
         admin_timeout = strtol(_data, NULL, 10);
+        // This setting should never be so low as to prevent admining at startup.
+        if (admin_timeout < 10) { admin_timeout = 10; }
         Serial.println(admin_timeout);
         return true;
         break;
