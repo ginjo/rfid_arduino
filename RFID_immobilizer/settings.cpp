@@ -29,13 +29,13 @@
     
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
-    admin_timeout(30), // seconds
+    admin_timeout(60), // seconds
 
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
     // this should be rolled into a Reader class or something.
-    RAW_TAG_LENGTH(10)
+    RAW_TAG_LENGTH(13)
   {;}
 
   // TODO: This is temp for testing.

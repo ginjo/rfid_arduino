@@ -29,8 +29,9 @@
     
     digitalWrite(13, proximity_state);
     
-    // Starts up the RFID reader.
-    digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
+    // Starts up the RFID reader,
+    // Or starts initial LOW state for reset pin.
+    digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
   }
 
   void RFID::loop() {
@@ -100,12 +101,12 @@
           resetBuffer();
         } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
           resetBuffer();
-          //Serial.println("");
+          DPRINTLN("");
         } else if (buff_index < final_index) { // good read, add comma to log and keep reading
           buff_index++;
-          //Serial.print(",");
+          DPRINT(",");
         } else { // tag complete, now process it
-          //Serial.println("");
+          DPRINTLN("");
           processTagData(buff);
           last_tag_read_ms = current_ms;
           resetBuffer();
@@ -130,14 +131,16 @@
   void RFID::processTagData(uint8_t _tag[24]) {
     uint8_t id_begin;
     uint8_t id_end;
+
+    DPRINTLN("processTagData() received buffer");
      
-    if (S.RAW_TAG_LENGTH == 14) {  // RDM6300 reader
-      Serial.println((char *)_tag);
-      //Serial.println(strtol(buff, NULL, 16));
+    if (S.RAW_TAG_LENGTH == 14 || S.RAW_TAG_LENGTH == 13) {  // readers: RDM6300, ZocoRFID (aliexpres) WL-125 
+      //DPRINTLN((char *)_tag);
+      DPRINTLN(strtol((char *)_tag, NULL, HEX));
       id_begin = 3;
       id_end   = 10;
       
-    } else if (S.RAW_TAG_LENGTH == 10) {  // 7941E reader
+    } else if (S.RAW_TAG_LENGTH == 10) {  // readers: 7941E
       id_begin = 4;
       id_end   = 7;
     }
@@ -200,11 +203,11 @@
       }
       
       last_reader_power_cycle_ms = current_ms;
-      digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
+      digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
       
     } else if (current_ms >= cycle_low_finish_ms) {
       DPRINTLN(F("cycleReaderPower() setting reader power HIGH"));
-      digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
+      digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
     }
   }
 

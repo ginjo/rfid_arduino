@@ -78,6 +78,8 @@
  //       For example admin_timeout should NEVER go below 5s,
  //       And the initial admin_timeout of 2s should not be modifiable by user.
  //       Generally make sure the Arduino cannot be bricked (requiring a re-flash).
+ // TODO: Create a setting & control for reader-power-cycle polarity.
+
  
  
   #include <SoftwareSerial.h>
