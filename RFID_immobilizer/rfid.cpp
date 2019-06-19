@@ -88,11 +88,9 @@
       while (serial_port->available()) {
         buff[buff_index] = serial_port->read();
   
-        DPRINT("(");
-        DPRINT(buff_index);
-        DPRINT(")");
-        DPRINT(buff[buff_index], HEX);
-        DPRINT(":");
+        DPRINT("("); DPRINT(buff_index); DPRINT(")");
+        DPRINT((char *)buff[buff_index]); DPRINT(":");
+        DPRINT(buff[buff_index], HEX); DPRINT(":");
         DPRINT(buff[buff_index], DEC);
   
         uint8_t final_index = S.RAW_TAG_LENGTH - 1;
@@ -124,45 +122,61 @@
     }    
   }
 
-  // Processes received line of tag data.
+  // Processes a received array of tag bytes.
   // NOTE: array args in func definitions can only use absolute constants, not vars.
   // TODO: create macro definition for max-tag-length that can be used in func definition array args.
   //void RFID::processTagData(uint8_t _tag[S.RAW_TAG_LENGTH]) {
-  void RFID::processTagData(uint8_t _tag[24]) {
+  void RFID::processTagData(uint8_t _tag[]) {
     uint8_t id_begin;
     uint8_t id_end;
 
     DPRINTLN("processTagData() received buffer");
+
+    Reader reader = GetReader("WL125");
+
+    uint32_t tag_id = reader.processTagData(_tag);
      
-    if (S.RAW_TAG_LENGTH == 14 || S.RAW_TAG_LENGTH == 13) {  // readers: RDM6300, ZocoRFID (aliexpres) WL-125 
-      //DPRINTLN((char *)_tag);
-      DPRINTLN(strtol((char *)_tag, NULL, HEX));
-      id_begin = 3;
-      id_end   = 10;
-      
-    } else if (S.RAW_TAG_LENGTH == 10) {  // readers: 7941E
-      id_begin = 4;
-      id_end   = 7;
-    }
-  
-    uint8_t id_len = id_end - id_begin;
-    char tmp_str[id_len] = "";
-    
-    for(int n=id_begin; n<=id_end; n++) {
-      sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
-    }
+    //  if (S.RAW_TAG_LENGTH == 14 || S.RAW_TAG_LENGTH == 13) {  // readers: RDM6300, ZocoRFID (aliexpres) WL-125 
+    //    //DPRINTLN((char *)_tag);
+    //    DPRINTLN(strtol((char *)_tag, NULL, HEX));
+    //    id_begin = 3;
+    //    id_end   = 10;
+    //    
+    //  } else if (S.RAW_TAG_LENGTH == 10) {  // readers: 7941E
+    //    id_begin = 4;
+    //    id_end   = 7;
+    //  }
+    //
+    //  uint8_t id_len = id_end - id_begin;
+    //  char tmp_str[id_len] = "";
+    //  
+    //  for(int n=id_begin; n<=id_end; n++) {
+    //    sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
+    //  }
+    //
+    //  Serial.print(F("Tag success: "));
+    //  Serial.print((char *)tmp_str);
+    //  Serial.print(", ");
+    //  Serial.print(strtol((char *)tmp_str, NULL, 16));
+    //  Serial.print(F(", at ms "));
+    //  Serial.println(current_ms);
+    //  
+    //  strncpy(tmp_str, NULL, id_len);
 
-    Serial.print(F("Tag success: "));
-    Serial.print((char *)tmp_str);
-    Serial.print(", ");
-    Serial.print(strtol((char *)tmp_str, NULL, 16));
-    Serial.print(F(", at ms "));
-    Serial.println(current_ms);
-    
-    strncpy(tmp_str, NULL, id_len);
+    // assuming successful tag at this point?
 
-    // assuming successful tag at this point
-    S.updateProximityState(1);
+    // If tag is valid, immediatly update proximity-state.
+    if (tag_id > 0) {
+      S.updateProximityState(1);
+      DPRINT("Retrieved valid tag: ");
+
+    // Otherwise, don't do anything.
+    // (it's not necessarily a failed proximity-state yet)
+    } else {
+      DPRINT("Tag not valid: ")
+    }
+    DPRINTLN(tag_id);
+    
   }
 
   void RFID::resetBuffer() {

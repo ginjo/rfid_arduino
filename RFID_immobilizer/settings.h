@@ -69,6 +69,7 @@
     int enable_debug;
 
     uint8_t RAW_TAG_LENGTH;
+    char* DEFAULT_READER;
 
 
     /*  Functions  */

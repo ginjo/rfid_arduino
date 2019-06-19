@@ -35,7 +35,9 @@
     enable_debug(0),
 
     // this should be rolled into a Reader class or something.
-    RAW_TAG_LENGTH(13)
+    RAW_TAG_LENGTH(13),
+
+    DEFAULT_READER("WL125")
   {;}
 
   // TODO: This is temp for testing.

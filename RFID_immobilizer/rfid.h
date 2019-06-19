@@ -21,6 +21,7 @@
   #include <SoftwareSerial.h>
 
   #include "settings.h"
+  #include "reader.h"
   #include "led_blinker.h"
 
   // TODO: Should these be stored in Settigs?
