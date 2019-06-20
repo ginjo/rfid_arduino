@@ -40,9 +40,10 @@
     uint32_t reader_power_cycle_high_duration; // seconds
     Stream * serial_port;
     Led * blinker;
+    Reader * reader;
 
     // constructor
-    RFID(Stream*, Led*);
+    RFID(Stream*, Led*, Reader*);
 
     void begin();
     void loop();

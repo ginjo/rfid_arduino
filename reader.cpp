@@ -39,7 +39,7 @@
 
   uint32_t RDM6300::processTagData(uint8_t _tag[24]) {
 
-    DPRINT("RDM6300::processTagData() with input: ");
+    DPRINT(F("RDM6300::processTagData() with input: "));
     DPRINTLN(strtol((char *)_tag, NULL, HEX));
 
     uint8_t id_len = id_end - id_begin;
@@ -133,7 +133,7 @@
   /***  Global functions and variables  ***/
 
   //  Reader * GetReader(char _name[16]) {
-  //    DPRINT("GetReader() called with name: ");
+  //    DPRINT(F("GetReader() called with name: "));
   //    DPRINTLN((char *)_name);
   //
   //    Reader * result;
@@ -147,10 +147,10 @@
   //    }
   //
   //    if (n < 3) {
-  //      DPRINT("GetReader() selected: ");
+  //      DPRINT(F("GetReader() selected: "));
   //      DPRINTLN(result->reader_name);
   //    } else {
-  //      DPRINTLN("No reader was selected");
+  //      DPRINTLN(F("No reader was selected"));
   //    }
   //    
   //    return result;

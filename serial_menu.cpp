@@ -92,7 +92,7 @@
   /*** Looping Functions ***/
 
   void SerialMenu::loop() {
-    //serial_port->println("SerialMenu::loop() calling serial_port->println()");
+    //serial_port->println(F("SerialMenu::loop() calling serial_port->println()"));
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: Create a Switch object that handles all switch actions (start, stop, initial, cleanup, etc).
@@ -111,9 +111,9 @@
         //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
         uint8_t byt = serial_port->read();
         
-        DPRINT("checkSerialPort() received byte: ");
+        DPRINT(F("checkSerialPort() received byte: "));
         DPRINTLN(char(byt));
-        //  DPRINT("checkSerialPort input_mode is: ");
+        //  DPRINT(F("checkSerialPort input_mode is: "));
         //  DPRINTLN(input_mode);
         
         if (matchInputMode("char")) {
@@ -233,7 +233,7 @@
   }
 
   bool SerialMenu::matchInputMode(char mode[]) {
-    //  Serial.print("matchInputMode() mode, input_mode: ");
+    //  Serial.print(F("matchInputMode() mode, input_mode: "));
     //  Serial.print(mode);
     //  Serial.print(", ");
     //  Serial.println(input_mode);
@@ -386,7 +386,7 @@
 
   // This is just for logging.
   void SerialMenu::showInfo() {
-    //serial_port->println("serial_port is active!");
+    //serial_port->println(F("serial_port is active!"));
     Serial.print(F("SerialMenu::setup input_mode: "));
     Serial.println(input_mode);
     Serial.print(F("SerialMenu::setup buff_index: "));

@@ -94,23 +94,25 @@
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
   //#include "settings.h";
 
-  //  #define VERSION "0.1.0"
-  //  #define TIMESTAMP __DATE__ ", " __TIME__
-
-  // Brings up a simple menu cli on a BT serial port.
-
   // Brings up a blinker LED.
   Led Blinker(8);
-  
+
+  // Creates serial port for admin console.
   SoftwareSerial BTserial(2, 3); // RX | TX
+
+  // Creates instance of admin console.
   SerialMenu BTmenu(&BTserial, &Blinker);
 
-  // The RFID reader.
-  SoftwareSerial RfidSerial(4,6); // not sending anything to reader, tx on unused pin
-  RFID Rfid(&RfidSerial, &Blinker);
+  // Creates serial port for RFID reader.
+  SoftwareSerial RfidSerial(4,6); // not sending anything to reader, so tx on unused pin
 
-  // Rdm3600 library example
-  //Rdm6300LibExample RdmExample; 
+  // Creates instance of RFID reader.
+  Reader * RfidReader = Readers[1];
+
+  // Creates instance of RFID handler
+  // (RfidReader is already a pointer, so we don't use '&' reference).
+  RFID Rfid(&RfidSerial, &Blinker, RfidReader);
+
 
   void setup() {    
     Serial.begin(9600);

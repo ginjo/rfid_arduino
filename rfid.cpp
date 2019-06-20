@@ -1,7 +1,7 @@
 #include "rfid.h"
 
   // constructor
-  RFID::RFID(Stream *_serial_port, Led *_blinker) :
+  RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
     buff({}),
     buff_index(0),
     current_ms(millis()),
@@ -10,6 +10,7 @@
     reader_power_cycle_high_duration(0),
     serial_port(_serial_port),
     blinker(_blinker),
+    reader(_reader),
     proximity_state(0)
   {
     ;
@@ -81,9 +82,7 @@
     }
   }
 
-  // Polls reader.
-  // TODO: We will need to get the reader instance in this method,
-  // if we want to put RAW_TAG_LENGTH in the reader specification.
+  // Polls reader serial port and processes incoming tag data.
   void RFID::pollReader() {
     // If data available on RFID serial port, do something.
     if (serial_port->available()) {
@@ -95,7 +94,8 @@
         DPRINT(buff[buff_index], HEX); DPRINT(":");
         DPRINT(buff[buff_index], DEC);
   
-        uint8_t final_index = S.RAW_TAG_LENGTH - 1;
+        //uint8_t final_index = S.RAW_TAG_LENGTH - 1;
+        uint8_t final_index = reader->raw_tag_length - 1;
   
         if (buff_index == 0 && buff[0] != 2) { // reset bogus read
           resetBuffer();
@@ -132,11 +132,11 @@
     uint8_t id_begin;
     uint8_t id_end;
 
-    DPRINTLN("processTagData() received buffer");
+    DPRINTLN(F("processTagData() received buffer"));
 
     //Reader * reader = GetReader(S.DEFAULT_READER);
-    Reader * reader = Readers[1];
-    DPRINT("RFID::processTagData() using reader: ");
+    //Reader * reader = Readers[1];
+    DPRINT(F("RFID::processTagData() using reader: "));
     DPRINTLN(reader->reader_name);
 
     //  This Worked (before we created the Reader classes).
@@ -151,16 +151,16 @@
     //  } else if (S.DEFAULT_READER == "7941E") {
     //    R7941E * reader = Readers[1];
     //  } else {
-    //    DPRINT("RFID::processTagData could not find a reader matching: ");
+    //    DPRINT(F("RFID::processTagData could not find a reader matching: "));
     //    DPRINTLN(S.DEFAULT_READER);
     //    Reader * reader = &Reader("Generic", 10, 4,7);
     //  }
 
-    DPRINT("RFID::processTagData() calling reader->echo(): ");
+    DPRINT(F("RFID::processTagData() calling reader->echo(): "));
     int tst = reader->echo(24);
     DPRINTLN(tst);
 
-    DPRINT("RFID::processTagData() calling reader->processTagData(_tag): ");
+    DPRINT(F("RFID::processTagData() calling reader->processTagData(_tag): "));
     uint32_t tag_id = reader->processTagData(_tag);
     //uint32_t tag_id = 22334455;
     DPRINTLN(tag_id);
@@ -173,12 +173,12 @@
     // If tag is valid, immediatly update proximity-state.
     if (tag_id > 0) {
       S.updateProximityState(1);
-      DPRINT("Retrieved valid tag: ");
+      DPRINT(F("Received valid tag: "));
 
     // Otherwise, don't do anything.
     // (it's not necessarily a failed proximity-state yet)
     } else {
-      DPRINT("Tag not valid: ")
+      DPRINT(F("Tag not valid: "))
     }
     DPRINTLN(tag_id);
     
@@ -186,7 +186,8 @@
 
   void RFID::resetBuffer() {
     buff_index = 0;
-    strncpy(buff, NULL, S.RAW_TAG_LENGTH);
+    //strncpy(buff, NULL, S.RAW_TAG_LENGTH);
+    strncpy(buff, NULL, reader->raw_tag_length);
   }
 
   void RFID::cycleReaderPower() {
