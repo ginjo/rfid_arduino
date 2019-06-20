@@ -4,7 +4,8 @@
   
   This also demonstrates how to do globally accessible vars and functions.
   
-  TODO: Maybe make a Settings class to contain all of this?
+  TODO: Consider the Storage class as an abstract base,
+        with Settings, Tags, and State as derived classes.
   TODO: SEE https://community.particle.io/t/eeprom-put-using-a-multi-variable-struct/30561/7
         for an easier way to use EEPROM: put()'ing a struct object.
 */
@@ -12,7 +13,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre39"
+  #define VERSION "0.1.0.pre59"
   #define TIMESTAMP __DATE__ ", " __TIME__
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
@@ -70,6 +71,9 @@
 
     uint8_t RAW_TAG_LENGTH;
     char* DEFAULT_READER;
+
+    // TODO: This should probably be stored with reader specification (in derived Reader).
+    bool READER_POWER_CONTROL_POLARITY;
 
 
     /*  Functions  */

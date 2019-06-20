@@ -88,8 +88,8 @@
   
   #include "led_blinker.h"
   #include "serial_menu.h"
+  #include "reader.h"
   #include "rfid.h"
-  #include "rdm6300_lib_example.cpp"
 
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
   //#include "settings.h";
@@ -122,6 +122,8 @@
     Serial.print(VERSION);
     Serial.print(", ");
     Serial.println(TIMESTAMP);
+
+    readerArraySetup();
 
     //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
     //Serial.println(Settings.reader_cycle_timeout_ms);

@@ -29,9 +29,8 @@
     
     digitalWrite(13, proximity_state);
     
-    // Starts up the RFID reader,
-    // Or starts initial LOW state for reset pin.
-    digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
+    // Initializes the reader power/reset control.
+    digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
   }
 
   void RFID::loop() {
@@ -82,6 +81,9 @@
     }
   }
 
+  // Polls reader.
+  // TODO: We will need to get the reader instance in this method,
+  // if we want to put RAW_TAG_LENGTH in the reader specification.
   void RFID::pollReader() {
     // If data available on RFID serial port, do something.
     if (serial_port->available()) {
@@ -132,36 +134,39 @@
 
     DPRINTLN("processTagData() received buffer");
 
-    Reader reader = GetReader("WL125");
+    //Reader * reader = GetReader(S.DEFAULT_READER);
+    Reader * reader = Readers[1];
+    DPRINT("RFID::processTagData() using reader: ");
+    DPRINTLN(reader->reader_name);
 
-    uint32_t tag_id = reader.processTagData(_tag);
-     
-    //  if (S.RAW_TAG_LENGTH == 14 || S.RAW_TAG_LENGTH == 13) {  // readers: RDM6300, ZocoRFID (aliexpres) WL-125 
-    //    //DPRINTLN((char *)_tag);
-    //    DPRINTLN(strtol((char *)_tag, NULL, HEX));
-    //    id_begin = 3;
-    //    id_end   = 10;
-    //    
-    //  } else if (S.RAW_TAG_LENGTH == 10) {  // readers: 7941E
-    //    id_begin = 4;
-    //    id_end   = 7;
-    //  }
+    //  This Worked (before we created the Reader classes).
     //
-    //  uint8_t id_len = id_end - id_begin;
-    //  char tmp_str[id_len] = "";
-    //  
-    //  for(int n=id_begin; n<=id_end; n++) {
-    //    sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
-    //  }
+    //  uint32_t tag_id;
     //
-    //  Serial.print(F("Tag success: "));
-    //  Serial.print((char *)tmp_str);
-    //  Serial.print(", ");
-    //  Serial.print(strtol((char *)tmp_str, NULL, 16));
-    //  Serial.print(F(", at ms "));
-    //  Serial.println(current_ms);
-    //  
-    //  strncpy(tmp_str, NULL, id_len);
+    //  if (true || S.DEFAULT_READER == "WL-125") {
+    //    WL125 * reader = Readers[2];
+    //    tag_id = reader->processTagData(_tag);
+    //  } else if (S.DEFAULT_READER == "RDM6300") {
+    //    RDM6300 * reader = Readers[0];
+    //  } else if (S.DEFAULT_READER == "7941E") {
+    //    R7941E * reader = Readers[1];
+    //  } else {
+    //    DPRINT("RFID::processTagData could not find a reader matching: ");
+    //    DPRINTLN(S.DEFAULT_READER);
+    //    Reader * reader = &Reader("Generic", 10, 4,7);
+    //  }
+
+    DPRINT("RFID::processTagData() calling reader->echo(): ");
+    int tst = reader->echo(24);
+    DPRINTLN(tst);
+
+    DPRINT("RFID::processTagData() calling reader->processTagData(_tag): ");
+    uint32_t tag_id = reader->processTagData(_tag);
+    //uint32_t tag_id = 22334455;
+    DPRINTLN(tag_id);
+    
+    Serial.print(F("Tag result: "));
+    Serial.println(tag_id);
 
     // assuming successful tag at this point?
 
@@ -215,13 +220,14 @@
       } else {
         Serial.println(F("never"));
       }
+
       
       last_reader_power_cycle_ms = current_ms;
-      digitalWrite(S.READER_POWER_CONTROL_PIN, HIGH);
+      digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
       
     } else if (current_ms >= cycle_low_finish_ms) {
       DPRINTLN(F("cycleReaderPower() setting reader power HIGH"));
-      digitalWrite(S.READER_POWER_CONTROL_PIN, LOW);
+      digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
     }
   }
 
