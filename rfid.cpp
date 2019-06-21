@@ -88,9 +88,15 @@
     if (serial_port->available()) {
       while (serial_port->available()) {
         buff[buff_index] = serial_port->read();
-  
+
         DPRINT("("); DPRINT(buff_index); DPRINT(")");
-        DPRINT((char *)buff[buff_index]); DPRINT(":");
+        if (
+          (buff[buff_index] >= 48 && buff[buff_index] <= 57) ||
+          (buff[buff_index] >= 65 && buff[buff_index] <= 70) ||
+          (buff[buff_index] >= 97 && buff[buff_index] <= 102)
+        ) { DPRINT((char *)buff[buff_index]); }
+        
+        DPRINT(":");
         DPRINT(buff[buff_index], HEX); DPRINT(":");
         DPRINT(buff[buff_index], DEC);
   
@@ -160,26 +166,26 @@
     int tst = reader->echo(24);
     DPRINTLN(tst);
 
-    DPRINT(F("RFID::processTagData() calling reader->processTagData(_tag): "));
+    DPRINTLN(F("RFID::processTagData() calling reader->processTagData(_tag)"));
     uint32_t tag_id = reader->processTagData(_tag);
     //uint32_t tag_id = 22334455;
-    DPRINTLN(tag_id);
     
-    Serial.print(F("Tag result: "));
-    Serial.println(tag_id);
+    DPRINT(F("Tag result: "));
+    DPRINTLN(tag_id);
 
     // assuming successful tag at this point?
 
     // If tag is valid, immediatly update proximity-state.
     if (tag_id > 0) {
       S.updateProximityState(1);
-      DPRINT(F("Received valid tag: "));
+      Serial.print(F("Received valid tag: "));
 
     // Otherwise, don't do anything.
     // (it's not necessarily a failed proximity-state yet)
     } else {
-      DPRINT(F("Tag not valid: "))
+      Serial.print(F("Tag not valid: "));
     }
+    
     DPRINTLN(tag_id);
     
   }

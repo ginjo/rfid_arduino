@@ -91,9 +91,6 @@
   #include "reader.h"
   #include "rfid.h"
 
-  // TODO: Implement settings with eeprom, instead of #define macros, something like this:
-  //#include "settings.h";
-
   // Brings up a blinker LED.
   Led Blinker(8);
 
@@ -109,7 +106,7 @@
   // Creates instance of RFID reader.
   Reader * RfidReader = Readers[1];
 
-  // Creates instance of RFID handler
+  // Creates instance of RFID handler.
   // (RfidReader is already a pointer, so we don't use '&' reference).
   RFID Rfid(&RfidSerial, &Blinker, RfidReader);
 
@@ -125,28 +122,27 @@
     Serial.print(", ");
     Serial.println(TIMESTAMP);
 
+    // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     readerArraySetup();
 
-    //Serial.print(F("Settings loaded reader_cycle_timeout_ms: "));
-    //Serial.println(Settings.reader_cycle_timeout_ms);
-    
-    //  int blinker_intervals[INTERVALS_LENGTH] = {50,20,50,2880}; // slow pilot light
-    //int blinker_intervals[INTERVALS_LENGTH] = {480,20}; // 120bpm mostly-on twinkle
-    //Blinker.begin(0, blinker_intervals);
+    // Calls the fast-startup-blinker pattern.
     Blinker.startupBlink();
 
+    // Activates the serial port for admin console.
     BTserial.begin(9600);
 
+    // Activates the admin console.
     BTmenu.begin();
-    //BTmenu.updateAdminTimeout(2);
 
+    // Activates the serial port for the RFID handler.
     RfidSerial.begin(9600);
+
+    // Activates the RFID handler.
     Rfid.begin();
 
-    //RdmExample.begin();
-    
   } // end setup
-  
+
+
   void loop() {
     // here is where you put code that needs to be running all the time.
     

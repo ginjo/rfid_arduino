@@ -66,33 +66,35 @@
   R7941E::R7941E() :
     Reader("7941E", 10, 4, 7)
   { ; }
-  //{ Readers[1] = this; } // doesn't work
     
   uint32_t R7941E::processTagData(uint8_t _tag[]) {
-
-    DPRINT(F("R7941E::processTagData() with input: "));
-    DPRINTLN();
+    DPRINT(F("R7941E::processTagData() with "));
+    //DPRINT((char *)_tag);
+    DPRINT(F("id_begin: "));
+    DPRINT(id_begin);
+    DPRINT(F(", id_end: "));
+    DPRINT(id_end);
     
-    // TEMPORARY !!!
-    //return 22334455; // TEMPORARY !!!
-
-    DPRINTLN(strtol((char *)_tag, NULL, 10));
+    uint8_t id_len = (id_end - id_begin +1)*2;
+    DPRINT(F(", id_len: "));
+    DPRINT(id_len);
     
-    uint8_t id_len = id_end - id_begin;
-    char tmp_str[id_len] = "";
+    DPRINT(F(", checksum (dec): "));
+    DPRINTLN(_tag[8]);
+    
+    char id_hex[id_len] = ""; // need to initialize this to empty.
 
-    // or maybe it's this?
-//    for(int n=id_begin; n<=id_end; n++) {
-//      sprintf(tmp_str + strlen(tmp_str), "%x", _tag[n]);
-//    }
+    // THIS was the crash culprit!
+    for(int n=id_begin; n<=id_end; n++) {
+      sprintf(id_hex + strlen(id_hex), "%02x", _tag[n]);
+    }
 
-    // ... or this?
-    uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
+    uint32_t tag_id = strtol(id_hex, NULL, 16);
   
-    Serial.print(F("R7941E Tag success: "));
-    Serial.print((char *)tmp_str);
+    Serial.print(F("R7941E Tag read: "));
+    Serial.print(id_hex);
     Serial.print(", ");
-    Serial.print(tag_id);
+    Serial.println(tag_id);
     
     //strncpy(tmp_str, NULL, id_len);
       
