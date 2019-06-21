@@ -25,6 +25,10 @@
     // where we left off at power-down (or reset).
     proximity_state = S.proximity_state;
 
+    // Calls global function to populate the Readers array of pointers to specific reader subclasses.
+    // TODO: Maybe this should be a RFID-specific function (and the Readers array too?).
+    readerArraySetup();
+
     Serial.print(F("Starting RFID reader with proximity state: "));
     Serial.println(proximity_state);
     
@@ -95,7 +99,7 @@
           (buff[buff_index] >= 48 && buff[buff_index] <= 57) ||
           (buff[buff_index] >= 65 && buff[buff_index] <= 70) ||
           (buff[buff_index] >= 97 && buff[buff_index] <= 102)
-        ) { DPRINT((char *)buff[buff_index]); }
+        ) { DPRINT((char)buff[buff_index]); }
         
         DPRINT(":");
         DPRINT(buff[buff_index], HEX); DPRINT(":");
@@ -115,7 +119,7 @@
         } else { // tag complete, now process it
           DPRINTLN("");
           processTagData(buff);
-          last_tag_read_ms = current_ms;
+          //last_tag_read_ms = current_ms;
           resetBuffer();
           return;
         }
@@ -136,40 +140,16 @@
   // TODO: create macro definition for max-tag-length that can be used in func definition array args.
   //void RFID::processTagData(uint8_t _tag[S.RAW_TAG_LENGTH]) {
   void RFID::processTagData(uint8_t _tag[]) {
-    uint8_t id_begin;
-    uint8_t id_end;
-
-    DPRINTLN(F("processTagData() received buffer"));
-
-    //Reader * reader = GetReader(S.DEFAULT_READER);
-    //Reader * reader = Readers[1];
-    DPRINT(F("RFID::processTagData() using reader: "));
+    DPRINT(F("RFID::processTagData() received buffer, using reader: "));
     DPRINTLN(reader->reader_name);
 
-    //  This Worked (before we created the Reader classes).
-    //
-    //  uint32_t tag_id;
-    //
-    //  if (true || S.DEFAULT_READER == "WL-125") {
-    //    WL125 * reader = Readers[2];
-    //    tag_id = reader->processTagData(_tag);
-    //  } else if (S.DEFAULT_READER == "RDM6300") {
-    //    RDM6300 * reader = Readers[0];
-    //  } else if (S.DEFAULT_READER == "7941E") {
-    //    R7941E * reader = Readers[1];
-    //  } else {
-    //    DPRINT(F("RFID::processTagData could not find a reader matching: "));
-    //    DPRINTLN(S.DEFAULT_READER);
-    //    Reader * reader = &Reader("Generic", 10, 4,7);
-    //  }
-
-    DPRINT(F("RFID::processTagData() calling reader->echo(): "));
-    int tst = reader->echo(24);
-    DPRINTLN(tst);
+    // DEV: Use this to ensure that virtual functions are working in derived classes.
+    //  DPRINT(F("RFID::processTagData() calling reader->echo(): "));
+    //  int tst = reader->echo(24);
+    //  DPRINTLN(tst);
 
     DPRINTLN(F("RFID::processTagData() calling reader->processTagData(_tag)"));
     uint32_t tag_id = reader->processTagData(_tag);
-    //uint32_t tag_id = 22334455;
     
     DPRINT(F("Tag result: "));
     DPRINTLN(tag_id);
@@ -179,15 +159,15 @@
     // If tag is valid, immediatly update proximity-state.
     if (tag_id > 0) {
       S.updateProximityState(1);
+      last_tag_read_ms = current_ms;
       Serial.print(F("Received valid tag: "));
 
-    // Otherwise, don't do anything.
-    // (it's not necessarily a failed proximity-state yet)
+    // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
       Serial.print(F("Tag not valid: "));
     }
     
-    DPRINTLN(tag_id);
+    Serial.print(tag_id);
     
   }
 

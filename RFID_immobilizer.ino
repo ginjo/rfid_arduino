@@ -122,8 +122,8 @@
     Serial.print(", ");
     Serial.println(TIMESTAMP);
 
-    // Calls global function to populate the Readers array of pointers to specific reader subclasses.
-    readerArraySetup();
+    //  // Calls global function to populate the Readers array of pointers to specific reader subclasses.
+    //  readerArraySetup();
 
     // Calls the fast-startup-blinker pattern.
     Blinker.startupBlink();

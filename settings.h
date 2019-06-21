@@ -13,7 +13,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre61"
+  #define VERSION "0.1.0.pre62"
   #define TIMESTAMP __DATE__ ", " __TIME__
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
@@ -50,13 +50,10 @@
   struct Storage {
     
     /*  Variables  */
-    
+
+    // Temporary EEPROM alternative.
     int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 
-    // for class RFID
-    //
-    //int RAW_TAG_LENGTH 14  // RDM63000
-    //int RAW_TAG_LENGTH;  // 7941E
     
     // Mostly time data
     uint32_t TAG_LAST_READ_TIMEOUT;
@@ -69,11 +66,11 @@
     uint32_t admin_timeout;
     int enable_debug;
 
-    uint8_t RAW_TAG_LENGTH;
+    //uint8_t RAW_TAG_LENGTH;
     char* DEFAULT_READER;
 
     // TODO: This should probably be stored with reader specification (in derived Reader).
-    bool READER_POWER_CONTROL_POLARITY;
+    //bool READER_POWER_CONTROL_POLARITY;
 
 
     /*  Functions  */

@@ -85,7 +85,6 @@
     
     char id_hex[id_len] = ""; // need to initialize this to empty.
 
-    // THIS was the crash culprit!
     for(int n=id_begin; n<=id_end; n++) {
       sprintf(id_hex + strlen(id_hex), "%02x", _tag[n]);
     }
@@ -102,7 +101,12 @@
     return tag_id;
   }
 
-  
+
+  // TODO: Consider that this reader (and the rdm6300)
+  // yield a string of ascii characters (0-9, A-F),
+  // and those characters are THEN used to build the ID
+  // of the tag.
+  //
   WL125::WL125() :
     Reader("WL-125", 13, 3, 10, 0)
   { ; }
@@ -110,10 +114,19 @@
   uint32_t WL125::processTagData(uint8_t _tag[]) {
 
     DPRINT(F("WL125::processTagData() with input: "));
-    DPRINTLN(strtol((char *)_tag, NULL, HEX));
-
+    DPRINT(F("id_begin: "));
+    DPRINT(id_begin);
+    DPRINT(F(", id_end: "));
+    DPRINT(id_end);
+    
     uint8_t id_len = (id_end - id_begin +1);
     
+    DPRINT(F(", id_len: "));
+    DPRINT(id_len);
+    
+    DPRINT(F(", checksum (chars representing hex): "));
+    DPRINT(_tag[11]); DPRINTLN(_tag[12]);
+
     char id_char[id_len] = ""; // need to initialize this to empty.
     
     for(int n=id_begin; n<=id_end; n++) {

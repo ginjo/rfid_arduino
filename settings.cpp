@@ -35,17 +35,17 @@
     enable_debug(1),
 
     // this should be rolled into a Reader class or something.
-    RAW_TAG_LENGTH(10),
+    //RAW_TAG_LENGTH(10),
 
-    DEFAULT_READER("WL-125"),
-    //DEFAULT_READER("R7941E"),
+    DEFAULT_READER("WL-125")
+    //DEFAULT_READER("R7941E")
 
     // Adjusts polarity of reader power control,
     // so you can use it for direct power control
     // or for pull-to-ground-to-reset control.
     // 1 == switch is normally closed and opens briefly to cycle power (direct control of reader power).
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
-    READER_POWER_CONTROL_POLARITY(1)
+    //READER_POWER_CONTROL_POLARITY(1)
   {;}
 
   // TODO: This is temp for testing.
@@ -106,12 +106,12 @@
         Serial.println(enable_debug);
         return true;
         break;
-      case 9:
-        Serial.print(F("S.updateSetting() updating 'RAW_TAG_LENGTH' with: "));
-        RAW_TAG_LENGTH = strtol(_data, NULL, 10);
-        Serial.println(RAW_TAG_LENGTH);
-        return true;
-        break;
+      //  case 9:
+      //    Serial.print(F("S.updateSetting() updating 'RAW_TAG_LENGTH' with: "));
+      //    RAW_TAG_LENGTH = strtol(_data, NULL, 10);
+      //    Serial.println(RAW_TAG_LENGTH);
+      //    return true;
+      //    break;
     }
 
     return false;
