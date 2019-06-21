@@ -3,11 +3,12 @@
 #include "reader.h"
 
   // Defines Reader Constructor
-  Reader::Reader(char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end) :
+  Reader::Reader(char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
     //reader_name(_name),
     raw_tag_length(_raw_tag_length),
     id_begin(_id_begin),
-    id_end(_id_end)
+    id_end(_id_end),
+    power_control_logic(_control_logic)
   {
     strncpy(reader_name, _name, sizeof(reader_name));
     DPRINT(F("Constructing Reader for: "));
@@ -34,7 +35,7 @@
   /***  Derived classes for reader specifications  ***/
 
   RDM6300::RDM6300() :
-    Reader("RDM-6300", 14, 3, 10)
+    Reader("RDM-6300", 14, 3, 10, 1)
   { ; }
 
   uint32_t RDM6300::processTagData(uint8_t _tag[24]) {
@@ -64,7 +65,7 @@
 
 
   R7941E::R7941E() :
-    Reader("7941E", 10, 4, 7)
+    Reader("7941E", 10, 4, 7, 1)
   { ; }
     
   uint32_t R7941E::processTagData(uint8_t _tag[]) {
@@ -103,7 +104,7 @@
 
   
   WL125::WL125() :
-    Reader("WL-125", 13, 3, 10)
+    Reader("WL-125", 13, 3, 10, 0)
   { ; }
 
   uint32_t WL125::processTagData(uint8_t _tag[]) {
@@ -111,17 +112,18 @@
     DPRINT(F("WL125::processTagData() with input: "));
     DPRINTLN(strtol((char *)_tag, NULL, HEX));
 
-    uint8_t id_len = id_end - id_begin;
-    char tmp_str[id_len] = "";
+    uint8_t id_len = (id_end - id_begin +1);
+    
+    char id_char[id_len] = ""; // need to initialize this to empty.
     
     for(int n=id_begin; n<=id_end; n++) {
-      sprintf(tmp_str + strlen(tmp_str), "%c", _tag[n]);
+      sprintf(id_char + strlen(id_char), "%c", _tag[n]);
     }
 
-    uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
+    uint32_t tag_id = strtol(id_char, NULL, 16);
   
     Serial.print(F("WL125 Tag success: "));
-    Serial.print((char *)tmp_str);
+    Serial.print(id_char);
     Serial.print(", ");
     Serial.println(tag_id);
 

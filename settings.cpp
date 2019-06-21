@@ -37,8 +37,8 @@
     // this should be rolled into a Reader class or something.
     RAW_TAG_LENGTH(10),
 
-    //DEFAULT_READER("WL-125")
-    DEFAULT_READER("R7941E"),
+    DEFAULT_READER("WL-125"),
+    //DEFAULT_READER("R7941E"),
 
     // Adjusts polarity of reader power control,
     // so you can use it for direct power control

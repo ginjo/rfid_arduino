@@ -104,7 +104,7 @@
   SoftwareSerial RfidSerial(4,6); // not sending anything to reader, so tx on unused pin
 
   // Creates instance of RFID reader.
-  Reader * RfidReader = Readers[1];
+  Reader * RfidReader = Readers[2];
 
   // Creates instance of RFID handler.
   // (RfidReader is already a pointer, so we don't use '&' reference).
