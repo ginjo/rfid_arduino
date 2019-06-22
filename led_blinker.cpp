@@ -15,7 +15,7 @@
     ;
   }
   
-  void Led::begin(int _num_cycles, int _intervals[]) {
+  void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
     if(S.enable_debug) {
       Serial.println(F("Led::begin with _intervals, intervals:"));
       printIntervals(_intervals);
@@ -44,7 +44,7 @@
     handleBlinker();
   }
 
-  int Led::countIntervals(int _intervals[]) {
+  int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
     int n;
     for (n = 0; n <= INTERVALS_LENGTH; n ++) {
       //DPRINT("_intervals: "); DPRINT(n); DPRINT(" "); DPRINTLN(_intervals[n]);
@@ -55,7 +55,7 @@
     return n;
   }
 
-  void Led::printIntervals(int _intervals[]) {
+  void Led::printIntervals(const int _intervals[INTERVALS_LENGTH]) {
     Serial.print(countIntervals(_intervals));
     Serial.print(",");
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {
@@ -67,8 +67,9 @@
 
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
-  void Led::update(int _num_cycles, int _intervals[]) {
-    DPRINT(F("Led::update _intervals[0]: ")); DPRINTLN(_intervals[0]);
+  void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
+    // This was using DPRINT, but disabled for testing array bug.
+    Serial.print(F("Led::update _intervals[0]: ")); Serial.println(_intervals[0]);
     if(S.enable_debug) {
       Serial.println(F("Led::update with _intervals, intervals:"));
       printIntervals(_intervals);
@@ -108,32 +109,32 @@
 
   void Led::Steady() {
     DPRINT(F("Led::Steady(), _intervals[0]: "));
-    int _intervals[INTERVALS_LENGTH] = {1000};
+    const int _intervals[INTERVALS_LENGTH] = {1000, 20};
     DPRINTLN(_intervals[0]);
     update(0, _intervals);
   }
 
   void Led::Off() {
     DPRINTLN(F("Led::Off()"));
-    int _intervals[INTERVALS_LENGTH] = {0};
+    const int _intervals[INTERVALS_LENGTH] = {0};
     update(0, _intervals);
   }
 
   void Led::SlowBlink() {
     DPRINTLN(F("Led::SlowBlink()"));
-    int _intervals[INTERVALS_LENGTH] = {500,500};
+    const int _intervals[INTERVALS_LENGTH] = {500,500};
     update(0, _intervals);
   }
 
   void Led::FastBlink() {
     DPRINTLN(F("Led::FastBlink()"));
-    int _intervals[INTERVALS_LENGTH] = {70,70};
+    const int _intervals[INTERVALS_LENGTH] = {70,70};
     update(0, _intervals);
   }
 
   void Led::StartupBlink() {
     DPRINTLN(F("Led::StartupBlink()"));
-    int _intervals[INTERVALS_LENGTH] = {480,20};
+    const int _intervals[INTERVALS_LENGTH] = {480,20};
     update(0, _intervals);
   }
     

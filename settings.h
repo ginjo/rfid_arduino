@@ -67,7 +67,7 @@
     int enable_debug;
 
     //uint8_t RAW_TAG_LENGTH;
-    char* DEFAULT_READER;
+    char DEFAULT_READER[];
 
     // TODO: This should probably be stored with reader specification (in derived Reader).
     //bool READER_POWER_CONTROL_POLARITY;

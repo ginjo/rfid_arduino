@@ -143,18 +143,25 @@
     // Activates the RFID handler.
     Rfid.begin();
 
+    Blinker.SlowBlink();
+    Blinker.FastBlink();
+    Blinker.Steady();
+    Blinker.Off();
+
   } // end setup
 
 
   void loop() {
     // here is where you put code that needs to be running all the time.
+
+    DPRINTLN("L O O P  B E G I N");
     
     Blinker.loop();
     
-    //  unsigned long current_ms = millis();
-    //  if (current_ms/1000 > 17) {Blinker.SlowBlink();}
-    //  else if (current_ms/1000 > 12) {Blinker.FastBlink();}
-    //  else if (current_ms/1000 > 7) {Blinker.Steady();}
+    //  unsigned long currentms = millis();
+    //  if (currentms/1000 > 17) {Blinker.SlowBlink();}
+    //  else if (currentms/1000 > 12) {Blinker.FastBlink();}
+    //  else if (currentms/1000 > 7) {Blinker.Steady();}
     
     if (BTmenu.run_mode > 0) {
       BTserial.listen();

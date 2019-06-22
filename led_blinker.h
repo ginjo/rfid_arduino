@@ -34,7 +34,7 @@
     // Generally, you should use "unsigned long" for variables that hold time.
     // The value will quickly become too large for an int to store.
     unsigned long current_ms;
-    unsigned long previous_ms; // will store last time LED was updated
+    unsigned long previous_ms; // will store last time LED was updateBlinkerd
 
     // The intervals.
     int intervals[INTERVALS_LENGTH];
@@ -42,13 +42,13 @@
     // constructor
     Led(int);
     
-    void begin(int, int[]);
-    void update(int, int[]);
+    void begin(int, const int[]);
+    void update(int, const int[]);
     void loop();
     void startPhase(int);
     void handleBlinker();
-    void printIntervals(int[]);
-    int  countIntervals(int[]);
+    void printIntervals(const int[]);
+    int  countIntervals(const int[]);
 
     void Steady();
     void Off();
