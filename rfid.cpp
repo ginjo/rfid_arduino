@@ -27,7 +27,7 @@
 
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     // TODO: Maybe this should be a RFID-specific function (and the Readers array too?).
-    readerArraySetup();
+    //readerArraySetup();
 
     Serial.print(F("Starting RFID reader with proximity state: "));
     Serial.println(proximity_state);
@@ -167,7 +167,7 @@
       Serial.print(F("Tag not valid: "));
     }
     
-    Serial.print(tag_id);
+    Serial.println(tag_id);
     
   }
 
@@ -237,14 +237,14 @@
     if (last_tag_read_ms == 0 && last_reader_power_cycle_ms > 0 && msSinceLastReaderPowerCycle() > 2000) {
       
       DPRINTLN(F("proximityStateController() startup grace period timeout, no tag found"));
-      blinker->slowBlink();
+      blinker->SlowBlink();
       setProximityState(0);
     
     // if last read was too long ago, and we've cycled reader at least once in that interval.
     } else if (msSinceLastTagRead() > S.TAG_LAST_READ_TIMEOUT * 1000 && last_reader_power_cycle_ms > 0 && msSinceLastTagRead() > msSinceLastReaderPowerCycle() && msSinceLastReaderPowerCycle() > 2000) {
       
       DPRINTLN(F("proximityStateController() timeout"));
-      blinker->slowBlink();
+      blinker->SlowBlink();
       setProximityState(0);
 
     // If last read is greater than reader-power-cycle-total AND less than final timeout total,
@@ -252,13 +252,13 @@
     } else if (last_tag_read_ms > 0 && msSinceLastTagRead() > msReaderCycleTotal() && msSinceLastTagRead() <= (S.TAG_LAST_READ_TIMEOUT * 1000)) {
 
       DPRINTLN(F("proximityStateController() aging"));
-      blinker->fastBlink();
+      blinker->FastBlink();
       setProximityState(1);
 
     // If we're still young.
     } else if (last_tag_read_ms > 0 && msSinceLastTagRead() <= msReaderCycleTotal()) {
         DPRINTLN(F("proximityStateController() still young"));
-        blinker->on();
+        blinker->Steady();
         setProximityState(1);
 
     // No expected condition was met (not sure what to do here yet).

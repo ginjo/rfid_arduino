@@ -122,11 +122,11 @@
     Serial.print(", ");
     Serial.println(TIMESTAMP);
 
-    //  // Calls global function to populate the Readers array of pointers to specific reader subclasses.
-    //  readerArraySetup();
+    // Calls global function to populate the Readers array of pointers to specific reader subclasses.
+    readerArraySetup();
 
     // Calls the fast-startup-blinker pattern.
-    Blinker.startupBlink();
+    Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
     BTserial.begin(9600);
@@ -147,7 +147,12 @@
     // here is where you put code that needs to be running all the time.
     
     Blinker.loop();
-
+    
+    //  unsigned long current_ms = millis();
+    //  if (current_ms/1000 > 17) {Blinker.SlowBlink();}
+    //  else if (current_ms/1000 > 12) {Blinker.FastBlink();}
+    //  else if (current_ms/1000 > 7) {Blinker.Steady();}
+    
     if (BTmenu.run_mode > 0) {
       BTserial.listen();
       delay(1);

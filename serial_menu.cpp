@@ -374,7 +374,7 @@
     if (true || admin_timeout == 2) {
       Serial.println(F("\r\nSerialMenu setting run_mode to 0 'run'"));
       serial_port->println(F("Entering run mode\r\n"));
-      blinker->off();
+      blinker->Off();
       run_mode = 0;
     } else {
       Serial.println(F("\r\nSerialMenu rebooting arduino"));

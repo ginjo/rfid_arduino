@@ -21,14 +21,19 @@
 
 
   // Defines Readers array.
+  // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
   extern Reader** Readers = new Reader*[3];
-
+  
   // Defines global function for Readers array setup.
   extern void readerArraySetup() {
     Serial.println(F("readerArraySetup() building array of readers."));
-    Readers[0] = new RDM6300;
-    Readers[1] = new R7941E;
-    Readers[2] = new WL125;    
+    Readers[0] = new RDM6300();
+    Readers[1] = new R7941E();
+    Readers[2] = new WL125();
+    // These compile, but they won't work.
+    //  Readers[0] = &RDM6300();
+    //  Readers[1] = &R7941E();
+    //  Readers[2] = &WL125();    
   }
 
 

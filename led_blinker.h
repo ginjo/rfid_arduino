@@ -10,15 +10,7 @@
 
   #include "settings.h"
   
-  
-  // NONE of these work for defining array bounds for global constants.
-  // (because they're not resolved at compile-time)
-  //
-  //extern const int INTERVALS_LENGTH;
-  //extern const int INTERVALS_LENGTH = Settings.INTERVALS_LENGTH;
-  //extern const int Settings.INTERVALS_LENGTH;
-  //
-  // Therefore it is necessary to use a macro, but not sure why it works.
+  // Max allowed size of intervals array.
   #define INTERVALS_LENGTH 20 // for a max of 10 on/off cycles
   
   
@@ -41,12 +33,11 @@
     
     // Generally, you should use "unsigned long" for variables that hold time.
     // The value will quickly become too large for an int to store.
-    unsigned long previous_ms = 0; // will store last time LED was updated
-    
-    int intervals_count;
-    int intervals[INTERVALS_LENGTH];
-    //int intervals[10];
+    unsigned long current_ms;
+    unsigned long previous_ms; // will store last time LED was updated
 
+    // The intervals.
+    int intervals[INTERVALS_LENGTH];
 
     // constructor
     Led(int);
@@ -56,11 +47,14 @@
     void loop();
     void startPhase(int);
     void handleBlinker();
-    void on();
-    void off();
-    void slowBlink();
-    void fastBlink();
-    void startupBlink();
+    void printIntervals(int[]);
+    int  countIntervals(int[]);
+
+    void Steady();
+    void Off();
+    void SlowBlink();
+    void FastBlink();
+    void StartupBlink();
   
   };
 

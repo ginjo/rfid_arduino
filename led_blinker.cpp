@@ -3,12 +3,25 @@
 #include "led_blinker.h"
   
   Led::Led(int pin) : 
-    led_pin(pin)
+    led_pin(pin),
+    led_state(0),
+    current_phase(0),
+    cycle_count(0),
+    num_cycles(0),
+    current_ms(millis()),
+    previous_ms(0),
+    intervals({})
   {
     ;
   }
   
   void Led::begin(int _num_cycles, int _intervals[]) {
+    if(S.enable_debug) {
+      Serial.println(F("Led::begin with _intervals, intervals:"));
+      printIntervals(_intervals);
+      printIntervals(intervals);
+    }
+    
   	pinMode(led_pin, OUTPUT);
 
     // Initialize state
@@ -21,30 +34,47 @@
     //for (int n = 0; n < INTERVALS_LENGTH && _intervals[n] > 0; n ++) {
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {
       intervals[n] = _intervals[n];
-      if (intervals[n] > 0) {
-        intervals_count = n+1;
-      }
     }
-
-      Serial.print(F("Led::begin with intervals[]: "));
-      Serial.print(intervals_count);
-      Serial.print(",");
-      for (int n = 0; n < INTERVALS_LENGTH; n ++) {
-        Serial.print(" ");
-        Serial.print(intervals[n]);
-      }
-      Serial.println("");
 
     startPhase(0);
   }
   
   void Led::loop() {
+    current_ms = millis();
     handleBlinker();
+  }
+
+  int Led::countIntervals(int _intervals[]) {
+    int n;
+    for (n = 0; n <= INTERVALS_LENGTH; n ++) {
+      //DPRINT("_intervals: "); DPRINT(n); DPRINT(" "); DPRINTLN(_intervals[n]);
+      if (_intervals[n] <= 0 || n == INTERVALS_LENGTH) {
+        break;
+      }
+    }
+    return n;
+  }
+
+  void Led::printIntervals(int _intervals[]) {
+    Serial.print(countIntervals(_intervals));
+    Serial.print(",");
+    for (int n = 0; n < INTERVALS_LENGTH; n ++) {
+      Serial.print(" ");
+      Serial.print(_intervals[n]);
+    }
+    Serial.println("");
   }
 
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
   void Led::update(int _num_cycles, int _intervals[]) {
+    DPRINT(F("Led::update _intervals[0]: ")); DPRINTLN(_intervals[0]);
+    if(S.enable_debug) {
+      Serial.println(F("Led::update with _intervals, intervals:"));
+      printIntervals(_intervals);
+      printIntervals(intervals);
+    }
+    
     if (
         _num_cycles == num_cycles &&
         memcmp(_intervals, intervals, sizeof(_intervals)) == 0
@@ -64,42 +94,51 @@
       cycle_count ++;
     }
 
-    // don't bother changing state if interval is 0
+    // //don't bother changing state if interval is 0
+    // Sets state according to intervals[phz].
+    // Sets state to 0 if intervals[phz] == 0
     if (intervals[phz] > 0) {
       led_state = (phz + 1) % 2;
+    } else {
+      led_state = 0;
     }
     
-    previous_ms = millis();
+    previous_ms = current_ms;
   }
 
-  void Led::on() {
-    int intervals[INTERVALS_LENGTH] = {1000};
-    update(0, intervals);
+  void Led::Steady() {
+    DPRINT(F("Led::Steady(), _intervals[0]: "));
+    int _intervals[INTERVALS_LENGTH] = {1000};
+    DPRINTLN(_intervals[0]);
+    update(0, _intervals);
   }
 
-  void Led::off() {
-    int intervals[INTERVALS_LENGTH] = {0,1000};
-    update(0, intervals);
+  void Led::Off() {
+    DPRINTLN(F("Led::Off()"));
+    int _intervals[INTERVALS_LENGTH] = {0};
+    update(0, _intervals);
   }
 
-  void Led::slowBlink() {
-    int intervals[INTERVALS_LENGTH] = {500,500};
-    update(0, intervals);
+  void Led::SlowBlink() {
+    DPRINTLN(F("Led::SlowBlink()"));
+    int _intervals[INTERVALS_LENGTH] = {500,500};
+    update(0, _intervals);
   }
 
-  void Led::fastBlink() {
-    int intervals[INTERVALS_LENGTH] = {70,70};
-    update(0, intervals);
+  void Led::FastBlink() {
+    DPRINTLN(F("Led::FastBlink()"));
+    int _intervals[INTERVALS_LENGTH] = {70,70};
+    update(0, _intervals);
   }
 
-  void Led::startupBlink() {
-    int intervals[INTERVALS_LENGTH] = {480,20};
-    update(0, intervals);
+  void Led::StartupBlink() {
+    DPRINTLN(F("Led::StartupBlink()"));
+    int _intervals[INTERVALS_LENGTH] = {480,20};
+    update(0, _intervals);
   }
     
   // Handles start-stop blinker and blinker cycling
   void Led::handleBlinker() {
-    unsigned long current_ms = millis();
   
     //Serial.println(current_phase);
     //Serial.println(intervals[current_phase]);
@@ -110,13 +149,10 @@
 
     // If the current interval has expired
     if (current_ms - previous_ms >= intervals[current_phase]) {
-      // save the last time you started a new phase
-      previous_ms = current_ms;
-  
       // Increments the led phase, or resets it to zero,
       // then calls startPhase()
       //int ary_size = sizeof(intervals)/sizeof(*intervals);
-      if (current_phase >= intervals_count - 1) {
+      if (current_phase >= countIntervals(intervals) - 1) {
         startPhase(0);
       } else {
         startPhase(current_phase + 1);

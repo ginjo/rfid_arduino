@@ -30,7 +30,6 @@
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
     bool power_control_logic;
 
-
     // Constructor
     Reader(char[], uint8_t, uint8_t, uint8_t, bool);
 
