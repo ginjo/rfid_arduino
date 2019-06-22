@@ -39,7 +39,7 @@
   };
 
 
-  // External Global vars & functions.
+  //  // External Global vars & functions.
   extern Reader** Readers;
   extern void readerArraySetup();
 

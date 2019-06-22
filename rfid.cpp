@@ -2,6 +2,7 @@
 
   // constructor
   RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
+  //RFID::RFID(Stream *_serial_port, Led *_blinker) :
     buff({}),
     buff_index(0),
     current_ms(millis()),
@@ -12,9 +13,7 @@
     blinker(_blinker),
     reader(_reader),
     proximity_state(0)
-  {
-    ;
-  }
+  { ; }
 
   void RFID::begin() {
     // Starts up with whatever state we left off in.
@@ -25,9 +24,7 @@
     // where we left off at power-down (or reset).
     proximity_state = S.proximity_state;
 
-    // Calls global function to populate the Readers array of pointers to specific reader subclasses.
-    // TODO: Maybe this should be a RFID-specific function (and the Readers array too?).
-    //readerArraySetup();
+    //reader = new WL125;
 
     Serial.print(F("Starting RFID reader with proximity state: "));
     Serial.println(proximity_state);
@@ -90,6 +87,11 @@
   // Polls reader serial port and processes incoming tag data.
   void RFID::pollReader() {
     // If data available on RFID serial port, do something.
+    DPRINT("RFID::pollReader() reader->reader_name: ");
+    DPRINTLN(reader->reader_name);    
+    DPRINT("RFID::pollReader() reader->raw_tag_length: ");
+    DPRINTLN(reader->raw_tag_length);
+    
     if (serial_port->available()) {
       while (serial_port->available()) {
         buff[buff_index] = serial_port->read();
@@ -111,6 +113,9 @@
         if (buff_index == 0 && buff[0] != 2) { // reset bogus read
           resetBuffer();
         } else if (buff_index == final_index && buff[final_index] != 3) { // reset bogus read
+          resetBuffer();
+          DPRINTLN("");
+        } else if (buff_index > final_index) { // reset bogus read
           resetBuffer();
           DPRINTLN("");
         } else if (buff_index < final_index) { // good read, add comma to log and keep reading
