@@ -38,7 +38,14 @@
 
   void RFID::loop() {
     current_ms = millis();
+    ms_since_last_tag_read = current_ms - last_tag_read_ms;
+    ms_since_last_reader_power_cycle = current_ms - last_reader_power_cycle_ms;
+    ms_reader_cycle_total = S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000;
+    cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
+    cycle_high_finish_ms = cycle_low_finish_ms + readerPowerCycleHighDuration()*1000;
+    tag_last_read_timeout_x_1000 = S.TAG_LAST_READ_TIMEOUT*1000;
 
+    
     /***  Displays most if not all local vars.      ***/
     /***  TODO: This should be put into a function  ***/
     /***                                            ***/
@@ -282,9 +289,9 @@
   void RFID::proximityStateController() {
     DPRINTLN("### PROXIMITY ###");
     DPRINT("last_tag_read_ms: "); DPRINTLN(last_tag_read_ms);
-    DPRINT("msSinceLastTagRead(): "); DPRINTLN(msSinceLastTagRead());
-    DPRINT("msReaderCycleTotal(): "); DPRINTLN(msReaderCycleTotal());
-    DPRINT("S.TAG_LAST_READ_TIMEOUT*1000: "); DPRINTLN(S.TAG_LAST_READ_TIMEOUT*1000);
+    DPRINT("ms_since_last_tag_read: "); DPRINTLN(ms_since_last_tag_read);
+    DPRINT("ms_reader_cycle_total: "); DPRINTLN(ms_reader_cycle_total);
+    DPRINT("tag_last_read_timeout_x_1000: "); DPRINTLN(tag_last_read_timeout_x_1000);
     DPRINTLN("###  ###");
     
     
@@ -315,9 +322,9 @@
     // If last read is greater than reader-power-cycle-total AND
     // less than final timeout total, we're in the AGING zone.
     } else if (
-      (last_tag_read_ms > 0) &&
-      (msSinceLastTagRead() > msReaderCycleTotal()) &&
-      (msSinceLastTagRead() <= (S.TAG_LAST_READ_TIMEOUT*1000))
+      last_tag_read_ms > 0 &&
+      ms_since_last_tag_read > ms_reader_cycle_total &&
+      ms_since_last_tag_read <= tag_last_read_timeout_x_1000
       ){
 
       //  DPRINTLN("### AGING ###");

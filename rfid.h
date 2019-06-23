@@ -42,6 +42,13 @@
     Led * blinker;
     Reader * reader;
 
+    uint32_t ms_since_last_tag_read;
+    uint32_t ms_since_last_reader_power_cycle;
+    uint32_t ms_reader_cycle_total;
+    uint32_t cycle_low_finish_ms;
+    uint32_t cycle_high_finish_ms;
+    uint32_t tag_last_read_timeout_x_1000;
+
     // constructor
     RFID(Stream*, Led*, Reader*);
     //RFID(Stream*, Led*);
