@@ -68,8 +68,7 @@
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
-    // This was using DPRINT, but disabled for testing array bug.
-    Serial.print(F("Led::update _intervals[0]: ")); Serial.println(_intervals[0]);
+    DPRINT(F("Led::update _intervals[0]: ")); DPRINTLN(_intervals[0]);
     if(S.enable_debug) {
       Serial.println(F("Led::update with _intervals, intervals:"));
       printIntervals(_intervals);
@@ -109,7 +108,7 @@
 
   void Led::Steady() {
     DPRINT(F("Led::Steady(), _intervals[0]: "));
-    const int _intervals[INTERVALS_LENGTH] = {1000, 20};
+    const int _intervals[INTERVALS_LENGTH] = {1000};
     DPRINTLN(_intervals[0]);
     update(0, _intervals);
   }

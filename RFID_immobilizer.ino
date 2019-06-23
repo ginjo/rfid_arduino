@@ -128,7 +128,14 @@
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     readerArraySetup();
 
-    // Calls the fast-startup-blinker pattern.
+    // This seems to be necessary with the current setup,
+    // otherwise the local vars _intervals[] get lost
+    // when passed to other functions.
+    // This also finally calls the fast-startup-blinker pattern.
+    Blinker.Steady();
+    Blinker.FastBlink();
+    Blinker.SlowBlink();
+    Blinker.Off();
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
@@ -142,11 +149,6 @@
 
     // Activates the RFID handler.
     Rfid.begin();
-
-    Blinker.SlowBlink();
-    Blinker.FastBlink();
-    Blinker.Steady();
-    Blinker.Off();
 
   } // end setup
 
