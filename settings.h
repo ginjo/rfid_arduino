@@ -13,7 +13,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre66"
+  #define VERSION "0.1.0.pre67"
   #define TIMESTAMP __DATE__ ", " __TIME__
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
@@ -61,17 +61,13 @@
     uint32_t READER_CYCLE_LOW_DURATION;
     uint32_t READER_CYCLE_HIGH_DURATION;
     uint8_t READER_POWER_CONTROL_PIN;
-    
-    int proximity_state;
+
     uint32_t admin_timeout;
+    int proximity_state;
     int enable_debug;
 
-    //uint8_t RAW_TAG_LENGTH;
-    char DEFAULT_READER[];
-
-    // TODO: This should probably be stored with reader specification (in derived Reader).
-    //bool READER_POWER_CONTROL_POLARITY;
-
+    char DEFAULT_READER[16];
+    
 
     /*  Functions  */
     

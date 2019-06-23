@@ -110,6 +110,7 @@
 
   // Creates instance of RFID handler.
   // (RfidReader is already a pointer, so we don't use '&' reference).
+  // NOTE: This 'Rfid' is declared as extern in rfid.h.
   RFID Rfid(&RfidSerial, &Blinker, RfidReader);
   //RFID Rfid(&RfidSerial, &Blinker);
 

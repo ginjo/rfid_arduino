@@ -24,23 +24,19 @@
   #include "reader.h"
   #include "led_blinker.h"
 
-  // TODO: Should these be stored in Settigs?
-  //#define RAW_TAG_LENGTH 14  // RDM63000
-  //#define RAW_TAG_LENGTH 10  // 7941E
+  #define MAX_TAG_LENGTH 24
+  
 
   class RFID {
   public:
-    //uint8_t buff[RAW_TAG_LENGTH];
-    uint8_t buff[24];
+    uint8_t buff[MAX_TAG_LENGTH];
     int buff_index;
     int proximity_state;
+    
     uint32_t current_ms;
     uint32_t last_tag_read_ms;
     uint32_t last_reader_power_cycle_ms;
     uint32_t reader_power_cycle_high_duration; // seconds
-    Stream * serial_port;
-    Led * blinker;
-    Reader * reader;
 
     uint32_t ms_since_last_tag_read;
     uint32_t ms_since_last_reader_power_cycle;
@@ -48,6 +44,10 @@
     uint32_t cycle_low_finish_ms;
     uint32_t cycle_high_finish_ms;
     uint32_t tag_last_read_timeout_x_1000;
+    
+    Stream * serial_port;
+    Led * blinker;
+    Reader * reader;
 
     // constructor
     RFID(Stream*, Led*, Reader*);
@@ -61,12 +61,12 @@
     void setProximityState(int);
     void proximityStateController();
     void processTagData(uint8_t []);
-    uint32_t msSinceLastTagRead();
-    uint32_t msSinceLastReaderPowerCycle();
-    uint32_t msReaderCycleTotal();
+    //uint32_t msSinceLastTagRead();
+    //uint32_t msSinceLastReaderPowerCycle();
+    //uint32_t msReaderCycleTotal();
     uint32_t readerPowerCycleHighDuration();
-    uint32_t cycleLowFinishMs();
-    uint32_t cycleHighFinishMs();
+    //uint32_t cycleLowFinishMs();
+    //uint32_t cycleHighFinishMs();
   };
 
   extern RFID Rfid;

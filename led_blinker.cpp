@@ -46,9 +46,9 @@
 
   int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
     int n;
-    for (n = 0; n <= INTERVALS_LENGTH; n ++) {
+    for (n = 1; n <= INTERVALS_LENGTH; n ++) {
       //DPRINT("_intervals: "); DPRINT(n); DPRINT(" "); DPRINTLN(_intervals[n]);
-      if (_intervals[n] <= 0 || n == INTERVALS_LENGTH) {
+      if (_intervals[n-1] <= 0) {
         break;
       }
     }
