@@ -60,7 +60,7 @@
  //       This was an issue with integer arithmatic and not enough bits.
  // TODO: √ Maybe refactor proximityStateController() to have smaller conditions and more else-if blocks.
  //       Also move the subconditions to a single flat if-then-else statement.
- // TODO: Require a CR or CR/LF to enter single characters for SerialMenu.
+ // TODO: √ Require a CR or CR/LF to enter single characters for SerialMenu.
  //       This might just be a matter of always using 'line' mode instead of 'char' mode.
  //       This is necessary to use some terminal apps like BLE-Terminal on ios
  //       to use the BLE (HM-10) adapter on arduino. Also consider HM-12 for dual BT access (2.1, 4.0).
@@ -78,9 +78,15 @@
  //       For example admin_timeout should NEVER go below 5s,
  //       And the initial admin_timeout of 2s should not be modifiable by user.
  //       Generally make sure the Arduino cannot be bricked (requiring a re-flash).
- // TODO: Create a setting & control for reader-power-cycle polarity.
-
- 
+ // TODO: √ Create a setting & control for reader-power-cycle polarity.
+ //       Yes, but this is now done in the Reader (sub) classes.
+ // TODO: Complete the Reader function that decides what reader to use.
+ // TODO: Convert settings, readers, led patterns to lists & enums, if possible.
+ //       Also create settings for all possible current uses of literal data,
+ //       mostly numbers, but maybe some strings?
+ // DONE: Finally fixed the nasty bugs in RFID and Reader.
+ // TODO: Try swapping the RFID::loop() functions back to the way they were... Still work?
+ // TODO: Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
  
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
@@ -90,6 +96,7 @@
   #include "serial_menu.h"
   #include "reader.h"
   #include "rfid.h"
+  
 
   // Brings up a blinker LED.
   Led Blinker(8);
@@ -115,7 +122,7 @@
   //RFID Rfid(&RfidSerial, &Blinker);
 
 
-  void setup() {    
+  void setup() {
     Serial.begin(9600);
     while (! Serial) {
       delay(10);
@@ -125,6 +132,16 @@
     Serial.print(VERSION);
     Serial.print(F(", "));
     Serial.println(TIMESTAMP);
+
+    // For manual debug/log mode.
+    pinMode(11, INPUT_PULLUP);
+    int D11 = digitalRead(11);
+    Serial.print("Pin D11: ");
+    Serial.println(D11);
+    if (D11 == LOW) {
+      Serial.println("Pin D11 LOW ... enabling debug");
+      S.enable_debug = 1;
+    }
 
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     readerArraySetup();

@@ -39,7 +39,9 @@
     DPRINT(F("RFID::begin() reader->reader_name: "));
     DPRINTLN(reader->reader_name);
 
-    Serial.print(F("Starting RFID reader with proximity state: "));
+    Serial.print(F("Starting RFID reader: "));
+    Serial.print(reader->reader_name);
+    Serial.print(F(", with proximity state: "));
     Serial.println(proximity_state);
     
     digitalWrite(13, proximity_state);
@@ -128,6 +130,10 @@
     } else {
       return S.READER_CYCLE_HIGH_DURATION;
     }
+  }
+
+  uint32_t RFID::tagLastReadTimeoutX1000() {
+    return (uint32_t)(S.TAG_LAST_READ_TIMEOUT*1000UL);
   }
 
   //  uint32_t RFID::cycleLowFinishMs() {
@@ -238,7 +244,7 @@
   void RFID::resetBuffer() {
     buff_index = 0U;
     //strncpy(buff, NULL, reader->raw_tag_length);
-    strncpy(*buff, NULL, MAX_TAG_LENGTH);
+    strncpy(buff, NULL, MAX_TAG_LENGTH);
   }
 
   void RFID::cycleReaderPower() {
@@ -277,12 +283,12 @@
   // while this function is actively looping.
   // 
   void RFID::proximityStateController() {
-    //  DPRINTLN(F("### PROXIMITY ###"));
-    //  DPRINT(F("last_tag_read_ms: ")); DPRINTLN(last_tag_read_ms);
-    //  DPRINT(F("ms_since_last_tag_read: ")); DPRINTLN(ms_since_last_tag_read);
-    //  DPRINT(F("ms_reader_cycle_total: ")); DPRINTLN(ms_reader_cycle_total);
-    //  DPRINT(F("tag_last_read_timeout_x_1000: ")); DPRINTLN(tag_last_read_timeout_x_1000);
-    //  DPRINTLN(F("###  ###"));
+    DPRINTLN(F("### PROXIMITY ###"));
+    DPRINT(F("last_tag_read_ms: ")); DPRINTLN(last_tag_read_ms);
+    DPRINT(F("ms_since_last_tag_read: ")); DPRINTLN(ms_since_last_tag_read);
+    DPRINT(F("ms_reader_cycle_total: ")); DPRINTLN(ms_reader_cycle_total);
+    DPRINT(F("tagLastReadTimeoutX1000(): ")); DPRINTLN(tagLastReadTimeoutX1000());
+    DPRINTLN(F("###  ###"));
     
     // If NO TAG READ YET and reader has recently power cycled
     // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
@@ -313,14 +319,14 @@
     } else if (
       last_tag_read_ms > 0UL &&
       ms_since_last_tag_read > ms_reader_cycle_total &&
-      ms_since_last_tag_read <= tag_last_read_timeout_x_1000
+      ms_since_last_tag_read <= tagLastReadTimeoutX1000()
       ){
 
       DPRINTLN(F("### AGING ###"));
       DPRINT(F("last_tag_read_ms: ")); DPRINTLN((uint32_t)last_tag_read_ms);
       DPRINT(F("ms_since_last_tag_read: ")); DPRINTLN((uint32_t)ms_since_last_tag_read);
       DPRINT(F("ms_reader_cycle_total: ")); DPRINTLN((uint32_t)ms_reader_cycle_total);
-      DPRINT(F("tag_last_read_timeout_x_1000: ")); DPRINTLN((uint32_t)tag_last_read_timeout_x_1000);
+      DPRINT(F("tagLastReadTimeoutX1000(): ")); DPRINTLN((uint32_t)tagLastReadTimeoutX1000());
       DPRINTLN(F("###  ###"));
 
       DPRINTLN(F("proximityStateController() aging"));

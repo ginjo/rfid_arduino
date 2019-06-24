@@ -65,6 +65,7 @@
     //uint32_t msSinceLastReaderPowerCycle();
     //uint32_t msReaderCycleTotal();
     uint32_t readerPowerCycleHighDuration();
+    uint32_t tagLastReadTimeoutX1000();
     //uint32_t cycleLowFinishMs();
     //uint32_t cycleHighFinishMs();
   };

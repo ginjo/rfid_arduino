@@ -32,7 +32,7 @@
     admin_timeout(60), // seconds
 
     // enables debug (if #define DEBUG was active at compile time).
-    enable_debug(1),
+    enable_debug(0),
 
     // this should be rolled into a Reader class or something.
     //RAW_TAG_LENGTH(10),
@@ -46,7 +46,7 @@
     // 1 == switch is normally closed and opens briefly to cycle power (direct control of reader power).
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
     //READER_POWER_CONTROL_POLARITY(1)
-  {;}
+  { ; }
 
   // TODO: This is temp for testing.
   // The data should ultimately be pulled from EEPROM.
