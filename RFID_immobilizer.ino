@@ -128,6 +128,8 @@
 
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     readerArraySetup();
+    DPRINT("Readers[2]->reader_name: ");
+    DPRINTLN(Readers[2]->reader_name);
 
     // This seems to be necessary with the current setup,
     // otherwise the local vars _intervals[] get lost
@@ -156,8 +158,8 @@
 
   void loop() {
     // here is where you put code that needs to be running all the time.
-
-    DPRINTLN("L O O P  B E G I N");
+    
+    // DPRINTLN("/*** MAIN LOOP BEGIN ***/");
     
     Blinker.loop();
     

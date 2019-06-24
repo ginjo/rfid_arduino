@@ -32,7 +32,12 @@
     // where we left off at power-down (or reset).
     proximity_state = S.proximity_state;
 
+    // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125;
+    //WL125 * reader;
+
+    DPRINT("RFID::begin() reader->reader_name: ");
+    DPRINTLN(reader->reader_name);
 
     Serial.print(F("Starting RFID reader with proximity state: "));
     Serial.println(proximity_state);
@@ -45,15 +50,23 @@
   }
 
   void RFID::loop() {
+    DPRINTLN("*** RFID LOOP BEGIN ***");
     current_ms = millis();
+    
+    cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
+    cycle_high_finish_ms = cycle_low_finish_ms + readerPowerCycleHighDuration()*1000;
+    //Serial.print("cycle_low_finish_ms: "); Serial.println(cycle_low_finish_ms);
+    //Serial.print("last_reader_power_cycle_ms: "); Serial.println(last_reader_power_cycle_ms);
+    //Serial.print("S.READER_CYCLE_LOW_DURATION: "); Serial.println(S.READER_CYCLE_LOW_DURATION);
+    
     ms_since_last_tag_read = current_ms - last_tag_read_ms;
     ms_since_last_reader_power_cycle = current_ms - last_reader_power_cycle_ms;
     ms_reader_cycle_total = S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000;
-    cycle_low_finish_ms = 0; //last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
-    Serial.print("cycle_low_finish_ms: "); Serial.println(cycle_low_finish_ms);
-    Serial.print("last_reader_power_cycle_ms: "); Serial.println(last_reader_power_cycle_ms);
-    Serial.print("S.READER_CYCLE_LOW_DURATION: "); Serial.println(S.READER_CYCLE_LOW_DURATION);
-    cycle_high_finish_ms = cycle_low_finish_ms + readerPowerCycleHighDuration()*1000;
+    //cycle_low_finish_ms = last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
+    //Serial.print("cycle_low_finish_ms: "); Serial.println(cycle_low_finish_ms);
+    //Serial.print("last_reader_power_cycle_ms: "); Serial.println(last_reader_power_cycle_ms);
+    //Serial.print("S.READER_CYCLE_LOW_DURATION: "); Serial.println(S.READER_CYCLE_LOW_DURATION);
+    //cycle_high_finish_ms = cycle_low_finish_ms + readerPowerCycleHighDuration()*1000;
     tag_last_read_timeout_x_1000 = S.TAG_LAST_READ_TIMEOUT*1000;
 
     

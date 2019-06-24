@@ -30,17 +30,18 @@
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
     bool power_control_logic;
 
-    // Constructor
+    // Constructor(s)
     Reader(char[], uint8_t, uint8_t, uint8_t, bool);
 
     // Functions
-    virtual uint32_t processTagData(uint8_t[]) = 0;
+    virtual uint32_t processTagData(uint8_t[]);
     int echo(int);
   };
 
 
   //  // External Global vars & functions.
   extern Reader** Readers;
+  //extern Reader * Readers[3];
   extern void readerArraySetup();
 
 
@@ -50,20 +51,20 @@
   struct RDM6300 : public Reader {
   public:
     RDM6300();
-    uint32_t processTagData(uint8_t[]) override;
+    uint32_t processTagData(uint8_t[]);
   };
 
   struct R7941E : public Reader {
   public:
     R7941E();
-    uint32_t processTagData(uint8_t[]) override;
+    uint32_t processTagData(uint8_t[]);
     //int echo(int) override;
   };
 
   struct WL125 : public Reader {
   public:
     WL125();
-    uint32_t processTagData(uint8_t[]) override;
+    uint32_t processTagData(uint8_t[]);
   };
 
 #endif

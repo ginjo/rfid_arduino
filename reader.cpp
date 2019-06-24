@@ -1,7 +1,7 @@
 /***  READERS  ***/
 
 #include "reader.h"
-
+  
   // Defines Reader Constructor
   Reader::Reader(char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
     //reader_name(_name),
@@ -19,21 +19,37 @@
     return _dat;
   }
 
+  uint32_t Reader::processTagData(uint8_t[]) {
+    DPRINTLN("Error: You are attempting to call processTagData() on the generic Reader class");
+  }
 
   // Defines Readers array.
   // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
   extern Reader** Readers = new Reader*[3];
+  //extern Reader * Readers[3] = {};
   
   // Defines global function for Readers array setup.
   extern void readerArraySetup() {
     Serial.println(F("readerArraySetup() building array of readers."));
+    // These work with Reader as abstract class (with pure virtual functions).
     Readers[0] = new RDM6300;
     Readers[1] = new R7941E;
     Readers[2] = new WL125;
+    //
     // These compile, but they won't work.
     //  Readers[0] = &RDM6300();
     //  Readers[1] = &R7941E();
-    //  Readers[2] = &WL125();    
+    //  Readers[2] = &WL125();
+    //
+    // These don't seem to work either.
+    //  RDM6300 * rdm6300;
+    //  Readers[0] = rdm6300;
+    //  
+    //  R7941E * r7941e;
+    //  Readers[1] = r7941e;
+    //  
+    //  WL125 * wl125;
+    //  Readers[2] = wl125;
   }
 
 
@@ -178,18 +194,5 @@
   //    return result;
   //  }
 
-  //  Reader* Readers[3] = {
-  //    &RDM6300(),
-  //    &R7941E(),
-  //    &WL125()
-  //  };
-
-  //  Reader * Readers[0] = new *RDM6300();
-  //  Reader * Readers[1] = new *R7941E();
-  //  Reader * Readers[2] = new *WL125();
-
-  //  Readers[0] = new RDM6300();
-  //  Readers[1] = new R7941E();
-  //  Readers[2] = new WL125();
 
  

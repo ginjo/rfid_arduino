@@ -92,6 +92,7 @@
   /*** Looping Functions ***/
 
   void SerialMenu::loop() {
+    //DPRINTLN("/*** MENU LOOP BEGIN ***/");
     //serial_port->println(F("SerialMenu::loop() calling serial_port->println()"));
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
