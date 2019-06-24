@@ -67,14 +67,17 @@
     int enable_debug;
 
     char DEFAULT_READER[16];
+
+
+    /*  Constructor  */
+
+    Storage();
     
 
     /*  Functions  */
     
     int updateProximityState(int);
     bool updateSetting(int, char[]);
-
-    Storage::Storage();
   };  
 
   extern Storage Settings;

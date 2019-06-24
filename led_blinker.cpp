@@ -10,7 +10,7 @@
     num_cycles(0),
     current_ms(millis()),
     previous_ms(0),
-    intervals({})
+    intervals {}
   {
     ;
   }
@@ -40,16 +40,27 @@
   }
   
   void Led::loop() {
-    //DPRINTLN("/*** LED LOOP BEGIN ***/");
+    //DPRINTLN(F("*** LED LOOP BEGIN ***"));
     current_ms = millis();
     handleBlinker();
   }
 
+  //  int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
+  //    int n;
+  //    for (n = 1; n <= INTERVALS_LENGTH; n ++) {
+  //      //DPRINT(F("_intervals: ")); DPRINT(n); DPRINT(F(" ")); DPRINTLN(_intervals[n]);
+  //      if (_intervals[n-1] <= 0) {
+  //        break;
+  //      }
+  //    }
+  //    return n;
+  //  }
+  
   int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
     int n;
-    for (n = 1; n <= INTERVALS_LENGTH; n ++) {
-      //DPRINT("_intervals: "); DPRINT(n); DPRINT(" "); DPRINTLN(_intervals[n]);
-      if (_intervals[n-1] <= 0) {
+    for (n = 0; n < INTERVALS_LENGTH; n ++) {
+      //DPRINT(F("_intervals: ")); DPRINT(n); DPRINT(F(" ")); DPRINTLN(_intervals[n]);
+      if (_intervals[n] <= 0) {
         break;
       }
     }
@@ -78,7 +89,7 @@
     
     if (
         _num_cycles == num_cycles &&
-        memcmp(_intervals, intervals, sizeof(_intervals)) == 0
+        memcmp(_intervals, intervals, countIntervals(_intervals)) == 0
        )
     {
       //Serial.println(F("Led::update() skipping begin()"));

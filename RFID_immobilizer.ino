@@ -84,7 +84,7 @@
  
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
-  #include "settings.h";
+  #include "settings.h"
   
   #include "led_blinker.h"
   #include "serial_menu.h"
@@ -123,12 +123,12 @@
 
     Serial.print(F("Booting RFID Immobilizer, "));
     Serial.print(VERSION);
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.println(TIMESTAMP);
 
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     readerArraySetup();
-    DPRINT("Readers[2]->reader_name: ");
+    DPRINT(F("Readers[2]->reader_name: "));
     DPRINTLN(Readers[2]->reader_name);
 
     // This seems to be necessary with the current setup,
@@ -159,7 +159,7 @@
   void loop() {
     // here is where you put code that needs to be running all the time.
     
-    // DPRINTLN("/*** MAIN LOOP BEGIN ***/");
+    // DPRINTLN(F("*** MAIN LOOP BEGIN ***"));
     
     Blinker.loop();
     

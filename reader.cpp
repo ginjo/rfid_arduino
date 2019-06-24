@@ -20,7 +20,7 @@
   }
 
   uint32_t Reader::processTagData(uint8_t[]) {
-    DPRINTLN("Error: You are attempting to call processTagData() on the generic Reader class");
+    DPRINTLN(F("Error: You are attempting to call processTagData() on the generic Reader class"));
   }
 
   // Defines Readers array.

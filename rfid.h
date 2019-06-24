@@ -24,13 +24,13 @@
   #include "reader.h"
   #include "led_blinker.h"
 
-  #define MAX_TAG_LENGTH 24
+  #define MAX_TAG_LENGTH 16
   
 
   class RFID {
   public:
     uint8_t buff[MAX_TAG_LENGTH];
-    int buff_index;
+    uint8_t buff_index;
     int proximity_state;
     
     uint32_t current_ms;
