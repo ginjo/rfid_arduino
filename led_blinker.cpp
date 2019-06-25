@@ -17,9 +17,9 @@
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
     if(S.enable_debug) {
-      Serial.println(F("Led::begin with _intervals, intervals:"));
-      printIntervals(_intervals);
+      Serial.println(F("Led::begin with intervals current, new:"));
       printIntervals(intervals);
+      printIntervals(_intervals);
     }
     
   	pinMode(led_pin, OUTPUT);
@@ -82,9 +82,9 @@
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
     DPRINT(F("Led::update _intervals[0]: ")); DPRINTLN(_intervals[0]);
     if(S.enable_debug) {
-      Serial.println(F("Led::update with _intervals, intervals:"));
-      printIntervals(_intervals);
+      Serial.println(F("Led::update with intervals current, new:"));
       printIntervals(intervals);
+      printIntervals(_intervals);
     }
     
     if (

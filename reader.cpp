@@ -73,10 +73,10 @@
 
     uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
   
-    Serial.print(F("RDM6300 Tag success: "));
-    Serial.print((char *)tmp_str);
-    Serial.print(", ");
-    Serial.println(tag_id);
+    DPRINT(F("RDM6300 Tag success: "));
+    DPRINT((char *)tmp_str);
+    DPRINT(", ");
+    DPRINTLN(tag_id);
 
     // Why this here?
     //strncpy(tmp_str, NULL, id_len);
@@ -112,10 +112,10 @@
 
     uint32_t tag_id = strtol(id_hex, NULL, 16);
   
-    Serial.print(F("R7941E Tag read: "));
-    Serial.print(id_hex);
-    Serial.print(", ");
-    Serial.println(tag_id);
+    DPRINT(F("R7941E Tag read: "));
+    DPRINT(id_hex);
+    DPRINT(", ");
+    DPRINTLN(tag_id);
     
     //strncpy(tmp_str, NULL, id_len);
       
@@ -156,10 +156,10 @@
 
     uint32_t tag_id = strtol(id_char, NULL, 16);
   
-    Serial.print(F("WL125 Tag success: "));
-    Serial.print(id_char);
-    Serial.print(", ");
-    Serial.println(tag_id);
+    DPRINT(F("WL125 Tag success: "));
+    DPRINT(id_char);
+    DPRINT(", ");
+    DPRINTLN(tag_id);
 
     // Why this here?
     //strncpy(tmp_str, NULL, id_len);

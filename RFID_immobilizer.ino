@@ -87,6 +87,8 @@
  // DONE: Finally fixed the nasty bugs in RFID and Reader.
  // TODO: Try swapping the RFID::loop() functions back to the way they were... Still work?
  // TODO: Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
+ // TODO: Add instance vars to Reader for current_tag_id and current_tag_code (hex, I think).
+ 
  
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
@@ -152,10 +154,10 @@
     // otherwise the local vars _intervals[] get lost
     // when passed to other functions.
     // This also finally calls the fast-startup-blinker pattern.
-    Blinker.Steady();
-    Blinker.FastBlink();
-    Blinker.SlowBlink();
     Blinker.Off();
+    Blinker.SlowBlink();
+    Blinker.FastBlink();
+    Blinker.Steady();
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.

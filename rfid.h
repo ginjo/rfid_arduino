@@ -43,7 +43,7 @@
     uint32_t ms_reader_cycle_total;
     uint32_t cycle_low_finish_ms;
     uint32_t cycle_high_finish_ms;
-    uint32_t tag_last_read_timeout_x_1000;
+    //uint32_t tag_last_read_timeout_x_1000;
     
     Stream * serial_port;
     Led * blinker;
@@ -61,9 +61,9 @@
     void setProximityState(int);
     void proximityStateController();
     void processTagData(uint8_t []);
-    //uint32_t msSinceLastTagRead();
-    //uint32_t msSinceLastReaderPowerCycle();
-    //uint32_t msReaderCycleTotal();
+    uint32_t msSinceLastTagRead();
+    uint32_t msSinceLastReaderPowerCycle();
+    uint32_t msReaderCycleTotal();
     uint32_t readerPowerCycleHighDuration();
     uint32_t tagLastReadTimeoutX1000();
     //uint32_t cycleLowFinishMs();

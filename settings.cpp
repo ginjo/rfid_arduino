@@ -7,7 +7,7 @@
 
   Storage::Storage() :
     // ultimate valid-tag timeout
-    TAG_LAST_READ_TIMEOUT(25), // seconds
+    TAG_LAST_READ_TIMEOUT(15), // seconds
 
     // time between attempts to listen to reader
     TAG_READ_SLEEP_INTERVAL(1000), // millis
