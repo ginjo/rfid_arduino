@@ -88,6 +88,10 @@
  // TODO: Try swapping the RFID::loop() functions back to the way they were... Still work?
  // TODO: Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
  // TODO: Consider instance vars to Reader for current_tag_id and current_tag_code (hex, I think).
+ // TODO: I think SerialMenu.run_mode should be a global-global.
+ //       Then logging can have its own file/class, and it can access multiple serial outputs.
+ // TODO: I got debug logging to work with BTmenu, but it breaks the RFID cycle.
+ //       It prevents the Reader instance for processing the tag. Is this also a UB whack-a-mole thing?
  
  
   #include <SoftwareSerial.h>
@@ -104,6 +108,7 @@
   Led Blinker(8);
 
   // Creates serial port for admin console.
+  // NOTE: This 'BTserial' is declared as extern in settings.h.
   SoftwareSerial BTserial(2, 3); // RX | TX
 
   // Creates instance of admin console.
@@ -154,10 +159,10 @@
     // otherwise the local vars _intervals[] get lost
     // when passed to other functions.
     // This also finally calls the fast-startup-blinker pattern.
-    Blinker.Off();
-    Blinker.SlowBlink();
-    Blinker.FastBlink();
-    Blinker.Steady();
+    //Blinker.Off();
+    //Blinker.SlowBlink();
+    //Blinker.FastBlink();
+    //Blinker.Steady();
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.

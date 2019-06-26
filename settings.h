@@ -15,20 +15,26 @@
 
   #define VERSION "0.1.0.pre82"
   #define TIMESTAMP __DATE__ ", " __TIME__
+
+
+
+  // This stuff should probably in a debug.h file.
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
   #ifdef DEBUG    //Macros are usually in all capital letters.
-    #define DPRINT(...)    if(Settings.enable_debug){Serial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
-    #define DPRINTLN(...)  if(Settings.enable_debug){Serial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
+    #define DPRINT(...)    if(Settings.enable_debug){Serial.print(__VA_ARGS__); BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
+    #define DPRINTLN(...)  if(Settings.enable_debug){Serial.println(__VA_ARGS__); BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
   #else
     #define DPRINT(...)     //now defines a blank line
     #define DPRINTLN(...)   //now defines a blank line
   #endif
 
   #include <Arduino.h>
+  #include <SoftwareSerial.h>
   #include <string.h>
   #include <EEPROM.h>
   #include <stdarg.h>
+
 
   // TODO: Integrate loading of GlobalSettings from EEPROM,
   // maybe putting defaults in the .h struct definition.
@@ -82,5 +88,6 @@
 
   extern Storage Settings;
   extern Storage& S;
-  
+  extern SoftwareSerial BTserial;
+    
 #endif

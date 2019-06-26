@@ -21,6 +21,7 @@
     Stream *serial_port;
     
   public:
+    // TODO: I think run_mode should be a global-global.
     int run_mode; // 0=run, 1=admin
     uint32_t previous_ms;
     uint32_t admin_timeout; // seconds
