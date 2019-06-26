@@ -84,14 +84,18 @@
  // TODO: Convert settings, readers, led patterns to lists & enums, if possible.
  //       Also create settings for all possible current uses of literal data,
  //       mostly numbers, but maybe some strings?
- // DONE: Finally fixed the nasty bugs in RFID and Reader.
- // TODO: Try swapping the RFID::loop() functions back to the way they were... Still work?
- // TODO: Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
- // TODO: Consider instance vars to Reader for current_tag_id and current_tag_code (hex, I think).
+ // DONE: √ Finally fixed the nasty bugs in RFID and Reader, well most anyway. Ongoing search for UB.
+ // TODO: √ Try swapping the RFID::loop() functions back to the way they were... Still work?
+ // TODO: √ Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
+ // TODO: Consider instance vars in Reader for current_tag_id and current_tag_code (hex, I think).
+ //       This is trickier that it seems because it would create a curcular requirement between classes.
+ //       Turning the logging features into their own class might help.
  // TODO: I think SerialMenu.run_mode should be a global-global.
  //       Then logging can have its own file/class, and it can access multiple serial outputs.
- // TODO: I got debug logging to work with BTmenu, but it breaks the RFID cycle.
+ // TODO: - I got debug logging to work with BTmenu, but it breaks the RFID cycle.
  //       It prevents the Reader instance for processing the tag. Is this also a UB whack-a-mole thing?
+ //       Upon further inspection, the problem appears to be that the RFID serial channel is getting
+ //       garbled data, or at least the program is seeing it as garbled. So, I disabled the BTmenu logging.
  
  
   #include <SoftwareSerial.h>

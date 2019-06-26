@@ -10,26 +10,26 @@
 
 #include "serial_menu.h"
 
-  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
-  // This should really go in a Utility class.
-  // It is only here as a quick fix.    
-  #ifdef __arm__
-  // should use uinstd.h to define sbrk but Due causes a conflict
-  extern "C" char* sbrk(int incr);
-  #else  // __ARM__
-  extern char *__brkval;
-  #endif  // __arm__
-  
-  static int freeMemory() {
-    char top;
-  #ifdef __arm__
-    return &top - reinterpret_cast<char*>(sbrk(0));
-  #elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-    return &top - __brkval;
-  #else  // __arm__
-    return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-  #endif  // __arm__
-  }
+  //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
+  //  // This should really go in a Utility class.
+  //  // It is only here as a quick fix.    
+  //  #ifdef __arm__
+  //  // should use uinstd.h to define sbrk but Due causes a conflict
+  //  extern "C" char* sbrk(int incr);
+  //  #else  // __ARM__
+  //  extern char *__brkval;
+  //  #endif  // __arm__
+  //  
+  //  static int freeMemory() {
+  //    char top;
+  //  #ifdef __arm__
+  //    return &top - reinterpret_cast<char*>(sbrk(0));
+  //  #elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
+  //    return &top - __brkval;
+  //  #else  // __arm__
+  //    return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+  //  #endif  // __arm__
+  //  }
   
 
   // NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
@@ -50,16 +50,19 @@
 
   SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
+    
+    input_mode("menu"),
     buff {},
     buff_index(0),
     current_function(""),
-    input_mode("menu"),
-    blinker(_blinker),
+    tags {305441741, 2882343476, 2676915564}, // 1234ABCD, ABCD1234, 9F8E7D6C
+    blinker(_blinker)
+    
     // See updateAdminTimeout()
     //  run_mode(1), // 0=run, 1=admin
     //  admin_timeout(3), // seconds
     //  previous_ms(millis());
-    tags {305441741, 2882343476, 2676915564} // 1234ABCD, ABCD1234, 9F8E7D6C
+    
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
@@ -341,7 +344,8 @@
   }
 
   void SerialMenu::resetInputBuffer() {
-    memcpy(buff, NULL, INPUT_BUFFER_LENGTH);
+    //memcpy(buff, NULL, INPUT_BUFFER_LENGTH);
+    memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
   }
 
@@ -501,8 +505,8 @@
   }
 
   void SerialMenu::menuShowFreeMemory() {
-    serial_port->print(F("Free Memory: "));
-    serial_port->println(freeMemory());
+    serial_port->println(F("Free Memory: n/a"));
+    //serial_port->println(freeMemory());
     serial_port->println();
   }
 

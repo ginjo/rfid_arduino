@@ -29,6 +29,7 @@
 
   class RFID {
   public:
+    // Vars
     uint8_t buff[MAX_TAG_LENGTH];
     uint8_t buff_index;
     int proximity_state;
@@ -49,11 +50,12 @@
     Led * blinker;
     Reader * reader;
 
-    // constructor
+    
+    // Constructor
     RFID(Stream*, Led*, Reader*);
     //RFID(Stream*, Led*);
 
-
+    // Functions
     void begin();
     void loop();
     void resetBuffer();

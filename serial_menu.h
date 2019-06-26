@@ -37,7 +37,7 @@
 
     Led * blinker;
 
-    // constructor receives a serial port instance
+    // Constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
     // TODO: Is the parameter name required here? What about the pointer?
     //SerialMenu(Stream *stream_ref);
@@ -75,7 +75,6 @@
     void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void exitAdmin();
     void loop();
-  
   };
 
 #endif

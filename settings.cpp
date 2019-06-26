@@ -6,6 +6,7 @@
   // TODO: Implement actual EEPROM storage.
 
   Storage::Storage() :
+    
     // ultimate valid-tag timeout
     TAG_LAST_READ_TIMEOUT(15), // seconds
 
@@ -22,28 +23,22 @@
     // controls reader power thru mosfet
     READER_POWER_CONTROL_PIN(5),
 
-    // saved proximity state (TODO: should be separate setting)
-    proximity_state(EEPROM.read(0)), // 0 = false, 1 = true
-    
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
     admin_timeout(60), // seconds
+    
+    // saved proximity state (TODO: should be separate setting)
+    proximity_state(EEPROM.read(0)), // 0 = false, 1 = true
 
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
-    // this should be rolled into a Reader class or something.
-    //RAW_TAG_LENGTH(10),
-
-    DEFAULT_READER("WL-125")
+    DEFAULT_READER("WL-125"),
     //DEFAULT_READER("R7941E")
 
-    // Adjusts polarity of reader power control,
-    // so you can use it for direct power control
-    // or for pull-to-ground-to-reset control.
-    // 1 == switch is normally closed and opens briefly to cycle power (direct control of reader power).
-    // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
-    //READER_POWER_CONTROL_POLARITY(1)
+    state_dev_tmp(1)
+
+
   { 
     // ONLY use this for debugging.
     proximity_state = 1;

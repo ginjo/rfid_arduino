@@ -5,6 +5,7 @@
   //RFID::RFID(Stream *_serial_port, Led *_blinker) :
     buff {},
     buff_index(0UL),
+    proximity_state(0),
     current_ms(millis()),
     last_tag_read_ms(0UL),
     last_reader_power_cycle_ms(0UL),
@@ -12,15 +13,15 @@
 
     ms_since_last_tag_read(0UL),
     ms_since_last_reader_power_cycle(0UL),
-    //ms_reader_cycle_total(0UL),
+    ms_reader_cycle_total(0UL),
     cycle_low_finish_ms(0UL),
     cycle_high_finish_ms(0UL),
     //tag_last_read_timeout_x_1000(0UL),
     
     serial_port(_serial_port),
     blinker(_blinker),
-    reader(_reader),
-    proximity_state(0)
+    reader(_reader)
+    
   { ; }
 
   //  RFID::~RFID() {
@@ -235,9 +236,9 @@
 
     // If tag is valid, immediatly update proximity-state.
     if (tag_id > 0UL) {
-      // I don't know if we need to update the full prox state here, just the loop handle it.
-      S.updateProximityState(1);
-      //proximity_state = 1;
+      // Should this be the local function setProximityState()?
+      //S.updateProximityState(1);
+      setProximityState(1);
       last_tag_read_ms = current_ms;
       Serial.print(F("Valid tag: "));
 
@@ -254,7 +255,8 @@
     buff_index = 0U;
     //strncpy(buff, NULL, reader->raw_tag_length);
     //strncpy(buff, NULL, MAX_TAG_LENGTH);
-    memcpy(buff, 0, MAX_TAG_LENGTH);
+    //memcpy(buff, 0, MAX_TAG_LENGTH);
+    memset(buff, 0, MAX_TAG_LENGTH);
   }
 
   void RFID::cycleReaderPower() {

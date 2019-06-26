@@ -13,7 +13,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre82"
+  #define VERSION "0.1.0.pre83"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
 
@@ -22,8 +22,8 @@
   
   #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
   #ifdef DEBUG    //Macros are usually in all capital letters.
-    #define DPRINT(...)    if(Settings.enable_debug){Serial.print(__VA_ARGS__); BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
-    #define DPRINTLN(...)  if(Settings.enable_debug){Serial.println(__VA_ARGS__); BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
+    #define DPRINT(...)    if(Settings.enable_debug){Serial.print(__VA_ARGS__);} // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
+    #define DPRINTLN(...)  if(Settings.enable_debug){Serial.println(__VA_ARGS__);} // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
   #else
     #define DPRINT(...)     //now defines a blank line
     #define DPRINTLN(...)   //now defines a blank line
@@ -56,10 +56,6 @@
   struct Storage {
     
     /*  Variables  */
-
-    // Temporary EEPROM alternative.
-    int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
-
     
     // Mostly time data
     uint32_t TAG_LAST_READ_TIMEOUT;
@@ -73,6 +69,9 @@
     int enable_debug;
 
     char DEFAULT_READER[16];
+
+    // Temporary EEPROM alternative. I don't think this is used.
+    int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 
 
     /*  Constructor  */
