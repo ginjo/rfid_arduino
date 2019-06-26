@@ -95,7 +95,7 @@
   #include "settings.h"
   
   #include "led_blinker.h"
-  //#include "serial_menu.h"
+  #include "serial_menu.h"
   #include "reader.h"
   #include "rfid.h"
   
@@ -104,10 +104,10 @@
   Led Blinker(8);
 
   // Creates serial port for admin console.
-  //SoftwareSerial BTserial(2, 3); // RX | TX
+  SoftwareSerial BTserial(2, 3); // RX | TX
 
   // Creates instance of admin console.
-  //SerialMenu BTmenu(&BTserial, &Blinker);
+  SerialMenu BTmenu(&BTserial, &Blinker);
 
   // Creates serial port for RFID reader.
   SoftwareSerial RfidSerial(4,6); // not sending anything to reader, so tx on unused pin
@@ -161,10 +161,10 @@
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
-    //BTserial.begin(9600);
+    BTserial.begin(9600);
 
     // Activates the admin console.
-    //BTmenu.begin();
+    BTmenu.begin();
 
     // Activates the serial port for the RFID handler.
     RfidSerial.begin(9600);
@@ -176,31 +176,21 @@
 
 
   void loop() {
-    // here is where you put code that needs to be running all the time.
-    
-    // DPRINTLN(F("*** MAIN LOOP BEGIN ***"));
     
     Blinker.loop();
     
-    //  unsigned long currentms = millis();
-    //  if (currentms/1000 > 17) {Blinker.SlowBlink();}
-    //  else if (currentms/1000 > 12) {Blinker.FastBlink();}
-    //  else if (currentms/1000 > 7) {Blinker.Steady();}
-    
-//    if (BTmenu.run_mode > 0) {
-//      BTserial.listen();
-//      delay(1);
-//      BTmenu.loop();
-//      
-//    } else {
-      //RdmExample.rdm6300._software_serial->listen();
-      //RdmExample.loop();
+    if (BTmenu.run_mode > 0) {
+      BTserial.listen();
+      delay(1);
+      BTmenu.loop();
+      
+    } else {
       
       RfidSerial.listen();
       Rfid.loop();
       delay(1);
-//    }
-
+    }
+    
   } // end loop
 
   

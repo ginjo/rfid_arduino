@@ -28,13 +28,13 @@
   	char input_mode[INPUT_MODE_LENGTH];
   
   	// Byte buffer for incoming serial strings
-  	uint8_t buff[INPUT_BUFFER_LENGTH];
+  	char buff[INPUT_BUFFER_LENGTH];
   	int buff_index;
     char current_function[CURRENT_FUNCTION_LENGTH];
   	uint32_t tags[TAG_LIST_SIZE];
     int selected_menu_item;
 
-    Led *blinker;
+    Led * blinker;
 
     // constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
@@ -47,17 +47,17 @@
     void begin();
     void showInfo();
     void checkSerialPort();
-    void menuSelectedMainItem(uint8_t);
+    void menuSelectedMainItem(char);
     void menuMain();
     void menuListTags();
     void menuAddTag();
     void menuDeleteTag();
     void menuShowFreeMemory();
     void menuSettings();
-    void menuSelectedSetting(uint8_t);
-    uint8_t  byteToAsciiChrNum(uint8_t);
-    void getLine(uint8_t);
-    void receiveTagInput(uint8_t);
+    void menuSelectedSetting(char);
+    int  byteToAsciiChrNum(char);
+    void getLine(char);
+    void receiveTagInput(char);
     void setInputMode(const char[]);
     bool matchInputMode(const char[]);
     void setCallbackFunction(const char[]);
@@ -66,8 +66,8 @@
     bool inputAvailable(const char[]);
     const char * inputAvailableFor();
     void runCallbacks();
-    bool addTagString(uint8_t[]);
-    bool addTagNum(unsigned long);
+    bool addTagString(char[]);
+    bool addTagNum(uint32_t);
     void resetInputBuffer();
     void adminTimeout();
     // argument defaults must be declared here, not defined in implementation.

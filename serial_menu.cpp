@@ -50,7 +50,7 @@
 
   SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
-    buff({}),
+    buff {},
     buff_index(0),
     current_function(""),
     input_mode("menu"),
@@ -110,7 +110,7 @@
     if (serial_port->available()) {
       while (serial_port->available()) {
         //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
-        uint8_t byt = serial_port->read();
+        char byt = serial_port->read();
         
         DPRINT(F("checkSerialPort() received byte: "));
         DPRINTLN(char(byt));
@@ -203,7 +203,7 @@
 
   // Builds a line of input in variable 'buff' until CR or LF is detected,
   // then resets buff_index to 0.
-  void SerialMenu::getLine(uint8_t byt) {
+  void SerialMenu::getLine(char byt) {
     DPRINT(F("getLine() byt, buff: "));
     DPRINT(char(byt));
     DPRINT(", ");
@@ -282,7 +282,7 @@
 
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
-  uint8_t SerialMenu::byteToAsciiChrNum(uint8_t byt) {
+  int SerialMenu::byteToAsciiChrNum(char byt) {
     DPRINT(F("SerialMenu::byteToAsciiChrNum received byte: "));
     DPRINT(char(byt));
     DPRINT(" (");
@@ -290,15 +290,17 @@
     DPRINTLN(")");
     
     if (byt < 48 || byt > 57) {
-      return (uint8_t)0;
+      return '0';
     }
-    char str[3]; // ascii only uses 3 digits in base-10.
-    sprintf(str, "%c", byt); // convert the byte to ascii string.
-    return strtol(str, NULL, 10); // convert the string of digits to int.
+    //char str[2]; // need room for null-terminator?
+    //sprintf(str, "%c", byt); // convert the byte to ascii string.
+    char * str = &byt; 
+    
+    return (int)strtol(str, NULL, 10); // convert the string of digits to int.
   }
 
-  //bool SerialMenu::addTagString(uint8_t str[TAG_LENGTH]) {
-  bool SerialMenu::addTagString(uint8_t str[]) {
+  //bool SerialMenu::addTagString(char str[TAG_LENGTH]) {
+  bool SerialMenu::addTagString(char str[]) {
     // Need to discard bogus tags... this kinda works,
     // but needs more failure conditions.
     // TODO: Make sure string consists of only numerics, no other characters.
@@ -339,7 +341,7 @@
   }
 
   void SerialMenu::resetInputBuffer() {
-    memcpy(buff, 0, INPUT_BUFFER_LENGTH);
+    memcpy(buff, NULL, INPUT_BUFFER_LENGTH);
     buff_index = 0;
   }
 
@@ -417,7 +419,7 @@
   }
 
   // Activates an incoming menu selection.
-  void SerialMenu::menuSelectedMainItem(uint8_t byt) {
+  void SerialMenu::menuSelectedMainItem(char byt) {
     DPRINT(F("menuSelectedMainItem received byte: "));
     DPRINT(char(byt));
     DPRINT(" (");
@@ -527,7 +529,7 @@
   }
 
   // Handle selected setting.
-  void SerialMenu::menuSelectedSetting(uint8_t byt) {
+  void SerialMenu::menuSelectedSetting(char byt) {
     DPRINT(F("menuSelectedSetting received byte: "));
     DPRINTLN((char)byt);
 

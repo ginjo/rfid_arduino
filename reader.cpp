@@ -63,7 +63,7 @@
     DPRINTLN(strtol((char *)_tag, NULL, HEX));
 
     uint8_t id_len = id_end - id_begin;
-    char tmp_str[id_len] = "";
+    char tmp_str[id_len+1] = "";
     
     for (int n=id_begin; n<=id_end; n++) {
       sprintf(tmp_str + strlen(tmp_str), "%c", _tag[n]);
@@ -99,7 +99,7 @@
     DPRINT(F(", checksum (dec): "));
     DPRINTLN(_tag[8]);
     
-    char id_hex[id_len] = ""; // need to initialize this to empty.
+    char id_hex[id_len+1] = ""; // need to initialize this to empty.
 
     for (int n=id_begin; n<=id_end; n++) {
       sprintf(id_hex + strlen(id_hex), "%02x", _tag[n]);
@@ -143,7 +143,7 @@
     DPRINT(F(", checksum (chars representing hex): "));
     DPRINT(_tag[11]); DPRINTLN(_tag[12]);
 
-    char id_char[id_len] = ""; // need to initialize this to empty.
+    char id_char[id_len+1] = ""; // need to initialize this to empty.
     
     for (int n=id_begin; n<=id_end; n++) {
       sprintf(id_char + strlen(id_char), "%c", _tag[n]);
