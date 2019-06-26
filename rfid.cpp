@@ -3,7 +3,7 @@
   // constructor
   RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
   //RFID::RFID(Stream *_serial_port, Led *_blinker) :
-    buff({}),
+    buff {},
     buff_index(0UL),
     current_ms(millis()),
     last_tag_read_ms(0UL),
@@ -23,6 +23,10 @@
     proximity_state(0)
   { ; }
 
+  //  RFID::~RFID() {
+  //    delete reader;
+  //  }
+
   void RFID::begin() {
     // Starts up with whatever state we left off in.
     // Protects against thief using 'admin' to move
@@ -33,8 +37,8 @@
     proximity_state = S.proximity_state;
 
     // Temp test to see if this class works with manually instanciated reader.
-    //reader = new WL125;
-    //WL125 * reader;
+    //reader = new WL125; // I think this works.
+    //WL125 * reader = &WL125(); // I don't think this works.
 
     DPRINT(F("RFID::begin() reader->reader_name: "));
     DPRINTLN(reader->reader_name);
@@ -156,7 +160,10 @@
     
     if (serial_port->available()) {
       while (serial_port->available()) {
-        if (buff_index >= MAX_TAG_LENGTH) {resetBuffer();}
+        if (buff_index >= MAX_TAG_LENGTH || buff_index >= reader->raw_tag_length) {
+          resetBuffer();
+          continue;
+        }
         
         buff[buff_index] = serial_port->read();
 
@@ -228,8 +235,9 @@
 
     // If tag is valid, immediatly update proximity-state.
     if (tag_id > 0UL) {
-      // I don't we need to update prox state here, just the loop handle it.
-      //S.updateProximityState(1);
+      // I don't know if we need to update the full prox state here, just the loop handle it.
+      S.updateProximityState(1);
+      //proximity_state = 1;
       last_tag_read_ms = current_ms;
       Serial.print(F("Valid tag: "));
 
@@ -245,7 +253,8 @@
   void RFID::resetBuffer() {
     buff_index = 0U;
     //strncpy(buff, NULL, reader->raw_tag_length);
-    strncpy(buff, NULL, MAX_TAG_LENGTH);
+    //strncpy(buff, NULL, MAX_TAG_LENGTH);
+    memcpy(buff, 0, MAX_TAG_LENGTH);
   }
 
   void RFID::cycleReaderPower() {
@@ -286,12 +295,14 @@
   // while this function is actively looping.
   // 
   void RFID::proximityStateController() {
-    DPRINTLN(F("### PROXIMITY ###"));
+    DPRINTLN(F("*** PROXIMITY ***"));
     DPRINT(F("last_tag_read_ms: ")); DPRINTLN(last_tag_read_ms);
+    DPRINT(F("last_reader_power_cycle_ms: ")); DPRINTLN(last_reader_power_cycle_ms);
     DPRINT(F("msSinceLastTagRead(): ")); DPRINTLN(msSinceLastTagRead());
+    DPRINT(F("msSinceLastReaderPowerCycle(): ")); DPRINTLN(msSinceLastReaderPowerCycle());
     DPRINT(F("ms_reader_cycle_total: ")); DPRINTLN(ms_reader_cycle_total);
     DPRINT(F("tagLastReadTimeoutX1000(): ")); DPRINTLN(tagLastReadTimeoutX1000());
-    DPRINTLN(F("###  ###"));
+    DPRINTLN(F("***"));
     
     // If NO TAG READ YET and reader has recently power cycled
     // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
@@ -305,7 +316,7 @@
       blinker->SlowBlink();
       setProximityState(0);
     
-    // If last read was TOO LONG AGO, and we've cycled reader at least once in that interval.
+    // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
     } else if (
       msSinceLastTagRead() > tagLastReadTimeoutX1000() &&
       last_reader_power_cycle_ms > 0UL &&
@@ -337,10 +348,14 @@
       setProximityState(1);
 
     // If we're STILL YOUNG.
-    } else if (last_tag_read_ms > 0UL && msSinceLastTagRead() <= ms_reader_cycle_total) {
-        DPRINTLN(F("proximityStateController() still YOUNG"));
-        blinker->Steady();
-        setProximityState(1);
+    } else if (
+      last_tag_read_ms > 0UL &&
+      msSinceLastTagRead() <= ms_reader_cycle_total
+      ){
+        
+      DPRINTLN(F("proximityStateController() still YOUNG"));
+      blinker->Steady();
+      setProximityState(1);
 
     // No expected condition was met (not sure what to do here yet).
     } else {

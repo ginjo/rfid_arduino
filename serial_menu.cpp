@@ -178,7 +178,8 @@
           Serial.println(F("runCallbacks() call to S.updateSetting() failed"));
         }
         
-        selected_menu_item = NULL;
+        //selected_menu_item = NULL;
+        selected_menu_item = -1;
         menuSettings();
       
       } else {
@@ -225,7 +226,7 @@
 
   // Set input mode to character or line.
   // NOTE: Migrating to line-mode for all functions.
-  void SerialMenu::setInputMode(char str[]) {
+  void SerialMenu::setInputMode(const char str[]) {
     //strncpy(input_mode, str, INPUT_MODE_LENGTH);
     strncpy(input_mode, "line", INPUT_MODE_LENGTH);
     
@@ -233,7 +234,7 @@
     DPRINTLN(input_mode);
   }
 
-  bool SerialMenu::matchInputMode(char mode[]) {
+  bool SerialMenu::matchInputMode(const char mode[]) {
     //  Serial.print(F("matchInputMode() mode, input_mode: "));
     //  Serial.print(mode);
     //  Serial.print(", ");
@@ -247,14 +248,14 @@
   // Update the soft-coded links to fix.
   
   // TODO: Maybe change this to setCallbackFunction()
-  void SerialMenu::setCallbackFunction(char func[]) {
+  void SerialMenu::setCallbackFunction(const char func[]) {
     strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
 
     DPRINT(F("setCallbackFunction() to: "));
     DPRINTLN(current_function);
   }
 
-  bool SerialMenu::matchCurrentFunction(char func[]) {
+  bool SerialMenu::matchCurrentFunction(const char func[]) {
     //  Serial.print(F("matchCurrentFunction() with: "));
     //  Serial.print(func);
     //  Serial.print(", ");
@@ -267,11 +268,11 @@
     return buff_index == 0 && buff[0] > 0;
   }
   
-  bool SerialMenu::inputAvailable(char func[]) {
+  bool SerialMenu::inputAvailable(const char func[]) {
     return inputAvailable() && matchCurrentFunction(func);
   }
 
-  char SerialMenu::inputAvailableFor() {
+  const char * SerialMenu::inputAvailableFor() {
     if(inputAvailable()) {
       return current_function;
     } else {
@@ -289,7 +290,7 @@
     DPRINTLN(")");
     
     if (byt < 48 || byt > 57) {
-      return NULL;
+      return (uint8_t)0;
     }
     char str[3]; // ascii only uses 3 digits in base-10.
     sprintf(str, "%c", byt); // convert the byte to ascii string.
@@ -326,7 +327,7 @@
   // since that is as high as the tag ids will go: 4294967295 or 'FFFFFFFF'
   bool SerialMenu::addTagNum(unsigned long tag_num) {
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      if (! tags[i] > 0) {
+      if ( tags[i] <= 0) {
         tags[i] = tag_num;
         setCallbackFunction("");
         return true;
@@ -338,12 +339,12 @@
   }
 
   void SerialMenu::resetInputBuffer() {
-    strncpy(buff, "", INPUT_BUFFER_LENGTH);
+    memcpy(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
   }
 
   // Starts, restarts, resets admin with timeout.
-  void SerialMenu::updateAdminTimeout(int seconds) {
+  void SerialMenu::updateAdminTimeout(uint32_t seconds) {
     if (admin_timeout != seconds) {
       Serial.print(F("updateAdminTimeout() seconds: "));
       Serial.println(seconds);
@@ -505,7 +506,8 @@
 
   // TODO: Should this be moved to settings.cpp?
   void SerialMenu::menuSettings() {
-    selected_menu_item = NULL;
+    //selected_menu_item = NULL;
+    selected_menu_item = -1;
     
     serial_port->println(F("Settings"));
     serial_port->println(F("0. Return to main menu: "));

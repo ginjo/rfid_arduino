@@ -3,7 +3,7 @@
 #include "reader.h"
   
   // Defines Reader Constructor
-  Reader::Reader(char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
+  Reader::Reader(const char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
     //reader_name(_name),
     raw_tag_length(_raw_tag_length),
     id_begin(_id_begin),
@@ -21,6 +21,16 @@
 
   uint32_t Reader::processTagData(uint8_t[]) {
     DPRINTLN(F("Error: You are attempting to call processTagData() on the generic Reader class"));
+    return 0UL;
+  }
+
+  void Reader::preProcessTagData() {
+    DPRINT(reader_name);
+    DPRINT(F(" processTagData() with input: "));
+    DPRINT(F("id_begin: "));
+    DPRINT(id_begin);
+    DPRINT(F(", id_end: "));
+    DPRINT(id_end);
   }
 
   // Defines Readers array.
@@ -31,25 +41,13 @@
   // Defines global function for Readers array setup.
   extern void readerArraySetup() {
     Serial.println(F("readerArraySetup() building array of readers."));
-    // These work with Reader as abstract class (with pure virtual functions).
+    // These work with Reader as abstract class (with pure virtual functions),
+    // and they also works with the Reader as regular base class (no pure virtual funcs).
+    // This is the ONLY form that works. I've tried many others, and none get
+    // the job done correctly.
     Readers[0] = new RDM6300;
     Readers[1] = new R7941E;
     Readers[2] = new WL125;
-    //
-    // These compile, but they won't work.
-    //  Readers[0] = &RDM6300();
-    //  Readers[1] = &R7941E();
-    //  Readers[2] = &WL125();
-    //
-    // These don't seem to work either.
-    //  RDM6300 * rdm6300;
-    //  Readers[0] = rdm6300;
-    //  
-    //  R7941E * r7941e;
-    //  Readers[1] = r7941e;
-    //  
-    //  WL125 * wl125;
-    //  Readers[2] = wl125;
   }
 
 
@@ -133,6 +131,8 @@
   { ; }
 
   uint32_t WL125::processTagData(uint8_t _tag[]) {
+
+    //Reader::preProcessTagData();
 
     DPRINT(F("WL125::processTagData() with input: "));
     DPRINT(F("id_begin: "));

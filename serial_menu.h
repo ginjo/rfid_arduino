@@ -58,20 +58,20 @@
     uint8_t  byteToAsciiChrNum(uint8_t);
     void getLine(uint8_t);
     void receiveTagInput(uint8_t);
-    void setInputMode(char[]);
-    bool matchInputMode(char[]);
-    void setCallbackFunction(char[]);
-    bool matchCurrentFunction(char[]);
+    void setInputMode(const char[]);
+    bool matchInputMode(const char[]);
+    void setCallbackFunction(const char[]);
+    bool matchCurrentFunction(const char[]);
     bool inputAvailable();
-    bool inputAvailable(char[]);
-    char inputAvailableFor();
+    bool inputAvailable(const char[]);
+    const char * inputAvailableFor();
     void runCallbacks();
     bool addTagString(uint8_t[]);
     bool addTagNum(unsigned long);
     void resetInputBuffer();
     void adminTimeout();
     // argument defaults must be declared here, not defined in implementation.
-    void updateAdminTimeout(int = S.admin_timeout); // seconds
+    void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void exitAdmin();
     void loop();
   

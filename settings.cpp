@@ -23,9 +23,7 @@
     READER_POWER_CONTROL_PIN(5),
 
     // saved proximity state (TODO: should be separate setting)
-    //proximity_state(EEPROM.read(0)), // 0 = false, 1 = true
-    // Use this for debugging
-    proximity_state(1),
+    proximity_state(EEPROM.read(0)), // 0 = false, 1 = true
     
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
@@ -46,7 +44,10 @@
     // 1 == switch is normally closed and opens briefly to cycle power (direct control of reader power).
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
     //READER_POWER_CONTROL_POLARITY(1)
-  { ; }
+  { 
+    // ONLY use this for debugging.
+    proximity_state = 1;
+  }
 
   // TODO: This is temp for testing.
   // The data should ultimately be pulled from EEPROM.

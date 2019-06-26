@@ -87,7 +87,7 @@
  // DONE: Finally fixed the nasty bugs in RFID and Reader.
  // TODO: Try swapping the RFID::loop() functions back to the way they were... Still work?
  // TODO: Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
- // TODO: Add instance vars to Reader for current_tag_id and current_tag_code (hex, I think).
+ // TODO: Consider instance vars to Reader for current_tag_id and current_tag_code (hex, I think).
  
  
   #include <SoftwareSerial.h>
@@ -95,7 +95,7 @@
   #include "settings.h"
   
   #include "led_blinker.h"
-  #include "serial_menu.h"
+  //#include "serial_menu.h"
   #include "reader.h"
   #include "rfid.h"
   
@@ -104,10 +104,10 @@
   Led Blinker(8);
 
   // Creates serial port for admin console.
-  SoftwareSerial BTserial(2, 3); // RX | TX
+  //SoftwareSerial BTserial(2, 3); // RX | TX
 
   // Creates instance of admin console.
-  SerialMenu BTmenu(&BTserial, &Blinker);
+  //SerialMenu BTmenu(&BTserial, &Blinker);
 
   // Creates serial port for RFID reader.
   SoftwareSerial RfidSerial(4,6); // not sending anything to reader, so tx on unused pin
@@ -161,10 +161,10 @@
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
-    BTserial.begin(9600);
+    //BTserial.begin(9600);
 
     // Activates the admin console.
-    BTmenu.begin();
+    //BTmenu.begin();
 
     // Activates the serial port for the RFID handler.
     RfidSerial.begin(9600);
@@ -187,19 +187,19 @@
     //  else if (currentms/1000 > 12) {Blinker.FastBlink();}
     //  else if (currentms/1000 > 7) {Blinker.Steady();}
     
-    if (BTmenu.run_mode > 0) {
-      BTserial.listen();
-      delay(1);
-      BTmenu.loop();
-      
-    } else {
+//    if (BTmenu.run_mode > 0) {
+//      BTserial.listen();
+//      delay(1);
+//      BTmenu.loop();
+//      
+//    } else {
       //RdmExample.rdm6300._software_serial->listen();
       //RdmExample.loop();
       
       RfidSerial.listen();
       Rfid.loop();
       delay(1);
-    }
+//    }
 
   } // end loop
 

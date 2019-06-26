@@ -31,10 +31,11 @@
     bool power_control_logic;
 
     // Constructor(s)
-    Reader(char[], uint8_t, uint8_t, uint8_t, bool);
+    Reader(const char[], uint8_t, uint8_t, uint8_t, bool);
 
     // Functions
     virtual uint32_t processTagData(uint8_t[]);
+    void preProcessTagData();
     int echo(int);
   };
 
