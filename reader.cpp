@@ -36,7 +36,7 @@
   // Defines Readers array.
   // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
   extern Reader** Readers = new Reader*[3];
-  //extern Reader * Readers[3] = {};
+  //extern Reader * Readers[3] = {}; // I don't think this works.
   
   // Defines global function for Readers array setup.
   extern void readerArraySetup() {
@@ -75,9 +75,6 @@
     DPRINT((char *)tmp_str);
     DPRINT(", ");
     DPRINTLN(tag_id);
-
-    // Why this here?
-    //strncpy(tmp_str, NULL, id_len);
     
     return tag_id;
   }
@@ -114,9 +111,7 @@
     DPRINT(id_hex);
     DPRINT(", ");
     DPRINTLN(tag_id);
-    
-    //strncpy(tmp_str, NULL, id_len);
-      
+          
     return tag_id;
   }
 
@@ -160,9 +155,6 @@
     DPRINT(id_char);
     DPRINT(", ");
     DPRINTLN(tag_id);
-
-    // Why this here?
-    //strncpy(tmp_str, NULL, id_len);
     
     return tag_id;
   }

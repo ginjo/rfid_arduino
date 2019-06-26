@@ -44,17 +44,6 @@
     current_ms = millis();
     handleBlinker();
   }
-
-  //  int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
-  //    int n;
-  //    for (n = 1; n <= INTERVALS_LENGTH; n ++) {
-  //      //DPRINT(F("_intervals: ")); DPRINT(n); DPRINT(F(" ")); DPRINTLN(_intervals[n]);
-  //      if (_intervals[n-1] <= 0) {
-  //        break;
-  //      }
-  //    }
-  //    return n;
-  //  }
   
   int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
     int n;
@@ -151,16 +140,16 @@
     
   // Handles start-stop blinker and blinker cycling
   void Led::handleBlinker() {
-  
-    //Serial.println(current_phase);
-    //Serial.println(intervals[current_phase]);
-    //Serial.println(led_state);
-    //Serial.println(current_ms);
-    //Serial.println(previous_ms);
-    //Serial.println(" ");
+    //DPRINTLN("Led::handleBlinker() current data:");
+    //DPRINTLN(current_phase);
+    //DPRINTLN(intervals[current_phase]);
+    //DPRINTLN(led_state);
+    //DPRINTLN(current_ms);
+    //DPRINTLN(previous_ms);
+    //DPRINTLN(" ");
 
     // If the current interval has expired
-    if (current_ms - previous_ms >= intervals[current_phase]) {
+    if (current_ms - previous_ms >= (unsigned long)intervals[current_phase]) {
       // Increments the led phase, or resets it to zero,
       // then calls startPhase()
       //int ary_size = sizeof(intervals)/sizeof(*intervals);
