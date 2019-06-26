@@ -125,7 +125,7 @@
 
 
   void setup() {
-    Serial.begin(9600);
+    Serial.begin(57600);
     while (! Serial) {
       delay(10);
     }
