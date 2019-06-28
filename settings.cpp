@@ -124,6 +124,77 @@
     //EEPROM.put(100, this);
   }
 
+  void Storage::getSettingByIndex (int index, char _result[2][SETTINGS_NAME_SIZE]) {
+    switch(index) {
+      case 0 :
+        sprintf(_result[0], "%s", F("TAG_LAST_READ_TIMEOUT"));
+        sprintf(_result[1], "%lu", TAG_LAST_READ_TIMEOUT);
+        break;
+      case 1 :
+        sprintf(_result[0], "%s", F("TAG_READ_SLEEP_INTERVAL"));
+        sprintf(_result[1], "%lu", TAG_READ_SLEEP_INTERVAL);
+        break;
+      case 2 :
+        sprintf(_result[0], "%s", F("READER_CYCLE_LOW_DURATION"));
+        sprintf(_result[1], "%lu", READER_CYCLE_LOW_DURATION);
+        break;
+      case 3 :
+        sprintf(_result[0], "%s", F("READER_CYCLE_HIGH_DURATION"));
+        sprintf(_result[1], "%lu", READER_CYCLE_HIGH_DURATION);
+        break;
+      case 4 :
+        sprintf(_result[0], "%s", F("READER_POWER_CONTROL_PIN"));
+        sprintf(_result[1], "%u", READER_POWER_CONTROL_PIN);
+        break;
+      case 5 :
+        sprintf(_result[0], "%s", F("admin_timeout"));
+        sprintf(_result[1], "%lu", admin_timeout);
+        break;
+      case 6 :
+        sprintf(_result[0], "%s", F("proximity_state"));
+        sprintf(_result[1], "%i", proximity_state);
+        break;
+      case 7 :
+        sprintf(_result[0], "%s", F("enable_debug"));
+        sprintf(_result[1], "%i", enable_debug);
+        break;
+      case 8 :
+        sprintf(_result[0], "%s", F("DEFAULT_READER"));
+        sprintf(_result[1], "%s", DEFAULT_READER);
+        break;
+      case 9 :
+        sprintf(_result[0], "%s", F("LED_PIN"));
+        sprintf(_result[1], "%i", LED_PIN);
+        break;
+      case 10 :
+        sprintf(_result[0], "%s", F("BT_RXTX"));
+        sprintf(_result[1], "%i", BT_RXTX);
+        break;
+      case 11 :
+        sprintf(_result[0], "%s", F("RFID_SERIAL_RX"));
+        sprintf(_result[1], "%i", RFID_SERIAL_RX);
+        break;
+      case 12 :
+        sprintf(_result[0], "%s", F("HW_SERIAL_BAUD"));
+        sprintf(_result[1], "%li", HW_SERIAL_BAUD);
+        break;
+      case 13 :
+        sprintf(_result[0], "%s", F("DEBUG_PIN"));
+        sprintf(_result[1], "%i", DEBUG_PIN);
+        break;
+      case 14 :
+        sprintf(_result[0], "%s", F("BT_BAUD"));
+        sprintf(_result[1], "%li", BT_BAUD);
+        break;
+      case 15 :
+        sprintf(_result[0], "%s", F("RFID_BAUD"));
+        sprintf(_result[1], "%li", RFID_BAUD);
+        break;
+
+      default:
+        break;
+    }
+  }
 
 
   Storage loadStorage(const char _name[]) {

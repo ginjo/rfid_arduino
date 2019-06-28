@@ -8,6 +8,8 @@
 // This could allow a menu option for "Add tag from scanner",
 // vs the current add-tag-from-keyboard menu option.
 
+// TODO: Create a function:  prompt(char message[], char callback[]).
+
 #include "serial_menu.h"
 
   //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
@@ -514,19 +516,18 @@
   void SerialMenu::menuSettings() {
     //selected_menu_item = NULL;
     selected_menu_item = -1;
-    
-    serial_port->println(F("Settings"));
-    serial_port->println(F("0. Return to main menu: "));
-    serial_port->print(F("1. TAG_LAST_READ_TIMEOUT: ")); serial_port->println(S.TAG_LAST_READ_TIMEOUT);
-    serial_port->print(F("2. TAG_READ_SLEEP_INTERVAL: ")); serial_port->println(S.TAG_READ_SLEEP_INTERVAL);
-    serial_port->print(F("3. READER_CYCLE_LOW_DURATION: ")); serial_port->println(S.READER_CYCLE_LOW_DURATION);
-    serial_port->print(F("4. READER_CYCLE_HIGH_DURATION: ")); serial_port->println(S.READER_CYCLE_HIGH_DURATION);
-    serial_port->print(F("5. READER_POWER_CONTROL_PIN: ")); serial_port->println(S.READER_POWER_CONTROL_PIN);
-    serial_port->print(F("6. proximity_state: ")); serial_port->println(S.proximity_state);
-    serial_port->print(F("7. admin_timeout: ")); serial_port->println(S.admin_timeout);
-    serial_port->print(F("8. enable_debug: ")); serial_port->println(S.enable_debug);
-    //serial_port->print(F("9. RAW_TAG_LENGTH: ")); serial_port->println(S.RAW_TAG_LENGTH);
-    serial_port->println("");
+
+    // Prints out all settings can use variable int '*' in format string here,
+    // since it work in onlinegdb.com. See my getSettingByIndex.cpp example.
+    for (int n=0; n < 16; n++) {
+      char tupple[2][SETTINGS_NAME_SIZE];
+      char output[SETTINGS_NAME_SIZE*2];
+      S.getSettingByIndex(n, tupple);
+      sprintf(output, "%2i. %-32s %s", n+1, tupple[0], tupple[1]);
+      serial_port->println(output);
+    }
+
+    serial_port->print("\r\n> ");
 
     setInputMode("char");
     setCallbackFunction("menuSelectedSetting");
@@ -548,6 +549,8 @@
     
     DPRINT(F("menuSelectedSetting set selected_menu_item to: "));
     DPRINTLN(selected_menu_item);
+
+    // TODO: Use the new getSettingsFromIndex() function, plus strtol here.
 
     // See note for menuSelectedMainItem().
     switch (byt) {

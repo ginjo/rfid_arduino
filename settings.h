@@ -37,6 +37,7 @@
 
   #define storage_name_size 16
   #define DEFAULT_READER_SIZE 16
+  #define SETTINGS_NAME_SIZE 32
 
 
   // TODO: Integrate loading of GlobalSettings from EEPROM,
@@ -56,10 +57,15 @@
   // How would we do this? Probably need a hardware pin to signal it?
 
   struct Storage {
-
+    /*  Private implementation details:
+     *  storage_name is a string representation
+     *  of the subclass name, since we can't
+     *  instrospect the name at runtime.
+     *  TODO: Should this be a 'const'?
+     */
     char storage_name[storage_name_size];
-    
-    /*  Variables  */
+
+    /*  Global Settings  */
     
     uint32_t TAG_LAST_READ_TIMEOUT;
     uint32_t TAG_READ_SLEEP_INTERVAL;
@@ -94,6 +100,7 @@
     
     int  updateProximityState(int);
     bool updateSetting(int, char[]);
+    void getSettingByIndex(int, char[2][SETTINGS_NAME_SIZE]);
     void save();
   };  
 
