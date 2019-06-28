@@ -96,6 +96,7 @@
  //       It prevents the Reader instance for processing the tag. Is this also a UB whack-a-mole thing?
  //       Upon further inspection, the problem appears to be that the RFID serial channel is getting
  //       garbled data, or at least the program is seeing it as garbled. So, I disabled the BTmenu logging.
+ // TODO: Put all literal data that hasn't been incorporated into Settings into macros.
  
  
   #include <SoftwareSerial.h>
@@ -106,20 +107,20 @@
   #include "serial_menu.h"
   #include "reader.h"
   #include "rfid.h"
-  
+
 
   // Brings up a blinker LED.
-  Led Blinker(8);
+  Led Blinker(S.LED_PIN);
 
   // Creates serial port for admin console.
   // NOTE: This 'BTserial' is declared as extern in settings.h.
-  SoftwareSerial BTserial(2, 3); // RX | TX
+  SoftwareSerial BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
   // Creates instance of admin console.
   SerialMenu BTmenu(&BTserial, &Blinker);
 
   // Creates serial port for RFID reader.
-  SoftwareSerial RfidSerial(4,6); // not sending anything to reader, so tx on unused pin
+  SoftwareSerial RfidSerial(S.RFID_SERIAL_RX, 0); // not sending anything to reader, so tx on unused pin
 
   // Creates instance of RFID reader.
   Reader * RfidReader = Readers[2]; // works
@@ -134,7 +135,7 @@
 
 
   void setup() {
-    Serial.begin(57600);
+    Serial.begin(S.HW_SERIAL_BAUD);
     while (! Serial) {
       delay(10);
     }
@@ -145,12 +146,12 @@
     Serial.println(TIMESTAMP);
 
     // For manual debug/log mode.
-    pinMode(11, INPUT_PULLUP);
-    int D11 = digitalRead(11);
-    Serial.print("Pin D11: ");
-    Serial.println(D11);
-    if (D11 == LOW) {
-      Serial.println("Pin D11 LOW ... enabling debug");
+    pinMode(S.DEBUG_PIN, INPUT_PULLUP);
+    int debug_pin_status = digitalRead(S.DEBUG_PIN);
+    Serial.print("Debug pin status: ");
+    Serial.println(debug_pin_status);
+    if (debug_pin_status == LOW) {
+      Serial.println("Debug pin LOW ... enabling debug");
       S.enable_debug = 1;
     }
 
@@ -159,24 +160,16 @@
     DPRINT(F("Readers[2]->reader_name: "));
     DPRINTLN(Readers[2]->reader_name);
 
-    // This seems to be necessary with the current setup,
-    // otherwise the local vars _intervals[] get lost
-    // when passed to other functions.
-    // This also finally calls the fast-startup-blinker pattern.
-    //Blinker.Off();
-    //Blinker.SlowBlink();
-    //Blinker.FastBlink();
-    //Blinker.Steady();
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
-    BTserial.begin(9600);
+    BTserial.begin(S.BT_BAUD);
 
     // Activates the admin console.
     BTmenu.begin();
 
     // Activates the serial port for the RFID handler.
-    RfidSerial.begin(9600);
+    RfidSerial.begin(S.RFID_BAUD);
 
     // Activates the RFID handler.
     Rfid.begin();

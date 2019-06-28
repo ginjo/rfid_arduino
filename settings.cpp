@@ -4,9 +4,12 @@
   // and Settings, State, whatever should be subclassed.
 
   // TODO: Implement actual EEPROM storage.
-
+  
   Storage::Storage() :
-    
+
+    // This should be a constant per each sublcass of Storage
+    storage_name("settings"),
+  
     // ultimate valid-tag timeout
     TAG_LAST_READ_TIMEOUT(15), // seconds
 
@@ -36,21 +39,21 @@
     DEFAULT_READER("WL-125"),
     //DEFAULT_READER("R7941E")
 
-    state_dev_tmp(1)
+    state_dev_tmp(1),
+
+    LED_PIN(8),
+    BT_RXTX {2,3},
+    RFID_SERIAL_RX(4),
+    HW_SERIAL_BAUD(57600),
+    DEBUG_PIN(11),
+    BT_BAUD(9600),
+    RFID_BAUD(9600)
 
 
   { 
     // ONLY use this for debugging.
     proximity_state = 1;
   }
-
-  // TODO: This is temp for testing.
-  // The data should ultimately be pulled from EEPROM.
-  // Defaults should be in constructor, if that works.
-  extern Storage Settings = {};
-
-  // a reference (alias?) from S to Settings
-  extern Storage& S = Settings;
 
   // TODO: I think this ultimately needs to be integrated into Storage class EEPROM handling.
   int Storage::updateProximityState(int _state) {
@@ -113,6 +116,40 @@
     return false;
   }
 
+  // Saves this Storage instance to the correct storage address.
+  // Sub-classes, like Settings, should carry the info about
+  // what address to use.
+  void Storage::save() {
+    DPRINT(F("Storage::save() using EEPROM.put() with object name: ")); DPRINTLN(storage_name);
+    //EEPROM.put(100, this);
+  }
 
-  
-  
+
+
+  Storage loadStorage(const char _name[]) {
+    Storage result;
+    // if _name == blabla
+       EEPROM.get(100, result);
+    // else if blabla
+    //   return EEPROM.get(something);
+    // endif
+
+    // TODO: Use a different test to validate it's a real Storage object.
+    if (strcmp(result.storage_name, "settings") == 0) {
+      DPRINT(F("loadStorage() loaded: ")); DPRINTLN(result.storage_name);
+      return result;
+    } else {
+      Storage result;
+      DPRINTLN(F("loadStorage() saving new settings object"));
+      result.save();
+      return result;
+    }
+  }
+
+  // TODO: This is temp for testing.
+  // The data should ultimately be pulled from EEPROM.
+  // Defaults should be in constructor, if that works.
+  Storage Settings = loadStorage("settings");
+
+  // a reference (alias?) from S to Settings
+  Storage& S = Settings;

@@ -35,6 +35,9 @@
   #include <EEPROM.h>
   #include <stdarg.h>
 
+  #define storage_name_size 16
+  #define DEFAULT_READER_SIZE 16
+
 
   // TODO: Integrate loading of GlobalSettings from EEPROM,
   // maybe putting defaults in the .h struct definition.
@@ -51,13 +54,13 @@
   // Maybe make it like OpenWRT, with a basic failsafe boot mode, allowing you
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
-  
 
   struct Storage {
+
+    char storage_name[storage_name_size];
     
     /*  Variables  */
     
-    // Mostly time data
     uint32_t TAG_LAST_READ_TIMEOUT;
     uint32_t TAG_READ_SLEEP_INTERVAL;
     uint32_t READER_CYCLE_LOW_DURATION;
@@ -68,10 +71,18 @@
     int proximity_state;
     int enable_debug;
 
-    char DEFAULT_READER[16];
+    char DEFAULT_READER[DEFAULT_READER_SIZE];
 
     // Temporary EEPROM alternative. I don't think this is used.
     int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
+
+    int LED_PIN;
+    int BT_RXTX[2];
+    int RFID_SERIAL_RX;
+    long HW_SERIAL_BAUD;
+    int DEBUG_PIN;
+    long BT_BAUD;
+    long RFID_BAUD;
 
 
     /*  Constructor  */
@@ -81,12 +92,15 @@
 
     /*  Functions  */
     
-    int updateProximityState(int);
+    int  updateProximityState(int);
     bool updateSetting(int, char[]);
+    void save();
   };  
 
   extern Storage Settings;
   extern Storage& S;
   extern SoftwareSerial BTserial;
+
+  extern Storage loadStorage(const char[]);
     
 #endif
