@@ -13,7 +13,7 @@
   #include "settings.h"
   #include "led_blinker.h"
   
-  #define INPUT_BUFFER_LENGTH 16
+  #define INPUT_BUFFER_LENGTH 24
   #define INPUT_MODE_LENGTH 16
   #define CURRENT_FUNCTION_LENGTH 24
   #define TAG_LIST_SIZE 5
@@ -57,7 +57,7 @@
     void menuDeleteTag();
     void menuShowFreeMemory();
     void menuSettings();
-    void menuSelectedSetting(char);
+    void menuSelectedSetting(char[]);
     int  byteToAsciiChrNum(char);
     void getLine(char);
     void receiveTagInput(char);

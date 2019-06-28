@@ -167,7 +167,7 @@
 
       } else if (inputAvailable("menuSelectedSetting")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedSetting"));
-        menuSelectedSetting(buff[0]);
+        menuSelectedSetting(buff);
 
       } else if (inputAvailable("updateSetting")) {
         DPRINT(F("runCallbacks() inputAvailable for updateSetting: "));
@@ -209,10 +209,8 @@
   // Builds a line of input in variable 'buff' until CR or LF is detected,
   // then resets buff_index to 0.
   void SerialMenu::getLine(char byt) {
-    DPRINT(F("getLine() byt, buff: "));
-    DPRINT(char(byt));
-    DPRINT(", ");
-    DPRINTLN((char *)buff);
+    DPRINT(F("getLine() byt"));
+    DPRINTLN(char(byt));
     
     buff[buff_index] = byt;
     buff_index ++;
@@ -225,6 +223,10 @@
       serial_port->println((char*)buff);
       serial_port->println("");
 
+      // Adds string terminator to end of buff.
+      buff[buff_index + 1] = 0;
+
+      // Resets buff_index.
       buff_index = 0;
     }
   }
@@ -534,73 +536,28 @@
   }
 
   // Handle selected setting.
-  void SerialMenu::menuSelectedSetting(char byt) {
+  void SerialMenu::menuSelectedSetting(char bytes[]) {
     DPRINT(F("menuSelectedSetting received byte: "));
-    DPRINTLN((char)byt);
+    DPRINTLN((char *)bytes);
 
-    // NOTE: This is an example of converting a byte
-    // to the integer represented by the ascii character of the byte.
-    // Ex: byte is 55, which is ascii '7', which is integer 7.
-    // TODO: Should this be extracted to its own function?
-    //char str[3]; // ascii only uses 3 digits in base-10.
-    //sprintf(str, "%c", byt); // convert the byte to ascii string.
-    //selected_menu_item = strtol(str, NULL, 10); // convert the string of digits to int.
-    selected_menu_item = byteToAsciiChrNum(byt);
+    selected_menu_item = strtol(bytes, NULL, 10);
     
     DPRINT(F("menuSelectedSetting set selected_menu_item to: "));
     DPRINTLN(selected_menu_item);
 
-    // TODO: Use the new getSettingsFromIndex() function, plus strtol here.
-
-    // See note for menuSelectedMainItem().
-    switch (byt) {
-      // NOTE: A missing 'break' will allow
-      // drop-thru to the next case. It's weird, don't do it.
-      case '0':
-        menuMain();
-        return;
-        break; // probbly not necessary, but just being safe.
-      case '1':
-        serial_port->print(F("TAG_LAST_READ_TIMEOUT: "));
-        serial_port->println(S.TAG_LAST_READ_TIMEOUT);
-        break;
-      case '2':
-        serial_port->print(F("TAG_READ_SLEEP_INTERVAL: "));
-        serial_port->println(S.TAG_READ_SLEEP_INTERVAL);
-        break;
-      case '3':
-        serial_port->print(F("READER_CYCLE_LOW_DURATION: "));
-        serial_port->println(S.READER_CYCLE_LOW_DURATION);
-        break;
-      case '4':
-        serial_port->print(F("READER_CYCLE_HIGH_DURATION: "));
-        serial_port->println(S.READER_CYCLE_HIGH_DURATION);
-        break;
-      case '5':
-        serial_port->print(F("READER_POWER_CONTROL_PIN: "));
-        serial_port->println(S.READER_POWER_CONTROL_PIN);
-        break;
-      case '6':
-        serial_port->print(F("proximity_state: "));
-        serial_port->println(S.proximity_state);
-        break;
-      case '7':
-        serial_port->print(F("admin_timeout: "));
-        serial_port->println(S.admin_timeout);
-        break;
-      case '8':
-        serial_port->print(F("enable_debug: "));
-        serial_port->println(S.enable_debug);
-        break;
-      //  case '9':
-      //    serial_port->print(F("RAW_TAG_LENGTH: "));
-      //    serial_port->println(S.RAW_TAG_LENGTH);
-      //    break;
-      default:
-        menuSettings();
-        return;
+    if (selected_menu_item == 0) {
+      menuMain();
+      return;
+    } else if (selected_menu_item > 0 && selected_menu_item <=15) {
+      char tupple[2][SETTINGS_NAME_SIZE];
+      S.getSettingByIndex(selected_menu_item, tupple);
+      serial_port->print(tupple[0]); serial_port->print(": ");
+      serial_port->println(tupple[1]);
+    } else {
+      menuSettings();
+      return;
     }
-    
+
     serial_port->print(F("Type a new value for setting: "));
     setInputMode("line");
     setCallbackFunction("updateSetting");
