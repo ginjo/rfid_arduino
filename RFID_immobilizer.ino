@@ -97,6 +97,13 @@
  //       Upon further inspection, the problem appears to be that the RFID serial channel is getting
  //       garbled data, or at least the program is seeing it as garbled. So, I disabled the BTmenu logging.
  // TODO: Put all literal data that hasn't been incorporated into Settings into macros.
+ // TODO: Find a way to use F() to wrap Settings var names in getSettingsByIndex().
+ // TODO: When power is first applied, reader-reset-pin appears to be help low indefinitely,
+ //       and reader failes to read tag (after the first one at boot time).
+ //       But even when reader is manually triggered, Ard fails to process the tag successfully.
+ //       A warm (not cold!) reboot of the Ard is necessary to get it working again.
+ //       Update: this only happens in production mode - in debug mode, the reader works fine. Arrrgg!
+
  
  
   #include <SoftwareSerial.h>

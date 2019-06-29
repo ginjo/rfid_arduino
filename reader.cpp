@@ -140,8 +140,8 @@
     DPRINT(F(", id_len: "));
     DPRINT(id_len);
     
-    DPRINT(F(", checksum (chars representing hex): "));
-    DPRINT(_tag[11]); DPRINTLN(_tag[12]);
+    DPRINT(F(", checksum (raw bytes): "));
+    DPRINT(_tag[11]); DPRINT(","); DPRINTLN(_tag[12]);
 
     char id_char[id_len+1] = ""; // need to initialize this to empty.
     

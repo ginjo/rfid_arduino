@@ -238,7 +238,9 @@
     strncpy(input_mode, "line", INPUT_MODE_LENGTH);
     
     DPRINT(F("setInputMode() to: "));
-    DPRINTLN(input_mode);
+    DPRINT(input_mode);
+    DPRINT(F(", all input uses 'length' now, this used to be: "))
+    DPRINTLN(str);
   }
 
   bool SerialMenu::matchInputMode(const char mode[]) {
@@ -289,7 +291,7 @@
 
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
-  int SerialMenu::byteToAsciiChrNum(char byt) {
+  int SerialMenu::byteToAsciiChrNum(const char byt) {
     DPRINT(F("SerialMenu::byteToAsciiChrNum received byte: "));
     DPRINT(char(byt));
     DPRINT(" (");
@@ -301,9 +303,10 @@
     }
     //char str[2]; // need room for null-terminator?
     //sprintf(str, "%c", byt); // convert the byte to ascii string.
-    char * str = &byt; 
-    
-    return (int)strtol(str, NULL, 10); // convert the string of digits to int.
+    //char * str = &byt; 
+    //return (int)strtol(str, NULL, 10); // convert the string of digits to int.
+    // I don't think we need to use the str... it should the exactly the same as byt.
+    return (int)strtol(&byt, NULL, 10);
   }
 
   //bool SerialMenu::addTagString(char str[TAG_LENGTH]) {
@@ -314,7 +317,7 @@
     // OR, if it's a valid hex string, use that.
     //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
     //if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
-    if (str[0] == 13 || str[0] == 10) {
+    if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
       //strncpy(input_mode, "menu", INPUT_MODE_LENGTH);
       //setInputMode("char");
       //setCallbackFunction("menuSelectedMainItem");
@@ -521,17 +524,17 @@
 
     // Prints out all settings can use variable int '*' in format string here,
     // since it work in onlinegdb.com. See my getSettingByIndex.cpp example.
-    for (int n=0; n < 16; n++) {
+    for (int n=1; n <= 16; n++) {
       char tupple[2][SETTINGS_NAME_SIZE];
       char output[SETTINGS_NAME_SIZE*2];
       S.getSettingByIndex(n, tupple);
-      sprintf(output, "%2i. %-32s %s", n+1, tupple[0], tupple[1]);
+      sprintf(output, "%2i. %-32s %s", n, tupple[0], tupple[1]);
       serial_port->println(output);
     }
 
     serial_port->print("\r\n> ");
 
-    setInputMode("char");
+    setInputMode("line");
     setCallbackFunction("menuSelectedSetting");
   }
 

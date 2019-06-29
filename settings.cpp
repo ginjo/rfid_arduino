@@ -48,8 +48,6 @@
     DEBUG_PIN(11),
     BT_BAUD(9600),
     RFID_BAUD(9600)
-
-
   { 
     // ONLY use this for debugging.
     proximity_state = 1;
@@ -75,45 +73,73 @@
   // Updates a setting given setting index and data.
   bool Storage::updateSetting(int _index, char _data[]) {
 
-    DPRINT(F("S.updateSetting() called with index: "));
-    DPRINTLN(_index);
-    
+    DPRINT(F("S.updateSetting() "));
+    DPRINT(_index); DPRINT(", ");
+
+    char setting_name[SETTINGS_NAME_SIZE];
+    strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
+
+    DPRINT(setting_name); DPRINT(", ");
+    DPRINTLN(_data);
+
+    // Note that this is a 1-based list (not 0-based).
     switch (_index) {
-      case 7:
-        Serial.print(F("S.updateSetting() updating 'admin_timeout' with: "));
-        admin_timeout = strtol(_data, NULL, 10);
-        // This setting should never be so low as to prevent admining at startup.
-        if (admin_timeout < 10) { admin_timeout = 10; }
-        Serial.println(admin_timeout);
-        return true;
-        break;
       case 1:
-        Serial.print(F("S.updateSetting() updating 'TAG_LAST_READ_TIMEOUT' with: "));
-        TAG_LAST_READ_TIMEOUT = strtol(_data, NULL, 10);
-        Serial.println(TAG_LAST_READ_TIMEOUT);
-        return true;
+        TAG_LAST_READ_TIMEOUT = (uint32_t)strtol(_data, NULL, 10);
+        break;
+      case 2:
+        TAG_READ_SLEEP_INTERVAL = (uint32_t)strtol(_data, NULL, 10);
+        break;
+      case 3:
+        READER_CYCLE_LOW_DURATION = (uint32_t)strtol(_data, NULL, 10);
         break;
       case 4:
-        Serial.print(F("S.updateSetting() updating 'READER_CYCLE_HIGH_DURATION' with: "));
-        READER_CYCLE_HIGH_DURATION = (int)strtol(_data, NULL, 10);
-        Serial.println(READER_CYCLE_HIGH_DURATION);
-        return true;
+        READER_CYCLE_HIGH_DURATION = (uint32_t)strtol(_data, NULL, 10);
+        break;
+      case 5:
+        READER_POWER_CONTROL_PIN = (uint8_t)strtol(_data, NULL, 10);
+        break;
+      case 6:
+        admin_timeout = (uint32_t)strtol(_data, NULL, 10);
+        // This setting should never be so low as to prevent admining at startup.
+        if (admin_timeout < 10) { admin_timeout = 10; }
+        break;
+      case 7:
+        proximity_state = (int)strtol(_data, NULL, 10);
         break;
       case 8:
-        Serial.print(F("S.updateSetting() updating 'enable_debug' with: "));
-        enable_debug = strtol(_data, NULL, 10);
-        Serial.println(enable_debug);
-        return true;
+        enable_debug = (int)strtol(_data, NULL, 10);
         break;
-      //  case 9:
-      //    Serial.print(F("S.updateSetting() updating 'RAW_TAG_LENGTH' with: "));
-      //    RAW_TAG_LENGTH = strtol(_data, NULL, 10);
-      //    Serial.println(RAW_TAG_LENGTH);
-      //    return true;
-      //    break;
+      case 9:
+        strcpy(DEFAULT_READER, (char *)_data);
+        break;
+      case 10:
+        LED_PIN = (int)strtol(_data, NULL, 10);
+        break;
+      case 11:
+        //BT_RXTX = (int)strtol(_data, NULL, 10);
+        Serial.println(F("BT_RXTX needs a proper setter for updateSetting()"));
+        break;
+      case 12:
+        RFID_SERIAL_RX = (int)strtol(_data, NULL, 10);
+        break;
+      case 13:
+        HW_SERIAL_BAUD = (long)strtol(_data, NULL, 10);
+        break;
+      case 14:
+        DEBUG_PIN = (int)strtol(_data, NULL, 10);
+        break;
+      case 15:
+        BT_BAUD = (long)strtol(_data, NULL, 10);
+        break;
+      case 16:
+        RFID_BAUD = (long)strtol(_data, NULL, 10);
+        break;
+      default :
+        return false;
     }
 
-    return false;
+    return true;
   }
 
   // Saves this Storage instance to the correct storage address.
@@ -125,69 +151,56 @@
   }
 
   void Storage::getSettingByIndex (int index, char _result[2][SETTINGS_NAME_SIZE]) {
+    strcpy_P(_result[0], (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
+    DPRINT(F("Storage::getSettingByIndex: ")); DPRINT(index); DPRINT(", "); DPRINTLN(_result[0]);
+    
     switch(index) {
-      case 0 :
-        sprintf(_result[0], "%s", F("TAG_LAST_READ_TIMEOUT"));
+      case 1 :
         sprintf(_result[1], "%lu", TAG_LAST_READ_TIMEOUT);
         break;
-      case 1 :
-        sprintf(_result[0], "%s", F("TAG_READ_SLEEP_INTERVAL"));
+      case 2 :
         sprintf(_result[1], "%lu", TAG_READ_SLEEP_INTERVAL);
         break;
-      case 2 :
-        sprintf(_result[0], "%s", F("READER_CYCLE_LOW_DURATION"));
+      case 3 :
         sprintf(_result[1], "%lu", READER_CYCLE_LOW_DURATION);
         break;
-      case 3 :
-        sprintf(_result[0], "%s", F("READER_CYCLE_HIGH_DURATION"));
+      case 4 :
         sprintf(_result[1], "%lu", READER_CYCLE_HIGH_DURATION);
         break;
-      case 4 :
-        sprintf(_result[0], "%s", F("READER_POWER_CONTROL_PIN"));
+      case 5 :
         sprintf(_result[1], "%u", READER_POWER_CONTROL_PIN);
         break;
-      case 5 :
-        sprintf(_result[0], "%s", F("admin_timeout"));
+      case 6 :
         sprintf(_result[1], "%lu", admin_timeout);
         break;
-      case 6 :
-        sprintf(_result[0], "%s", F("proximity_state"));
+      case 7 :
         sprintf(_result[1], "%i", proximity_state);
         break;
-      case 7 :
-        sprintf(_result[0], "%s", F("enable_debug"));
+      case 8 :
         sprintf(_result[1], "%i", enable_debug);
         break;
-      case 8 :
-        sprintf(_result[0], "%s", F("DEFAULT_READER"));
+      case 9 :
         sprintf(_result[1], "%s", DEFAULT_READER);
         break;
-      case 9 :
-        sprintf(_result[0], "%s", F("LED_PIN"));
+      case 10 :
         sprintf(_result[1], "%i", LED_PIN);
         break;
-      case 10 :
-        sprintf(_result[0], "%s", F("BT_RXTX"));
-        sprintf(_result[1], "%i", BT_RXTX);
-        break;
       case 11 :
-        sprintf(_result[0], "%s", F("RFID_SERIAL_RX"));
-        sprintf(_result[1], "%i", RFID_SERIAL_RX);
+        sprintf(_result[1], "%s", (char *)BT_RXTX);
         break;
       case 12 :
-        sprintf(_result[0], "%s", F("HW_SERIAL_BAUD"));
-        sprintf(_result[1], "%li", HW_SERIAL_BAUD);
+        sprintf(_result[1], "%i", RFID_SERIAL_RX);
         break;
       case 13 :
-        sprintf(_result[0], "%s", F("DEBUG_PIN"));
-        sprintf(_result[1], "%i", DEBUG_PIN);
+        sprintf(_result[1], "%li", HW_SERIAL_BAUD);
         break;
       case 14 :
-        sprintf(_result[0], "%s", F("BT_BAUD"));
-        sprintf(_result[1], "%li", BT_BAUD);
+        sprintf(_result[1], "%i", DEBUG_PIN);
         break;
       case 15 :
-        sprintf(_result[0], "%s", F("RFID_BAUD"));
+        sprintf(_result[1], "%li", BT_BAUD);
+        break;
+      case 16 :
         sprintf(_result[1], "%li", RFID_BAUD);
         break;
 
@@ -199,6 +212,9 @@
 
   Storage loadStorage(const char _name[]) {
     Storage result;
+
+    DPRINT("loadStorage() for: "); DPRINTLN(_name);
+    
     // if _name == blabla
        EEPROM.get(100, result);
     // else if blabla
@@ -224,3 +240,6 @@
 
   // a reference (alias?) from S to Settings
   Storage& S = Settings;
+
+
+  

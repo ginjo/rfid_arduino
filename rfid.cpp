@@ -53,6 +53,9 @@
     
     // Initializes the reader power/reset control.
     //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
+    // This first one is to clear any built-up charge, as something is holding the reader low at startup.
+    digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
+    delay(2);
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
   }
 
