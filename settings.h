@@ -39,8 +39,7 @@
   #define DEFAULT_READER_SIZE 16
   #define SETTINGS_SIZE 16 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
-
-
+  
 
   // TODO: Integrate loading of GlobalSettings from EEPROM,
   // maybe putting defaults in the .h struct definition.
@@ -92,6 +91,7 @@
     int DEBUG_PIN;
     long BT_BAUD;
     long RFID_BAUD;
+    int OUTPUT_SWITCH_PIN;
 
 
     /*  Constructor  */

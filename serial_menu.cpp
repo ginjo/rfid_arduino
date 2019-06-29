@@ -102,7 +102,7 @@
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: Create a Switch object that handles all switch actions (start, stop, initial, cleanup, etc).
-    if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(13, 0); }
+    if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
     checkSerialPort();

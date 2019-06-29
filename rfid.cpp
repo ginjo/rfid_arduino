@@ -29,6 +29,10 @@
   //  }
 
   void RFID::begin() {
+    pinMode(13, OUTPUT);
+    pinMode(S.READER_POWER_CONTROL_PIN, OUTPUT);
+    
+    
     // Starts up with whatever state we left off in.
     // Protects against thief using 'admin' to move
     // in fits and starts, since a failed proximity
@@ -49,7 +53,7 @@
     Serial.print(F(", with EEPROM proximity state: "));
     Serial.println(proximity_state);
     
-    digitalWrite(13, proximity_state);
+    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
     
     // Initializes the reader power/reset control.
     //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
@@ -368,7 +372,7 @@
     }
 
     // TODO: Replace 13 with a S.<setting>
-    digitalWrite(13, proximity_state);
+    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
   }
 
   void RFID::setProximityState(int _state) {

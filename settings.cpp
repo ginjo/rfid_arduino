@@ -47,7 +47,9 @@
     HW_SERIAL_BAUD(57600),
     DEBUG_PIN(11),
     BT_BAUD(9600),
-    RFID_BAUD(9600)
+    RFID_BAUD(9600),
+
+    OUTPUT_SWITCH_PIN(13)
   { 
     // ONLY use this for debugging.
     proximity_state = 1;
