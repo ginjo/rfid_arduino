@@ -16,32 +16,26 @@
   #define VERSION "0.1.0.pre84"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
-
-
-  // This stuff should probably in a debug.h file.
-  
-  #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
-  #ifdef DEBUG    //Macros are usually in all capital letters.
-    #define DPRINT(...)    if(Settings.enable_debug){Serial.print(__VA_ARGS__);} // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
-    #define DPRINTLN(...)  if(Settings.enable_debug){Serial.println(__VA_ARGS__);} // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
-  #else
-    #define DPRINT(...)     //now defines a blank line
-    #define DPRINTLN(...)   //now defines a blank line
-  #endif
-
   #include <Arduino.h>
   #include <SoftwareSerial.h>
   #include <string.h>
   #include <EEPROM.h>
   #include <stdarg.h>
 
-  #define storage_name_size 16
+  #include "storage.h"
+  #include "logger.h"
+  //#include "storage.h"
+  
+
+  // Moved to storage.h
+  //#define storage_name_size 16
+  
   #define DEFAULT_READER_SIZE 16
   #define SETTINGS_SIZE 16 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   
 
-  // TODO: Integrate loading of GlobalSettings from EEPROM,
+  // TODO: Integrate loading of Global Settings from EEPROM,
   // maybe putting defaults in the .h struct definition.
   //
   // TODO: You may need to wait until after admin window to load
@@ -57,14 +51,15 @@
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
 
-  struct Storage {
+  struct Settings : public Storage {
     /*  Private implementation details:
      *  storage_name is a string representation
      *  of the subclass name, since we can't
      *  instrospect the name at runtime.
      *  TODO: Should this be a 'const'?
      */
-    char storage_name[storage_name_size];
+     // Moved to storage.h
+    //char storage_name[storage_name_size];
 
     /*  Global Settings  */
     
@@ -75,7 +70,8 @@
     uint8_t READER_POWER_CONTROL_PIN;
 
     uint32_t admin_timeout;
-    int proximity_state;
+    int proximity_state;  //  Put this in a state.h file (and class).
+    
     int enable_debug;
 
     char DEFAULT_READER[DEFAULT_READER_SIZE];
@@ -94,9 +90,9 @@
     int OUTPUT_SWITCH_PIN;
 
 
-    /*  Constructor  */
+    /*  Constructors  */
 
-    Storage();
+    Settings();
     
 
     /*  Functions  */
@@ -104,17 +100,24 @@
     int  updateProximityState(int);
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char[2][SETTINGS_NAME_SIZE]);
+
     void save();
+
+
+    /*  Static  */
+
+    static Settings current;
+
+    static Settings load();
   };  
 
 
   /*  Global / External  Vars & Funcs  */
 
-  extern Storage Settings;
-  extern Storage& S;
+  //extern Settings CurrentSettings; // converted to static Settings::current
+  extern Settings& S;
   extern SoftwareSerial BTserial;
 
-  extern Storage loadStorage(const char[]);
 
   // Creates an extern constant 2D char array 'SETTING_NAMES' that holds Settings var names.
   // This is used to get names/values by index and to iterate through Settings
@@ -147,7 +150,6 @@
     const static char str_13[] PROGMEM =  "DEBUG_PIN";
     const static char str_14[] PROGMEM =  "BT_BAUD";
     const static char str_15[] PROGMEM =  "RFID_BAUD";
-    
     extern const char *const SETTING_NAMES[] PROGMEM = {
       str_0,
       str_1,
@@ -168,4 +170,4 @@
     };
   } // end nameless namespace
     
-#endif
+#endif  // end __SETTINGS_H__

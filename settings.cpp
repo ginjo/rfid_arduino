@@ -5,10 +5,9 @@
 
   // TODO: Implement actual EEPROM storage.
   
-  Storage::Storage() :
-
-    // This should be a constant per each sublcass of Storage
-    storage_name("settings"),
+  Settings::Settings() :
+    // See for explanation: https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
+    Storage("settings"),
   
     // ultimate valid-tag timeout
     TAG_LAST_READ_TIMEOUT(15), // seconds
@@ -51,12 +50,15 @@
 
     OUTPUT_SWITCH_PIN(13)
   { 
+    //storage_name = "settings";
+    
     // ONLY use this for debugging.
+    // Always comment this out for production.
     proximity_state = 1;
   }
 
   // TODO: I think this ultimately needs to be integrated into Storage class EEPROM handling.
-  int Storage::updateProximityState(int _state) {
+  int Settings::updateProximityState(int _state) {
     int previous_proximity_state = proximity_state;
     proximity_state = _state;
     //  Serial.print(F("Storing proximity_state: "));
@@ -73,7 +75,7 @@
   }
 
   // Updates a setting given setting index and data.
-  bool Storage::updateSetting(int _index, char _data[]) {
+  bool Settings::updateSetting(int _index, char _data[]) {
 
     DPRINT(F("S.updateSetting() "));
     DPRINT(_index); DPRINT(", ");
@@ -144,15 +146,7 @@
     return true;
   }
 
-  // Saves this Storage instance to the correct storage address.
-  // Sub-classes, like Settings, should carry the info about
-  // what address to use.
-  void Storage::save() {
-    DPRINT(F("Storage::save() using EEPROM.put() with object name: ")); DPRINTLN(storage_name);
-    //EEPROM.put(100, this);
-  }
-
-  void Storage::getSettingByIndex (int index, char _result[2][SETTINGS_NAME_SIZE]) {
+  void Settings::getSettingByIndex (int index, char _result[2][SETTINGS_NAME_SIZE]) {
     strcpy_P(_result[0], (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
     DPRINT(F("Storage::getSettingByIndex: ")); DPRINT(index); DPRINT(", "); DPRINTLN(_result[0]);
     
@@ -212,36 +206,26 @@
   }
 
 
-  Storage loadStorage(const char _name[]) {
-    Storage result;
-
-    DPRINT("loadStorage() for: "); DPRINTLN(_name);
+  static Settings Settings::load() {
+    int address = 100;
+    //Settings result = Storage::load(address);
     
-    // if _name == blabla
-       EEPROM.get(100, result);
-    // else if blabla
-    //   return EEPROM.get(something);
-    // endif
-
-    // TODO: Use a different test to validate it's a real Storage object.
-    if (strcmp(result.storage_name, "settings") == 0) {
-      DPRINT(F("loadStorage() loaded: ")); DPRINTLN(result.storage_name);
-      return result;
-    } else {
-      Storage result;
-      DPRINTLN(F("loadStorage() saving new settings object"));
-      result.save();
-      return result;
+    Settings result;
+    DPRINT("Settings::load() from eeprom adrs: "); DPRINTLN(address);
+    
+    EEPROM.get(address, result);
+    
+    if (result.storage_name != "settings") {
+      Settings result;
     }
+    
+    return result;
   }
 
-  // TODO: This is temp for testing.
-  // The data should ultimately be pulled from EEPROM.
-  // Defaults should be in constructor, if that works.
-  Storage Settings = loadStorage("settings");
+  Settings Settings::current = Settings::load();
 
-  // a reference (alias?) from S to Settings
-  Storage& S = Settings;
+  // a reference (alias?) from S to CurrentSettings
+  Settings& S = Settings::current;
 
 
   
