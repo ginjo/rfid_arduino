@@ -11,6 +11,7 @@
     power_control_logic(_control_logic)
   {
     strncpy(reader_name, _name, sizeof(reader_name));
+    // WARN: Probably bad to reference any global var or funcs in a constructor.
     DPRINT(F("Constructing Reader for: "));
     DPRINTLN(_name);
   }

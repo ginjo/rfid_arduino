@@ -143,6 +143,8 @@
 
 
   void setup() {
+    Settings::load(SETTINGS_EEPROM_ADDRESS);
+    
     Serial.begin(S.HW_SERIAL_BAUD);
     while (! Serial) {
       delay(10);
@@ -153,13 +155,17 @@
     Serial.print(F(", "));
     Serial.println(TIMESTAMP);
 
+    Serial.print(F("Loaded Settings with checksum: "));
+    Serial.print((char *)S.settings_name); Serial.print(" 0x");
+    Serial.println(S.myChecksum(), 16);
+
     // For manual debug/log mode.
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
     int debug_pin_status = digitalRead(S.DEBUG_PIN);
-    Serial.print("Debug pin status: ");
+    Serial.print(F("Debug pin status: "));
     Serial.println(debug_pin_status);
     if (debug_pin_status == LOW) {
-      Serial.println("Debug pin LOW ... enabling debug");
+      Serial.println(F("Debug pin LOW ... enabling debug"));
       S.enable_debug = 1;
     }
 

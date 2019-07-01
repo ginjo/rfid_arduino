@@ -4,8 +4,6 @@
   
   This also demonstrates how to do globally accessible vars and functions.
   
-  TODO: Consider the Storage class as an abstract base,
-        with Settings, Tags, and State as derived classes.
   TODO: SEE https://community.particle.io/t/eeprom-put-using-a-multi-variable-struct/30561/7
         for an easier way to use EEPROM: put()'ing a struct object.
 */
@@ -13,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre84"
+  #define VERSION "0.1.0.pre86"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -22,17 +20,12 @@
   #include <EEPROM.h>
   #include <stdarg.h>
 
-  #include "storage.h"
   #include "logger.h"
-  //#include "storage.h"
-  
-
-  // Moved to storage.h
-  //#define storage_name_size 16
-  
+    
   #define DEFAULT_READER_SIZE 16
   #define SETTINGS_SIZE 16 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
+  #define SETTINGS_EEPROM_ADDRESS 100
   
 
   // TODO: Integrate loading of Global Settings from EEPROM,
@@ -51,15 +44,15 @@
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
 
-  struct Settings : public Storage {
-    /*  Private implementation details:
-     *  storage_name is a string representation
-     *  of the subclass name, since we can't
-     *  instrospect the name at runtime.
-     *  TODO: Should this be a 'const'?
+  class Settings {
+  public:
+    /*  Implementation details, not settings:
+     *  settings_name is a string representation
+     *  of the Settings instance Currently usint
+     *  it to verify successful loading of instance
+     *  from EEPROM (not sure if that works yet).
      */
-     // Moved to storage.h
-    //char storage_name[storage_name_size];
+    char settings_name[SETTINGS_NAME_SIZE];
 
     /*  Global Settings  */
     
@@ -93,22 +86,23 @@
     /*  Constructors  */
 
     Settings();
-    
+
 
     /*  Functions  */
     
     int  updateProximityState(int);
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char[2][SETTINGS_NAME_SIZE]);
+    uint8_t myChecksum();
 
-    void save();
+    void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
 
 
     /*  Static  */
 
     static Settings current;
 
-    static Settings load();
+    static Settings * load(int address = SETTINGS_EEPROM_ADDRESS);
   };  
 
 
@@ -131,7 +125,7 @@
   //  4. Setting by index in settings.cpp
   //  5. Names index in settings.h (for storage of strings in PROGMEM).
   //
-  namespace {  // a nameless namespace
+  namespace {  // a nameless namespace helps build a 2D array of char strings.
     // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.
     // https://stackoverflow.com/questions/2727582/multiple-definition-in-header-file
     const static char str_0[] PROGMEM = "TAG_LAST_READ_TIMEOUT"; // "String 0" etc are strings to store - change to suit.

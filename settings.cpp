@@ -7,7 +7,7 @@
   
   Settings::Settings() :
     // See for explanation: https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-    Storage("settings"),
+    settings_name("default_settings"),
   
     // ultimate valid-tag timeout
     TAG_LAST_READ_TIMEOUT(15), // seconds
@@ -205,24 +205,51 @@
     }
   }
 
-
-  static Settings Settings::load() {
-    int address = 100;
-    //Settings result = Storage::load(address);
-    
-    Settings result;
-    DPRINT("Settings::load() from eeprom adrs: "); DPRINTLN(address);
-    
-    EEPROM.get(address, result);
-    
-    if (result.storage_name != "settings") {
-      Settings result;
-    }
-    
-    return result;
+  // Saves this Storage instance to the correct storage address.
+  // Sub-classes, like Settings, should carry the info about
+  // what address to use.
+  void Settings::save(int address) {
+    DPRINT(F("Settings::save() address: ")); DPRINTLN(address);
+    //EEPROM.put(address, this);
   }
 
-  Settings Settings::current = Settings::load();
+  // Generates checksum for this object.
+  // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
+  unsigned char Settings::myChecksum() {
+    unsigned char *obj; 
+    obj = (unsigned char *) this; 
+    
+    //unsigned char * obj = (unsigned char *)this;
+    unsigned char xxor = 0;
+    for ( unsigned int i = 0 ; i < sizeof(obj) ; i ++ ) {
+        xxor = xxor ^ obj[i];
+    }
+    return xxor;
+  }
+
+
+
+  /*  Static & Extern  */
+
+  Settings * Settings::load(int address) {
+
+    EEPROM.get(address, current);
+    // Oooohh.. Serial has not been initialized yet.
+    // You might consider storing some "Boot Settings" in progmem or in eeprom.
+    //  Serial.print(F("Loaded Settings from EEPROM, checksum: "));
+    //  Serial.print((char *)current.settings_name); Serial.print(", ");
+    //  Serial.println(current.myChecksum(), 16);
+    
+    if (strcmp((const char *)current.settings_name, "default_settings") != 0) {
+      current = Settings();
+    }
+    
+    return &current;
+  }
+
+  // It seems necessary to initialize static member vars
+  // before using them (seems kinda wasteful).
+  Settings Settings::current;// = *Settings::load();
 
   // a reference (alias?) from S to CurrentSettings
   Settings& S = Settings::current;
