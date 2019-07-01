@@ -215,15 +215,19 @@
 
   // Generates checksum for this object.
   // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
-  unsigned char Settings::myChecksum() {
-    unsigned char *obj; 
-    obj = (unsigned char *) this; 
+  unsigned int Settings::myChecksum() {
+    unsigned char *obj = (unsigned char *) this;
+    unsigned int len = sizeof(*this);
+    unsigned int xxor = 0;
+
+    // Advances array index
+    //  for ( unsigned int i = 0 ; i < sizeof(obj) ; i ++ ) {
+    //      xxor = xxor ^ obj[i];
+    //  }
+
+    // Advances array pointer
+    while(len--) xxor = xxor ^ *obj++;
     
-    //unsigned char * obj = (unsigned char *)this;
-    unsigned char xxor = 0;
-    for ( unsigned int i = 0 ; i < sizeof(obj) ; i ++ ) {
-        xxor = xxor ^ obj[i];
-    }
     return xxor;
   }
 

@@ -36,11 +36,15 @@
 
   // Defines Readers array.
   // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
-  extern Reader** Readers = new Reader*[3];
+  //extern Reader** Readers = new Reader*[3];
+  // I think extern only need be given in declaration in .h file.
+  Reader** Readers = new Reader*[3];
   //extern Reader * Readers[3] = {}; // I don't think this works.
   
   // Defines global function for Readers array setup.
-  extern void readerArraySetup() {
+  //extern void readerArraySetup() {
+  // I think extern only need be given in declaration in .h file.
+  void readerArraySetup() {
     Serial.println(F("readerArraySetup() building array of readers."));
     // These work with Reader as abstract class (with pure virtual functions),
     // and they also works with the Reader as regular base class (no pure virtual funcs).
