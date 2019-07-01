@@ -11,14 +11,15 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre87"
+  #define VERSION "0.1.0.pre88"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
   #include <SoftwareSerial.h>
   #include <string.h>
-  #include <EEPROM.h>
   #include <stdarg.h>
+  // Moved to .cpp to stop warnings.
+  //#include <EEPROM.h>
 
   #include "logger.h"
     

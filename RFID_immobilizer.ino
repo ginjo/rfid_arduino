@@ -98,13 +98,15 @@
  //       garbled data, or at least the program is seeing it as garbled. So, I disabled the BTmenu logging.
  // TODO: √ Put all literal data that hasn't been incorporated into Settings into macros.
  // TODO: √ Find a way to use F() to wrap Settings var names in getSettingsByIndex().
- // TODO: When power is first applied, reader-reset-pin appears to be help low indefinitely,
+ // TODO: √ When power is first applied, reader-reset-pin appears to be held low indefinitely,
  //       and reader failes to read tag (after the first one at boot time).
  //       But even when reader is manually triggered, Ard fails to process the tag successfully.
  //       A warm (not cold!) reboot of the Ard is necessary to get it working again.
  //       Update: this only happens in production mode - in debug mode, the reader works fine. Arrrgg!
- //       Update: I might have fixed this - that pin didn't have a pinMode() call, leaving it floating.
-
+ //       √ Update: I might have fixed this - that pin didn't have a pinMode() call, leaving it floating.
+ // TODO: Booting under external power in debug mode (debug pin) is causing problems,
+ //       maybe because of a load-order thing with DPRINT. But this doesn't seem to happen
+ //       when powered by USB.
  
  
   #include <SoftwareSerial.h>
@@ -143,20 +145,28 @@
 
 
   void setup() {
-    Settings::load(SETTINGS_EEPROM_ADDRESS);
-    
-    Serial.begin(S.HW_SERIAL_BAUD);
+    // TEMP for debugging, so Settings operations can be logged.
+    Serial.begin(57600);
     while (! Serial) {
       delay(10);
     }
+    
+    Settings::load(SETTINGS_EEPROM_ADDRESS);
+
+    // Normal, when debugging not needed.
+    //  Serial.begin(S.HW_SERIAL_BAUD);
+    //  while (! Serial) {
+    //    delay(10);
+    //  }
 
     Serial.print(F("Booting RFID Immobilizer, "));
     Serial.print(VERSION);
     Serial.print(F(", "));
     Serial.println(TIMESTAMP);
 
-    Serial.print(F("Loaded Settings with checksum: "));
-    Serial.print((char *)S.settings_name); Serial.print(" 0x");
+    Serial.print(F("Loaded Settings "));
+    Serial.print((char *)S.settings_name);
+    Serial.print(", with checksum 0x");
     Serial.println(S.myChecksum(), 16);
 
     // For manual debug/log mode.

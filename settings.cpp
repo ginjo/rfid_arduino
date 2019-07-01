@@ -1,4 +1,5 @@
 #include "settings.h"
+#include <EEPROM.h>
 
   // TODO: I think Storage should be generic storage class,
   // and Settings, State, whatever should be subclassed.
@@ -143,6 +144,9 @@
         return false;
     }
 
+    strcpy(settings_name, "custom_settings");
+    save();
+    
     return true;
   }
 
@@ -209,12 +213,19 @@
   // Sub-classes, like Settings, should carry the info about
   // what address to use.
   void Settings::save(int address) {
-    DPRINT(F("Settings::save() address: ")); DPRINTLN(address);
-    //EEPROM.put(address, this);
+    unsigned int checksum = myChecksum();
+    
+    Serial.print(F("Settings::save() ")); Serial.print(settings_name);
+    Serial.print(F(" to address ")); Serial.print(address+9);
+    Serial.print(F(" with checksum 0x")); Serial.println(checksum, 16);
+
+    EEPROM.put(address, checksum);
+    EEPROM.put(address+9, *this); // Must dereference here, or your save pointer address instead of data.
   }
 
   // Generates checksum for this object.
   // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
+  // See https://www.microchip.com/forums/m649031.aspx
   unsigned int Settings::myChecksum() {
     unsigned char *obj = (unsigned char *) this;
     unsigned int len = sizeof(*this);
@@ -236,16 +247,30 @@
   /*  Static & Extern  */
 
   Settings * Settings::load(int address) {
-
-    EEPROM.get(address, current);
-    // Oooohh.. Serial has not been initialized yet.
-    // You might consider storing some "Boot Settings" in progmem or in eeprom.
-    //  Serial.print(F("Loaded Settings from EEPROM, checksum: "));
-    //  Serial.print((char *)current.settings_name); Serial.print(", ");
-    //  Serial.println(current.myChecksum(), 16);
+    // Under normal circumstances, Serial has not been initialized yet,
+    // so you can't print anything here. I've modified the load order
+    // of Serial in the main .ino file to allow printing for debugging.
     
-    if (strcmp((const char *)current.settings_name, "default_settings") != 0) {
+    unsigned int checksum;
+    EEPROM.get(address, checksum);
+    Serial.print(F("Settings::load() retrieved checksum 0x"));
+    Serial.println(checksum, 16);
+
+    EEPROM.get(address+9, current);
+    Serial.print(F("Settings::load() retrieved "));
+    Serial.print((char *)current.settings_name);
+    Serial.print(F(" with checksum 0x"));
+    Serial.println(current.myChecksum(), 16);
+    
+    //  if (strcmp((const char *)current.settings_name, "default_settings") != 0) {
+    //    current = Settings();
+    //  }
+
+    if (checksum != current.myChecksum()) {
       current = Settings();
+      strcpy(current.settings_name, "saved_settings");
+      Serial.println(F("Calling Settings::save() from Settings::load()"));
+      current.save();
     }
     
     return &current;
