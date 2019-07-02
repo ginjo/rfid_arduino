@@ -51,8 +51,8 @@
 
     
     // Constructor
-    RFID(Stream*, Led*, Reader*);
-    //RFID(Stream*, Led*);
+    //RFID(Stream*, Led*, Reader*);
+    RFID(Stream*, Led*);
 
     // Functions
     void begin();
@@ -72,6 +72,7 @@
     //uint32_t cycleHighFinishMs();
   };
 
+  // TODO: Consider converting externs to static-class vars & functions.
   extern RFID Rfid;
 
 #endif

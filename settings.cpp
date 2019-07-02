@@ -1,10 +1,5 @@
 #include "settings.h"
 #include <EEPROM.h>
-
-  // TODO: I think Storage should be generic storage class,
-  // and Settings, State, whatever should be subclassed.
-
-  // TODO: Implement actual EEPROM storage.
   
   Settings::Settings() :
     // See for explanation: https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
@@ -140,6 +135,9 @@
       case 16:
         RFID_BAUD = (long)strtol(_data, NULL, 10);
         break;
+      case 17:
+        OUTPUT_SWITCH_PIN = (int)strtol(_data, NULL, 10);
+        break;
       default :
         return false;
     }
@@ -203,21 +201,32 @@
       case 16 :
         sprintf(_result[1], "%li", RFID_BAUD);
         break;
-
+      case 17 :
+        sprintf(_result[1], "%i", OUTPUT_SWITCH_PIN);
+        break;
+        
       default:
         break;
     }
   }
 
-  // Saves this Storage instance to the correct storage address.
-  // Sub-classes, like Settings, should carry the info about
-  // what address to use.
+  // Saves this instance to EEPROM storage address.
+  // Notice the use of de-referencing the 'this' pointer,
+  // so we can get at the actual data.
+  //
+  // Address is the beginning address for the settings object
+  // AND the separate checksum. The checksum has the first 10
+  // bytes, then the settings take as much as they need after that.
+  //
   void Settings::save(int address) {
-    unsigned int checksum = myChecksum();
-    
-    Serial.print(F("Settings::save() ")); Serial.print(settings_name);
-    Serial.print(F(" to address ")); Serial.print(address+9);
-    Serial.print(F(" with checksum 0x")); Serial.println(checksum, 16);
+    unsigned int checksum = getChecksum();
+
+    if (Serial) {
+      Serial.print(F("Settings::save() ")); Serial.print(settings_name);
+      Serial.print(F(" of length ")); Serial.print(sizeof(*this));
+      Serial.print(F(" to address ")); Serial.print(address+9);
+      Serial.print(F(" with checksum 0x")); Serial.println(checksum, 16);
+    }
 
     EEPROM.put(address, checksum);
     EEPROM.put(address+9, *this); // Must dereference here, or your save pointer address instead of data.
@@ -226,7 +235,9 @@
   // Generates checksum for this object.
   // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
   // See https://www.microchip.com/forums/m649031.aspx
-  unsigned int Settings::myChecksum() {
+  // See example file Checksuming...XOR.cpp
+  //
+  unsigned int Settings::getChecksum() {
     unsigned char *obj = (unsigned char *) this;
     unsigned int len = sizeof(*this);
     unsigned int xxor = 0;
@@ -237,7 +248,12 @@
     //  }
 
     // Advances array pointer
-    while(len--) xxor = xxor ^ *obj++;
+    //while(len--) xxor = xxor ^ *obj++;
+
+    // Converts to 16-bit checksum, and handles odd bytes at end of obj.
+    for ( unsigned int i = 0 ; i < len ; i+=2 ) {
+      xxor = xxor ^ ((obj[i]<<8) | (i==len-1 ? 0 : obj[i+1]));
+    }
     
     return xxor;
   }
@@ -246,6 +262,8 @@
 
   /*  Static & Extern  */
 
+  // Loads settings from EEPROM and compares with stored checksum.
+  // See note above about Address.
   Settings * Settings::load(int address) {
     // Under normal circumstances, Serial has not been initialized yet,
     // so you can't print anything here. I've modified the load order
@@ -253,23 +271,21 @@
     
     unsigned int checksum;
     EEPROM.get(address, checksum);
-    Serial.print(F("Settings::load() retrieved checksum 0x"));
-    Serial.println(checksum, 16);
-
     EEPROM.get(address+9, current);
-    Serial.print(F("Settings::load() retrieved "));
-    Serial.print((char *)current.settings_name);
-    Serial.print(F(" with checksum 0x"));
-    Serial.println(current.myChecksum(), 16);
-    
-    //  if (strcmp((const char *)current.settings_name, "default_settings") != 0) {
-    //    current = Settings();
-    //  }
 
-    if (checksum != current.myChecksum()) {
+    if (Serial) {
+      Serial.print(F("Settings::load() retrieved checksum 0x"));
+      Serial.println(checksum, 16);
+      Serial.print(F("Settings::load() retrieved "));
+      Serial.print((char *)current.settings_name);
+      Serial.print(F(" with checksum 0x"));
+      Serial.println(current.getChecksum(), 16);
+    }
+
+    if (checksum != current.getChecksum()) {
       current = Settings();
       strcpy(current.settings_name, "saved_settings");
-      Serial.println(F("Calling Settings::save() from Settings::load()"));
+      if (Serial) Serial.println(F("Calling Settings::save() from Settings::load()"));
       current.save();
     }
     
@@ -278,6 +294,7 @@
 
   // It seems necessary to initialize static member vars
   // before using them (seems kinda wasteful).
+  // Maybe we don't need this if we move .ino items into setup().
   Settings Settings::current;// = *Settings::load();
 
   // a reference (alias?) from S to CurrentSettings

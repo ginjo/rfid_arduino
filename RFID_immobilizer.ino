@@ -42,10 +42,11 @@
  // TODO: √ Reduce active logging lines in SerialMenu serial port reading.
  // TODO: √ Show S.<settings> values along with list (in admin mode).
  // TODO: Complete add-tag and delete-tag processes.
+ // TODO: Save tags to EEPROM.
  // TODO: Also implement add-tag-from-scan option.
  // TODO: √ Create version & date-time handling.
- // TODO: Reorganize functions so that rfid tag functions are in RFID class,
- //       menu functions in SerialMenu class, and settings functions in Settings class.
+ // TODO: Reorganize functions so that "rfid" tag functions are in RFID class,
+ //       "menu" functions in SerialMenu class, and "settings" functions in Settings class.
  // TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
  //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
  // TODO: √ Tag output to serial console is always the same tag, regardless of what was scanned.
@@ -81,8 +82,8 @@
  // TODO: √ Create a setting & control for reader-power-cycle polarity.
  //       Yes, but this is now done in the Reader (sub) classes.
  // TODO: Complete the Reader function that decides what reader to use.
- // TODO: Convert settings, readers, led patterns to lists & enums, if possible.
- //       Also create settings for all possible current uses of literal data,
+ // TODO: Convert settings, readers, led patterns to lists & enums, if possible. (settings are done).
+ //       √ Also create settings for all possible current uses of literal data,
  //       mostly numbers, but maybe some strings?
  // DONE: √ Finally fixed the nasty bugs in RFID and Reader, well most anyway. Ongoing search for UB.
  // TODO: √ Try swapping the RFID::loop() functions back to the way they were... Still work?
@@ -107,7 +108,7 @@
  // TODO: Booting under external power in debug mode (debug pin) is causing problems,
  //       maybe because of a load-order thing with DPRINT. But this doesn't seem to happen
  //       when powered by USB.
- 
+ // TODO: Find string operations that have 0 as an argument, and see if they should use '\0' instead.
  
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
@@ -117,6 +118,13 @@
   #include "serial_menu.h"
   #include "reader.h"
   #include "rfid.h"
+
+
+  // WARN: None of these should be here, as the settings haven't been loaded yet.
+  // These are using the default settings, which work fine for in dev mode
+  // but are not going to work in the field (they will always supercede saved settings).
+  //
+  // TODO: Find a way to move these to setup().
 
 
   // Brings up a blinker LED.
@@ -130,34 +138,42 @@
   SerialMenu BTmenu(&BTserial, &Blinker);
 
   // Creates serial port for RFID reader.
-  SoftwareSerial RfidSerial(S.RFID_SERIAL_RX, 0); // not sending anything to reader, so tx on unused pin
+  // Not sending anything to reader, so tx on unused pin.
+  SoftwareSerial RfidSerial(S.RFID_SERIAL_RX, 90);
 
   // Creates instance of RFID reader.
-  Reader * RfidReader = Readers[2]; // works
+  // WARN: These shouldn't go here, because readerArraySetup hasn't
+  //       instanciated & loaded the readers into the Readers array yet.
   //Reader * RfidReader = &WL125(); // doesn't work
   //Reader * RfidReader = new WL125; // works
+  //Reader * RfidReader = Readers[2]; // works
+  //Reader * RfidReader = GetReader("WL-125"); // F() doesn't work here.
+  
 
   // Creates instance of RFID handler.
   // (RfidReader is already a pointer, so we don't use '&' reference).
   // NOTE: This 'Rfid' is declared as extern in rfid.h.
-  RFID Rfid(&RfidSerial, &Blinker, RfidReader);
-  //RFID Rfid(&RfidSerial, &Blinker);
+  //RFID Rfid(&RfidSerial, &Blinker, RfidReader);
+  RFID Rfid(&RfidSerial, &Blinker);
 
 
   void setup() {
-    // TEMP for debugging, so Settings operations can be logged.
+    // For debugging, so Settings operations can be logged.
     Serial.begin(57600);
     while (! Serial) {
       delay(10);
     }
+    delay(15);
     
     Settings::load(SETTINGS_EEPROM_ADDRESS);
 
     // Normal, when debugging not needed.
-    //  Serial.begin(S.HW_SERIAL_BAUD);
-    //  while (! Serial) {
-    //    delay(10);
-    //  }
+    Serial.flush();
+    Serial.begin(S.HW_SERIAL_BAUD);
+    while (! Serial) {
+      delay(10);
+    }
+    delay(15);
 
     Serial.print(F("Booting RFID Immobilizer, "));
     Serial.print(VERSION);
@@ -167,7 +183,7 @@
     Serial.print(F("Loaded Settings "));
     Serial.print((char *)S.settings_name);
     Serial.print(", with checksum 0x");
-    Serial.println(S.myChecksum(), 16);
+    Serial.println(S.getChecksum(), 16);
 
     // For manual debug/log mode.
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
@@ -180,9 +196,11 @@
     }
 
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
-    readerArraySetup();
-    DPRINT(F("Readers[2]->reader_name: "));
-    DPRINTLN(Readers[2]->reader_name);
+    // TODO: Convert this extern function to static Reader function.
+    //ReaderArraySetup();
+    //delay(15);
+    //DPRINT(F("Readers[2]->reader_name: "));
+    //DPRINTLN(Readers[2]->reader_name);
 
     Blinker.StartupBlink();
 

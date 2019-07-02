@@ -24,7 +24,7 @@
   #include "logger.h"
     
   #define DEFAULT_READER_SIZE 16
-  #define SETTINGS_SIZE 16 // quantity of settings vars
+  #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_EEPROM_ADDRESS 100
   
@@ -94,7 +94,7 @@
     int  updateProximityState(int);
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char[2][SETTINGS_NAME_SIZE]);
-    unsigned int myChecksum();
+    unsigned int getChecksum();
 
     void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
 
@@ -109,8 +109,13 @@
 
   /*  Global / External  Vars & Funcs  */
 
-  //extern Settings CurrentSettings; // converted to static Settings::current
+  // This declares an extern 'S' of type Settings.
+  // This will be a ref (pointer?) to Settings::current
+  // and is intended as a convenience shortcut, since
+  // Settings::current is referred to so many times in the project.
   extern Settings& S;
+
+  // TODO: Should this be converted to static? What class would it be attached to?
   extern SoftwareSerial BTserial;
 
 
@@ -126,7 +131,9 @@
   //  4. Setting by index in settings.cpp
   //  5. Names index in settings.h (for storage of strings in PROGMEM).
   //
-  namespace {  // a nameless namespace helps build a 2D array of char strings.
+  // TODO: Should all of this be converted to static Settings var?
+  //
+  namespace {  // a nameless namespace helps build a 2D array of char strings in PROGMEM.
     // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.
     // https://stackoverflow.com/questions/2727582/multiple-definition-in-header-file
     const static char str_0[] PROGMEM = "TAG_LAST_READ_TIMEOUT"; // "String 0" etc are strings to store - change to suit.
@@ -145,6 +152,7 @@
     const static char str_13[] PROGMEM =  "DEBUG_PIN";
     const static char str_14[] PROGMEM =  "BT_BAUD";
     const static char str_15[] PROGMEM =  "RFID_BAUD";
+    const static char str_16[] PROGMEM =  "OUTPUT_SWITCH_PIN";
     extern const char *const SETTING_NAMES[] PROGMEM = {
       str_0,
       str_1,
@@ -161,7 +169,8 @@
       str_12,
       str_13,
       str_14,
-      str_15
+      str_15,
+      str_16
     };
   } // end nameless namespace
     

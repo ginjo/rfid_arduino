@@ -1,8 +1,8 @@
 #include "rfid.h"
 
   // constructor
-  RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
-  //RFID::RFID(Stream *_serial_port, Led *_blinker) :
+  //RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
+  RFID::RFID(Stream *_serial_port, Led *_blinker) :
     buff {},
     buff_index(0UL),
     proximity_state(0),
@@ -19,8 +19,8 @@
     //tag_last_read_timeout_x_1000(0UL),
     
     serial_port(_serial_port),
-    blinker(_blinker),
-    reader(_reader)
+    blinker(_blinker)
+    //reader(_reader)
     
   { ; }
 
@@ -29,7 +29,7 @@
   //  }
 
   void RFID::begin() {
-    pinMode(13, OUTPUT);
+    pinMode(S.OUTPUT_SWITCH_PIN, OUTPUT);
     pinMode(S.READER_POWER_CONTROL_PIN, OUTPUT);
     
     
@@ -44,6 +44,8 @@
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.
     //WL125 * reader = &WL125(); // I don't think this works.
+    ReaderArraySetup();
+    reader = GetReader(S.DEFAULT_READER);
 
     DPRINT(F("RFID::begin() reader->reader_name: "));
     DPRINTLN(reader->reader_name);
@@ -59,7 +61,7 @@
     //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
     // This first one is to clear any built-up charge, as something is holding the reader low at startup.
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
-    delay(2);
+    delay(50);
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
   }
 
@@ -371,7 +373,6 @@
       DPRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
-    // TODO: Replace 13 with a S.<setting>
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
   }
 

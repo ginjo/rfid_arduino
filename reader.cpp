@@ -34,18 +34,50 @@
     DPRINT(id_end);
   }
 
+
+  /***  Global functions and variables  ***/
+
+  //Reader * GetReader(char _name[DEFAULT_READER_SIZE]) {
+  Reader * GetReader(const char *_name) {
+    DPRINT(F("GetReader() called with name: "));
+    DPRINTLN((char *)_name);
+
+    return Readers[2];
+
+    Reader * result;
+    int n;
+
+    for (n=0; n < 3; n++) {
+      if (strcmp((char *)_name, (char *)Readers[n]->reader_name) == 0) {
+        result = Readers[n];
+        break;
+      }
+    }
+
+    if (n < 3) {
+      DPRINT(F("GetReader() selected: "));
+      DPRINTLN(result->reader_name);
+    } else {
+      DPRINTLN(F("No reader was selected"));
+      return Readers[0];
+    }
+    
+    return result;
+  }
+
   // Defines Readers array.
   // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
+  // TODO: Convert these extern/global things to static Reader things.
   //extern Reader** Readers = new Reader*[3];
   // I think extern only need be given in declaration in .h file.
   Reader** Readers = new Reader*[3];
   //extern Reader * Readers[3] = {}; // I don't think this works.
   
   // Defines global function for Readers array setup.
-  //extern void readerArraySetup() {
+  //extern void ReaderArraySetup() {
   // I think extern only need be given in declaration in .h file.
-  void readerArraySetup() {
-    Serial.println(F("readerArraySetup() building array of readers."));
+  void ReaderArraySetup() {
+    Serial.println(F("ReaderArraySetup() building array of readers."));
     // These work with Reader as abstract class (with pure virtual functions),
     // and they also works with the Reader as regular base class (no pure virtual funcs).
     // This is the ONLY form that works. I've tried many others, and none get
@@ -56,7 +88,7 @@
   }
 
 
-  /***  Derived classes for reader specifications  ***/
+  /***  Derived classes are individual reader specifications  ***/
 
   RDM6300::RDM6300() :
     Reader("RDM-6300", 14, 3, 10, 1)
@@ -163,33 +195,3 @@
     
     return tag_id;
   }
-
-
-  /***  Global functions and variables  ***/
-
-  //  Reader * GetReader(char _name[16]) {
-  //    DPRINT(F("GetReader() called with name: "));
-  //    DPRINTLN((char *)_name);
-  //
-  //    Reader * result;
-  //    int n;
-  //
-  //    for (n=0; n < 3; n++) {
-  //      if (_name == Readers[n]->reader_name) {
-  //        result = Readers[n];
-  //        break;
-  //      }
-  //    }
-  //
-  //    if (n < 3) {
-  //      DPRINT(F("GetReader() selected: "));
-  //      DPRINTLN(result->reader_name);
-  //    } else {
-  //      DPRINTLN(F("No reader was selected"));
-  //    }
-  //    
-  //    return result;
-  //  }
-
-
- 

@@ -40,10 +40,12 @@
   };
 
 
-  //  // External Global vars & functions.
+  // External Global vars & functions.
+  // TODO: Convert these to static Reader functions.
   extern Reader** Readers;
   //extern Reader * Readers[3];
-  extern void readerArraySetup();
+  extern void ReaderArraySetup();
+  extern Reader * GetReader(const char[]);
 
 
   // For inherited class constructor syntax, see:

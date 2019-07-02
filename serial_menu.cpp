@@ -239,7 +239,7 @@
     
     DPRINT(F("setInputMode() to: "));
     DPRINT(input_mode);
-    DPRINT(F(", all input uses 'length' now, this used to be: "))
+    DPRINT(F(" (all input uses 'line' now), this used to be: "))
     DPRINTLN(str);
   }
 
@@ -524,7 +524,7 @@
 
     // Prints out all settings can use variable int '*' in format string here,
     // since it work in onlinegdb.com. See my getSettingByIndex.cpp example.
-    for (int n=1; n <= 16; n++) {
+    for (int n=1; n <= SETTINGS_SIZE; n++) {
       char tupple[2][SETTINGS_NAME_SIZE];
       char output[SETTINGS_NAME_SIZE*2];
       S.getSettingByIndex(n, tupple);
@@ -551,7 +551,7 @@
     if (selected_menu_item == 0) {
       menuMain();
       return;
-    } else if (selected_menu_item > 0 && selected_menu_item <=15) {
+    } else if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
       char tupple[2][SETTINGS_NAME_SIZE];
       S.getSettingByIndex(selected_menu_item, tupple);
       serial_port->print(tupple[0]); serial_port->print(": ");
