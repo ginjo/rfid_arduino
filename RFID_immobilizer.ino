@@ -18,12 +18,12 @@
  // TODO: - Create var-to-eeprom address mapping for common settings (to be editable by menu).
  //       I think this is no longer needed, since we're using EEPROM.put(<a-struct-object>).
  // TODO: √ Provide standard message when admin menu exits/transitions to run mode.
- // TODO: Sort out git repos in Documents/Arduino folder.
+ // TODO: √ Sort out git repos in Documents/Arduino folder.
  // TODO: Better code documentation. User documentation.
  // TODO: √ Don't allow admin mode to extend the startup grace period.
  // TODO: Implement a beeper/buzzer.
  // TODO: I think SerialMenu.run_mode should be a global, since it's needed in multiple classes.
- //       But where should it live?
+ //       But where should it live? (This item is duplicated below)
  // TODO: √ Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
  // TODO: √ Create exitAdmin() function for cleanup & logging.
@@ -49,6 +49,7 @@
  //       "menu" functions in SerialMenu class, and "settings" functions in Settings class.
  // TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
  //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
+ //       You might need to include stdarg.h.
  // TODO: √ Tag output to serial console is always the same tag, regardless of what was scanned.
  //       This holds true even after cold restart of entire board.
  // TODO: √ Need to ignore READER_CYCLE_HIGH_DURATION at beginning of run mode,
@@ -75,13 +76,13 @@
  //       This needs to be fixed so startup grace-period NEVER times out without
  //       first trying a reader power cycle.
  // TODO: √ Finish converting reader_power_cycle_high_duration to readerPowerCycleHighDuration()
- // TODO: Create protection/failsafe against user-input of bad settings.
+ // TODO: Create protection/failsafe against user-input of bad/empty/out-of-bounds settings.
  //       For example admin_timeout should NEVER go below 5s,
  //       And the initial admin_timeout of 2s should not be modifiable by user.
  //       Generally make sure the Arduino cannot be bricked (requiring a re-flash).
  // TODO: √ Create a setting & control for reader-power-cycle polarity.
  //       Yes, but this is now done in the Reader (sub) classes.
- // TODO: Complete the Reader function that decides what reader to use.
+ // TODO: √ Complete the Reader function that decides what reader to use.
  // TODO: Convert settings, readers, led patterns to lists & enums, if possible. (settings are done).
  //       √ Also create settings for all possible current uses of literal data,
  //       mostly numbers, but maybe some strings?
@@ -105,10 +106,19 @@
  //       A warm (not cold!) reboot of the Ard is necessary to get it working again.
  //       Update: this only happens in production mode - in debug mode, the reader works fine. Arrrgg!
  //       √ Update: I might have fixed this - that pin didn't have a pinMode() call, leaving it floating.
- // TODO: Booting under external power in debug mode (debug pin) is causing problems,
+ // TODO: √ Booting under external power in debug mode (debug pin) is causing problems,
  //       maybe because of a load-order thing with DPRINT. But this doesn't seem to happen
  //       when powered by USB.
- // TODO: Find string operations that have 0 as an argument, and see if they should use '\0' instead.
+ //       Update: The whole power-on bug was because load order wasn't allowing objects to initialize
+ //       before being used.
+ // TODO: √ Find string operations that have 0 as an argument, and see if they should use '\0' instead.
+ //       According to docs 0 is same as '\0'. They are both int's.
+ // TODO: Cleanup & fix bugs in SerialMenu UI.
+ //       * Prompt
+ //       * Empty selection for settings-menu.
+ // TODO: Output Settings list to BTserial on starup.
+ // WARN: Program storage space is at 80% usage.
+ //       Might need to move some strings back to SRAM (by eliminating F function for some).
  
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
