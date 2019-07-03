@@ -1,4 +1,5 @@
 #include "settings.h"
+// This is moved here by suggestion to stop EEPROM warnings.
 #include <EEPROM.h>
   
   Settings::Settings() :

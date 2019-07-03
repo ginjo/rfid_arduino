@@ -59,6 +59,4 @@
   
   };
 
-  //extern Led Blinker;
-
 #endif

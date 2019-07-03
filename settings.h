@@ -11,14 +11,16 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre89"
+  #define VERSION "v0.1.0.pre90"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
   #include <SoftwareSerial.h>
   #include <string.h>
-  #include <stdarg.h>
-  // Moved to .cpp to stop warnings.
+  // stdarg.h is used to process variadic function args.
+  // I don't think we're using it yet.
+  //#include <stdarg.h>
+  // Moved to .cpp to stop EEPROM warnings.
   //#include <EEPROM.h>
 
   #include "logger.h"
@@ -70,7 +72,7 @@
 
     char DEFAULT_READER[DEFAULT_READER_SIZE];
 
-    // Temporary EEPROM alternative. I don't think this is used.
+    // Temporary EEPROM alternative for dev/testing.
     // NOTE: This is NOT part of Settings.
     int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 

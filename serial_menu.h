@@ -82,7 +82,4 @@
     void loop();
   };
 
-  //  extern SerialMenu BTmenu;
-  //  extern SoftwareSerial BTserial;
-
 #endif

@@ -74,8 +74,6 @@
   //extern Reader * Readers[3] = {}; // I don't think this works.
   
   // Defines global function for Readers array setup.
-  //extern void ReaderArraySetup() {
-  // I think extern only need be given in declaration in .h file.
   void ReaderArraySetup() {
     Serial.println(F("ReaderArraySetup() building array of readers."));
     // These work with Reader as abstract class (with pure virtual functions),

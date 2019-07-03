@@ -73,8 +73,4 @@
     //uint32_t cycleHighFinishMs();
   };
 
-  // TODO: Consider converting externs to static-class vars & functions.
-  //extern SoftwareSerial RfidSerial;
-  //extern RFID Rfid;
-
 #endif
