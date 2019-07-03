@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "0.1.0.pre88"
+  #define VERSION "0.1.0.pre89"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -114,9 +114,6 @@
   // and is intended as a convenience shortcut, since
   // Settings::current is referred to so many times in the project.
   extern Settings& S;
-
-  // TODO: Should this be converted to static? What class would it be attached to?
-  extern SoftwareSerial BTserial;
 
 
   // Creates an extern constant 2D char array 'SETTING_NAMES' that holds Settings var names.

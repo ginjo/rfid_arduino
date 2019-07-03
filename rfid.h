@@ -50,7 +50,8 @@
     Reader * reader;
 
     
-    // Constructor
+    // Constructors
+    RFID(); // dummy for initialization
     //RFID(Stream*, Led*, Reader*);
     RFID(Stream*, Led*);
 
@@ -73,6 +74,7 @@
   };
 
   // TODO: Consider converting externs to static-class vars & functions.
-  extern RFID Rfid;
+  //extern SoftwareSerial RfidSerial;
+  //extern RFID Rfid;
 
 #endif

@@ -48,7 +48,9 @@
   void(* resetFunc) (void) = 0;
 
 
-  /*** Constructor and Setup ***/
+  /*** Constructors and Setup ***/
+
+  SerialMenu::SerialMenu() {;}
 
   SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
@@ -567,4 +569,8 @@
   }
 
 
+  /*  Extern & Global  */
+
+  //  SerialMenu BTmenu;
+  //  SoftwareSerial BTserial(80,81);
   

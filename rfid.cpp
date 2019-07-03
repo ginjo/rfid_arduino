@@ -1,6 +1,7 @@
 #include "rfid.h"
 
-  // constructor
+  // Constructors
+  RFID::RFID() {} // dummy for initialization
   //RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
   RFID::RFID(Stream *_serial_port, Led *_blinker) :
     buff {},

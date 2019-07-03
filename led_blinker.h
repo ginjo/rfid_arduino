@@ -40,6 +40,7 @@
     int intervals[INTERVALS_LENGTH];
 
     // constructor
+    Led(); // dummy for initialization.
     Led(int);
     
     void begin(int, const int[]);
@@ -57,5 +58,7 @@
     void StartupBlink();
   
   };
+
+  //extern Led Blinker;
 
 #endif

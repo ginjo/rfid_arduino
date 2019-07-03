@@ -127,37 +127,29 @@
   // TODO: Find a way to move these to setup().
 
 
-  // Brings up a blinker LED.
-  Led Blinker(S.LED_PIN);
+  // Initializes a dummy blinker LED.
+  //extern Led Blinker;
+  Led Blinker;
 
-  // Creates serial port for admin console.
-  // NOTE: This 'BTserial' is declared as extern in settings.h.
-  SoftwareSerial BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
-
-  // Creates instance of admin console.
-  SerialMenu BTmenu(&BTserial, &Blinker);
-
-  // Creates serial port for RFID reader.
-  // Not sending anything to reader, so tx on unused pin.
-  SoftwareSerial RfidSerial(S.RFID_SERIAL_RX, 90);
-
-  // Creates instance of RFID reader.
-  // WARN: These shouldn't go here, because readerArraySetup hasn't
-  //       instanciated & loaded the readers into the Readers array yet.
-  //Reader * RfidReader = &WL125(); // doesn't work
-  //Reader * RfidReader = new WL125; // works
-  //Reader * RfidReader = Readers[2]; // works
-  //Reader * RfidReader = GetReader("WL-125"); // F() doesn't work here.
+  // Initializes a dummy serial port for admin console.
+  //extern SoftwareSerial BTserial;
+  SoftwareSerial BTserial(81,80);
   
+  // Initializes a dummy instance of admin console.
+  //extern SerialMenu BTmenu;
+  SerialMenu BTmenu;
 
-  // Creates instance of RFID handler.
-  // (RfidReader is already a pointer, so we don't use '&' reference).
-  // NOTE: This 'Rfid' is declared as extern in rfid.h.
-  //RFID Rfid(&RfidSerial, &Blinker, RfidReader);
-  RFID Rfid(&RfidSerial, &Blinker);
+  // Initializes a dummy serial port for RFID reader.
+  //extern SoftwareSerial RfidSerial;
+  SoftwareSerial RfidSerial(91,90);
+  
+  // Initializes a dummy instance of RFID handler.
+  //extern RFID Rfid;
+  RFID Rfid;
 
 
   void setup() {
+    
     // For debugging, so Settings operations can be logged.
     Serial.begin(57600);
     while (! Serial) {
@@ -194,6 +186,21 @@
       Serial.println(F("Debug pin LOW ... enabling debug"));
       S.enable_debug = 1;
     }
+
+
+    /*  These used be in global namespace, but they need loaded settings. */
+
+    Blinker = Led(S.LED_PIN);
+
+    BTserial = SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
+
+    BTmenu = SerialMenu(&BTserial, &Blinker);
+
+    RfidSerial = SoftwareSerial(S.RFID_SERIAL_RX, 90);
+
+    Rfid = RFID(&RfidSerial, &Blinker);
+
+    
 
     // Calls global function to populate the Readers array of pointers to specific reader subclasses.
     // TODO: Convert this extern function to static Reader function.
