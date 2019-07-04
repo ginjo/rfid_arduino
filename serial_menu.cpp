@@ -547,15 +547,14 @@
     //selected_menu_item = NULL;
     selected_menu_item = -1;
 
-    // Prints out all settings. Can use variable int '*' in format string here,
-    // since it work in onlinegdb.com. See my getSettingByIndex.cpp example.
+    // Prints out all settings in tabular format.
+    // The displaySetting(n) function uses malloc(),
+    // so you MUST free the returned string (memory)
+    // when you are done.
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char tupple[2][SETTINGS_NAME_SIZE];
-      char output[SETTINGS_NAME_SIZE*2];
-      S.getSettingByIndex(n, tupple);
-      sprintf(output, "%2i. %-32s %s", n, tupple[0], tupple[1]);
-      serial_port->println(output);
-      //DPRINTLN(output);
+      char * str = S.displaySetting(n);
+      serial_port->println(str);
+      free(str);
     }
 
     serial_port->print("\r\n> ");

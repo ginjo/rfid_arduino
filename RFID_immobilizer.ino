@@ -226,13 +226,22 @@
 
     // Activates the admin console.
     BTmenu.begin();
-    //BTmenu.menuSettings(); // prints out menu settings to admin console.
 
     // Activates the serial port for the RFID handler.
     RfidSerial.begin(S.RFID_BAUD);
 
     // Activates the RFID handler.
     Rfid.begin();
+
+    // Prints out all settings in tabular format.
+    // The displaySetting(n) function uses malloc(),
+    // so you MUST free the returned string (memory)
+    // when you are done.
+    for (int n=1; n <= SETTINGS_SIZE; n++) {
+      char * str = S.displaySetting(n);
+      Serial.println(str);
+      free(str);
+    }
 
   } // end setup
 

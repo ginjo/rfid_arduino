@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre90"
+  #define VERSION "v0.1.0.pre91"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -96,6 +96,7 @@
     int  updateProximityState(int);
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char[2][SETTINGS_NAME_SIZE]);
+    char * displaySetting(int);
     unsigned int getChecksum();
 
     void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
