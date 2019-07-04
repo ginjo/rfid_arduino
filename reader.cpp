@@ -12,8 +12,8 @@
   {
     strncpy(reader_name, _name, sizeof(reader_name));
     // WARN: Probably bad to reference any global var or funcs in a constructor.
-    DPRINT(F("Constructing Reader for: "));
-    DPRINTLN(_name);
+    Serial.print(F("Constructing Reader for: "));
+    Serial.println(_name);
   }
 
   int Reader::echo(int _dat) {

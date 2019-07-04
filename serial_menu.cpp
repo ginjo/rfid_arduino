@@ -221,9 +221,9 @@
     if (int(byt) == 13 || int(byt) == 10) {
       serial_port->println("");
   
-      serial_port->print(F("You entered: "));
-      serial_port->println((char*)buff);
-      serial_port->println("");
+      DPRINT(F("You entered: "));
+      DPRINT((char*)buff);
+      DPRINTLN("");
 
       // Adds string terminator to end of buff.
       buff[buff_index + 1] = 0;
@@ -238,10 +238,9 @@
   void SerialMenu::setInputMode(const char str[]) {
     // All input uses 'line' now, but option to use 'char' is still here.
     strncpy(input_mode, str, INPUT_MODE_LENGTH);
-    //strncpy(input_mode, "line", INPUT_MODE_LENGTH);
     
     DPRINT(F("setInputMode(): "));
-    DPRINT(input_mode);
+    DPRINTLN(input_mode);
   }
 
   bool SerialMenu::matchInputMode(const char mode[]) {
@@ -257,8 +256,8 @@
   // since the recent changes have broken soft-coded links.
   // Update the soft-coded links to fix.
   
-  void SerialMenu::setCallbackFunction(const char func[]) {
-    strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
+  void SerialMenu::setCallbackFunction(const char *func_name) {
+    strncpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
 
     DPRINT(F("setCallbackFunction(): "));
     DPRINTLN(current_function);
@@ -351,7 +350,6 @@
   }
 
   void SerialMenu::resetInputBuffer() {
-    //memcpy(buff, NULL, INPUT_BUFFER_LENGTH);
     memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
   }
@@ -432,7 +430,6 @@
 
 
   /*** Draw Menu Items and Log Messages ***/
-
   
   void SerialMenu::menuMain() {
     serial_port->println(F("Menu"));
@@ -498,7 +495,7 @@
 
   // Lists tags for menu.
   void SerialMenu::menuListTags() {
-    serial_port->println("Tags");
+    serial_port->println(F("Tags"));
     //serial_port->println((char*)tags);
     // TODO: Move the bulk of this to RFIDTags?
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
@@ -546,15 +543,16 @@
   void SerialMenu::menuSettings() {
     //selected_menu_item = NULL;
     selected_menu_item = -1;
+    serial_port->print("Settings, chksm 0x");
+    serial_port->print(S.getChecksum(), HEX);
+    serial_port->print(", size ");
+    serial_port->println(sizeof(S));
 
     // Prints out all settings in tabular format.
-    // The displaySetting(n) function uses malloc(),
-    // so you MUST free the returned string (memory)
-    // when you are done.
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char * str = S.displaySetting(n);
-      serial_port->println(str);
-      free(str);
+      char output[SETTINGS_NAME_SIZE*2] = {};
+      S.displaySetting(n, output);
+      serial_port->println(output);
     }
 
     serial_port->print("\r\n> ");
@@ -586,3 +584,5 @@
       menuSettings();
     }
   } // menuSelectedSetting()
+
+  

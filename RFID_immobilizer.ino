@@ -184,7 +184,7 @@
 
     Serial.print(F("Loaded Settings "));
     Serial.print((char *)S.settings_name);
-    Serial.print(", with checksum 0x");
+    Serial.print(F(", with checksum 0x"));
     Serial.println(S.getChecksum(), 16);
 
     // For manual debug/log mode.
@@ -212,13 +212,6 @@
 
     
 
-    // Calls global function to populate the Readers array of pointers to specific reader subclasses.
-    // TODO: Convert this extern function to static Reader function.
-    //ReaderArraySetup();
-    //delay(15);
-    //DPRINT(F("Readers[2]->reader_name: "));
-    //DPRINTLN(Readers[2]->reader_name);
-
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
@@ -234,14 +227,11 @@
     Rfid.begin();
 
     // Prints out all settings in tabular format.
-    // The displaySetting(n) function uses malloc(),
-    // so you MUST free the returned string (memory)
-    // when you are done.
     Serial.println();
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char * str = S.displaySetting(n);
-      Serial.println(str);
-      free(str);
+      char output[SETTINGS_NAME_SIZE*2] = {};
+      S.displaySetting(n, output);
+      Serial.println(output);
     }
 
   } // end setup

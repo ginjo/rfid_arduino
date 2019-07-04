@@ -214,19 +214,14 @@
   // Prints out one line of settings. Can use variable int '*' in format string here,
   // since it works in onlinegdb.com. See my getSettingByIndex.cpp example.
   // Iterate over number-of-settings with this to get entire settings list.
-  // NOTE: You MUST free() the returned string when you are done,
-  // since this uses malloc (which is sytem heap memory, not local memory).
-  // See https://stackoverflow.com/questions/12380758/error-function-returns-address-of-local-variable
-  //
-  char * Settings::displaySetting(int index) {
+  // Pass this an initialized output string to return via:
+  //   char output[SETTINGS_NAME_SIZE*2] = {};
+  void Settings::displaySetting(int index, char *output) {
     char tupple[2][SETTINGS_NAME_SIZE];
-    //char output[SETTINGS_NAME_SIZE*2];
-    char* output = (char*)malloc(sizeof(char)*SETTINGS_NAME_SIZE*2);
     getSettingByIndex(index, tupple);
     sprintf(output, "%2i. %-32s %s", index, tupple[0], tupple[1]);
-    DPRINT("Settings::displaySetting() returning: ");
+    DPRINT(F("Settings::displaySetting() returning: "));
     DPRINTLN(output);
-    return output;
   }
 
   // Saves this instance to EEPROM storage address.

@@ -96,7 +96,7 @@
     int  updateProximityState(int);
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char[2][SETTINGS_NAME_SIZE]);
-    char * displaySetting(int);
+    void displaySetting(int, char*);
     unsigned int getChecksum();
 
     void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
