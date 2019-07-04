@@ -79,6 +79,7 @@
     // argument defaults must be declared here, not defined in implementation.
     void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void exitAdmin();
+    void prompt(const char = 0, const char* = 0, const char* = 0);
     void loop();
   };
 

@@ -8,8 +8,6 @@
 // This could allow a menu option for "Add tag from scanner",
 // vs the current add-tag-from-keyboard menu option.
 
-// TODO: Create a function:  prompt(char message[], char callback[]).
-
 #include "serial_menu.h"
 
   //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
@@ -89,8 +87,9 @@
     updateAdminTimeout(2);
     resetInputBuffer();
     
-    setInputMode("char");
-    setCallbackFunction("menuSelectedMainItem");
+    //  setInputMode("char");
+    //  setCallbackFunction("menuSelectedMainItem");
+    prompt('l', "", "menuSelectedMainItem");
     
     //menuListTags();
 	}
@@ -197,8 +196,9 @@
         //  buff_index = 0;
         //  strncpy(buff, "", INPUT_BUFFER_LENGTH);
 
-        setInputMode("char");
-        setCallbackFunction("menuSelectedMainItem");
+        //  setInputMode("char");
+        //  setCallbackFunction("menuSelectedMainItem");
+        prompt('l', "", "menuSelectedMainItem");
       }
 
       resetInputBuffer();
@@ -236,13 +236,12 @@
   // Set input mode to character or line.
   // NOTE: Migrating to line-mode for all functions.
   void SerialMenu::setInputMode(const char str[]) {
-    //strncpy(input_mode, str, INPUT_MODE_LENGTH);
-    strncpy(input_mode, "line", INPUT_MODE_LENGTH);
+    // All input uses 'line' now, but option to use 'char' is still here.
+    strncpy(input_mode, str, INPUT_MODE_LENGTH);
+    //strncpy(input_mode, "line", INPUT_MODE_LENGTH);
     
-    DPRINT(F("setInputMode() to: "));
+    DPRINT(F("setInputMode(): "));
     DPRINT(input_mode);
-    DPRINT(F(" (all input uses 'line' now), this used to be: "))
-    DPRINTLN(str);
   }
 
   bool SerialMenu::matchInputMode(const char mode[]) {
@@ -258,11 +257,10 @@
   // since the recent changes have broken soft-coded links.
   // Update the soft-coded links to fix.
   
-  // TODO: Maybe change this to setCallbackFunction()
   void SerialMenu::setCallbackFunction(const char func[]) {
     strncpy(current_function, func, CURRENT_FUNCTION_LENGTH);
 
-    DPRINT(F("setCallbackFunction() to: "));
+    DPRINT(F("setCallbackFunction(): "));
     DPRINTLN(current_function);
   }
 
@@ -412,6 +410,26 @@
     Serial.println(tags[2]);
   }
 
+  void SerialMenu::prompt(const char _input_mode, const char _message[], const char _callback_function[]) {
+    if (_input_mode == 'l') {
+      setInputMode("line");
+    } else if (_input_mode == 'c') {
+      setInputMode("char");
+    }
+
+    if ((int)_callback_function[0] > 0) {
+      setCallbackFunction(_callback_function);
+    }
+
+    if ((int)_message[0] > 0) {
+      serial_port->print(_message);
+      serial_port->print(" ");
+    }
+
+    //resetInputBuffer(); // WARN: This might break some things, being called here.
+    serial_port->print("> ");
+  }
+
 
   /*** Draw Menu Items and Log Messages ***/
 
@@ -426,9 +444,10 @@
     serial_port->println(F("5. Settings"));
     serial_port->println("");
 
-    resetInputBuffer(); // just to be safe, since it's the home position
-    setInputMode("char");
-    setCallbackFunction("menuSelectedMainItem");
+    //  resetInputBuffer(); // just to be safe, since it's the home position
+    //  setInputMode("char");
+    //  setCallbackFunction("menuSelectedMainItem");
+    prompt('l', "Select a menu option", "menuSelectedMainItem");
   }
 
   // Activates an incoming menu selection.
@@ -475,7 +494,7 @@
         menuMain();
         break;
     }
-  }
+  } // menuSelectedMainItem
 
   // Lists tags for menu.
   void SerialMenu::menuListTags() {
@@ -492,31 +511,35 @@
     }
     serial_port->println("");
     
-    setInputMode("char");
-    setCallbackFunction("menuSelectedMainItem");
+    //  setInputMode("char");
+    //  setCallbackFunction("menuSelectedMainItem");
+    prompt('\0', "", "menuSelectedMainItem");
   }
 
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
-    serial_port->println(F("Add Tag"));
-    serial_port->print(F("Enter a tag number (unsigned long) to store: "));
+    //serial_port->println(F("Add Tag"));
+    //serial_port->print(F("Enter a tag number (unsigned long) to store: "));
 
-    setInputMode("line");
-    setCallbackFunction(__FUNCTION__);
+    //  setInputMode("line");
+    //  setCallbackFunction(__FUNCTION__);
+    prompt('l', "Enter a tag number (unsigned long) to store: ", __FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag() {
     serial_port->println(F("Delete Tag"));
     serial_port->println("");
+    prompt();
   }
 
   void SerialMenu::menuShowFreeMemory() {
     serial_port->println(F("Free Memory: n/a"));
     //serial_port->println(freeMemory());
-    serial_port->println();
+    //serial_port->println();
+    prompt();
   }
 
   // TODO: Should this be moved to settings.cpp?
@@ -524,7 +547,7 @@
     //selected_menu_item = NULL;
     selected_menu_item = -1;
 
-    // Prints out all settings can use variable int '*' in format string here,
+    // Prints out all settings. Can use variable int '*' in format string here,
     // since it work in onlinegdb.com. See my getSettingByIndex.cpp example.
     for (int n=1; n <= SETTINGS_SIZE; n++) {
       char tupple[2][SETTINGS_NAME_SIZE];
@@ -532,18 +555,20 @@
       S.getSettingByIndex(n, tupple);
       sprintf(output, "%2i. %-32s %s", n, tupple[0], tupple[1]);
       serial_port->println(output);
+      //DPRINTLN(output);
     }
 
     serial_port->print("\r\n> ");
 
-    setInputMode("line");
-    setCallbackFunction("menuSelectedSetting");
+    //  setInputMode("line");
+    //  setCallbackFunction("menuSelectedSetting");
+    prompt('l', "Select a setting to edit", "menuSelectedSetting");
   }
 
   // Handle selected setting.
   void SerialMenu::menuSelectedSetting(char bytes[]) {
-    DPRINT(F("menuSelectedSetting received byte: "));
-    DPRINTLN((char *)bytes);
+    // DPRINT(F("menuSelectedSetting received bytes: "));
+    // DPRINTLN((char *)bytes);
 
     selected_menu_item = strtol(bytes, NULL, 10);
     
@@ -563,14 +588,11 @@
       return;
     }
 
-    serial_port->print(F("Type a new value for setting: "));
-    setInputMode("line");
-    setCallbackFunction("updateSetting");
+    //  serial_port->print(F("Type a new value for setting: "));
+    //  setInputMode("line");
+    //  setCallbackFunction("updateSetting");
+    prompt('l', "Type a new value for setting", "updateSetting");
+    
   }
 
-
-  /*  Extern & Global  */
-
-  //  SerialMenu BTmenu;
-  //  SoftwareSerial BTserial(80,81);
   

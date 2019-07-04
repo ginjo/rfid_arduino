@@ -51,10 +51,12 @@
     DPRINT(F("RFID::begin() reader->reader_name: "));
     DPRINTLN(reader->reader_name);
 
-    Serial.print(F("Starting RFID reader: "));
+    Serial.print(F("Starting RFID reader "));
     Serial.print(reader->reader_name);
-    Serial.print(F(", with EEPROM proximity state: "));
+    Serial.print(F(", with EEPROM proximity state "));
     Serial.println(proximity_state);
+    //  Serial.print(F(", and output switch pin: "));
+    //  Serial.println(S.OUTPUT_SWITCH_PIN);
     
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
     

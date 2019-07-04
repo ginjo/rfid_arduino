@@ -116,7 +116,7 @@
  // TODO: Cleanup & fix bugs in SerialMenu UI.
  //       * Prompt
  //       * Empty selection for settings-menu.
- // TODO: Output Settings list to BTserial on starup.
+ // TODO: Output Settings list to HW Serial on starup.
  // WARN: Program storage space is at 80% usage.
  //       Might need to move some strings back to SRAM (by eliminating F function for some).
  
@@ -226,6 +226,7 @@
 
     // Activates the admin console.
     BTmenu.begin();
+    //BTmenu.menuSettings(); // prints out menu settings to admin console.
 
     // Activates the serial port for the RFID handler.
     RfidSerial.begin(S.RFID_BAUD);
