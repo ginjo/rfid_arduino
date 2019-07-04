@@ -447,7 +447,7 @@
     //  resetInputBuffer(); // just to be safe, since it's the home position
     //  setInputMode("char");
     //  setCallbackFunction("menuSelectedMainItem");
-    prompt('l', "Select a menu option", "menuSelectedMainItem");
+    prompt('l', "Select a menu option ", "menuSelectedMainItem");
   }
 
   // Activates an incoming menu selection.
@@ -574,24 +574,15 @@
     DPRINT(F("menuSelectedSetting set selected_menu_item to: "));
     DPRINTLN(selected_menu_item);
 
-    if (selected_menu_item == 0) {
-      menuMain();
-      return;
-    } else if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
+    if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
       char tupple[2][SETTINGS_NAME_SIZE];
       S.getSettingByIndex(selected_menu_item, tupple);
       serial_port->print(tupple[0]); serial_port->print(": ");
       serial_port->println(tupple[1]);
+      prompt('l', "Type a new value for setting", "updateSetting");
+    } else if (bytes[0] == '0') {
+      menuMain();
     } else {
       menuSettings();
-      return;
     }
-
-    //  serial_port->print(F("Type a new value for setting: "));
-    //  setInputMode("line");
-    //  setCallbackFunction("updateSetting");
-    prompt('l', "Type a new value for setting", "updateSetting");
-    
-  }
-
-  
+  } // menuSelectedSetting()

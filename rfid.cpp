@@ -44,13 +44,27 @@
 
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.
-    //WL125 * reader = &WL125(); // I don't think this works.
-    ReaderArraySetup();
+    // This might work on the surface, but I don't think it allows each instance
+    // to properly differentiate from the base class.
+    //WL125 * reader = &WL125(); 
+
+    // This must go after the Readers array is defined and initialized.
+    ReaderArraySetup(); 
+
+    // Sets local 'reader' to instance of Reader.
     reader = GetReader(S.DEFAULT_READER);
+
+    // Switches the main load according to current proximity_state.
+    // This turns on the load if saved prox-state was "on".
+    // This begins the courtesey grace period until the system can
+    // start processing tags (at which time, it will immediately
+    // shut down output until a successful tag read).
+    // TODO: Protect this action with a gate of some sort.
+    //       Use a setting, or a pin, or a key-press.
+    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
 
     DPRINT(F("RFID::begin() reader->reader_name: "));
     DPRINTLN(reader->reader_name);
-
     Serial.print(F("Starting RFID reader "));
     Serial.print(reader->reader_name);
     Serial.print(F(", with EEPROM proximity state "));
@@ -58,7 +72,7 @@
     //  Serial.print(F(", and output switch pin: "));
     //  Serial.println(S.OUTPUT_SWITCH_PIN);
     
-    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    //digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
     
     // Initializes the reader power/reset control.
     //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);

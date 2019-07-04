@@ -237,6 +237,7 @@
     // The displaySetting(n) function uses malloc(),
     // so you MUST free the returned string (memory)
     // when you are done.
+    Serial.println();
     for (int n=1; n <= SETTINGS_SIZE; n++) {
       char * str = S.displaySetting(n);
       Serial.println(str);
