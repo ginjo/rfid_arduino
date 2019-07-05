@@ -255,6 +255,10 @@
   // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
   // See https://www.microchip.com/forums/m649031.aspx
   // See example file Checksuming...XOR.cpp
+  // NOTE: If settings have been changed temporarily (like debug-mode,
+  // which would only last for the session), the checksum will be
+  // different from the stored checksum and the calculated checksum
+  // of the stored settings. This is OK, just be aware. 
   //
   unsigned int Settings::getChecksum() {
     unsigned char *obj = (unsigned char *) this;

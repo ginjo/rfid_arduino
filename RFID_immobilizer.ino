@@ -143,24 +143,21 @@
   // TODO: Find a way to move these to setup().
 
 
-  // Initializes a dummy blinker LED.
-  //extern Led Blinker;
-  Led Blinker;
+  // Declares blinker LED.
+  Led *Blinker;
 
   // Declares a serial port for admin console.
-  SoftwareSerial *BTserial
+  SoftwareSerial *BTserial;
   
-  // Initializes a dummy instance of admin console.
-  //extern SerialMenu BTmenu;
-  SerialMenu BTmenu;
+  // Declares instance of admin console.
+  SerialMenu *BTmenu;
 
-  // Initializes a dummy serial port for RFID reader.
-  //extern SoftwareSerial RfidSerial;
+  // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;//(91,90);
   
-  // Initializes a dummy instance of RFID handler.
+  // Declares instance of RFID handler.
   //extern RFID Rfid;
-  RFID Rfid;
+  RFID *Rfid;
 
 
   void setup() {
@@ -197,11 +194,16 @@
     Serial.print(F(", of size "));
     Serial.println(sizeof(S));
 
+Serial.println(S.getChecksum(), 16);
+
     // For manual debug/log mode.
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
+Serial.println(S.getChecksum(), 16);
     int debug_pin_status = digitalRead(S.DEBUG_PIN);
+Serial.println(S.getChecksum(), 16);
     Serial.print(F("Debug pin status: "));
     Serial.println(debug_pin_status);
+Serial.println(S.getChecksum(), 16);
     if (debug_pin_status == LOW) {
       Serial.println(F("Debug pin LOW ... enabling debug"));
       S.enable_debug = 1;
@@ -211,34 +213,34 @@ Serial.println(S.getChecksum(), 16);
 
     /*  These used be in global namespace, but they need loaded settings. */
 
-    Blinker = Led(S.LED_PIN);
+    Blinker = new Led(S.LED_PIN);
 Serial.println(S.getChecksum(), 16);
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
     //BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 Serial.println(S.getChecksum(), 16);
-    BTmenu = SerialMenu(BTserial, &Blinker);
+    BTmenu = new SerialMenu(BTserial, Blinker);
 Serial.println(S.getChecksum(), 16);
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
     //RfidSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 Serial.println(S.getChecksum(), 16);
-    Rfid = RFID(RfidSerial, &Blinker);
+    Rfid = new RFID(RfidSerial, Blinker);
 
 
 Serial.println(S.getChecksum(), 16);
 
-    Blinker.StartupBlink();
+    Blinker->StartupBlink();
 
     // Activates the serial port for admin console.
     BTserial->begin(S.BT_BAUD);
 
     // Activates the admin console.
-    BTmenu.begin();
+    BTmenu->begin();
 
     // Activates the serial port for the RFID handler.
     RfidSerial->begin(S.RFID_BAUD);
 
     // Activates the RFID handler.
-    Rfid.begin();
+    Rfid->begin();
 
     // Prints out all settings in tabular format.
     Serial.println();
@@ -255,17 +257,17 @@ Serial.println(S.getChecksum(), 16);
 
 //Serial.println(S.getChecksum(), 16);
     
-    Blinker.loop();
+    Blinker->loop();
     
-    if (BTmenu.run_mode > 0) {
+    if (BTmenu->run_mode > 0) {
       BTserial->listen();
       delay(1);
-      BTmenu.loop();
+      BTmenu->loop();
       
     } else {
       
       RfidSerial->listen();
-      Rfid.loop();
+      Rfid->loop();
       delay(1);
     }
     

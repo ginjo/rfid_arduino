@@ -37,9 +37,6 @@
 
     Led * blinker;
 
-    // Dummy constructor for 'definition'.
-    SerialMenu();
-
     // Constructor receives a serial port instance
     // from Serial (HardwareSerial) or SoftwareSerial.
     // TODO: Is the parameter name required here? What about the pointer?

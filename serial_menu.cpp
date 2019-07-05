@@ -48,8 +48,6 @@
 
   /*** Constructors and Setup ***/
 
-  SerialMenu::SerialMenu() {;}
-
   SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
     
@@ -219,7 +217,7 @@
     serial_port->write(byt);
   
     if (int(byt) == 13 || int(byt) == 10) {
-      serial_port->println("");
+      serial_port->println("\r\n");
   
       //  DPRINT(F("You entered: "));
       //  DPRINT((char*)buff);

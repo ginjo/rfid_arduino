@@ -51,7 +51,6 @@
 
     
     // Constructors
-    RFID(); // dummy for initialization
     //RFID(Stream*, Led*, Reader*);
     RFID(Stream*, Led*);
 

@@ -1,8 +1,6 @@
 // LED Blinker Class
 
 #include "led_blinker.h"
-
-  Led::Led() {} // dummy for initialization
   
   Led::Led(int pin) : 
     led_pin(pin),
