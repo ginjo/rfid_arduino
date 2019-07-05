@@ -54,6 +54,8 @@
     // Sets local 'reader' to instance of Reader.
     reader = GetReader(S.DEFAULT_READER);
 
+    Serial.print(F("Setting output switch per saved proximity_state: "));
+    Serial.println(proximity_state);
     // Switches the main load according to current proximity_state.
     // This turns on the load if saved prox-state was "on".
     // This begins the courtesey grace period until the system can
@@ -63,8 +65,6 @@
     //       Use a setting, or a pin, or a key-press.
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
 
-    DPRINT(F("RFID::begin() reader->reader_name: "));
-    DPRINTLN(reader->reader_name);
     Serial.print(F("Starting RFID reader "));
     Serial.print(reader->reader_name);
     Serial.print(F(", with EEPROM proximity state "));

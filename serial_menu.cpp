@@ -76,7 +76,7 @@
     //serial_port->println(F("SerialMenu Admin Console\r\n"));
     
     //showInfo();
-    Serial.println(F("Starting SerialMenu"));
+    Serial.println(F("SerialMenu::begin() running"));
 
     serial_port->print(F("RFID Immobilizer admin console, "));
     serial_port->print(VERSION);
@@ -221,9 +221,9 @@
     if (int(byt) == 13 || int(byt) == 10) {
       serial_port->println("");
   
-      DPRINT(F("You entered: "));
-      DPRINT((char*)buff);
-      DPRINTLN("");
+      //  DPRINT(F("You entered: "));
+      //  DPRINT((char*)buff);
+      //  DPRINTLN("");
 
       // Adds string terminator to end of buff.
       buff[buff_index + 1] = 0;
@@ -544,7 +544,7 @@
     //selected_menu_item = NULL;
     selected_menu_item = -1;
     serial_port->print("Settings, chksm 0x");
-    serial_port->print(S.getChecksum(), HEX);
+    serial_port->print(S.getChecksum(), 16);
     serial_port->print(", size ");
     serial_port->println(sizeof(S));
 
@@ -555,7 +555,7 @@
       serial_port->println(output);
     }
 
-    serial_port->print("\r\n> ");
+    serial_port->println();
 
     //  setInputMode("line");
     //  setCallbackFunction("menuSelectedSetting");
@@ -573,10 +573,10 @@
     DPRINTLN(selected_menu_item);
 
     if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
-      char tupple[2][SETTINGS_NAME_SIZE];
-      S.getSettingByIndex(selected_menu_item, tupple);
-      serial_port->print(tupple[0]); serial_port->print(": ");
-      serial_port->println(tupple[1]);
+      char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_NAME_SIZE];
+      S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
+      serial_port->print(setting_name); serial_port->print(": ");
+      serial_port->println(setting_value);
       prompt('l', "Type a new value for setting", "updateSetting");
     } else if (bytes[0] == '0') {
       menuMain();

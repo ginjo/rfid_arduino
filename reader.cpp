@@ -10,7 +10,8 @@
     id_end(_id_end),
     power_control_logic(_control_logic)
   {
-    strncpy(reader_name, _name, sizeof(reader_name));
+    //strncpy(reader_name, _name, sizeof(reader_name));
+    strcpy(reader_name, _name);
     // WARN: Probably bad to reference any global var or funcs in a constructor.
     Serial.print(F("Constructing Reader for: "));
     Serial.println(_name);

@@ -119,6 +119,12 @@
  // TODO: Output Settings list to HW Serial on starup.
  // WARN: Program storage space is at 80% usage.
  //       Might need to move some strings back to SRAM (by eliminating F function for some).
+ // TODO: Create SETTINGS_VALUE_SIZE and use it for calls to getSettingByIndex().
+ // TODO: Functionally, everything is working, but S.getChecksum is returning a different number
+ //       between boot and first loop.
+ //       Update: It appears to be the out-of-range dummy ports. Stop using them!
+ 
+ 
  
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
@@ -141,9 +147,8 @@
   //extern Led Blinker;
   Led Blinker;
 
-  // Initializes a dummy serial port for admin console.
-  //extern SoftwareSerial BTserial;
-  SoftwareSerial BTserial(81,80);
+  // Declares a serial port for admin console.
+  SoftwareSerial *BTserial
   
   // Initializes a dummy instance of admin console.
   //extern SerialMenu BTmenu;
@@ -151,7 +156,7 @@
 
   // Initializes a dummy serial port for RFID reader.
   //extern SoftwareSerial RfidSerial;
-  SoftwareSerial RfidSerial(91,90);
+  SoftwareSerial *RfidSerial;//(91,90);
   
   // Initializes a dummy instance of RFID handler.
   //extern RFID Rfid;
@@ -166,6 +171,7 @@
       delay(10);
     }
     delay(15);
+    Serial.println(F("Initialized default serial port @ 57600 baud"));
     
     Settings::load(SETTINGS_EEPROM_ADDRESS);
 
@@ -176,6 +182,8 @@
       delay(10);
     }
     delay(15);
+    Serial.print(F("Re-initialized serial port from loaded settings: "));
+    Serial.println(S.HW_SERIAL_BAUD);
 
     Serial.print(F("Booting RFID Immobilizer, "));
     Serial.print(VERSION);
@@ -185,7 +193,9 @@
     Serial.print(F("Loaded Settings "));
     Serial.print((char *)S.settings_name);
     Serial.print(F(", with checksum 0x"));
-    Serial.println(S.getChecksum(), 16);
+    Serial.print(S.getChecksum(), 16);
+    Serial.print(F(", of size "));
+    Serial.println(sizeof(S));
 
     // For manual debug/log mode.
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
@@ -196,32 +206,36 @@
       Serial.println(F("Debug pin LOW ... enabling debug"));
       S.enable_debug = 1;
     }
-
+    
+Serial.println(S.getChecksum(), 16);
 
     /*  These used be in global namespace, but they need loaded settings. */
 
     Blinker = Led(S.LED_PIN);
+Serial.println(S.getChecksum(), 16);
+    BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
+    //BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
+Serial.println(S.getChecksum(), 16);
+    BTmenu = SerialMenu(BTserial, &Blinker);
+Serial.println(S.getChecksum(), 16);
+    RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
+    //RfidSerial(S.RFID_SERIAL_RX, S.LED_PIN);
+Serial.println(S.getChecksum(), 16);
+    Rfid = RFID(RfidSerial, &Blinker);
 
-    BTserial = SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    BTmenu = SerialMenu(&BTserial, &Blinker);
-
-    RfidSerial = SoftwareSerial(S.RFID_SERIAL_RX, 90);
-
-    Rfid = RFID(&RfidSerial, &Blinker);
-
-    
+Serial.println(S.getChecksum(), 16);
 
     Blinker.StartupBlink();
 
     // Activates the serial port for admin console.
-    BTserial.begin(S.BT_BAUD);
+    BTserial->begin(S.BT_BAUD);
 
     // Activates the admin console.
     BTmenu.begin();
 
     // Activates the serial port for the RFID handler.
-    RfidSerial.begin(S.RFID_BAUD);
+    RfidSerial->begin(S.RFID_BAUD);
 
     // Activates the RFID handler.
     Rfid.begin();
@@ -234,25 +248,27 @@
       Serial.println(output);
     }
 
-  } // end setup
+  } // end setup()
 
 
   void loop() {
+
+//Serial.println(S.getChecksum(), 16);
     
     Blinker.loop();
     
     if (BTmenu.run_mode > 0) {
-      BTserial.listen();
+      BTserial->listen();
       delay(1);
       BTmenu.loop();
       
     } else {
       
-      RfidSerial.listen();
+      RfidSerial->listen();
       Rfid.loop();
       delay(1);
     }
     
-  } // end loop
+  } // end loop()
 
   

@@ -112,7 +112,8 @@
         enable_debug = (int)strtol(_data, NULL, 10);
         break;
       case 9:
-        strcpy(DEFAULT_READER, (char *)_data);
+        //strcpy(DEFAULT_READER, (char *)_data);
+        strncpy(DEFAULT_READER, (char *)_data, sizeof(DEFAULT_READER));
         break;
       case 10:
         LED_PIN = (int)strtol(_data, NULL, 10);
@@ -149,67 +150,69 @@
     return true;
   }
 
-  void Settings::getSettingByIndex (int index, char _result[2][SETTINGS_NAME_SIZE]) {
-    strcpy_P(_result[0], (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
-    DPRINT(F("Storage::getSettingByIndex: ")); DPRINT(index); DPRINT(", "); DPRINTLN(_result[0]);
+  void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
+    strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
+    DPRINT(F("Settings::getSettingByIndex: ")); DPRINT(index); DPRINT(", "); DPRINT(setting_name);
     
     switch(index) {
       case 1 :
-        sprintf(_result[1], "%lu", TAG_LAST_READ_TIMEOUT);
+        sprintf(setting_value, "%lu", TAG_LAST_READ_TIMEOUT);
         break;
       case 2 :
-        sprintf(_result[1], "%lu", TAG_READ_SLEEP_INTERVAL);
+        sprintf(setting_value, "%lu", TAG_READ_SLEEP_INTERVAL);
         break;
       case 3 :
-        sprintf(_result[1], "%lu", READER_CYCLE_LOW_DURATION);
+        sprintf(setting_value, "%lu", READER_CYCLE_LOW_DURATION);
         break;
       case 4 :
-        sprintf(_result[1], "%lu", READER_CYCLE_HIGH_DURATION);
+        sprintf(setting_value, "%lu", READER_CYCLE_HIGH_DURATION);
         break;
       case 5 :
-        sprintf(_result[1], "%u", READER_POWER_CONTROL_PIN);
+        sprintf(setting_value, "%u", READER_POWER_CONTROL_PIN);
         break;
       case 6 :
-        sprintf(_result[1], "%lu", admin_timeout);
+        sprintf(setting_value, "%lu", admin_timeout);
         break;
       case 7 :
-        sprintf(_result[1], "%i", proximity_state);
+        sprintf(setting_value, "%i", proximity_state);
         break;
       case 8 :
-        sprintf(_result[1], "%i", enable_debug);
+        sprintf(setting_value, "%i", enable_debug);
         break;
       case 9 :
-        sprintf(_result[1], "%s", DEFAULT_READER);
+        sprintf(setting_value, "%s", DEFAULT_READER);
         break;
       case 10 :
-        sprintf(_result[1], "%i", LED_PIN);
+        sprintf(setting_value, "%i", LED_PIN);
         break;
       case 11 :
-        sprintf(_result[1], "%s", (char *)BT_RXTX);
+        sprintf(setting_value, "%s", (char *)BT_RXTX);
         break;
       case 12 :
-        sprintf(_result[1], "%i", RFID_SERIAL_RX);
+        sprintf(setting_value, "%i", RFID_SERIAL_RX);
         break;
       case 13 :
-        sprintf(_result[1], "%li", HW_SERIAL_BAUD);
+        sprintf(setting_value, "%li", HW_SERIAL_BAUD);
         break;
       case 14 :
-        sprintf(_result[1], "%i", DEBUG_PIN);
+        sprintf(setting_value, "%i", DEBUG_PIN);
         break;
       case 15 :
-        sprintf(_result[1], "%li", BT_BAUD);
+        sprintf(setting_value, "%li", BT_BAUD);
         break;
       case 16 :
-        sprintf(_result[1], "%li", RFID_BAUD);
+        sprintf(setting_value, "%li", RFID_BAUD);
         break;
       case 17 :
-        sprintf(_result[1], "%i", OUTPUT_SWITCH_PIN);
+        sprintf(setting_value, "%i", OUTPUT_SWITCH_PIN);
         break;
         
       default:
         break;
-    }
-  }
+    } // switch
+
+    DPRINT(", "); DPRINTLN(setting_value);
+  } // function
 
   // Prints out one line of settings. Can use variable int '*' in format string here,
   // since it works in onlinegdb.com. See my getSettingByIndex.cpp example.
@@ -217,9 +220,11 @@
   // Pass this an initialized output string to return via:
   //   char output[SETTINGS_NAME_SIZE*2] = {};
   void Settings::displaySetting(int index, char *output) {
-    char tupple[2][SETTINGS_NAME_SIZE];
-    getSettingByIndex(index, tupple);
-    sprintf(output, "%2i. %-32s %s", index, tupple[0], tupple[1]);
+    char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_NAME_SIZE];
+    getSettingByIndex(index, setting_name, setting_value);
+    sprintf(output, "%2i. %-32s %s", index, setting_name, setting_value);
+    DPRINT(F("Settings::displaySetting() gathered: "));
+    DPRINT(setting_name); DPRINT(", "); DPRINTLN(setting_value);
     DPRINT(F("Settings::displaySetting() returning: "));
     DPRINTLN(output);
   }
@@ -278,38 +283,47 @@
 
   // Loads settings from EEPROM and compares with stored checksum.
   // See note above about Address.
-  Settings * Settings::load(int address) {
+  //Settings * Settings::load(int address) {
+  void Settings::load(int address) {
     // Under normal circumstances, Serial has not been initialized yet,
     // so you can't print anything here. I've modified the load order
     // of Serial in the main .ino file to allow printing for debugging.
+    Serial.print("Settings::load(");
+    Serial.print(address);
+    Serial.println(")");
+    Serial.print("Settings::load() existing? ");
+    Serial.println((char*)current.settings_name);
     
-    unsigned int checksum;
-    EEPROM.get(address, checksum);
+    unsigned int stored_checksum;
+    unsigned int loaded_checksum;
+    EEPROM.get(address, stored_checksum);
     EEPROM.get(address+9, current);
+    loaded_checksum = current.getChecksum();
 
     if (Serial) {
-      Serial.print(F("Settings::load() retrieved checksum 0x"));
-      Serial.println(checksum, 16);
-      Serial.print(F("Settings::load() retrieved "));
+      Serial.print(F("Settings::load() retrieved 0x"));
+      Serial.print(stored_checksum, 16);
+      Serial.print(F(", "));
       Serial.print((char *)current.settings_name);
-      Serial.print(F(" with checksum 0x"));
-      Serial.println(current.getChecksum(), 16);
+      Serial.print(F(", 0x"));
+      Serial.println(loaded_checksum, 16);
     }
 
-    if (checksum != current.getChecksum()) {
+    if (stored_checksum != loaded_checksum) {
       current = Settings();
       strcpy(current.settings_name, "saved_settings");
-      if (Serial) Serial.println(F("Calling Settings::save() from Settings::load()"));
+      if (Serial) Serial.println(F("Settings::load() calling current.save()"));
       current.save();
     }
     
-    return &current;
+    //return &current;
   }
 
   // It seems necessary to initialize static member vars
   // before using them (seems kinda wasteful).
   // Maybe we don't need this if we move .ino items into setup().
-  Settings Settings::current;// = *Settings::load();
+  //Settings Settings::current;// = *Settings::load();
+  Settings Settings::current = Settings();
 
   // a reference (alias?) from S to CurrentSettings
   Settings& S = Settings::current;

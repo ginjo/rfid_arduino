@@ -19,10 +19,8 @@
   #define TAG_LIST_SIZE 5
 
   class SerialMenu {
-  private:
-    Stream *serial_port;
-    
   public:
+    Stream *serial_port;
     // TODO: I think run_mode should be a global-global.
     int run_mode; // 0=run, 1=admin
     uint32_t previous_ms;
