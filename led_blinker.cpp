@@ -16,7 +16,7 @@
   }
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
-    if(S.enable_debug) {
+    if(S.debugMode()) {
       Serial.println(F("Led::begin with intervals current, new:"));
       printIntervals(intervals);
       printIntervals(_intervals);
@@ -70,7 +70,7 @@
   // Should generally use this instad of begin().
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
     DPRINT(F("Led::update _intervals[0]: ")); DPRINTLN(_intervals[0]);
-    if(S.enable_debug) {
+    if(S.debugMode()) {
       Serial.println(F("Led::update with intervals current, new:"));
       printIntervals(intervals);
       printIntervals(_intervals);

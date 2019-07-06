@@ -281,6 +281,13 @@
     return xxor;
   }
 
+  int Settings::debugMode() {
+    if (digitalRead(DEBUG_PIN) == LOW || enable_debug == 1) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
 
   /*  Static & Extern  */
@@ -292,10 +299,10 @@
     // Under normal circumstances, Serial has not been initialized yet,
     // so you can't print anything here. I've modified the load order
     // of Serial in the main .ino file to allow printing for debugging.
-    Serial.print("Settings::load(");
+    Serial.print(F("Settings::load("));
     Serial.print(address);
     Serial.println(")");
-    Serial.print("Settings::load() existing? ");
+    Serial.print(F("Settings::load() existing? "));
     Serial.println((char*)current.settings_name);
     
     unsigned int stored_checksum;

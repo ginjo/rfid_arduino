@@ -124,6 +124,9 @@
  //       between boot and first loop.
  //       Update: It appears to be the out-of-range dummy ports. Stop using them!
  //       Ok, this is fixed now! Don't use out-of-range pins, will cause UB.
+ // TODO: With debug pin, don't change S.enable_debug, because saving any setting
+ //       will then save enable_debug as 1. Just read the pin directly.
+ // TODO: Create a Settings function 'debugMode()' which compiles enable_debug with debug-pin.
  
  
  
@@ -205,10 +208,10 @@ Serial.println(S.getChecksum(), 16);
     Serial.print(F("Debug pin status: "));
     Serial.println(debug_pin_status);
 Serial.println(S.getChecksum(), 16);
-    if (debug_pin_status == LOW) {
-      Serial.println(F("Debug pin LOW ... enabling debug"));
-      S.enable_debug = 1;
-    }
+    //  if (debug_pin_status == LOW) {
+    //    Serial.println(F("Debug pin LOW ... enabling debug"));
+    //    S.enable_debug = 1;
+    //  }
     
 Serial.println(S.getChecksum(), 16);
 

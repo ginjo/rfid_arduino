@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre95"
+  #define VERSION "v0.1.0.pre96"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -98,6 +98,7 @@
     void getSettingByIndex(int, char*, char*);
     void displaySetting(int, char*);
     unsigned int getChecksum();
+    int debugMode();
 
     void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
 

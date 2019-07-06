@@ -80,7 +80,7 @@
     serial_port->print(VERSION);
     serial_port->print(", ");
     serial_port->println(TIMESTAMP);
-    serial_port->println("");
+    serial_port->println();
     
     updateAdminTimeout(2);
     resetInputBuffer();
@@ -255,10 +255,14 @@
   // Update the soft-coded links to fix.
   
   void SerialMenu::setCallbackFunction(const char *func_name) {
-    strncpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
-
-    DPRINT(F("setCallbackFunction(): "));
-    DPRINTLN(current_function);
+    //  DPRINT(F("setCallbackFunction() received func_name: ("));
+    //  DPRINTLN(func_name));
+    
+    if (func_name[0] != 0) {
+      DPRINT(F("setCallbackFunction(): "));
+      DPRINTLN(func_name);
+      strncpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
+    }
   }
 
   bool SerialMenu::matchCurrentFunction(const char func[]) {
@@ -413,11 +417,14 @@
       setInputMode("char");
     }
 
-    if ((int)_callback_function[0] > 0) {
+    if (_callback_function[0] != 0) {
       setCallbackFunction(_callback_function);
     }
 
-    if ((int)_message[0] > 0) {
+    if (_message[0] != 0) {
+      DPRINT(F("prompt() printing _message: "));
+      DPRINTLN(_message);
+      
       serial_port->print(_message);
       serial_port->print(" ");
     }
@@ -442,7 +449,7 @@
     //  resetInputBuffer(); // just to be safe, since it's the home position
     //  setInputMode("char");
     //  setCallbackFunction("menuSelectedMainItem");
-    prompt('l', "Select a menu option ", "menuSelectedMainItem");
+    prompt('l', "Select a menu option", "menuSelectedMainItem");
   }
 
   // Activates an incoming menu selection.
@@ -520,7 +527,7 @@
 
     //  setInputMode("line");
     //  setCallbackFunction(__FUNCTION__);
-    prompt('l', "Enter a tag number (unsigned long) to store: ", __FUNCTION__);
+    prompt('l', "Enter a tag number (unsigned long) to store", __FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.
