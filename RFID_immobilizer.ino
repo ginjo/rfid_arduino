@@ -198,39 +198,35 @@
     Serial.print(F(", of size "));
     Serial.println(sizeof(S));
 
-Serial.println(S.getChecksum(), 16);
-
     // For manual debug/log mode.
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
-Serial.println(S.getChecksum(), 16);
+
     int debug_pin_status = digitalRead(S.DEBUG_PIN);
-Serial.println(S.getChecksum(), 16);
+
     Serial.print(F("Debug pin status: "));
     Serial.println(debug_pin_status);
-Serial.println(S.getChecksum(), 16);
+
     //  if (debug_pin_status == LOW) {
     //    Serial.println(F("Debug pin LOW ... enabling debug"));
     //    S.enable_debug = 1;
     //  }
     
-Serial.println(S.getChecksum(), 16);
 
     /*  These used be in global namespace, but they need loaded settings. */
 
     Blinker = new Led(S.LED_PIN);
-Serial.println(S.getChecksum(), 16);
+
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
     //BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
-Serial.println(S.getChecksum(), 16);
+
     BTmenu = new SerialMenu(BTserial, Blinker);
-Serial.println(S.getChecksum(), 16);
+
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
     //RfidSerial(S.RFID_SERIAL_RX, S.LED_PIN);
-Serial.println(S.getChecksum(), 16);
+
     Rfid = new RFID(RfidSerial, Blinker);
 
 
-Serial.println(S.getChecksum(), 16);
 
     Blinker->StartupBlink();
 
@@ -258,8 +254,6 @@ Serial.println(S.getChecksum(), 16);
 
 
   void loop() {
-
-//Serial.println(S.getChecksum(), 16);
     
     Blinker->loop();
     
