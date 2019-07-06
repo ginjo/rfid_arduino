@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre94"
+  #define VERSION "v0.1.0.pre95"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -25,9 +25,9 @@
 
   #include "logger.h"
     
-  #define DEFAULT_READER_SIZE 16
   #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
+  #define SETTINGS_VALUE_SIZE 16 // max length of a setting var name
   #define SETTINGS_EEPROM_ADDRESS 100
   
 
@@ -70,7 +70,7 @@
     
     int enable_debug;
 
-    char DEFAULT_READER[DEFAULT_READER_SIZE];
+    char DEFAULT_READER[SETTINGS_VALUE_SIZE];
 
     // Temporary EEPROM alternative for dev/testing.
     // NOTE: This is NOT part of Settings.

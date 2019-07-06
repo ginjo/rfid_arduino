@@ -38,7 +38,7 @@
 
   /***  Global functions and variables  ***/
 
-  //Reader * GetReader(char _name[DEFAULT_READER_SIZE]) {
+  //Reader * GetReader(char _name[SETTINGS_VALUE_SIZE]) {
   Reader * GetReader(const char *_name) {
     DPRINT(F("GetReader() called with name: "));
     DPRINTLN((char *)_name);

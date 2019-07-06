@@ -548,7 +548,7 @@
 
     // Prints out all settings in tabular format.
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE*2] = {};
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
       S.displaySetting(n, output);
       serial_port->println(output);
     }
@@ -571,7 +571,7 @@
     DPRINTLN(selected_menu_item);
 
     if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
-      char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_NAME_SIZE];
+      char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(": ");
       serial_port->println(setting_value);

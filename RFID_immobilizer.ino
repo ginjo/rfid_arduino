@@ -113,16 +113,17 @@
  //       before being used.
  // TODO: √ Find string operations that have 0 as an argument, and see if they should use '\0' instead.
  //       According to docs 0 is same as '\0'. They are both int's.
- // TODO: Cleanup & fix bugs in SerialMenu UI.
- //       * Prompt
- //       * Empty selection for settings-menu.
- // TODO: Output Settings list to HW Serial on starup.
+ // TODO: √ Cleanup & fix bugs in SerialMenu UI.
+ //       √ Prompt
+ //       √ Empty selection for settings-menu.
+ // TODO: √ Output Settings list to HW Serial on starup.
  // WARN: Program storage space is at 80% usage.
  //       Might need to move some strings back to SRAM (by eliminating F function for some).
- // TODO: Create SETTINGS_VALUE_SIZE and use it for calls to getSettingByIndex().
- // TODO: Functionally, everything is working, but S.getChecksum is returning a different number
+ // TODO: √ Create SETTINGS_VALUE_SIZE and use it for calls to getSettingByIndex().
+ // TODO: √ Functionally, everything is working, but S.getChecksum is returning a different number
  //       between boot and first loop.
  //       Update: It appears to be the out-of-range dummy ports. Stop using them!
+ //       Ok, this is fixed now! Don't use out-of-range pins, will cause UB.
  
  
  
@@ -245,7 +246,7 @@ Serial.println(S.getChecksum(), 16);
     // Prints out all settings in tabular format.
     Serial.println();
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE*2] = {};
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
       S.displaySetting(n, output);
       Serial.println(output);
     }

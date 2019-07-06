@@ -218,9 +218,9 @@
   // since it works in onlinegdb.com. See my getSettingByIndex.cpp example.
   // Iterate over number-of-settings with this to get entire settings list.
   // Pass this an initialized output string to return via:
-  //   char output[SETTINGS_NAME_SIZE*2] = {};
+  //   char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
   void Settings::displaySetting(int index, char *output) {
-    char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_NAME_SIZE];
+    char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
     getSettingByIndex(index, setting_name, setting_value);
     sprintf(output, "%2i. %-32s %s", index, setting_name, setting_value);
     DPRINT(F("Settings::displaySetting() gathered: "));
