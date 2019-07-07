@@ -24,6 +24,8 @@
   #include "led_blinker.h"
 
   #define MAX_TAG_LENGTH 16
+  #define TAG_LIST_SIZE 10
+  #define TAGS_EEPROM_ADDRESS 32
   
 
   class RFID {
@@ -70,6 +72,20 @@
     uint32_t tagLastReadTimeoutX1000();
     //uint32_t cycleLowFinishMs();
     //uint32_t cycleHighFinishMs();
+
+
+
+    /*  Static Vars & Functions  */
+    static uint32_t Tags[TAG_LIST_SIZE];
+
+    static uint32_t *LoadTags();
+    static void SaveTags();
+    static int CountTags();
+    static int GetTagIndex(uint32_t tag);
+    static void CompactTags();
+    static bool AddTag(uint32_t new_tag);
+    static bool DeleteTag(uint32_t deleteable_tag);
+    
   };
 
 #endif

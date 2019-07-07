@@ -16,7 +16,9 @@
   #define INPUT_BUFFER_LENGTH 24
   #define INPUT_MODE_LENGTH 16
   #define CURRENT_FUNCTION_LENGTH 24
-  #define TAG_LIST_SIZE 5
+
+  // TODO: Remove
+  #define TAG_LIST_SIZE 10
 
   class SerialMenu {
   public:

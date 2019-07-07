@@ -1,4 +1,5 @@
 #include "rfid.h"
+#include <EEPROM.h>
 
   // Constructors
   //RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
@@ -402,6 +403,65 @@
     }
     
     S.updateProximityState(_state);
+  }
+
+
+  /*  Static Vars & Functions  */
+
+  uint32_t Tags[TAG_LIST_SIZE];
+
+  uint32_t *RFID::LoadTags() {
+    EEPROM.get(TAGS_EEPROM_ADDRESS, Tags);
+    return Tags;
+  }
+
+  void RFID::SaveTags() {
+    EEPROM.put(TAGS_EEPROM_ADDRESS, Tags);
+  }
+
+  int RFID::CountTags(){
+    int n = 0;
+    for (int i=0; i < TAG_LIST_SIZE; i++) {
+      if (Tags[i] > 0) n++;
+    }
+    return n;
+  }
+
+  int RFID::GetTagIndex(uint32_t tag) {
+    for (int i=0; i < TAG_LIST_SIZE; i++) {
+      if (Tags[i] == tag) return i;
+    }
+    return -1;
+  }
+
+  void RFID::CompactTags() {
+    for (int i=0; i < TAG_LIST_SIZE; i++) {
+      if (i < TAG_LIST_SIZE-1 && Tags[i] < 1) {
+        Tags[i] = Tags[i+1];
+        Tags[i+1] = 0;
+      }
+    }
+  }
+
+  bool RFID::AddTag(uint32_t new_tag) {
+    CompactTags();
+    int tag_count = CountTags();
+    if (tag_count < TAG_LIST_SIZE && GetTagIndex(new_tag) < 0) {
+      Tags[tag_count] = new_tag;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool RFID::DeleteTag(uint32_t deleteable_tag) {
+    int tag_index = GetTagIndex(deleteable_tag);
+    if (tag_index >= 0) {
+      Tags[tag_index] = 0;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   
