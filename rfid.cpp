@@ -49,7 +49,7 @@
     //WL125 * reader = &WL125(); 
 
     // This must go after the Readers array is defined and initialized.
-    ReaderArraySetup(); 
+    ReaderArraySetup();
 
     // Sets local 'reader' to instance of Reader.
     reader = GetReader(S.DEFAULT_READER);
@@ -80,6 +80,8 @@
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
     delay(50);
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
+
+    LoadTags();
   }
 
   void RFID::loop() {
@@ -261,7 +263,7 @@
     // assuming successful tag at this point?
 
     // If tag is valid, immediatly update proximity-state.
-    if (tag_id > 0UL) {
+    if (tag_id > 0UL && GetTagIndex(tag_id) >= 0) { // 0 is valid index.
       // Should this be the local function setProximityState()?
       //S.updateProximityState(1);
       setProximityState(1);
@@ -408,15 +410,55 @@
 
   /*  Static Vars & Functions  */
 
-  uint32_t Tags[TAG_LIST_SIZE];
+  // A tag-id is 32 bit for a max of 4,294,967,295 unique combinations
+  // NOTE: The API here may change in future, when the higher-frequency
+  //       (UHF?) readers are accomodated in this class.
+  uint32_t RFID::Tags[TAG_LIST_SIZE];
 
   uint32_t *RFID::LoadTags() {
-    EEPROM.get(TAGS_EEPROM_ADDRESS, Tags);
+    unsigned int stored_checksum;
+    unsigned int loaded_checksum;
+    EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
+    EEPROM.get(TAGS_EEPROM_ADDRESS+4, Tags);
+    loaded_checksum = GetTagsChecksum();
+
+    Serial.print(F("Loaded tags with stored & loaded checksum: 0x"));
+    Serial.print(stored_checksum, 16);
+    Serial.print(F(", 0x"));
+    Serial.print(loaded_checksum, 16);
+    Serial.print(F(" from address "));
+    Serial.println(TAGS_EEPROM_ADDRESS);
+
+    for (int i=0; i < TAG_LIST_SIZE; i++) {
+      Serial.print(Tags[i]); Serial.print(",");
+    }
+    Serial.println();
+
+    if (stored_checksum != loaded_checksum) {
+      Serial.println(F("LoadTags() checksum mismatch"));
+      //DeleteAllTags();
+    }
+
+    CompactTags();
+
     return Tags;
   }
 
   void RFID::SaveTags() {
-    EEPROM.put(TAGS_EEPROM_ADDRESS, Tags);
+    CompactTags();
+    unsigned int checksum = GetTagsChecksum();
+
+    Serial.print(F("Saving tags with checksum "));
+    Serial.print(checksum, 16);
+    Serial.print(F(" to address "));
+    Serial.println(TAGS_EEPROM_ADDRESS);
+    for (int i=0; i < TAG_LIST_SIZE; i++) {
+      Serial.print(Tags[i]); Serial.print(",");
+    }
+    Serial.println();
+    
+    EEPROM.put(TAGS_EEPROM_ADDRESS, checksum);
+    EEPROM.put(TAGS_EEPROM_ADDRESS+4, Tags);
   }
 
   int RFID::CountTags(){
@@ -435,26 +477,52 @@
   }
 
   void RFID::CompactTags() {
+    int n=-1;
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      if (i < TAG_LIST_SIZE-1 && Tags[i] < 1) {
-        Tags[i] = Tags[i+1];
-        Tags[i+1] = 0;
+      if (RFID::Tags[i] == 0 && n < 0) {
+        n=i;
+      } else if ( RFID::Tags[i] > 0 && i>0 && n>=0) {
+        RFID::Tags[n] = RFID::Tags[i];
+        RFID::Tags[i] = 0;
+        i = n;
+        n = -1;
       }
     }
   }
 
-  bool RFID::AddTag(uint32_t new_tag) {
+  int RFID::AddTag(uint32_t new_tag) {
+    Serial.print(F("AddTag() "));
+    Serial.println(new_tag);
     CompactTags();
     int tag_count = CountTags();
-    if (tag_count < TAG_LIST_SIZE && GetTagIndex(new_tag) < 0) {
-      Tags[tag_count] = new_tag;
-      return true;
-    } else {
-      return false;
+    
+    if(new_tag < 1) {
+      Serial.println(F("AddTag() failed: Invalid"));
+      return 1;
+    } else if (tag_count >= TAG_LIST_SIZE) {
+      Serial.println(F("AddTag() failed: Full"));
+      return 2;
+    } else if (GetTagIndex(new_tag) >=0) {
+      Serial.println(F("AddTag() failed: Dupe"));
+      return 3;
     }
+
+    Tags[tag_count] = new_tag;
+    if (Tags[tag_count] == new_tag) {
+      SaveTags();
+      Serial.println(F("AddTag() success"));
+      return 0;
+    } else {
+      Serial.println(F("AddTag() failed: Unknown error"));
+      return -1;
+    }
+    
+
   }
 
-  bool RFID::DeleteTag(uint32_t deleteable_tag) {
+  int RFID::DeleteTag(uint32_t deleteable_tag) {
+    Serial.print(F("DeleteTag(): "));
+    Serial.println(deleteable_tag);
     int tag_index = GetTagIndex(deleteable_tag);
     if (tag_index >= 0) {
       Tags[tag_index] = 0;
@@ -464,4 +532,23 @@
     }
   }
 
-  
+  int RFID::DeleteAllTags() {
+    Serial.println(F("DeleteAllTags()"));
+    memset(Tags, 0, TAG_LIST_SIZE*4);
+    //Tags = new uint32_t[TAG_LIST_SIZE];
+    SaveTags();
+    return 0;
+  }
+
+  unsigned int RFID::GetTagsChecksum() {
+    unsigned char *obj = (unsigned char *) Tags;
+    unsigned int len = sizeof(*Tags);
+    unsigned int xxor = 0;
+
+    // Converts to 16-bit checksum, and handles odd bytes at end of obj.
+    for ( unsigned int i = 0 ; i < len ; i+=2 ) {
+      xxor = xxor ^ ((obj[i]<<8) | (i==len-1 ? 0 : obj[i+1]));
+    }
+    
+    return xxor;
+  }

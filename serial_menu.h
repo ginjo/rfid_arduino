@@ -12,13 +12,14 @@
 
   #include "settings.h"
   #include "led_blinker.h"
+  #include "rfid.h"
   
   #define INPUT_BUFFER_LENGTH 24
   #define INPUT_MODE_LENGTH 16
   #define CURRENT_FUNCTION_LENGTH 24
 
   // TODO: Remove
-  #define TAG_LIST_SIZE 10
+  //#define TAG_LIST_SIZE 10
 
   class SerialMenu {
   public:
@@ -34,7 +35,7 @@
   	char buff[INPUT_BUFFER_LENGTH];
   	int buff_index;
     char current_function[CURRENT_FUNCTION_LENGTH];
-  	uint32_t tags[TAG_LIST_SIZE];
+  	//uint32_t tags[TAG_LIST_SIZE];
     int selected_menu_item;
 
     Led * blinker;
@@ -55,6 +56,7 @@
     void menuListTags();
     void menuAddTag();
     void menuDeleteTag();
+    void menuDeleteAllTags();
     void menuShowFreeMemory();
     void menuSettings();
     void menuSelectedSetting(char[]);
@@ -69,8 +71,8 @@
     bool inputAvailable(const char[]);
     const char * inputAvailableFor();
     void runCallbacks();
-    bool addTagString(char[]);
-    bool addTagNum(uint32_t);
+    int addTagString(char[]);
+    //bool addTagNum(uint32_t);
     void resetInputBuffer();
     void adminTimeout();
     // argument defaults must be declared here, not defined in implementation.

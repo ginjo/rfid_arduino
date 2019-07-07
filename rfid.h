@@ -83,9 +83,11 @@
     static int CountTags();
     static int GetTagIndex(uint32_t tag);
     static void CompactTags();
-    static bool AddTag(uint32_t new_tag);
-    static bool DeleteTag(uint32_t deleteable_tag);
+    static int AddTag(uint32_t new_tag);
+    static int DeleteTag(uint32_t deleteable_tag);
+    static int DeleteAllTags();
+    static unsigned int GetTagsChecksum();
     
-  };
+  };  // RFID
 
 #endif

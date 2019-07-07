@@ -55,7 +55,7 @@
     buff {},
     buff_index(0),
     current_function(""),
-    tags {305441741, 2882343476, 2676915564}, // 1234ABCD, ABCD1234, 9F8E7D6C
+    //tags {305441741, 2882343476, 2676915564}, // 1234ABCD, ABCD1234, 9F8E7D6C
     blinker(_blinker)
     
     // See updateAdminTimeout()
@@ -152,13 +152,14 @@
       //Serial.println(inputAvailableFor());
 
       if (inputAvailable("menuAddTag")) {
-        DPRINTLN(F("runCallbacks() inputAvailable for addTagString"));
-        if (addTagString(buff)) { 
-          menuListTags();
-        } else {
-          Serial.println(F("runCallbacks() call to addTagString(buff) failed"));
-          menuMain();
-        }
+        DPRINTLN(F("runCallbacks() inputAvailable for menuAddTag"));
+        addTagString(buff);
+        menuListTags();
+
+//      } else if (inputAvailable("menuDeleteAllTags")) {
+//        DPRINTLN(F("runCallbacks() inputAvailable for menuDeleteAllTags"));
+//        menuDeleteAllTags();
+//        RFID::DeleteAllTags();
 
       } else if (inputAvailable("menuSelectedMainItem")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
@@ -311,45 +312,40 @@
   }
 
   //bool SerialMenu::addTagString(char str[TAG_LENGTH]) {
-  bool SerialMenu::addTagString(char str[]) {
-    // Need to discard bogus tags... this kinda works,
-    // but needs more failure conditions.
-    // TODO: Make sure string consists of only numerics, no other characters.
-    // OR, if it's a valid hex string, use that.
-    //if (sizeof(buff)/sizeof(*buff) != 8 || buff[0] == 13) {
-    //if (buff_index < (TAG_LENGTH -1) || buff[0] == 13) {
+  int SerialMenu::addTagString(char str[]) {
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
-      //strncpy(input_mode, "menu", INPUT_MODE_LENGTH);
-      //setInputMode("char");
-      //setCallbackFunction("menuSelectedMainItem");
-      //buff_index = 0;
-      //resetInputBuffer();
-      //serial_port->println("");
-      return false;
+      serial_port->println(F("addTagString() failed: invalid tag"));
+      return 1;
     }
+
+    // TODO: Should probably validate the entire string of digits.
   
     serial_port->print(F("Tag entered: "));
     serial_port->println((char*)str);
     serial_port->println("");
-
-    return addTagNum(strtol(str, NULL, 10));
+    
+    //return addTagNum(strtol(str, NULL, 10));
+    int rslt = RFID::AddTag(strtol(str, NULL, 10));
+    serial_port->print(F("AddTag() result: "));
+    serial_port->println(rslt);
+    return rslt;
   }
   
   // Adds tag number to tag list.
   // TODO: Make sure number to add is within bounds of 32-bit integer,
   // since that is as high as the tag ids will go: 4294967295 or 'FFFFFFFF'
-  bool SerialMenu::addTagNum(unsigned long tag_num) {
-    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      if ( tags[i] <= 0) {
-        tags[i] = tag_num;
-        setCallbackFunction("");
-        return true;
-      }
-    }
-
-    // fails if didn't return from inner block
-    return false;
-  }
+  //  bool SerialMenu::addTagNum(unsigned long tag_num) {
+  //    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
+  //      if ( tags[i] <= 0) {
+  //        tags[i] = tag_num;
+  //        setCallbackFunction("");
+  //        return true;
+  //      }
+  //    }
+  //
+  //    // fails if didn't return from inner block
+  //    return false;
+  //  }
 
   void SerialMenu::resetInputBuffer() {
     memset(buff, 0, INPUT_BUFFER_LENGTH);
@@ -406,8 +402,8 @@
     Serial.println(input_mode);
     Serial.print(F("SerialMenu::setup buff_index: "));
     Serial.println(buff_index);
-    Serial.print(F("SerialMenu::setup tags[2]: "));
-    Serial.println(tags[2]);
+    Serial.print(F("SerialMenu::setup RFID::Tags[2]: "));
+    Serial.println(RFID::Tags[2]);
   }
 
   void SerialMenu::prompt(const char _input_mode, const char _message[], const char _callback_function[]) {
@@ -444,6 +440,8 @@
     serial_port->println(F("3. Delete tag"));
     serial_port->println(F("4. Show free memory"));
     serial_port->println(F("5. Settings"));
+    serial_port->println(F("6. Delete all tags"));
+    
     serial_port->println("");
 
     //  resetInputBuffer(); // just to be safe, since it's the home position
@@ -492,6 +490,9 @@
       case '5':
         menuSettings();
         break;
+      case '6':
+        menuDeleteAllTags();
+        break;
       default:
         menuMain();
         break;
@@ -504,10 +505,10 @@
     //serial_port->println((char*)tags);
     // TODO: Move the bulk of this to RFIDTags?
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      if (tags[i] > 0) {
+      if (RFID::Tags[i] > 0) {
         serial_port->print(i);
         serial_port->print(". ");
-        serial_port->print(tags[i]);
+        serial_port->print(RFID::Tags[i]);
         serial_port->println("");
       }
     }
@@ -522,11 +523,6 @@
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
-    //serial_port->println(F("Add Tag"));
-    //serial_port->print(F("Enter a tag number (unsigned long) to store: "));
-
-    //  setInputMode("line");
-    //  setCallbackFunction(__FUNCTION__);
     prompt('l', "Enter a tag number (unsigned long) to store", __FUNCTION__);
   }
 
@@ -535,6 +531,15 @@
     serial_port->println(F("Delete Tag"));
     serial_port->println("");
     prompt();
+  }
+
+  // Asks user for index of tag to delete from EEPROM.
+  void SerialMenu::menuDeleteAllTags() {
+    serial_port->println(F("Delete all Tags"));
+    serial_port->println("");
+    RFID::DeleteAllTags();
+    //prompt();
+    menuListTags();
   }
 
   void SerialMenu::menuShowFreeMemory() {
