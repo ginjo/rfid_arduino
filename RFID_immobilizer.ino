@@ -140,12 +140,7 @@
   #include "rfid.h"
 
 
-  // WARN: None of these should be here, as the settings haven't been loaded yet.
-  // These are using the default settings, which work fine for in dev mode
-  // but are not going to work in the field (they will always supercede saved settings).
-  //
-  // TODO: Find a way to move these to setup().
-
+  // TODO: Consider moving these to static class vars.
 
   // Declares blinker LED.
   Led *Blinker;
@@ -161,7 +156,7 @@
   
   // Declares instance of RFID handler.
   //extern RFID Rfid;
-  RFID *Rfid;
+  RFID *Rfid; // used in SerialMenu to add tags.
 
 
   void setup() {

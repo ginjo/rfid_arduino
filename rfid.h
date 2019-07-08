@@ -45,6 +45,7 @@
     uint32_t ms_reader_cycle_total;
     uint32_t cycle_low_finish_ms;
     uint32_t cycle_high_finish_ms;
+    int      tag_ready;
     //uint32_t tag_last_read_timeout_x_1000;
     
     Stream * serial_port;
@@ -89,5 +90,8 @@
     static unsigned int GetTagsChecksum();
     
   };  // RFID
+
+  // So SerialMenu can access Rfid instance.
+  extern RFID *Rfid;
 
 #endif

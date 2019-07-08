@@ -37,6 +37,7 @@
     char current_function[CURRENT_FUNCTION_LENGTH];
   	//uint32_t tags[TAG_LIST_SIZE];
     int selected_menu_item;
+    int poll_rfid;
 
     Led * blinker;
 

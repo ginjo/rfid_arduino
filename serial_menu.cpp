@@ -50,11 +50,13 @@
 
   SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
-    
+
+    // TODO: Initialize the rest of this class's vars. See .h file.
     input_mode("menu"),
     buff {},
     buff_index(0),
     current_function(""),
+    poll_rfid(0),
     //tags {305441741, 2882343476, 2676915564}, // 1234ABCD, ABCD1234, 9F8E7D6C
     blinker(_blinker)
     
@@ -106,6 +108,18 @@
     adminTimeout();
     checkSerialPort();
     runCallbacks();
+
+    // For getting new tag from rfid reader.
+    // TODO: Should this be encapsulated in a function?
+    if (poll_rfid) {
+      Rfid->pollReader();
+      if (Rfid->tag_ready) {
+        uint32_t tag_id = Rfid->reader->processTagData(Rfid->buff);
+        sprintf(buff, "%lu", tag_id);
+        Rfid->tag_ready = 0;
+        poll_rfid = 0;
+      }
+    }
   }
 
 	// check serial_port every cycle
@@ -523,6 +537,7 @@
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
+    poll_rfid = 1;
     prompt('l', "Enter a tag number (unsigned long) to store", __FUNCTION__);
   }
 

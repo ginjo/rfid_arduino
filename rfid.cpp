@@ -17,6 +17,7 @@
     ms_reader_cycle_total(0UL),
     cycle_low_finish_ms(0UL),
     cycle_high_finish_ms(0UL),
+    tag_ready(0),
     //tag_last_read_timeout_x_1000(0UL),
     
     serial_port(_serial_port),
@@ -137,6 +138,11 @@
       // Checks the rfid reader for new data.
       pollReader();
 
+      if (tag_ready) {
+        processTagData(buff);
+        resetBuffer();
+      }
+
       // Check fuel pump timeout on every loop.
       // TODO: Is this appropriate here? It was outside (below) the sleep block before.
       proximityStateController();
@@ -187,8 +193,8 @@
     DPRINT(F("RFID::pollReader() reader->raw_tag_length: "));
     DPRINTLN(reader->raw_tag_length);
     
-    if (serial_port->available()) {
-      while (serial_port->available()) {
+    if (serial_port->available() && ! tag_ready) {
+      while (serial_port->available() && ! tag_ready) {
         if (buff_index >= MAX_TAG_LENGTH || buff_index >= reader->raw_tag_length) {
           resetBuffer();
           continue;
@@ -224,9 +230,9 @@
           DPRINT(",");
         } else { // tag complete, now process it
           DPRINTLN("");
-          processTagData(buff);
-          //last_tag_read_ms = current_ms;
-          resetBuffer();
+          tag_ready = 1;
+          //  processTagData(buff);
+          //  resetBuffer();
           return;
         }
       }
@@ -281,6 +287,7 @@
 
   void RFID::resetBuffer() {
     buff_index = 0U;
+    tag_ready = 0;
     //strncpy(buff, NULL, reader->raw_tag_length);
     //strncpy(buff, NULL, MAX_TAG_LENGTH);
     //memcpy(buff, 0, MAX_TAG_LENGTH);
