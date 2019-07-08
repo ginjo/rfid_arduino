@@ -124,9 +124,11 @@
  //       between boot and first loop.
  //       Update: It appears to be the out-of-range dummy ports. Stop using them!
  //       Ok, this is fixed now! Don't use out-of-range pins, will cause UB.
- // TODO: With debug pin, don't change S.enable_debug, because saving any setting
+ // TODO: - With debug pin, don't change S.enable_debug, because saving any setting
  //       will then save enable_debug as 1. Just read the pin directly.
- // TODO: Create a Settings function 'debugMode()' which compiles enable_debug with debug-pin.
+ //       Actually, it's ok, just don't boot with debug pin low for an admin session.
+ //       You can always hold debug pin low after boot, for temporary debug mode.
+ // TODO: √ Create a Settings function 'debugMode()' which compiles enable_debug with debug-pin.
  
  
  
@@ -169,7 +171,7 @@
     delay(15);
     Serial.println(F("Initialized default serial port @ 57600 baud"));
     
-    Settings::load(SETTINGS_EEPROM_ADDRESS);
+    Settings::Load(SETTINGS_EEPROM_ADDRESS);
 
     // Normal, when debugging not needed.
     Serial.flush();
@@ -263,7 +265,7 @@
     }
     
     if (BTmenu->get_tag_from_scanner > 0) {
-      DPRINTLN("BTmenu->get_tag_from_scanner > 0");
+      DPRINTLN(F("BTmenu->get_tag_from_scanner > 0"));
       RfidSerial->listen();
       delay(1);
       while (! RfidSerial->isListening()) delay(15);

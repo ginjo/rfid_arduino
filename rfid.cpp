@@ -96,7 +96,7 @@
     
     DPRINT(F("*** RFID LOOP BEGIN "));
     current_ms = millis();
-    DPRINT(current_ms); DPRINTLN(" ***");
+    DPRINT(current_ms); DPRINTLN(F(" ***"));
     
     cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION);
     cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
@@ -265,7 +265,7 @@
     // add the tag to Tags array if add_tag_from_scanner switch is 1.
     // TODO: See if there is a way to push tag_id into SerialMenu buffer,
     // so it shows up in the menuAddTag CLI interface.
-    //  DPRINT("RFID::processTagData() add_tag_from_scanner: "); DPRINTLN(add_tag_from_scanner);
+    //  DPRINT(F("RFID::processTagData() add_tag_from_scanner: ")); DPRINTLN(add_tag_from_scanner);
     //  if (add_tag_from_scanner == 1) {
     //    AddTag(tag_id);
     //    add_tag_from_scanner = 0;
@@ -460,13 +460,13 @@
     CompactTags();
     
     return Tags;
-  }
+  } // LoadTags()
 
   void RFID::SaveTags() {
     CompactTags();
     unsigned int checksum = GetTagsChecksum();
 
-    Serial.print(F("Saving tags with checksum "));
+    Serial.print(F("Saving tags with checksum 0x"));
     Serial.print(checksum, 16);
     Serial.print(F(" to address "));
     Serial.println(TAGS_EEPROM_ADDRESS);
@@ -534,9 +534,7 @@
       Serial.println(F("AddTag() failed: Unknown error"));
       return -1;
     }
-    
-
-  }
+  } // AddTag()
 
   int RFID::DeleteTag(uint32_t deleteable_tag) {
     Serial.print(F("DeleteTag(): "));

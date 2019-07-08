@@ -98,7 +98,7 @@
   /*** Looping Functions ***/
 
   void SerialMenu::loop() {
-    //DPRINTLN("/*** MENU LOOP BEGIN ***/");
+    //DPRINTLN(F("/*** MENU LOOP BEGIN ***/"));
     //serial_port->println(F("SerialMenu::loop() calling serial_port->println()"));
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
@@ -222,7 +222,7 @@
     serial_port->write(byt);
   
     if (int(byt) == 13 || int(byt) == 10) {
-      serial_port->println("\r\n");
+      serial_port->println(F("\r\n"));
   
       //  DPRINT(F("You entered: "));
       //  DPRINT((char*)buff);
@@ -357,7 +357,7 @@
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
-    //  Serial.print("adminTimeout() run_mode, admin_timeout, now, previous_ms: ");
+    //  Serial.print(F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
     //  Serial.print(run_mode); Serial.print(" ");
     //  Serial.print(admin_timeout); Serial.print(" ");
     //  Serial.print(current_ms); Serial.print(" ");
@@ -538,9 +538,9 @@
   void SerialMenu::menuSettings() {
     //selected_menu_item = NULL;
     selected_menu_item = -1;
-    serial_port->print("Settings, chksm 0x");
+    serial_port->print(F("Settings, chksm 0x"));
     serial_port->print(S.getChecksum(), 16);
-    serial_port->print(", size ");
+    serial_port->print(F(", size "));
     serial_port->println(sizeof(S));
 
     // Prints out all settings in tabular format.

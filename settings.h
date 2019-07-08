@@ -108,7 +108,7 @@
     static Settings current;
 
     //static Settings * load(int address = SETTINGS_EEPROM_ADDRESS);
-    static void load(int address = SETTINGS_EEPROM_ADDRESS);
+    static void Load(int address = SETTINGS_EEPROM_ADDRESS);
   };  
 
 

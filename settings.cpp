@@ -294,15 +294,15 @@
 
   // Loads settings from EEPROM and compares with stored checksum.
   // See note above about Address.
-  //Settings * Settings::load(int address) {
-  void Settings::load(int address) {
+  //Settings * Settings::Load(int address) {
+  void Settings::Load(int address) {
     // Under normal circumstances, Serial has not been initialized yet,
     // so you can't print anything here. I've modified the load order
     // of Serial in the main .ino file to allow printing for debugging.
-    Serial.print(F("Settings::load("));
+    Serial.print(F("Settings::Load("));
     Serial.print(address);
     Serial.println(")");
-    Serial.print(F("Settings::load() existing? "));
+    Serial.print(F("Settings::Load() existing? "));
     Serial.println((char*)current.settings_name);
     
     unsigned int stored_checksum;
@@ -312,7 +312,7 @@
     loaded_checksum = current.getChecksum();
 
     if (Serial) {
-      Serial.print(F("Settings::load() retrieved 0x"));
+      Serial.print(F("Settings::Load() retrieved 0x"));
       Serial.print(stored_checksum, 16);
       Serial.print(F(", "));
       Serial.print((char *)current.settings_name);
@@ -323,8 +323,18 @@
     if (stored_checksum != loaded_checksum) {
       current = Settings();
       strcpy(current.settings_name, "saved_settings");
-      if (Serial) Serial.println(F("Settings::load() calling current.save()"));
+      if (Serial) Serial.println(F("Settings::Load() calling current.save()"));
       current.save();
+    }
+
+    // If debug pin is held low at boot, enables
+    // debug for the duration of this session.
+    // If you do this prior to an admin session,
+    // enable_debug will be saved with any other
+    // saved settings.
+    //
+    if (current.DEBUG_PIN == LOW) {
+      current.enable_debug = 1;
     }
     
     //return &current;
@@ -333,7 +343,7 @@
   // It seems necessary to initialize static member vars
   // before using them (seems kinda wasteful).
   // Maybe we don't need this if we move .ino items into setup().
-  //Settings Settings::current;// = *Settings::load();
+  //Settings Settings::current;// = *Settings::Load();
   Settings Settings::current = Settings();
 
   // a reference (alias?) from S to CurrentSettings
