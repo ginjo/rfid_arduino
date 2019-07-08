@@ -255,15 +255,27 @@
     if (BTmenu->run_mode > 0) {
       BTserial->listen();
       delay(1);
-      while (! BTserial->isListening()) delay(1);
+      while (! BTserial->isListening()) delay(15);
+      delay(10);
+      //delay(BTmenu->get_tag_from_scanner ? 15 : 1);
       BTmenu->loop();
+      
     }
-
-    if (BTmenu->run_mode == 0 || Rfid->add_tag_from_scanner == 1) {      
+    
+    if (BTmenu->get_tag_from_scanner > 0) {
+      DPRINTLN("BTmenu->get_tag_from_scanner > 0");
       RfidSerial->listen();
       delay(1);
-      while (! RfidSerial->isListening()) delay(1);
+      while (! RfidSerial->isListening()) delay(15);
+      delay(50);
       Rfid->loop();
+      
+    } else if (BTmenu->run_mode == 0) {      
+      RfidSerial->listen();
+      delay(1);
+      while (! RfidSerial->isListening()) delay(15);
+      Rfid->loop();
+      
     }
     
   } // end loop()

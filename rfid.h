@@ -22,6 +22,7 @@
   #include "settings.h"
   #include "reader.h"
   #include "led_blinker.h"
+  #include "serial_menu.h"
 
   #define MAX_TAG_LENGTH 16
   #define TAG_LIST_SIZE 10
@@ -77,7 +78,7 @@
 
     /*  Static Vars & Functions  */
     static uint32_t Tags[TAG_LIST_SIZE];
-    static int add_tag_from_scanner;
+    //static int add_tag_from_scanner;
 
     static uint32_t *LoadTags();
     static void SaveTags();
@@ -90,5 +91,7 @@
     static unsigned int GetTagsChecksum();
     
   };  // RFID
+
+  //extern SerialMenu *BTmenu;
 
 #endif

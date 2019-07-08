@@ -12,7 +12,7 @@
 
   #include "settings.h"
   #include "led_blinker.h"
-  #include "rfid.h"
+  //#include "rfid.h"
   
   #define INPUT_BUFFER_LENGTH 24
   #define INPUT_MODE_LENGTH 16
@@ -37,6 +37,7 @@
     char current_function[CURRENT_FUNCTION_LENGTH];
   	//uint32_t tags[TAG_LIST_SIZE];
     int selected_menu_item;
+    int get_tag_from_scanner;
 
     Led * blinker;
 
@@ -81,5 +82,9 @@
     void prompt(const char = 0, const char* = "", const char* = "");
     void loop();
   };
+
+  // Had to move this to rfid.h becuase of load order,
+  // but that's not really a good place for it.
+  extern SerialMenu *BTmenu;
 
 #endif

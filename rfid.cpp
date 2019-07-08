@@ -91,6 +91,7 @@
     //   errors in the comparisons, maybe from corrupted memory/data,
     //   but I still don't really know what caused it.
     //   Anyway, be very careful if modifying the vars & functions of this class.
+    //   UPDATE: This problem might be gone, as it was caused by unrelated UB in the program.
 
     
     DPRINT(F("*** RFID LOOP BEGIN "));
@@ -137,8 +138,7 @@
       // Checks the rfid reader for new data.
       pollReader();
 
-      // Check fuel pump timeout on every loop.
-      // TODO: Is this appropriate here? It was outside (below) the sleep block before.
+      // Check output switch timeout on every loop.
       proximityStateController();
     }
   }
@@ -186,7 +186,8 @@
     DPRINTLN(reader->reader_name);    
     DPRINT(F("RFID::pollReader() reader->raw_tag_length: "));
     DPRINTLN(reader->raw_tag_length);
-    
+
+    // TODO: Consider moving this if/then condition to RFID::loop() function.
     if (serial_port->available()) {
       while (serial_port->available()) {
         if (buff_index >= MAX_TAG_LENGTH || buff_index >= reader->raw_tag_length) {
@@ -264,10 +265,17 @@
     // add the tag to Tags array if add_tag_from_scanner switch is 1.
     // TODO: See if there is a way to push tag_id into SerialMenu buffer,
     // so it shows up in the menuAddTag CLI interface.
-    DPRINT("RFID::processTagData() add_tag_from_scanner: "); DPRINTLN(add_tag_from_scanner);
-    if (add_tag_from_scanner == 1) {
-      AddTag(tag_id);
-      add_tag_from_scanner = 0;
+    //  DPRINT("RFID::processTagData() add_tag_from_scanner: "); DPRINTLN(add_tag_from_scanner);
+    //  if (add_tag_from_scanner == 1) {
+    //    AddTag(tag_id);
+    //    add_tag_from_scanner = 0;
+    //  }
+    if (BTmenu->get_tag_from_scanner == 1) {
+      //AddTag(tag_id);
+      char str[9];
+      sprintf(str, "%lu", tag_id);
+      strcpy(BTmenu->buff, str);
+      BTmenu->get_tag_from_scanner = 0;
     }
 
     // If tag is valid, immediatly update proximity-state.
@@ -418,7 +426,7 @@
 
   /*  Static Vars & Functions  */
 
-  int RFID::add_tag_from_scanner = 0;
+  //int RFID::add_tag_from_scanner = 0;
 
   // A tag-id is 32 bit for a max of 4,294,967,295 unique combinations
   // NOTE: The API here may change in future, when the higher-frequency

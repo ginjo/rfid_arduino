@@ -9,6 +9,7 @@
 // vs the current add-tag-from-keyboard menu option.
 
 #include "serial_menu.h"
+#include "rfid.h" // This is here because it seems to avoid circular include between rfid.h and serial_menu.h.
 
   //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
   //  // This should really go in a Utility class.
@@ -56,7 +57,7 @@
     buff {},
     buff_index(0),
     current_function(""),
-    //tags {305441741, 2882343476, 2676915564}, // 1234ABCD, ABCD1234, 9F8E7D6C
+    get_tag_from_scanner(0),
     blinker(_blinker)
     
     // See updateAdminTimeout()
@@ -157,6 +158,13 @@
         addTagString(buff);
         menuListTags();
 
+      } else if (inputAvailable("menuDeleteTag")) {
+        DPRINTLN(F("runCallbacks() inputAvailable for menuDeleteTag"));
+        //addTagString(buff);
+        RFID::Tags[strtol(buff, NULL, 10)] = 0;
+        RFID::SaveTags();
+        menuListTags();
+        
       } else if (inputAvailable("menuSelectedMainItem")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
         menuSelectedMainItem(buff[0]);
@@ -310,7 +318,7 @@
   //bool SerialMenu::addTagString(char str[TAG_LENGTH]) {
   int SerialMenu::addTagString(char str[]) {
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
-      serial_port->println(F("addTagString() failed: invalid tag"));
+      serial_port->println(F("addTagString() aborted with CR or LF or NULL response"));
       return 1;
     }
 
@@ -326,22 +334,6 @@
     serial_port->println(rslt);
     return rslt;
   }
-  
-  // Adds tag number to tag list.
-  // TODO: Make sure number to add is within bounds of 32-bit integer,
-  // since that is as high as the tag ids will go: 4294967295 or 'FFFFFFFF'
-  //  bool SerialMenu::addTagNum(unsigned long tag_num) {
-  //    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-  //      if ( tags[i] <= 0) {
-  //        tags[i] = tag_num;
-  //        setCallbackFunction("");
-  //        return true;
-  //      }
-  //    }
-  //
-  //    // fails if didn't return from inner block
-  //    return false;
-  //  }
 
   void SerialMenu::resetInputBuffer() {
     memset(buff, 0, INPUT_BUFFER_LENGTH);
@@ -414,9 +406,6 @@
     }
 
     if (_message[0] != 0) {
-      DPRINT(F("prompt() printing _message: "));
-      DPRINTLN(_message);
-      
       serial_port->print(_message);
       serial_port->print(" ");
     }
@@ -519,15 +508,14 @@
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
-    RFID::add_tag_from_scanner = 1;
+    //RFID::add_tag_from_scanner = 1;
+    SerialMenu::get_tag_from_scanner = 1;
     prompt('l', "Enter (or scan) a tag number (unsigned long) to store", __FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag() {
-    serial_port->println(F("Delete Tag"));
-    serial_port->println("");
-    prompt();
+    prompt('l', "Enter tag index to delete", __FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.
