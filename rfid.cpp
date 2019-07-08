@@ -17,7 +17,6 @@
     ms_reader_cycle_total(0UL),
     cycle_low_finish_ms(0UL),
     cycle_high_finish_ms(0UL),
-    tag_ready(0),
     //tag_last_read_timeout_x_1000(0UL),
     
     serial_port(_serial_port),
@@ -138,11 +137,6 @@
       // Checks the rfid reader for new data.
       pollReader();
 
-      if (tag_ready) {
-        processTagData(buff);
-        resetBuffer();
-      }
-
       // Check fuel pump timeout on every loop.
       // TODO: Is this appropriate here? It was outside (below) the sleep block before.
       proximityStateController();
@@ -193,8 +187,8 @@
     DPRINT(F("RFID::pollReader() reader->raw_tag_length: "));
     DPRINTLN(reader->raw_tag_length);
     
-    if (serial_port->available() && ! tag_ready) {
-      while (serial_port->available() && ! tag_ready) {
+    if (serial_port->available()) {
+      while (serial_port->available()) {
         if (buff_index >= MAX_TAG_LENGTH || buff_index >= reader->raw_tag_length) {
           resetBuffer();
           continue;
@@ -230,9 +224,9 @@
           DPRINT(",");
         } else { // tag complete, now process it
           DPRINTLN("");
-          tag_ready = 1;
-          //  processTagData(buff);
-          //  resetBuffer();
+          processTagData(buff);
+          //last_tag_read_ms = current_ms;
+          resetBuffer();
           return;
         }
       }
@@ -266,7 +260,15 @@
     DPRINT(F("Tag result from Reader: "));
     DPRINTLN(tag_id);
 
-    // assuming successful tag at this point?
+    // Assuming successful tag-read at this point,
+    // add the tag to Tags array if add_tag_from_scanner switch is 1.
+    // TODO: See if there is a way to push tag_id into SerialMenu buffer,
+    // so it shows up in the menuAddTag CLI interface.
+    DPRINT("RFID::processTagData() add_tag_from_scanner: "); DPRINTLN(add_tag_from_scanner);
+    if (add_tag_from_scanner == 1) {
+      AddTag(tag_id);
+      add_tag_from_scanner = 0;
+    }
 
     // If tag is valid, immediatly update proximity-state.
     if (tag_id > 0UL && GetTagIndex(tag_id) >= 0) { // 0 is valid index.
@@ -287,7 +289,6 @@
 
   void RFID::resetBuffer() {
     buff_index = 0U;
-    tag_ready = 0;
     //strncpy(buff, NULL, reader->raw_tag_length);
     //strncpy(buff, NULL, MAX_TAG_LENGTH);
     //memcpy(buff, 0, MAX_TAG_LENGTH);
@@ -417,6 +418,8 @@
 
   /*  Static Vars & Functions  */
 
+  int RFID::add_tag_from_scanner = 0;
+
   // A tag-id is 32 bit for a max of 4,294,967,295 unique combinations
   // NOTE: The API here may change in future, when the higher-frequency
   //       (UHF?) readers are accomodated in this class.
@@ -447,7 +450,7 @@
     }
 
     CompactTags();
-
+    
     return Tags;
   }
 

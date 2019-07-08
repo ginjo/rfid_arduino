@@ -56,7 +56,6 @@
     buff {},
     buff_index(0),
     current_function(""),
-    poll_rfid(0),
     //tags {305441741, 2882343476, 2676915564}, // 1234ABCD, ABCD1234, 9F8E7D6C
     blinker(_blinker)
     
@@ -108,18 +107,6 @@
     adminTimeout();
     checkSerialPort();
     runCallbacks();
-
-    // For getting new tag from rfid reader.
-    // TODO: Should this be encapsulated in a function?
-    if (poll_rfid) {
-      Rfid->pollReader();
-      if (Rfid->tag_ready) {
-        uint32_t tag_id = Rfid->reader->processTagData(Rfid->buff);
-        sprintf(buff, "%lu", tag_id);
-        Rfid->tag_ready = 0;
-        poll_rfid = 0;
-      }
-    }
   }
 
 	// check serial_port every cycle
@@ -169,11 +156,6 @@
         DPRINTLN(F("runCallbacks() inputAvailable for menuAddTag"));
         addTagString(buff);
         menuListTags();
-
-//      } else if (inputAvailable("menuDeleteAllTags")) {
-//        DPRINTLN(F("runCallbacks() inputAvailable for menuDeleteAllTags"));
-//        menuDeleteAllTags();
-//        RFID::DeleteAllTags();
 
       } else if (inputAvailable("menuSelectedMainItem")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
@@ -537,8 +519,8 @@
   // sets mode to receive-text-line-from-serial,
   // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
-    poll_rfid = 1;
-    prompt('l', "Enter a tag number (unsigned long) to store", __FUNCTION__);
+    RFID::add_tag_from_scanner = 1;
+    prompt('l', "Enter (or scan) a tag number (unsigned long) to store", __FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.

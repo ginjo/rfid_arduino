@@ -255,13 +255,15 @@
     if (BTmenu->run_mode > 0) {
       BTserial->listen();
       delay(1);
+      while (! BTserial->isListening()) delay(1);
       BTmenu->loop();
-      
-    } else {
-      
+    }
+
+    if (BTmenu->run_mode == 0 || Rfid->add_tag_from_scanner == 1) {      
       RfidSerial->listen();
-      Rfid->loop();
       delay(1);
+      while (! RfidSerial->isListening()) delay(1);
+      Rfid->loop();
     }
     
   } // end loop()
