@@ -53,18 +53,16 @@
     serial_port(stream_ref),
 
     // TODO: Initialize the rest of this class's vars. See .h file.
+    run_mode(0),
+    previous_ms(0),
+    admin_timeout(0),
     input_mode("menu"),
     buff {},
     buff_index(0),
     current_function(""),
+    selected_menu_item(-1),
     get_tag_from_scanner(0),
     blinker(_blinker)
-    
-    // See updateAdminTimeout()
-    //  run_mode(1), // 0=run, 1=admin
-    //  admin_timeout(3), // seconds
-    //  previous_ms(millis());
-    
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
@@ -156,6 +154,8 @@
       if (inputAvailable("menuAddTag")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuAddTag"));
         addTagString(buff);
+        resetInputBuffer();
+        get_tag_from_scanner = 0;
         menuListTags();
 
       } else if (inputAvailable("menuDeleteTag")) {
@@ -254,10 +254,6 @@
     
     return strcmp(mode, input_mode) == 0;
   }
-
-  // TODO: Find all of these and make sure they operate correctly,
-  // since the recent changes have broken soft-coded links.
-  // Update the soft-coded links to fix.
   
   void SerialMenu::setCallbackFunction(const char *func_name) {
     //  DPRINT(F("setCallbackFunction() received func_name: ("));
@@ -394,6 +390,8 @@
     Serial.println(RFID::Tags[2]);
   }
 
+  // TODO: I think every action that results in a prompt should call a specific prompt(),
+  // and not just allow the previous prompt's settings to be used.
   void SerialMenu::prompt(const char _input_mode, const char _message[], const char _callback_function[]) {
     if (_input_mode == 'l') {
       setInputMode("line");
@@ -506,7 +504,6 @@
 
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial,
-  // stores received tag (with validation) using RFIDTags class.
   void SerialMenu::menuAddTag() {
     //RFID::add_tag_from_scanner = 1;
     SerialMenu::get_tag_from_scanner = 1;
@@ -534,7 +531,6 @@
     prompt();
   }
 
-  // TODO: Should this be moved to settings.cpp?
   void SerialMenu::menuSettings() {
     //selected_menu_item = NULL;
     selected_menu_item = -1;
@@ -573,7 +569,8 @@
       serial_port->print(setting_name); serial_port->print(": ");
       serial_port->println(setting_value);
       prompt('l', "Type a new value for setting", "updateSetting");
-    } else if (bytes[0] == '0') {
+    // If use hits "0", return, or enter, go back to main menu.
+    } else if (bytes[0] == '0' || bytes[0] == '\r' || bytes[0] == '\n') {
       menuMain();
     } else {
       menuSettings();

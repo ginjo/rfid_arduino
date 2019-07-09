@@ -41,7 +41,7 @@
 
 
   // External Global vars & functions.
-  // TODO: Convert these to static Reader functions.
+  // TODO: Convert these to static Reader functions. See TODO in .cpp file.
   extern Reader** Readers;
   //extern Reader * Readers[3];
   extern void ReaderArraySetup();

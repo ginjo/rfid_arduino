@@ -63,7 +63,7 @@
     // shut down output until a successful tag read).
     // TODO: Protect this action with a gate of some sort.
     //       Use a setting, or a pin, or a key-press.
-    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (BTmenu->run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
 
     Serial.print(F("Starting RFID reader "));
     Serial.print(reader->reader_name);
@@ -262,16 +262,10 @@
     DPRINTLN(tag_id);
 
     // Assuming successful tag-read at this point,
-    // add the tag to Tags array if add_tag_from_scanner switch is 1.
-    // TODO: See if there is a way to push tag_id into SerialMenu buffer,
-    // so it shows up in the menuAddTag CLI interface.
-    //  DPRINT(F("RFID::processTagData() add_tag_from_scanner: ")); DPRINTLN(add_tag_from_scanner);
-    //  if (add_tag_from_scanner == 1) {
-    //    AddTag(tag_id);
-    //    add_tag_from_scanner = 0;
-    //  }
+    // add the tag to Tags array if get_tag_from_scanner is 1.
+    // This pushes tag_id as string directly into BTmenu::buff,
+    // which then picks it up and processes it as if were manually entered.
     if (BTmenu->get_tag_from_scanner == 1) {
-      //AddTag(tag_id);
       char str[9];
       sprintf(str, "%lu", tag_id);
       strcpy(BTmenu->buff, str);
@@ -408,19 +402,21 @@
       DPRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
-    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (BTmenu->run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
   }
 
   void RFID::setProximityState(int _state) {
-    proximity_state = _state;
-    
-    if (proximity_state == 0) {
-      reader_power_cycle_high_duration = 3UL;
-    } else {
-      reader_power_cycle_high_duration = 0UL;
+    if (BTmenu->run_mode == 0) {
+      proximity_state = _state;
+      
+      if (proximity_state == 0) {
+        reader_power_cycle_high_duration = 3UL;
+      } else {
+        reader_power_cycle_high_duration = 0UL;
+      }
+      
+      S.updateProximityState(_state);
     }
-    
-    S.updateProximityState(_state);
   }
 
 

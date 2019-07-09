@@ -23,7 +23,8 @@
  // TODO: √ Don't allow admin mode to extend the startup grace period.
  // TODO: Implement a beeper/buzzer.
  // TODO: I think SerialMenu.run_mode should be a global, since it's needed in multiple classes.
- //       But where should it live? (This item is duplicated below)
+ //       But where should it live? Then logging can have its own file/class,
+ //       and it can access multiple serial outputs, maybe?
  // TODO: √ Consolidate SerialMenu handling of input between checkSerialPort() and runCallbacks(),
  //       so basically everything should be a callback.
  // TODO: √ Create exitAdmin() function for cleanup & logging.
@@ -41,11 +42,11 @@
  //       Use enum StatusText {recent, aging, expired}
  // TODO: √ Reduce active logging lines in SerialMenu serial port reading.
  // TODO: √ Show S.<settings> values along with list (in admin mode).
- // TODO: Complete add-tag and delete-tag processes.
- // TODO: Save tags to EEPROM.
- // TODO: Also implement add-tag-from-scan option.
+ // TODO: √ Complete add-tag and delete-tag processes.
+ // TODO: √Save tags to EEPROM.
+ // TODO: √ Also implement add-tag-from-scan option.
  // TODO: √ Create version & date-time handling.
- // TODO: Reorganize functions so that "rfid" tag functions are in RFID class,
+ // TODO: √ Reorganize functions so that "rfid" tag functions are in RFID class,
  //       "menu" functions in SerialMenu class, and "settings" functions in Settings class.
  // TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
  //       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
@@ -89,11 +90,9 @@
  // DONE: √ Finally fixed the nasty bugs in RFID and Reader, well most anyway. Ongoing search for UB.
  // TODO: √ Try swapping the RFID::loop() functions back to the way they were... Still work?
  // TODO: √ Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
- // TODO: Consider instance vars in Reader for current_tag_id and current_tag_code (hex, I think).
+ // TODO: - Consider instance vars in Reader for current_tag_id and current_tag_code (hex, I think).
  //       This is trickier that it seems because it would create a curcular requirement between classes.
  //       Turning the logging features into their own class might help.
- // TODO: I think SerialMenu.run_mode should be a global-global.
- //       Then logging can have its own file/class, and it can access multiple serial outputs.
  // TODO: - I got debug logging to work with BTmenu, but it breaks the RFID cycle.
  //       It prevents the Reader instance for processing the tag. Is this also a UB whack-a-mole thing?
  //       Upon further inspection, the problem appears to be that the RFID serial channel is getting
@@ -129,7 +128,13 @@
  //       Actually, it's ok, just don't boot with debug pin low for an admin session.
  //       You can always hold debug pin low after boot, for temporary debug mode.
  // TODO: √ Create a Settings function 'debugMode()' which compiles enable_debug with debug-pin.
- 
+ // NOTE: Milestone achieved! All basic functions required for real-world use are working.
+ //
+ // TODO: Smooth out UI functionality in SerialMenu - it's still a little confusing what
+ //       mode/state/options we're in at each prompt. I think there should be no generic prompts,
+ //       always give a textual hint.
+ // TODO: Rearrange main .ino file load order, so initial proximity_state gets written out
+ //       to master-switch-pin as early as possible.
  
  
   #include <SoftwareSerial.h>
@@ -166,7 +171,7 @@
     // For debugging, so Settings operations can be logged.
     Serial.begin(57600);
     while (! Serial) {
-      delay(10);
+      delay(15);
     }
     delay(15);
     Serial.println(F("Initialized default serial port @ 57600 baud"));
@@ -177,7 +182,7 @@
     Serial.flush();
     Serial.begin(S.HW_SERIAL_BAUD);
     while (! Serial) {
-      delay(10);
+      delay(15);
     }
     delay(15);
     Serial.print(F("Re-initialized serial port from loaded settings: "));
@@ -256,29 +261,36 @@
     
     if (BTmenu->run_mode > 0) {
       BTserial->listen();
-      delay(1);
+      //delay(1);
       while (! BTserial->isListening()) delay(15);
-      delay(10);
-      //delay(BTmenu->get_tag_from_scanner ? 15 : 1);
+      //delay(10);
+      delay(BTmenu->get_tag_from_scanner ? 20 : 1);
       BTmenu->loop();
-      
+    }
+  
+    if (BTmenu->run_mode == 0 || BTmenu->get_tag_from_scanner > 0) {
+      RfidSerial->listen();
+      //delay(1);
+      while (! RfidSerial->isListening()) delay(15);
+      delay(BTmenu->get_tag_from_scanner ? 50 : 0);
+      Rfid->loop();
     }
     
-    if (BTmenu->get_tag_from_scanner > 0) {
-      DPRINTLN(F("BTmenu->get_tag_from_scanner > 0"));
-      RfidSerial->listen();
-      delay(1);
-      while (! RfidSerial->isListening()) delay(15);
-      delay(50);
-      Rfid->loop();
-      
-    } else if (BTmenu->run_mode == 0) {      
-      RfidSerial->listen();
-      delay(1);
-      while (! RfidSerial->isListening()) delay(15);
-      Rfid->loop();
-      
-    }
+    //  if (BTmenu->get_tag_from_scanner > 0) {
+    //    DPRINTLN(F("BTmenu->get_tag_from_scanner > 0"));
+    //    RfidSerial->listen();
+    //    delay(1);
+    //    while (! RfidSerial->isListening()) delay(15);
+    //    delay(50);
+    //    Rfid->loop();
+    //    
+    //  } else if (BTmenu->run_mode == 0) {      
+    //    RfidSerial->listen();
+    //    delay(1);
+    //    while (! RfidSerial->isListening()) delay(15);
+    //    Rfid->loop();
+    //    
+    //  }
     
   } // end loop()
 

@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre98"
+  #define VERSION "v0.1.0.pre99"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -31,19 +31,7 @@
   #define SETTINGS_EEPROM_ADDRESS 100
   
 
-  // TODO: Integrate loading of Global Settings from EEPROM,
-  // maybe putting defaults in the .h struct definition.
-  //
-  // TODO: You may need to wait until after admin window to load
-  // settings from eeprom, giving you a chance to 'resetToDefaults' if
-  // something goes wrong with settings.
-  //
-  // If you do this, you definitely want to store 'proximity_state_timeout'
-  // condition as a separate eeprom byte.
-  // On second thought... actually, you will need to load settings, 'reasonable-defaults',
-  // at the very least, whenever you startup. Even if just using the admin mode.
-  //
-  // Maybe make it like OpenWRT, with a basic failsafe boot mode, allowing you
+  // TODO: Maybe make it like OpenWRT, with a basic failsafe boot mode, allowing you
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
 
@@ -133,7 +121,7 @@
   //  4. Setting by index in settings.cpp
   //  5. Names index in settings.h (for storage of strings in PROGMEM).
   //
-  // TODO: Should all of this be converted to static Settings var?
+  // TODO: Should SETTING_NAMES[] be converted to static Settings variable?
   //
   namespace {  // a nameless namespace helps build a 2D array of char strings in PROGMEM.
     // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.

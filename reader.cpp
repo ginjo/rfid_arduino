@@ -68,7 +68,11 @@
 
   // Defines Readers array.
   // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
+  // But with this application, I don't think we'll hit that problem.
   // TODO: Convert these extern/global things to static Reader things.
+  // TODO: Even better, don't store instances of all readers, just load the one(s) you need!
+  // You could then eliminate the entire Readers array!
+  //
   //extern Reader** Readers = new Reader*[3];
   // I think extern only need be given in declaration in .h file.
   Reader** Readers = new Reader*[3];
@@ -152,7 +156,7 @@
   }
 
 
-  // TODO: Consider that this reader (and the rdm6300)
+  // NOTE: Consider that this reader (and the rdm6300)
   // yield a string of ascii characters (0-9, A-F),
   // and those characters are THEN used to build the ID
   // of the tag.
