@@ -158,8 +158,7 @@
 
       } else if (inputAvailable("menuDeleteTag")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuDeleteTag"));
-        int rslt = RFID::DeleteTagIndex(strtol(buff, NULL, 10));
-        serial_port->print("DeleteTag() result: "); serial_port->println(rslt);
+        deleteTag(buff);
         menuListTags();
         
       } else if (inputAvailable("menuSelectedMainItem")) {
@@ -347,6 +346,20 @@
     resetInputBuffer();
     get_tag_from_scanner = 0;
     return result;
+  }
+
+  int SerialMenu::deleteTag(char str[]) {
+    if (str[0] == 13 || str[0] == 10) {
+      serial_port->println("DeleteTag() aborted");
+      serial_port->println();
+      return 1;
+    } else {
+      int rslt = RFID::DeleteTagIndex(strtol(str, NULL, 10));
+      serial_port->print("DeleteTag() result: ");
+      serial_port->println(rslt);
+      serial_port->println();
+      return rslt;
+    }
   }
 
   void SerialMenu::resetInputBuffer() {

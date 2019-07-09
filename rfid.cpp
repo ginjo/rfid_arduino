@@ -42,6 +42,17 @@
     // where we left off at power-down (or reset).
     proximity_state = S.proximity_state;
 
+    Serial.print(F("Setting output switch per saved proximity_state: "));
+    Serial.println(proximity_state);
+    // Switches the main load according to current proximity_state.
+    // This turns on the load if saved prox-state was "on".
+    // This begins the courtesey grace period until the system can
+    // start processing tags (at which time, it will immediately
+    // shut down output until a successful tag read).
+    // TODO: Protect this action with a gate of some sort.
+    //       Use a setting, or a pin, or a key-press.
+    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.
     // This might work on the surface, but I don't think it allows each instance
@@ -54,16 +65,16 @@
     // Sets local 'reader' to instance of Reader.
     reader = GetReader(S.DEFAULT_READER);
 
-    Serial.print(F("Setting output switch per saved proximity_state: "));
-    Serial.println(proximity_state);
-    // Switches the main load according to current proximity_state.
-    // This turns on the load if saved prox-state was "on".
-    // This begins the courtesey grace period until the system can
-    // start processing tags (at which time, it will immediately
-    // shut down output until a successful tag read).
-    // TODO: Protect this action with a gate of some sort.
-    //       Use a setting, or a pin, or a key-press.
-    if (BTmenu->run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    //  Serial.print(F("Setting output switch per saved proximity_state: "));
+    //  Serial.println(proximity_state);
+    //  // Switches the main load according to current proximity_state.
+    //  // This turns on the load if saved prox-state was "on".
+    //  // This begins the courtesey grace period until the system can
+    //  // start processing tags (at which time, it will immediately
+    //  // shut down output until a successful tag read).
+    //  // TODO: Protect this action with a gate of some sort.
+    //  //       Use a setting, or a pin, or a key-press.
+    //  digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
 
     Serial.print(F("Starting RFID reader "));
     Serial.print(reader->reader_name);
@@ -71,9 +82,7 @@
     Serial.println(proximity_state);
     //  Serial.print(F(", and output switch pin: "));
     //  Serial.println(S.OUTPUT_SWITCH_PIN);
-    
-    //digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
-    
+        
     // Initializes the reader power/reset control.
     //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
     // This first one is to clear any built-up charge, as something is holding the reader low at startup.
@@ -460,10 +469,19 @@
 
   void RFID::SaveTags() {
     CompactTags();
-    unsigned int checksum = GetTagsChecksum();
+    
+    unsigned int stored_checksum;
+    EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
+    unsigned int live_checksum = GetTagsChecksum();
+
+    if (live_checksum == stored_checksum) {
+      Serial.print(F("RFID::SaveTags() aborted, checksums already match: 0x"));
+      Serial.print(live_checksum, 16);
+      return;
+    }
 
     Serial.print(F("Saving tags with checksum 0x"));
-    Serial.print(checksum, 16);
+    Serial.print(live_checksum, 16);
     Serial.print(F(" to address "));
     Serial.println(TAGS_EEPROM_ADDRESS);
     for (int i=0; i < TAG_LIST_SIZE; i++) {
@@ -471,7 +489,7 @@
     }
     Serial.println();
     
-    EEPROM.put(TAGS_EEPROM_ADDRESS, checksum);
+    EEPROM.put(TAGS_EEPROM_ADDRESS, live_checksum);
     EEPROM.put(TAGS_EEPROM_ADDRESS+4, Tags);
   }
 
@@ -559,9 +577,10 @@
     return 0;
   }
 
+  // TODO: Should this checksum be 32-bit (unsigned long)?
   unsigned int RFID::GetTagsChecksum() {
     unsigned char *obj = (unsigned char *) Tags;
-    unsigned int len = sizeof(*Tags);
+    unsigned int len = sizeof(Tags);
     unsigned int xxor = 0;
 
     // Converts to 16-bit checksum, and handles odd bytes at end of obj.

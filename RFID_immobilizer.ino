@@ -136,6 +136,7 @@
  // TODO: Rearrange main .ino file load order, so initial proximity_state gets written out
  //       to master-switch-pin as early as possible.
  // TODO: Something is wrong with Tags checksum: it's the same for two different lists!
+ // TODO: Make tags checksum at least 32-bit.
  
  
   #include <SoftwareSerial.h>

@@ -262,7 +262,7 @@
   //
   unsigned int Settings::getChecksum() {
     unsigned char *obj = (unsigned char *) this;
-    unsigned int len = sizeof(*this);
+    unsigned int len = sizeof(*this); // de-references pointer, so we get size of actual data.
     unsigned int xxor = 0;
 
     // Advances array index

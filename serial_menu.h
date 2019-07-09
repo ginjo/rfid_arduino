@@ -71,7 +71,7 @@
     const char * inputAvailableFor();
     void runCallbacks();
     int addTagString(char[]);
-    //bool addTagNum(uint32_t);
+    int deleteTag(char[]);
     void resetInputBuffer();
     void adminTimeout();
     // argument defaults must be declared here, not defined in implementation.
