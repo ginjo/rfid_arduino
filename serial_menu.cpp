@@ -351,12 +351,12 @@
   int SerialMenu::deleteTag(char str[]) {
     int tag_index = strtol(str, NULL, 10);
     if (str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
-      serial_port->println("DeleteTag() aborted");
+      serial_port->println(F("DeleteTag() aborted"));
       serial_port->println();
       return 1;
     } else {
       int rslt = RFID::DeleteTagIndex(tag_index);
-      serial_port->print("DeleteTag() result: ");
+      serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
       serial_port->println();
       return rslt;
@@ -469,7 +469,7 @@
   void SerialMenu::menuSelectedMainItem(char byt) {
     DPRINT(F("menuSelectedMainItem received byte: "));
     DPRINT(char(byt));
-    DPRINT(" (");
+    DPRINT(F(" ("));
     DPRINT(byt);
     DPRINTLN(")");
 
@@ -516,13 +516,15 @@
 
   // Lists tags for menu.
   void SerialMenu::menuListTags() {
-    serial_port->println(F("Tags"));
-    //serial_port->println((char*)tags);
-    // TODO: Move the bulk of this to RFIDTags?
+    serial_port->print(F("Tags, chksm 0x"));
+    serial_port->print(RFID::GetTagsChecksum(), 16);
+    serial_port->print(F(", size "));
+    serial_port->println(sizeof(RFID::Tags));
+    
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
       if (RFID::Tags[i] > 0) {
         serial_port->print(i);
-        serial_port->print(". ");
+        serial_port->print(F(". "));
         serial_port->print(RFID::Tags[i]);
         serial_port->println("");
       }
@@ -597,7 +599,7 @@
     if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
       char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
-      serial_port->print(setting_name); serial_port->print(": ");
+      serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);
       prompt('l', "Type a new value for setting", "updateSetting");
     // If use hits "0", return, or enter, go back to main menu.
