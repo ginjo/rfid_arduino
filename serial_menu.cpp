@@ -349,12 +349,13 @@
   }
 
   int SerialMenu::deleteTag(char str[]) {
-    if (str[0] == 13 || str[0] == 10) {
+    int tag_index = strtol(str, NULL, 10);
+    if (str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
       serial_port->println("DeleteTag() aborted");
       serial_port->println();
       return 1;
     } else {
-      int rslt = RFID::DeleteTagIndex(strtol(str, NULL, 10));
+      int rslt = RFID::DeleteTagIndex(tag_index);
       serial_port->print("DeleteTag() result: ");
       serial_port->println(rslt);
       serial_port->println();

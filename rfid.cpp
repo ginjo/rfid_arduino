@@ -53,6 +53,8 @@
     //       Use a setting, or a pin, or a key-press.
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
 
+    LoadTags();
+
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.
     // This might work on the surface, but I don't think it allows each instance
@@ -64,17 +66,6 @@
 
     // Sets local 'reader' to instance of Reader.
     reader = GetReader(S.DEFAULT_READER);
-
-    //  Serial.print(F("Setting output switch per saved proximity_state: "));
-    //  Serial.println(proximity_state);
-    //  // Switches the main load according to current proximity_state.
-    //  // This turns on the load if saved prox-state was "on".
-    //  // This begins the courtesey grace period until the system can
-    //  // start processing tags (at which time, it will immediately
-    //  // shut down output until a successful tag read).
-    //  // TODO: Protect this action with a gate of some sort.
-    //  //       Use a setting, or a pin, or a key-press.
-    //  digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
 
     Serial.print(F("Starting RFID reader "));
     Serial.print(reader->reader_name);
@@ -89,9 +80,8 @@
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
     delay(50);
     digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
-
-    LoadTags();
-  }
+    
+  } // setup()
 
   void RFID::loop() {
     // IMPORTANT: Some numbers use instance (global) vars, and some use functions.

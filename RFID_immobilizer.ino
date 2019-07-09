@@ -133,10 +133,11 @@
  // TODO: √ Smooth out UI functionality in SerialMenu - it's still a little confusing what
  //       mode/state/options we're in at each prompt. Maybe there should be no generic prompts,
  //       always give a textual hint.
- // TODO: Rearrange main .ino file load order, so initial proximity_state gets written out
+ // TODO: √Rearrange main .ino file load order, so initial proximity_state gets written out
  //       to master-switch-pin as early as possible.
- // TODO: Something is wrong with Tags checksum: it's the same for two different lists!
- // TODO: Make tags checksum at least 32-bit.
+ // TODO: √ Something is wrong with Tags checksum: it's the same for two different lists!
+ // TODO: - Make tags checksum at least 32-bit. Actually, the 16-bit checksum works now.
+ // TODO: Don't load all readers, only load the one we're using.
  
  
   #include <SoftwareSerial.h>
@@ -190,17 +191,17 @@
     Serial.print(F("Re-initialized serial port from loaded settings: "));
     Serial.println(S.HW_SERIAL_BAUD);
 
-    Serial.print(F("Booting RFID Immobilizer, "));
-    Serial.print(VERSION);
-    Serial.print(F(", "));
-    Serial.println(TIMESTAMP);
-
     Serial.print(F("Loaded Settings "));
     Serial.print((char *)S.settings_name);
     Serial.print(F(", with checksum 0x"));
     Serial.print(S.getChecksum(), 16);
     Serial.print(F(", of size "));
     Serial.println(sizeof(S));
+
+    Serial.print(F("Booting RFID Immobilizer, "));
+    Serial.print(VERSION);
+    Serial.print(F(", "));
+    Serial.println(TIMESTAMP);
 
     // For manual debug/log mode.
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
@@ -210,13 +211,13 @@
     Serial.print(F("Debug pin status: "));
     Serial.println(debug_pin_status);
 
-    //  if (debug_pin_status == LOW) {
-    //    Serial.println(F("Debug pin LOW ... enabling debug"));
-    //    S.enable_debug = 1;
-    //  }
+    if (debug_pin_status == LOW) {
+      Serial.println(F("Debug pin LOW ... enabling debug"));
+      S.enable_debug = 1;
+    }
     
 
-    /*  These used be in global namespace, but they need loaded settings. */
+    /*  Initialize main objects  */
 
     Blinker = new Led(S.LED_PIN);
 
@@ -231,6 +232,7 @@
     Rfid = new RFID(RfidSerial, Blinker);
 
 
+    /*  Run setups  */
 
     Blinker->StartupBlink();
 
@@ -254,7 +256,7 @@
       Serial.println(output);
     }
 
-  } // end setup()
+  } // setup()
 
 
   void loop() {
