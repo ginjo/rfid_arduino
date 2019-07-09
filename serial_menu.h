@@ -23,9 +23,9 @@
   public:
     Stream *serial_port;
     // TODO: I think run_mode should be a global-global.
-    int run_mode; // 0=run, 1=admin
-    uint32_t previous_ms;
-    uint32_t admin_timeout; // seconds
+    //int run_mode; // 0=run, 1=admin // This was moved to static member.
+    //uint32_t previous_ms; // This was moved to static member.
+    //uint32_t admin_timeout; // seconds // This was moved to static member.
   	
   	char input_mode[INPUT_MODE_LENGTH];
   
@@ -79,7 +79,16 @@
     void exitAdmin();
     void prompt(const char = 0, const char* = "", const char* = "");
     void loop();
-  };
+
+
+    /*  Static Vars & Functions  */
+
+    static int run_mode; // 0=run, 1=admin
+    static uint32_t previous_ms;
+    static uint32_t admin_timeout;
+    
+  }; // SerialMenu
+
 
   // Had to move this to rfid.h becuase of load order,
   // but that's not really a good place for it.

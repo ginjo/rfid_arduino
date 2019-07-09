@@ -147,6 +147,10 @@
  //       or led triggering or Tag operations like add, delete, authentication (validation?).
  // TODO: Create a Gate class that handles all the other stuff RFID does now.
  // TODO: Consider again having a Storage class that Tags, Settings, and State all subclass from.
+ // TODO: Create a fail-safe button.
+ // TODO: Have BTmenu listen on hardware serial as well.
+ // TODO: For callback functions or event-response functions, use "onBufferReady()" naming style.
+ //       Examples: onTagReady(int tag_id), onMenuAddTag(), onSerialPortData(byte).
  
  
   #include <SoftwareSerial.h>
@@ -169,6 +173,7 @@
   
   // Declares instance of admin console.
   SerialMenu *BTmenu;
+  SerialMenu *HWmenu;
 
   // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;//(91,90);
@@ -234,6 +239,7 @@
     //BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
     BTmenu = new SerialMenu(BTserial, Blinker);
+    HWmenu = new SerialMenu(&Serial, Blinker);
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
     //RfidSerial(S.RFID_SERIAL_RX, S.LED_PIN);
@@ -250,6 +256,7 @@
 
     // Activates the admin console.
     BTmenu->begin();
+    HWmenu->begin();
 
     // Activates the serial port for the RFID handler.
     RfidSerial->begin(S.RFID_BAUD);
@@ -272,16 +279,17 @@
     
     Blinker->loop();
     
-    if (BTmenu->run_mode > 0) {
+    if (SerialMenu::run_mode > 0) {
       BTserial->listen();
       //delay(1);
       while (! BTserial->isListening()) delay(15);
       //delay(10);
       delay(BTmenu->get_tag_from_scanner ? 25 : 1);
       BTmenu->loop();
+      HWmenu->loop();
     }
   
-    if (BTmenu->run_mode == 0 || BTmenu->get_tag_from_scanner > 0) {
+    if (SerialMenu::run_mode == 0 || BTmenu->get_tag_from_scanner > 0) {
       RfidSerial->listen();
       //delay(1);
       while (! RfidSerial->isListening()) delay(15);

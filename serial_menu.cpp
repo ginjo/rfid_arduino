@@ -9,7 +9,15 @@
 // vs the current add-tag-from-keyboard menu option.
 
 #include "serial_menu.h"
-#include "rfid.h" // This is here because it seems to avoid circular include between rfid.h and serial_menu.h.
+// This is here because it seems to avoid circular include between rfid.h and serial_menu.h.
+// This is apparently a legitimate C/C++ technique.
+#include "rfid.h" 
+
+// Defines/initializes static members.
+int SerialMenu::run_mode = 0;
+uint32_t SerialMenu::previous_ms = 0;
+uint32_t SerialMenu::admin_timeout = 0;
+
 
   //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
   //  // This should really go in a Utility class.
@@ -43,7 +51,8 @@
   //      printf("%u", num);
   //  }
 
-  // Instanciate the built-in reset function
+  // Instanciate the built-in reset function.
+  // This should be somewhere more global to the application.
   void(* resetFunc) (void) = 0;
 
 
@@ -53,9 +62,9 @@
     serial_port(stream_ref),
 
     // TODO: Initialize the rest of this class's vars. See .h file.
-    run_mode(0),
-    previous_ms(0),
-    admin_timeout(0),
+    //run_mode(0), // moved to static
+    //previous_ms(0), // moved to static
+    //admin_timeout(0), // moved to static
     input_mode("menu"),
     buff {},
     buff_index(0),
@@ -190,13 +199,9 @@
       } else {
         Serial.println(F("runCallbacks() no condition was selected"));
         
-        //  setInputMode("char");
-        //  setCallbackFunction("");
-        //  buff_index = 0;
-        //  strncpy(buff, "", INPUT_BUFFER_LENGTH);
-
-        //  setInputMode("char");
-        //  setCallbackFunction("menuSelectedMainItem");
+        // Should we be resetting-buffer here? I think so, unless
+        // we want to save the available-input for something else... ?
+        
         prompt('l', "", "menuSelectedMainItem");
       }
 
