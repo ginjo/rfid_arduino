@@ -43,7 +43,7 @@
     DPRINT(F("GetReader() called with name: "));
     DPRINTLN((char *)_name);
 
-    return Readers[2];
+    //return Readers[2];
 
     Reader * result;
     int n;
@@ -73,8 +73,8 @@
   // TODO: Even better, don't store instances of all readers, just load the one(s) you need!
   // You could then eliminate the entire Readers array!
   //
-  //extern Reader** Readers = new Reader*[3];
-  // I think extern only need be given in declaration in .h file.
+  // The following is an excellent example of Creating an Array of
+  // pointers to struct (or class) objects.
   Reader** Readers = new Reader*[3];
   //extern Reader * Readers[3] = {}; // I don't think this works.
   
