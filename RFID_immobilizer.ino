@@ -130,11 +130,12 @@
  // TODO: √ Create a Settings function 'debugMode()' which compiles enable_debug with debug-pin.
  // NOTE: Milestone achieved! All basic functions required for real-world use are working.
  //
- // TODO: Smooth out UI functionality in SerialMenu - it's still a little confusing what
- //       mode/state/options we're in at each prompt. I think there should be no generic prompts,
+ // TODO: √ Smooth out UI functionality in SerialMenu - it's still a little confusing what
+ //       mode/state/options we're in at each prompt. Maybe there should be no generic prompts,
  //       always give a textual hint.
  // TODO: Rearrange main .ino file load order, so initial proximity_state gets written out
  //       to master-switch-pin as early as possible.
+ // TODO: Something is wrong with Tags checksum: it's the same for two different lists!
  
  
   #include <SoftwareSerial.h>
@@ -264,7 +265,7 @@
       //delay(1);
       while (! BTserial->isListening()) delay(15);
       //delay(10);
-      delay(BTmenu->get_tag_from_scanner ? 20 : 1);
+      delay(BTmenu->get_tag_from_scanner ? 25 : 1);
       BTmenu->loop();
     }
   

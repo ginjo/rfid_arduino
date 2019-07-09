@@ -278,11 +278,11 @@
       //S.updateProximityState(1);
       setProximityState(1);
       last_tag_read_ms = current_ms;
-      Serial.print(F("Valid tag: "));
+      Serial.print(F("Authorized tag: "));
 
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
-      Serial.print(F("INVALID tag: "));
+      Serial.print(F("Unauthorized or invalid tag: "));
     }
     
     Serial.println(tag_id);
@@ -511,7 +511,7 @@
     int tag_count = CountTags();
     
     if(new_tag < 1) {
-      Serial.println(F("AddTag() failed: Invalid"));
+      Serial.println(F("AddTag() aborted: Invalid code"));
       return 1;
     } else if (tag_count >= TAG_LIST_SIZE) {
       Serial.println(F("AddTag() failed: Full"));
@@ -536,11 +536,18 @@
     Serial.print(F("DeleteTag(): "));
     Serial.println(deleteable_tag);
     int tag_index = GetTagIndex(deleteable_tag);
-    if (tag_index >= 0) {
-      Tags[tag_index] = 0;
-      return true;
+    return DeleteTagIndex(tag_index);
+  }
+
+  int RFID::DeleteTagIndex(int index) {
+    Serial.print(F("DeleteTagIndex(): "));
+    Serial.println(index);
+    if (index >= 0) {
+      Tags[index] = 0;
+      SaveTags();
+      return 0;
     } else {
-      return false;
+      return 1;
     }
   }
 

@@ -134,7 +134,7 @@
 
   void Led::StartupBlink() {
     DPRINTLN(F("Led::StartupBlink()"));
-    const int _intervals[INTERVALS_LENGTH] = {480,20};
+    const int _intervals[INTERVALS_LENGTH] = {470,30};
     update(0, _intervals);
   }
     

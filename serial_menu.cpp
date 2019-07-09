@@ -154,15 +154,12 @@
       if (inputAvailable("menuAddTag")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuAddTag"));
         addTagString(buff);
-        resetInputBuffer();
-        get_tag_from_scanner = 0;
         menuListTags();
 
       } else if (inputAvailable("menuDeleteTag")) {
         DPRINTLN(F("runCallbacks() inputAvailable for menuDeleteTag"));
-        //addTagString(buff);
-        RFID::Tags[strtol(buff, NULL, 10)] = 0;
-        RFID::SaveTags();
+        int rslt = RFID::DeleteTagIndex(strtol(buff, NULL, 10));
+        serial_port->print("DeleteTag() result: "); serial_port->println(rslt);
         menuListTags();
         
       } else if (inputAvailable("menuSelectedMainItem")) {
@@ -311,24 +308,45 @@
     return (int)strtol(&byt, NULL, 10);
   }
 
-  //bool SerialMenu::addTagString(char str[TAG_LENGTH]) {
   int SerialMenu::addTagString(char str[]) {
+    int result;
+    
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
-      serial_port->println(F("addTagString() aborted with CR or LF or NULL response"));
-      return 1;
+      result = 1;
+    } else {
+      // TODO: Should probably validate the entire string of digits.
+      // But... do it here, or do it in RFID class?
+      // (or in Tags class, when we develop that)?
+      result = RFID::AddTag(strtol(str, NULL, 10));
     }
 
-    // TODO: Should probably validate the entire string of digits.
-  
     serial_port->print(F("Tag entered: "));
     serial_port->println((char*)str);
-    serial_port->println("");
-    
-    //return addTagNum(strtol(str, NULL, 10));
-    int rslt = RFID::AddTag(strtol(str, NULL, 10));
     serial_port->print(F("AddTag() result: "));
-    serial_port->println(rslt);
-    return rslt;
+    serial_port->print(result); serial_port->print(", ");
+
+    switch (result) {
+      case 0:
+        serial_port->print(F("success"));
+        break;
+      case 1:
+        serial_port->print(F("aborted, invalid tag-id string"));
+        break;
+      case 2:
+        serial_port->print(F("failed, tag list is full"));
+        break;
+      case 3:
+        serial_port->print(F("failed, tag is duplicate"));
+        break;
+      case -1:
+        serial_port->print(F("failed, unknown error"));
+        break;
+    }
+    
+    serial_port->println(); serial_port->println();
+    resetInputBuffer();
+    get_tag_from_scanner = 0;
+    return result;
   }
 
   void SerialMenu::resetInputBuffer() {
@@ -430,7 +448,7 @@
     //  resetInputBuffer(); // just to be safe, since it's the home position
     //  setInputMode("char");
     //  setCallbackFunction("menuSelectedMainItem");
-    prompt('l', "Select a menu option", "menuSelectedMainItem");
+    prompt('l', "Select a menu item", "menuSelectedMainItem");
   }
 
   // Activates an incoming menu selection.
@@ -496,10 +514,10 @@
       }
     }
     serial_port->println("");
-    
-    //  setInputMode("char");
-    //  setCallbackFunction("menuSelectedMainItem");
-    prompt('\0', "", "menuSelectedMainItem");
+
+    // The '\0' tells prompt() to use the last known input-mode,
+    // which in this case should be "line".
+    prompt('\0', "Select a main menu item", "menuSelectedMainItem");
   }
 
   // Asks user for full tag,
@@ -520,7 +538,6 @@
     serial_port->println(F("Delete all Tags"));
     serial_port->println("");
     RFID::DeleteAllTags();
-    //prompt();
     menuListTags();
   }
 

@@ -83,10 +83,11 @@
     static uint32_t *LoadTags();
     static void SaveTags();
     static int CountTags();
-    static int GetTagIndex(uint32_t tag);
+    static int GetTagIndex(uint32_t);
     static void CompactTags();
-    static int AddTag(uint32_t new_tag);
-    static int DeleteTag(uint32_t deleteable_tag);
+    static int AddTag(uint32_t);
+    static int DeleteTag(uint32_t);
+    static int DeleteTagIndex(int);
     static int DeleteAllTags();
     static unsigned int GetTagsChecksum();
     
