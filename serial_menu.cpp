@@ -13,11 +13,6 @@
 // This is apparently a legitimate C/C++ technique.
 #include "rfid.h" 
 
-// Defines/initializes static members.
-int SerialMenu::run_mode = 0;
-uint32_t SerialMenu::previous_ms = 0;
-uint32_t SerialMenu::admin_timeout = 0;
-
 
   //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
   //  // This should really go in a Utility class.
@@ -56,15 +51,49 @@ uint32_t SerialMenu::admin_timeout = 0;
   void(* resetFunc) (void) = 0;
 
 
+  /*  Static Vars & Funtions  */
+  
+  //int SerialMenu::run_mode = 0;
+  //uint32_t SerialMenu::previous_ms = 0;
+  //uint32_t SerialMenu::admin_timeout = 0;
+  SerialMenu * SerialMenu::Current;
+  SerialMenu * SerialMenu::HW;
+  SerialMenu * SerialMenu::SW;
+
+  void SerialMenu::Begin() {
+    HW->begin();
+    SW->begin();
+    Current = HW;
+  }
+  
+  void SerialMenu::Loop() {
+    
+    if (HW->run_mode > 0) {
+      Current = HW;
+      delay(HW->get_tag_from_scanner ? 25 : 1);
+      HW->loop();
+      
+    } else if (SW->run_mode > 0) {
+      SoftwareSerial * sp = (SoftwareSerial*)SW->serial_port;
+      sp->listen();
+      Current = SW;
+      while (! sp->isListening()) delay(15);
+      delay(SW->get_tag_from_scanner ? 25 : 1);
+      SW->loop();
+    }
+    
+  } // main Loop()
+
+
   /*** Constructors and Setup ***/
 
   SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
     serial_port(stream_ref),
 
     // TODO: Initialize the rest of this class's vars. See .h file.
-    //run_mode(0), // moved to static
-    //previous_ms(0), // moved to static
-    //admin_timeout(0), // moved to static
+    run_mode(0), // moved to static
+    previous_ms(0), // moved to static
+    admin_timeout(0), // moved to static
     input_mode("menu"),
     buff {},
     buff_index(0),
@@ -614,5 +643,6 @@ uint32_t SerialMenu::admin_timeout = 0;
       menuSettings();
     }
   } // menuSelectedSetting()
+
 
   

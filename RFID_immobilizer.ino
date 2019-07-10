@@ -172,8 +172,8 @@
   SoftwareSerial *BTserial;
   
   // Declares instance of admin console.
-  SerialMenu *BTmenu;
-  SerialMenu *HWmenu;
+  //SerialMenu *BTmenu;
+  //SerialMenu *HWmenu;
 
   // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;//(91,90);
@@ -238,8 +238,10 @@
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
     //BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    BTmenu = new SerialMenu(BTserial, Blinker);
-    HWmenu = new SerialMenu(&Serial, Blinker);
+    //BTmenu = new SerialMenu(BTserial, Blinker);
+    //HWmenu = new SerialMenu(&Serial, Blinker);
+    SerialMenu::HW = new SerialMenu(&Serial, Blinker);
+    SerialMenu::SW = new SerialMenu(BTserial, Blinker);
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
     //RfidSerial(S.RFID_SERIAL_RX, S.LED_PIN);
@@ -255,8 +257,9 @@
     BTserial->begin(S.BT_BAUD);
 
     // Activates the admin console.
-    BTmenu->begin();
-    HWmenu->begin();
+    //BTmenu->begin();
+    //HWmenu->begin();
+    SerialMenu::Begin();
 
     // Activates the serial port for the RFID handler.
     RfidSerial->begin(S.RFID_BAUD);
@@ -278,40 +281,25 @@
   void loop() {
     
     Blinker->loop();
+
+    SerialMenu::Loop();
     
-    if (SerialMenu::run_mode > 0) {
-      BTserial->listen();
-      //delay(1);
-      while (! BTserial->isListening()) delay(15);
-      //delay(10);
-      delay(BTmenu->get_tag_from_scanner ? 25 : 1);
-      BTmenu->loop();
-      HWmenu->loop();
-    }
+    //  if (SerialMenu::run_mode > 0) {
+    //    BTserial->listen();
+    //    //delay(1);
+    //    while (! BTserial->isListening()) delay(15);
+    //    //delay(10);
+    //    delay(BTmenu->get_tag_from_scanner ? 25 : 1);
+    //    BTmenu->loop();
+    //    HWmenu->loop();
+    //  }
   
-    if (SerialMenu::run_mode == 0 || BTmenu->get_tag_from_scanner > 0) {
+    if (SerialMenu::Current->run_mode == 0 || SerialMenu::Current->get_tag_from_scanner > 0) {
       RfidSerial->listen();
-      //delay(1);
       while (! RfidSerial->isListening()) delay(15);
-      delay(BTmenu->get_tag_from_scanner ? 50 : 0);
+      delay(SerialMenu::Current->get_tag_from_scanner ? 50 : 0);
       Rfid->loop();
     }
-    
-    //  if (BTmenu->get_tag_from_scanner > 0) {
-    //    DPRINTLN(F("BTmenu->get_tag_from_scanner > 0"));
-    //    RfidSerial->listen();
-    //    delay(1);
-    //    while (! RfidSerial->isListening()) delay(15);
-    //    delay(50);
-    //    Rfid->loop();
-    //    
-    //  } else if (BTmenu->run_mode == 0) {      
-    //    RfidSerial->listen();
-    //    delay(1);
-    //    while (! RfidSerial->isListening()) delay(15);
-    //    Rfid->loop();
-    //    
-    //  }
     
   } // end loop()
 

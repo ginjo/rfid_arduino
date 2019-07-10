@@ -264,11 +264,17 @@
     // add the tag to Tags array if get_tag_from_scanner is 1.
     // This pushes tag_id as string directly into BTmenu::buff,
     // which then picks it up and processes it as if were manually entered.
-    if (BTmenu->get_tag_from_scanner == 1) {
+    //  if (BTmenu->get_tag_from_scanner == 1) {
+    //    char str[9];
+    //    sprintf(str, "%lu", tag_id);
+    //    strcpy(BTmenu->buff, str);
+    //    BTmenu->get_tag_from_scanner = 0;
+    //  }
+    if (SerialMenu::Current->get_tag_from_scanner == 1) {
       char str[9];
       sprintf(str, "%lu", tag_id);
-      strcpy(BTmenu->buff, str);
-      BTmenu->get_tag_from_scanner = 0;
+      strcpy(SerialMenu::Current->buff, str);
+      SerialMenu::Current->get_tag_from_scanner = 0;
     }
 
     // If tag is valid, immediatly update proximity-state.
@@ -401,11 +407,11 @@
       DPRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
-    if (SerialMenu::run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (SerialMenu::Current->run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
   }
 
   void RFID::setProximityState(int _state) {
-    if (SerialMenu::run_mode == 0) {
+    if (SerialMenu::Current->run_mode == 0) {
       proximity_state = _state;
       
       if (proximity_state == 0) {

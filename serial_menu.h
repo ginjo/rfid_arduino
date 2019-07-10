@@ -12,7 +12,7 @@
 
   #include "settings.h"
   #include "led_blinker.h"
-  //#include "rfid.h"
+  //#include "rfid.h" // This would cause circular include. See .cpp file for better solution.
   
   #define INPUT_BUFFER_LENGTH 24
   #define INPUT_MODE_LENGTH 16
@@ -23,9 +23,9 @@
   public:
     Stream *serial_port;
     // TODO: I think run_mode should be a global-global.
-    //int run_mode; // 0=run, 1=admin // This was moved to static member.
-    //uint32_t previous_ms; // This was moved to static member.
-    //uint32_t admin_timeout; // seconds // This was moved to static member.
+    int run_mode; // 0=run, 1=admin // This was moved to static member.
+    uint32_t previous_ms; // This was moved to static member.
+    uint32_t admin_timeout; // seconds // This was moved to static member.
   	
   	char input_mode[INPUT_MODE_LENGTH];
   
@@ -83,15 +83,22 @@
 
     /*  Static Vars & Functions  */
 
-    static int run_mode; // 0=run, 1=admin
-    static uint32_t previous_ms;
-    static uint32_t admin_timeout;
+    //static int run_mode; // 0=run, 1=admin
+    //static uint32_t previous_ms;
+    //static uint32_t admin_timeout;
+
+    static SerialMenu * Current;
+    static SerialMenu * HW;
+    static SerialMenu * SW;
+    
+    static void Begin();
+    static void Loop();
     
   }; // SerialMenu
 
 
   // Had to move this to rfid.h becuase of load order,
   // but that's not really a good place for it.
-  extern SerialMenu *BTmenu;
+  //extern SerialMenu *BTmenu;
 
 #endif
