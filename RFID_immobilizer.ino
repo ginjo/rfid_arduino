@@ -163,24 +163,17 @@
   #include "rfid.h"
 
 
-  // TODO: Consider moving these to static class vars.
-
   // Declares blinker LED.
   Led *Blinker;
 
-  // Declares a serial port for admin console.
+  // Declares a software-serial port for admin console.
   SoftwareSerial *BTserial;
-  
-  // Declares instance of admin console.
-  //SerialMenu *BTmenu;
-  //SerialMenu *HWmenu;
 
   // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;//(91,90);
   
   // Declares instance of RFID handler.
-  //extern RFID Rfid;
-  RFID *Rfid; // used in SerialMenu to add tags.
+  RFID *Rfid;
 
 
   void setup() {
@@ -236,15 +229,11 @@
     Blinker = new Led(S.LED_PIN);
 
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
-    //BTserial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    //BTmenu = new SerialMenu(BTserial, Blinker);
-    //HWmenu = new SerialMenu(&Serial, Blinker);
-    SerialMenu::HW = new SerialMenu(&Serial, Blinker);
-    SerialMenu::SW = new SerialMenu(BTserial, Blinker);
+    SerialMenu::HW = new SerialMenu(&Serial, Blinker, "HW");
+    SerialMenu::SW = new SerialMenu(BTserial, Blinker, "SW");
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
-    //RfidSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 
     Rfid = new RFID(RfidSerial, Blinker);
 
@@ -253,12 +242,10 @@
 
     Blinker->StartupBlink();
 
-    // Activates the serial port for admin console.
+    // Activates the software-serial port for admin console.
     BTserial->begin(S.BT_BAUD);
 
     // Activates the admin console.
-    //BTmenu->begin();
-    //HWmenu->begin();
     SerialMenu::Begin();
 
     // Activates the serial port for the RFID handler.
@@ -282,19 +269,11 @@
     
     Blinker->loop();
 
-    SerialMenu::Loop();
-    
-    //  if (SerialMenu::run_mode > 0) {
-    //    BTserial->listen();
-    //    //delay(1);
-    //    while (! BTserial->isListening()) delay(15);
-    //    //delay(10);
-    //    delay(BTmenu->get_tag_from_scanner ? 25 : 1);
-    //    BTmenu->loop();
-    //    HWmenu->loop();
-    //  }
+    if (SerialMenu::run_mode > 0) {
+      SerialMenu::Loop();
+    }
   
-    if (SerialMenu::Current->run_mode == 0 || SerialMenu::Current->get_tag_from_scanner > 0) {
+    if (SerialMenu::run_mode == 0 || SerialMenu::Current->get_tag_from_scanner > 0) {
       RfidSerial->listen();
       while (! RfidSerial->isListening()) delay(15);
       delay(SerialMenu::Current->get_tag_from_scanner ? 50 : 0);

@@ -2,6 +2,28 @@
 // Handles human-readable input and output between text-based serial port
 // and arduino application (classes, functions, data, et.c.).
 
+
+/*
+
+* Refactored SerialMenu with these features:
+
+* SerialMenu::run_mode is a shared static now.
+
+* Two more statics hold SW and HW serial-menu instances.
+
+* One static, Current, holds the ''chosen-one'', or defaults to HW.
+
+* SerialMenu::Begin() and SerialMenu::Loop() make sub-calls to
+SW and HW instances (both) until once is ''chosen'' (when user
+input triggers admin-mode 'run_mode == 1').
+
+* At that point, the static for Current is filled with the chosen instance.
+Other classes can access the SerialMenu::Current or SerialMenu::run_mode
+if necessary for admin-mode operations.
+
+*/
+
+
 // TODO: Create a function for menu option "Read Tag",
 // that temporarily switches run_mode to 0, gathers a single tag,
 // then returns run_mode to 1 so BTmenu can resume where it left off.
@@ -9,33 +31,11 @@
 // vs the current add-tag-from-keyboard menu option.
 
 #include "serial_menu.h"
-// This is here because it seems to avoid circular include between rfid.h and serial_menu.h.
+// This is here because it seems to avoid circular include,
+// which would happen if this was in serial_menu.h.
 // This is apparently a legitimate C/C++ technique.
 #include "rfid.h" 
-
-
-  //  // Gets free-memory, see https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
-  //  // This should really go in a Utility class.
-  //  // It is only here as a quick fix.    
-  //  #ifdef __arm__
-  //  // should use uinstd.h to define sbrk but Due causes a conflict
-  //  extern "C" char* sbrk(int incr);
-  //  #else  // __ARM__
-  //  extern char *__brkval;
-  //  #endif  // __arm__
-  //  
-  //  static int freeMemory() {
-  //    char top;
-  //  #ifdef __arm__
-  //    return &top - reinterpret_cast<char*>(sbrk(0));
-  //  #elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-  //    return &top - __brkval;
-  //  #else  // __arm__
-  //    return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-  //  #endif  // __arm__
-  //  }
   
-
   // NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
   // This works in onlinegbd.com, but may not work for arduino.
   //  #include <stdlib.h>
@@ -46,37 +46,40 @@
   //      printf("%u", num);
   //  }
 
-  // Instanciate the built-in reset function.
-  // This should be somewhere more global to the application.
+
+  // Instanciates the built-in reset function.
+  // TODO: This should be somewhere more global to the application.
   void(* resetFunc) (void) = 0;
 
 
-  /*  Static Vars & Funtions  */
+  /***  Static Vars & Funtions  ***/
+
+  int SerialMenu::run_mode = 0;
   
-  //int SerialMenu::run_mode = 0;
-  //uint32_t SerialMenu::previous_ms = 0;
-  //uint32_t SerialMenu::admin_timeout = 0;
   SerialMenu * SerialMenu::Current;
   SerialMenu * SerialMenu::HW;
   SerialMenu * SerialMenu::SW;
 
   void SerialMenu::Begin() {
+    Serial.println(F("SerialMenu::begin()"));
     HW->begin();
     SW->begin();
-    Current = HW;
+
+    // NOTE: SerialMenu::Current is set in checkSerialPort() or in exitAdmin()
   }
   
   void SerialMenu::Loop() {
-    
-    if (HW->run_mode > 0) {
-      Current = HW;
+
+    // Runs hardware-serial loop().
+    if (Current == NULL || Current == HW) {
       delay(HW->get_tag_from_scanner ? 25 : 1);
       HW->loop();
-      
-    } else if (SW->run_mode > 0) {
+    }
+
+    // Runs software-serial loop().
+    if (Current == NULL || Current == SW) {
       SoftwareSerial * sp = (SoftwareSerial*)SW->serial_port;
       sp->listen();
-      Current = SW;
       while (! sp->isListening()) delay(15);
       delay(SW->get_tag_from_scanner ? 25 : 1);
       SW->loop();
@@ -87,13 +90,13 @@
 
   /*** Constructors and Setup ***/
 
-  SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker) :
+  SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker, const char _instance_name[]) :
     serial_port(stream_ref),
 
     // TODO: Initialize the rest of this class's vars. See .h file.
-    run_mode(0), // moved to static
-    previous_ms(0), // moved to static
-    admin_timeout(0), // moved to static
+    //run_mode(0), // moved to static member.
+    previous_ms(0),
+    admin_timeout(0),
     input_mode("menu"),
     buff {},
     buff_index(0),
@@ -105,30 +108,24 @@
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
+    strncpy(instance_name, _instance_name, 3);
 	}
 	
-	//void SerialMenu::begin(unsigned long baud) {
-  void SerialMenu::begin() {
-    //serial_port->println(F("SerialMenu Admin Console\r\n"));
-    
-    //showInfo();
-    Serial.println(F("SerialMenu::begin() running"));
-
-    serial_port->print(F("RFID Immobilizer admin console, "));
-    serial_port->print(VERSION);
-    serial_port->print(", ");
-    serial_port->println(TIMESTAMP);
-    serial_port->println();
-    
+  void SerialMenu::begin() {    
     updateAdminTimeout(2);
     resetInputBuffer();
     
-    //  setInputMode("char");
-    //  setCallbackFunction("menuSelectedMainItem");
-    prompt('l', "", "menuSelectedMainItem");
+    // If this is hardware instance, don't print info.
+    if (strcmp(instance_name, "HW") != 0) {
+      serial_port->print(F("RFID Immobilizer admin console, "));
+      serial_port->print(VERSION);
+      serial_port->print(", ");
+      serial_port->println(TIMESTAMP);
+      serial_port->println();
+    }
     
-    //menuListTags();
-	}
+    prompt('l', "", "menuSelectedMainItem");
+ 	}
 
 
   /*** Looping Functions ***/
@@ -146,8 +143,51 @@
     runCallbacks();
   }
 
-	// check serial_port every cycle
-  //
+  // Starts, restarts, resets admin with timeout.
+  void SerialMenu::updateAdminTimeout(uint32_t seconds) {
+    if (admin_timeout != seconds) {
+      Serial.print(F("updateAdminTimeout() seconds: "));
+      Serial.println(seconds);
+    }
+    
+    admin_timeout = seconds;
+    run_mode = 1;
+    previous_ms = millis();
+  }
+
+  // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
+  void SerialMenu::adminTimeout() {
+    unsigned long current_ms = millis();
+    unsigned long elapsed_ms = current_ms - previous_ms;
+    
+    //  Serial.print(F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
+    //  Serial.print(run_mode); Serial.print(" ");
+    //  Serial.print(admin_timeout); Serial.print(" ");
+    //  Serial.print(current_ms); Serial.print(" ");
+    //  Serial.println(previous_ms);
+
+    if (run_mode == 0) { return; }
+    if ( elapsed_ms/1000 > admin_timeout ) {
+      exitAdmin();
+    }
+  }
+
+  void SerialMenu::exitAdmin() {
+    if (true || admin_timeout == 2) {
+      Serial.println(F("\r\nSerialMenu setting run_mode to 0 'run'"));
+      serial_port->println(F("Entering run mode\r\n"));
+      blinker->Off();
+      run_mode = 0;
+      Current = HW;
+    } else {
+      Serial.println(F("\r\nSerialMenu rebooting arduino"));
+      serial_port->println(F("Exiting admin console\r\n"));
+      delay(100);
+      resetFunc();
+    }
+  }
+
+	// Checks serial_port every cycle.
   void SerialMenu::checkSerialPort() {
     if (serial_port->available()) {
       while (serial_port->available()) {
@@ -175,11 +215,16 @@
         }
       }
 
+      // If someone typed anything into any serial port,
+      // make this instance the Current one.
+      Current = this;
+
+      // Always update the admin timeout when user inputs anything.
       updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
-    } // done with available serial_port input
+    } // checkSerialPort()
   }
 
-  // check for callbacks every cycle
+  // Checks for callbacks every cycle.
   // TODO: I think enum's can be used here instead of matching strings.
   // Could then use 'switch' statement.
   void SerialMenu::runCallbacks() {
@@ -252,7 +297,8 @@
     serial_port->write(byt);
   
     if (int(byt) == 13 || int(byt) == 10) {
-      serial_port->println(F("\r\n"));
+      //serial_port->println(F("\r\n"));
+      serial_port->println();
   
       //  DPRINT(F("You entered: "));
       //  DPRINT((char*)buff);
@@ -266,7 +312,7 @@
     }
   }
 
-  // Set input mode to character or line.
+  // Sets input mode to character or line.
   // NOTE: Migrating to line-mode for all functions.
   void SerialMenu::setInputMode(const char str[]) {
     // All input uses 'line' now, but option to use 'char' is still here.
@@ -400,49 +446,6 @@
   void SerialMenu::resetInputBuffer() {
     memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
-  }
-
-  // Starts, restarts, resets admin with timeout.
-  void SerialMenu::updateAdminTimeout(uint32_t seconds) {
-    if (admin_timeout != seconds) {
-      Serial.print(F("updateAdminTimeout() seconds: "));
-      Serial.println(seconds);
-    }
-    
-    admin_timeout = seconds;
-    run_mode = 1;
-    previous_ms = millis();
-  }
-
-  // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
-  void SerialMenu::adminTimeout() {
-    unsigned long current_ms = millis();
-    unsigned long elapsed_ms = current_ms - previous_ms;
-    
-    //  Serial.print(F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
-    //  Serial.print(run_mode); Serial.print(" ");
-    //  Serial.print(admin_timeout); Serial.print(" ");
-    //  Serial.print(current_ms); Serial.print(" ");
-    //  Serial.println(previous_ms);
-
-    if (run_mode == 0) { return; }
-    if ( elapsed_ms/1000 > admin_timeout ) {
-      exitAdmin();
-    }
-  }
-
-  void SerialMenu::exitAdmin() {
-    if (true || admin_timeout == 2) {
-      Serial.println(F("\r\nSerialMenu setting run_mode to 0 'run'"));
-      serial_port->println(F("Entering run mode\r\n"));
-      blinker->Off();
-      run_mode = 0;
-    } else {
-      Serial.println(F("\r\nSerialMenu rebooting arduino"));
-      serial_port->println(F("Exiting admin console\r\n"));
-      delay(100);
-      resetFunc();
-    }
   }
 
   // This is just for logging.

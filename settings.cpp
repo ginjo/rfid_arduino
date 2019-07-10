@@ -294,16 +294,15 @@
 
   // Loads settings from EEPROM and compares with stored checksum.
   // See note above about Address.
-  //Settings * Settings::Load(int address) {
   void Settings::Load(int address) {
     // Under normal circumstances, Serial has not been initialized yet,
     // so you can't print anything here. I've modified the load order
     // of Serial in the main .ino file to allow printing for debugging.
-    Serial.print(F("Settings::Load("));
-    Serial.print(address);
-    Serial.println(")");
-    Serial.print(F("Settings::Load() existing? "));
-    Serial.println((char*)current.settings_name);
+    DPRINT(F("Settings::Load("));
+    DPRINT(address);
+    DPRINTLN(")");
+    DPRINT(F("Settings::Load() existing? "));
+    DPRINTLN((char*)current.settings_name);
     
     unsigned int stored_checksum;
     unsigned int loaded_checksum;
@@ -312,12 +311,12 @@
     loaded_checksum = current.getChecksum();
 
     if (Serial) {
-      Serial.print(F("Settings::Load() retrieved 0x"));
-      Serial.print(stored_checksum, 16);
-      Serial.print(F(", "));
-      Serial.print((char *)current.settings_name);
-      Serial.print(F(", 0x"));
-      Serial.println(loaded_checksum, 16);
+      DPRINT(F("Settings::Load() retrieved 0x"));
+      DPRINT(stored_checksum, 16);
+      DPRINT(F(", "));
+      DPRINT((char *)current.settings_name);
+      DPRINT(F(", 0x"));
+      DPRINTLN(loaded_checksum, 16);
     }
 
     if (stored_checksum != loaded_checksum) {

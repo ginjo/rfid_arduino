@@ -6,10 +6,8 @@
  * Interface with hardware using Reader structs
  * Decode, process, validate tags against stored values
  * 
- * TODO: Should this class be split into RFIDTagsList and RFIDTag?
- * I don't think so, at least not yet, since a list of tags is just an array,
- * and the storage is a single EEPROM service.
- * 
+ * This also controls the mast output switch and all of its timing
+ * I think the output controls should be moved to a separate class.
  */
 
 #ifndef __RFID_H__
@@ -76,9 +74,9 @@
 
 
 
-    /*  Static Vars & Functions  */
+    /***  Static Vars & Functions  ***/
+    
     static uint32_t Tags[TAG_LIST_SIZE];
-    //static int add_tag_from_scanner;
 
     static uint32_t *LoadTags();
     static void SaveTags();
@@ -92,7 +90,5 @@
     static unsigned int GetTagsChecksum();
     
   };  // RFID
-
-  //extern SerialMenu *BTmenu;
 
 #endif

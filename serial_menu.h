@@ -22,10 +22,11 @@
   class SerialMenu {
   public:
     Stream *serial_port;
-    // TODO: I think run_mode should be a global-global.
-    int run_mode; // 0=run, 1=admin // This was moved to static member.
-    uint32_t previous_ms; // This was moved to static member.
-    uint32_t admin_timeout; // seconds // This was moved to static member.
+    // TODO: I think run_mode should be a global.
+    //int run_mode; // 0=run, 1=admin // This was moved to static member.
+    char instance_name[3];
+    uint32_t previous_ms;
+    uint32_t admin_timeout; // seconds
   	
   	char input_mode[INPUT_MODE_LENGTH];
   
@@ -33,7 +34,6 @@
   	char buff[INPUT_BUFFER_LENGTH];
   	int buff_index;
     char current_function[CURRENT_FUNCTION_LENGTH];
-  	//uint32_t tags[TAG_LIST_SIZE];
     int selected_menu_item;
     int get_tag_from_scanner;
 
@@ -43,9 +43,7 @@
     // from Serial (HardwareSerial) or SoftwareSerial.
     // TODO: Is the parameter name required here? What about the pointer?
     //SerialMenu(Stream *stream_ref);
-    SerialMenu(Stream*, Led*);
-
-    // TODO: Do we need to specify the array lengths here?
+    SerialMenu(Stream*, Led*, const char* = "");
     
     void begin();
     void showInfo();
@@ -83,9 +81,7 @@
 
     /*  Static Vars & Functions  */
 
-    //static int run_mode; // 0=run, 1=admin
-    //static uint32_t previous_ms;
-    //static uint32_t admin_timeout;
+    static int run_mode; // 0=run, 1=admin 
 
     static SerialMenu * Current;
     static SerialMenu * HW;
@@ -95,10 +91,5 @@
     static void Loop();
     
   }; // SerialMenu
-
-
-  // Had to move this to rfid.h becuase of load order,
-  // but that's not really a good place for it.
-  //extern SerialMenu *BTmenu;
 
 #endif

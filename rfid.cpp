@@ -407,11 +407,11 @@
       DPRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
-    if (SerialMenu::Current->run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (SerialMenu::run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
   }
 
   void RFID::setProximityState(int _state) {
-    if (SerialMenu::Current->run_mode == 0) {
+    if (SerialMenu::run_mode == 0) {
       proximity_state = _state;
       
       if (proximity_state == 0) {
