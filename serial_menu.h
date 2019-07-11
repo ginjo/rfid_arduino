@@ -7,7 +7,8 @@
   //#include <Stream.h>
   #include <SoftwareSerial.h>
   #include <string.h>
-  #include <stdio.h>
+  // Not sure why we needed this, but seems to work without.
+  //#include <stdio.h>
 
 
   #include "settings.h"

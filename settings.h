@@ -39,15 +39,28 @@
 
   class Settings : public Storage {
   public:
-    /*  Implementation details, not settings:
-     *  settings_name is a string representation
-     *  of the Settings instance Currently usint
-     *  it to verify successful loading of instance
-     *  from EEPROM (not sure if that works yet).
-     */
+
+
+    /***  Static  ***/
+
+    static Settings current;
+    static constexpr const char *storage_name = "settings";
+    static constexpr const int eeprom_address = 100; //SETTINGS_EEPROM_ADDRESS;
+    static constexpr const int checksum_size = 9; //SETTINGS_CHECKSUM_SIZE;
+
+    //static Settings * load(int address = SETTINGS_EEPROM_ADDRESS);
+    //static void Load(int address = SETTINGS_EEPROM_ADDRESS);
+    static void LoadSettings();
+
+
+    /***  Instance  ***/
+
+    /*  Implementation details, not settings  */
+
     char settings_name[SETTINGS_NAME_SIZE];
 
-    /*  Global Settings  */
+
+    /*  Application Settings  */
     
     uint32_t TAG_LAST_READ_TIMEOUT;
     uint32_t TAG_READ_SLEEP_INTERVAL;
@@ -91,22 +104,10 @@
     int debugMode();
 
     //void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
-
-
-    /*  Static  */
-
-    static Settings current;
-    static constexpr const char *storage_name = "settings";
-    static constexpr const int eeprom_address = 100; //SETTINGS_EEPROM_ADDRESS;
-    static constexpr const int checksum_size = 9; //SETTINGS_CHECKSUM_SIZE;
-
-    //static Settings * load(int address = SETTINGS_EEPROM_ADDRESS);
-    //static void Load(int address = SETTINGS_EEPROM_ADDRESS);
-    static void LoadSettings();
   };  
 
 
-  /*  Global / External  Vars & Funcs  */
+  /***  Global / External Vars & Funcs  ***/
 
   // This declares an extern 'S' of type Settings.
   // This will be a ref (pointer?) to Settings::current

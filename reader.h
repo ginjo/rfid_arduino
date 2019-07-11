@@ -4,7 +4,8 @@
 #define __READER_H__
 
   #include <Arduino.h>
-  #include <stdlib.h>
+  // Not sure why this was needed, but seems to work without.
+  //#include <stdlib.h>
   #include <string.h>
   #include "settings.h"
 
