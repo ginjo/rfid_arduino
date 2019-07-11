@@ -3,31 +3,24 @@
 
   #include <Arduino.h>
   #include <EEPROM.h>
-  #include "logger.h"
 
-  #define storage_name_size 16
+	#define CHECKSUM_SIZE 4
+  #define STORAGE_NAME_SIZE 16
 
   struct Storage {
-    /*  Private Implementation Details
-     *  storage_name is a string representation
-     *  of the subclass name, since we can't
-     *  instrospect the name at runtime.
-     *  TODO: Should this be a 'const'?
-     */
-    char storage_name[storage_name_size];
 
-    /*  Constructors  */
+    //char storage_name[STORAGE_NAME_SIZE];
+		static constexpr char *storage_name = "base-class";
+		static uint16_t GetStoredChecksum();
 
-    Storage(const char *);
-    
+		template <class Subclass>
+		static Subclass Load(Subclass*);
 
-    /*  Functions  */
+    Storage();
 
-    virtual void save();
-    virtual void save(int eeprom_address);
-
-    //static Storage load(int);
+    int save();
+		uint16_t calculateChecksum();
     
   };
 
-#endif  //  end __STORAGE_H__
+#endif // __STORAGE_H__

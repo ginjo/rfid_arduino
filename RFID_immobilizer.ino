@@ -138,8 +138,11 @@
  // TODO: √ Something is wrong with Tags checksum: it's the same for two different lists!
  // TODO: - Make tags checksum at least 32-bit. Actually, the 16-bit checksum works now.
  // TODO: Don't load all readers, only load the one we're using.
- // TODO: Create an initial_state (for the grace period) setting: 0=off, 1=on, 2=last-known.
- //       This may also require an initialState() function to compile the various settings at runtime.
+ // TODO: Create an initial_state (for the grace period) setting: 0=off, 1=on, 2=last-known (S.proximity_state).
+ //       This may also require an initialState() function to compile the various settings/options at runtime.
+ //
+ //
+ // FOR REFACTOR:
  //
  // TODO: Move reader functions of RFID class into Reader base,
  //       then use the loaded reader only for reader functionality,
@@ -147,10 +150,12 @@
  //       or led triggering or Tag operations like add, delete, authentication (validation?).
  // TODO: Create a Gate class that handles all the other stuff RFID does now.
  // TODO: Consider again having a Storage class that Tags, Settings, and State all subclass from.
- // TODO: Create a fail-safe button.
- // TODO: Have BTmenu listen on hardware serial as well.
+ // TODO: Create a fail-safe button, and a restore-defaults button
+ // TODO: √ Have BTmenu listen on hardware serial as well.
  // TODO: For callback functions or event-response functions, use "onBufferReady()" naming style.
  //       Examples: onTagReady(int tag_id), onMenuAddTag(), onSerialPortData(byte).
+ //       Really? Do we want truly event-driven behavior? Would it be better to put a ready-tag
+ //       in a static-member var, and let whatever function pick it up?
  
  
   #include <SoftwareSerial.h>

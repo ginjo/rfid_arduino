@@ -35,8 +35,8 @@
 
     // Functions
     virtual uint32_t processTagData(uint8_t[]);
-    void preProcessTagData();
-    int echo(int);
+    //void preProcessTagData();
+    //int echo(int);
   };
 
 

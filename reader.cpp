@@ -17,23 +17,23 @@
     Serial.println(_name);
   }
 
-  int Reader::echo(int _dat) {
-    return _dat;
-  }
+  //  int Reader::echo(int _dat) {
+  //    return _dat;
+  //  }
 
   uint32_t Reader::processTagData(uint8_t[]) {
     DPRINTLN(F("Error: You are attempting to call processTagData() on the generic Reader class"));
     return 0UL;
   }
 
-  void Reader::preProcessTagData() {
-    DPRINT(reader_name);
-    DPRINT(F(" processTagData() with input: "));
-    DPRINT(F("id_begin: "));
-    DPRINT(id_begin);
-    DPRINT(F(", id_end: "));
-    DPRINT(id_end);
-  }
+  //  void Reader::preProcessTagData() {
+  //    DPRINT(reader_name);
+  //    DPRINT(F(" processTagData() with input: "));
+  //    DPRINT(F("id_begin: "));
+  //    DPRINT(id_begin);
+  //    DPRINT(F(", id_end: "));
+  //    DPRINT(id_end);
+  //  }
 
 
   /***  Global functions and variables  ***/
