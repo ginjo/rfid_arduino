@@ -12,8 +12,9 @@
 		static constexpr const char *storage_name = "base-class";
     static constexpr const int eeprom_address = 0;
     static constexpr const int checksum_size = 0;
-    //static const int eeprom_address;
-    //static const int checksum_size;
+    //  static const char *storage_name;
+    //  static const int eeprom_address;
+    //  static const int checksum_size;
 		
 		static uint16_t GetStoredChecksum();
 
@@ -25,7 +26,13 @@
       uint16_t loaded_checksum;
       EEPROM.get(eeprom_address+checksum_size, object_ref);
       loaded_checksum = object_ref->calculateChecksum();
-  
+
+      Serial.print(F("Storage::Load() ")); Serial.print(object_ref->storage_name);
+      Serial.print(F(" from address ")); Serial.print(eeprom_address+checksum_size);
+      Serial.print(F(" with stored/calc chksm 0x")); Serial.print(stored_checksum);
+      Serial.print(" 0x"); Serial.print(loaded_checksum);
+      Serial.print(" of size "); Serial.println(sizeof(*object_ref));
+      
       if (stored_checksum != loaded_checksum) {
         if (Serial) Serial.println(F("Storage::Load() checksum mismatch"));
       }
