@@ -605,7 +605,7 @@ if necessary for admin-mode operations.
     //selected_menu_item = NULL;
     selected_menu_item = -1;
     serial_port->print(F("Settings, chksm 0x"));
-    serial_port->print(S.getChecksum(), 16);
+    serial_port->print(S.calculateChecksum(), 16);
     serial_port->print(F(", size "));
     serial_port->println(sizeof(S));
 

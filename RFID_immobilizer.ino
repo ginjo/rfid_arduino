@@ -191,7 +191,9 @@
     delay(15);
     Serial.println(F("Initialized default serial port @ 57600 baud"));
     
-    Settings::Load(SETTINGS_EEPROM_ADDRESS);
+    //Settings::Load(SETTINGS_EEPROM_ADDRESS);
+    //Settings::Load(&Settings::current);
+    Settings::LoadSettings();
 
     // Normal, when debugging not needed.
     Serial.flush();
@@ -206,7 +208,7 @@
     Serial.print(F("Loaded Settings "));
     Serial.print((char *)S.settings_name);
     Serial.print(F(", with checksum 0x"));
-    Serial.print(S.getChecksum(), 16);
+    Serial.print(S.calculateChecksum(), 16);
     Serial.print(F(", of size "));
     Serial.println(sizeof(S));
 

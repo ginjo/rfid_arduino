@@ -24,18 +24,20 @@
   //#include <EEPROM.h>
 
   #include "logger.h"
+  #include "storage.h"
     
   #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var name
-  #define SETTINGS_EEPROM_ADDRESS 100
+  //#define SETTINGS_EEPROM_ADDRESS 100 // see class definition
+  //#define SETTINGS_CHECKSUM_SIZE // see class definition
   
 
   // TODO: Maybe make it like OpenWRT, with a basic failsafe boot mode, allowing you
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
 
-  class Settings {
+  class Settings : public Storage {
   public:
     /*  Implementation details, not settings:
      *  settings_name is a string representation
@@ -85,18 +87,22 @@
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char*, char*);
     void displaySetting(int, char*);
-    unsigned int getChecksum();
+    //unsigned int getChecksum();
     int debugMode();
 
-    void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
+    //void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
 
 
     /*  Static  */
 
     static Settings current;
+    static constexpr const char *storage_name = "settings";
+    static constexpr const int eeprom_address = 100; //SETTINGS_EEPROM_ADDRESS;
+    static constexpr const int checksum_size = 9; //SETTINGS_CHECKSUM_SIZE;
 
     //static Settings * load(int address = SETTINGS_EEPROM_ADDRESS);
-    static void Load(int address = SETTINGS_EEPROM_ADDRESS);
+    //static void Load(int address = SETTINGS_EEPROM_ADDRESS);
+    static void LoadSettings();
   };  
 
 
