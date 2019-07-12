@@ -3,6 +3,8 @@
 #include <EEPROM.h>
   
   Settings::Settings() :
+    Storage("settings"),
+  
     // See for explanation: https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
     settings_name("default_settings"),
   
@@ -251,6 +253,10 @@
   //    EEPROM.put(address+9, *this); // Must dereference here, or your save pointer address instead of data.
   //  }
 
+  int Settings::save() {
+    return Storage::save(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+  }
+
   // Generates checksum for this object.
   // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
   // See https://www.microchip.com/forums/m649031.aspx
@@ -342,8 +348,8 @@
   // This is a settings-specific wrapper for Storage::Load().
   // It handles settings-specific behavior, like saving default
   // settings if checksum mismatch.
-  void Settings::LoadSettings() {
-    Load(&current);
+  void Settings::Load() {
+    Storage::Load(&current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
 
     if (Serial) {
       DPRINT(F("Settings::LoadSettings() retrieved 0x"));
@@ -360,6 +366,10 @@
       if (Serial) Serial.println(F("Settings::LoadSettings() calling current.save()"));
       current.save();
     }
+  }
+
+  uint16_t Settings::GetStoredChecksum() {
+    return Storage::GetStoredChecksum(SETTINGS_EEPROM_ADDRESS);
   }
   
 

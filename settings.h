@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre106"
+  #define VERSION "v0.1.0.pre107"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -29,7 +29,7 @@
   #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var name
-  //#define SETTINGS_EEPROM_ADDRESS 100 // see class definition
+  #define SETTINGS_EEPROM_ADDRESS 100 // see class definition
   //#define SETTINGS_CHECKSUM_SIZE // see class definition
   
 
@@ -44,23 +44,17 @@
     /***  Static  ***/
 
     static Settings current;
-    static constexpr const char *storage_name = "settings";
-    static constexpr const int eeprom_address = 100; //SETTINGS_EEPROM_ADDRESS;
-    static constexpr const int checksum_size = 9; //SETTINGS_CHECKSUM_SIZE;
+    //  static constexpr const char *storage_name = "settings";
+    //  static constexpr const int eeprom_address = 100; //SETTINGS_EEPROM_ADDRESS;
+    //  static constexpr const int checksum_size = 9; //SETTINGS_CHECKSUM_SIZE;
 
-    //static Settings * load(int address = SETTINGS_EEPROM_ADDRESS);
-    //static void Load(int address = SETTINGS_EEPROM_ADDRESS);
-    static void LoadSettings();
-
+    static void Load();
+    static uint16_t GetStoredChecksum();
+    
 
     /***  Instance  ***/
 
-    /*  Implementation details, not settings  */
-
     char settings_name[SETTINGS_NAME_SIZE];
-
-
-    /*  Application Settings  */
     
     uint32_t TAG_LAST_READ_TIMEOUT;
     uint32_t TAG_READ_SLEEP_INTERVAL;
@@ -102,6 +96,8 @@
     void displaySetting(int, char*);
     //unsigned int getChecksum();
     int debugMode();
+    int save();
+    
 
     //void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
   };  

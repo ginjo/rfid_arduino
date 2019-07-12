@@ -193,7 +193,7 @@
     
     //Settings::Load(SETTINGS_EEPROM_ADDRESS);
     //Settings::Load(&Settings::current);
-    Settings::LoadSettings();
+    Settings::Load();
 
     // Normal, when debugging not needed.
     Serial.flush();
