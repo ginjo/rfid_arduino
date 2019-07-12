@@ -205,11 +205,11 @@
     Serial.print(F("Re-initialized serial port from loaded settings: "));
     Serial.println(S.HW_SERIAL_BAUD);
 
-    Serial.print(F("Loaded Settings "));
+    Serial.print(F("Loaded Settings '"));
     Serial.print((char *)S.settings_name);
-    Serial.print(F(", with checksum 0x"));
-    Serial.print(S.calculateChecksum(), 16);
-    Serial.print(F(", of size "));
+    //Serial.print(F("' with checksum 0x"));
+    //Serial.print(S.calculateChecksum(), 16);
+    Serial.print(F("' of size "));
     Serial.println(sizeof(S));
 
     Serial.print(F("Booting RFID Immobilizer, "));

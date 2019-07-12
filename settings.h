@@ -44,9 +44,6 @@
     /***  Static  ***/
 
     static Settings current;
-    //  static constexpr const char *storage_name = "settings";
-    //  static constexpr const int eeprom_address = 100; //SETTINGS_EEPROM_ADDRESS;
-    //  static constexpr const int checksum_size = 9; //SETTINGS_CHECKSUM_SIZE;
 
     static void Load();
     static uint16_t GetStoredChecksum();
@@ -98,9 +95,7 @@
     int debugMode();
     int save();
     
-
-    //void save(int address = SETTINGS_EEPROM_ADDRESS); // eeprom address
-  };  
+  };  // class Settings
 
 
   /***  Global / External Vars & Funcs  ***/

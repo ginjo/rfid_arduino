@@ -15,7 +15,7 @@
   struct Storage {
     
 		static uint16_t GetStoredChecksum(int);
-    static Storage *Load(Storage*, int, int);
+    static Storage * Load(Storage*, int, int);
 
     char storage_name[STORAGE_NAME_SIZE];
 

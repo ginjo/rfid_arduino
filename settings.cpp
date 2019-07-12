@@ -56,6 +56,7 @@
     proximity_state = 1;
   }
 
+
   // TODO: I think this ultimately needs to be integrated into Storage class EEPROM handling.
   int Settings::updateProximityState(int _state) {
     int previous_proximity_state = proximity_state;
@@ -231,62 +232,6 @@
     DPRINTLN(output);
   }
 
-  // Saves this instance to EEPROM storage address.
-  // Notice the use of de-referencing the 'this' pointer,
-  // so we can get at the actual data.
-  //
-  // Address is the beginning address for the settings object
-  // AND the separate checksum. The checksum has the first 10
-  // bytes, then the settings take as much as they need after that.
-  //
-  //  void Settings::save(int address) {
-  //    unsigned int checksum = getChecksum();
-  //
-  //    if (Serial) {
-  //      Serial.print(F("Settings::save() ")); Serial.print(settings_name);
-  //      Serial.print(F(" of length ")); Serial.print(sizeof(*this));
-  //      Serial.print(F(" to address ")); Serial.print(address+9);
-  //      Serial.print(F(" with checksum 0x")); Serial.println(checksum, 16);
-  //    }
-  //
-  //    EEPROM.put(address, checksum);
-  //    EEPROM.put(address+9, *this); // Must dereference here, or your save pointer address instead of data.
-  //  }
-
-  int Settings::save() {
-    return Storage::save(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
-  }
-
-  // Generates checksum for this object.
-  // See https://stackoverflow.com/questions/3215221/xor-all-data-in-packet
-  // See https://www.microchip.com/forums/m649031.aspx
-  // See example file Checksuming...XOR.cpp
-  // NOTE: If settings have been changed temporarily (like debug-mode,
-  // which would only last for the session), the checksum will be
-  // different from the stored checksum and the calculated checksum
-  // of the stored settings. This is OK, just be aware. 
-  //
-  //  unsigned int Settings::getChecksum() {
-  //    unsigned char *obj = (unsigned char *) this;
-  //    unsigned int len = sizeof(*this); // de-references pointer, so we get size of actual data.
-  //    unsigned int xxor = 0;
-  //
-  //    // Advances array index
-  //    //  for ( unsigned int i = 0 ; i < sizeof(obj) ; i ++ ) {
-  //    //      xxor = xxor ^ obj[i];
-  //    //  }
-  //
-  //    // Advances array pointer
-  //    //while(len--) xxor = xxor ^ *obj++;
-  //
-  //    // Converts to 16-bit checksum, and handles odd bytes at end of obj.
-  //    for ( unsigned int i = 0 ; i < len ; i+=2 ) {
-  //      xxor = xxor ^ ((obj[i]<<8) | (i==len-1 ? 0 : obj[i+1]));
-  //    }
-  //    
-  //    return xxor;
-  //  }
-
   int Settings::debugMode() {
     if (digitalRead(DEBUG_PIN) == LOW || enable_debug == 1) {
       return 1;
@@ -295,84 +240,64 @@
     }
   }
 
+  int Settings::save() {
+    Serial.println(F("Settings::save() BEGIN"));
+    int result = Storage::save(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    Serial.println(F("Settings::save() END"));
+    return result;
+  }
 
-  /*  Static & Extern  */
+  
 
-  // Loads settings from EEPROM and compares with stored checksum.
-  // See note above about Address.
-  //  void Settings::Load(int address) {
-  //    // Under normal circumstances, Serial has not been initialized yet,
-  //    // so you can't print anything here. I've modified the load order
-  //    // of Serial in the main .ino file to allow printing for debugging.
-  //    DPRINT(F("Settings::Load("));
-  //    DPRINT(address);
-  //    DPRINTLN(")");
-  //    DPRINT(F("Settings::Load() existing? "));
-  //    DPRINTLN((char*)current.settings_name);
-  //    
-  //    unsigned int stored_checksum;
-  //    unsigned int loaded_checksum;
-  //    EEPROM.get(address, stored_checksum);
-  //    EEPROM.get(address+9, current);
-  //    loaded_checksum = current.getChecksum();
-  //
-  //    if (Serial) {
-  //      DPRINT(F("Settings::Load() retrieved 0x"));
-  //      DPRINT(stored_checksum, 16);
-  //      DPRINT(F(", "));
-  //      DPRINT((char *)current.settings_name);
-  //      DPRINT(F(", 0x"));
-  //      DPRINTLN(loaded_checksum, 16);
-  //    }
-  //
-  //    if (stored_checksum != loaded_checksum) {
-  //      current = Settings();
-  //      strcpy(current.settings_name, "saved_settings");
-  //      if (Serial) Serial.println(F("Settings::Load() calling current.save()"));
-  //      current.save();
-  //    }
-  //
-  //    // If debug pin is held low at boot, enables
-  //    // debug for the duration of this session.
-  //    // If you do this prior to an admin session,
-  //    // enable_debug will be saved with any other
-  //    // saved settings.
-  //    //
-  //    if (current.DEBUG_PIN == LOW) {
-  //      current.enable_debug = 1;
-  //    }
-  //    
-  //    //return &current;
-  //  }
+  /***  Static & Extern  ***/
 
   // This is a settings-specific wrapper for Storage::Load().
   // It handles settings-specific behavior, like saving default
   // settings if checksum mismatch.
   void Settings::Load() {
+    Serial.println(F("Settings::Load() BEGIN"));
+    
     Storage::Load(&current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    
+    uint16_t calculated_checksum = current.calculateChecksum();   
 
-    if (Serial) {
-      DPRINT(F("Settings::LoadSettings() retrieved 0x"));
-      DPRINT(GetStoredChecksum(), 16);
-      DPRINT(F(", "));
-      DPRINT((char *)current.settings_name);
-      DPRINT(F(", 0x"));
-      DPRINTLN(current.calculateChecksum(), 16);
+    DPRINT(F("Settings::Load() current.storage_name '"));
+    DPRINT((char *)current.storage_name);
+    DPRINT(F("' settings_name '"));
+    DPRINT((char *)current.settings_name);
+    DPRINT(F("' calc chksm 0x"));
+    DPRINTLN(calculated_checksum, 16);
+
+    // TEMP: Prints out all settings in tabular format.
+    Serial.println("Settings::Load() printing all values in Settings::current");
+    for (int n=1; n <= SETTINGS_SIZE; n++) {
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
+      current.displaySetting(n, output);
+      Serial.println(output);
     }
     
-    if (GetStoredChecksum() != current.calculateChecksum()) {
+    if (GetStoredChecksum() != calculated_checksum) {
+      Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
       current = Settings();
       strcpy(current.settings_name, "saved_settings");
-      if (Serial) Serial.println(F("Settings::LoadSettings() calling current.save()"));
       current.save();
+      Serial.print(F("Settings::Load() using default settings saved as '"));
+      
+    } else {
+      Serial.print(F("Settings::Load() using loaded settings '"));
+      
     }
-  }
+    
+    Serial.print(current.settings_name); Serial.println("'");
+    Serial.println(F("Settings::Load() END"));
+    
+  } // Settings::Load()
 
   uint16_t Settings::GetStoredChecksum() {
+    if (Serial) Serial.println(F("Settings::GetStoredChecksum()"));
     return Storage::GetStoredChecksum(SETTINGS_EEPROM_ADDRESS);
   }
   
-
   // It seems necessary to initialize static member vars
   // before using them (seems kinda wasteful).
   // Maybe we don't need this if we move .ino items into setup().
