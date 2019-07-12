@@ -19,20 +19,21 @@
 		uint16_t stored_checksum;
 		EEPROM.get(eeprom_address, stored_checksum);
 		uint16_t calculated_checksum = calculateChecksum();
+
+    Serial.print(F("Storage::save() ")); Serial.print(storage_name);
+    Serial.print(F(" to address ")); Serial.print(eeprom_address+checksum_size);
+    Serial.print(F(" with stored/calc chksm 0x")); Serial.print(stored_checksum, 16);
+    Serial.print(F(" 0x")); Serial.print(calculated_checksum, 16);
+    Serial.print(F(" of size ")); Serial.println(sizeof(*this));
 		
 		if (stored_checksum != calculated_checksum) {
-
-      Serial.print(F("Storage::save() ")); Serial.print(storage_name);
-      Serial.print(F(" to address ")); Serial.print(eeprom_address+checksum_size);
-      Serial.print(F(" with stored/calc chksm 0x")); Serial.print(stored_checksum);
-      Serial.print(" 0x"); Serial.print(calculated_checksum);
-      Serial.print(" of size "); Serial.println(sizeof(*this));
-    
+      Serial.print(F("Storage::save() performing EEPROM.put()"));
 	    EEPROM.put(eeprom_address, calculated_checksum);
 			// Must dereference here, or you store pointer address instead of data.
 		  EEPROM.put(eeprom_address+checksum_size, *this);
       return 0;
 		} else {
+      Serial.print(F("Storage::save() EEPROM update not necessary"));
 			return 1;
 		}
   }

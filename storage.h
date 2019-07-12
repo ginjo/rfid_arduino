@@ -7,6 +7,11 @@
 	#define CHECKSUM_SIZE 9
   #define STORAGE_NAME_SIZE 16
 
+  /* All calls to static vars from instance methods must use templates
+   *  to qualify the derived class name. See my subclassing & template
+   *  cpp examples.
+   */
+
   struct Storage {
 
 		static constexpr const char *storage_name = "base-class";
@@ -24,14 +29,14 @@
     static T *Load(T * object_ref) {
       uint16_t stored_checksum = GetStoredChecksum();
       uint16_t loaded_checksum;
-      EEPROM.get(eeprom_address+checksum_size, object_ref);
+      EEPROM.get(T::eeprom_address+T::checksum_size, object_ref);
       loaded_checksum = object_ref->calculateChecksum();
 
-      Serial.print(F("Storage::Load() ")); Serial.print(object_ref->storage_name);
-      Serial.print(F(" from address ")); Serial.print(eeprom_address+checksum_size);
-      Serial.print(F(" with stored/calc chksm 0x")); Serial.print(stored_checksum);
-      Serial.print(" 0x"); Serial.print(loaded_checksum);
-      Serial.print(" of size "); Serial.println(sizeof(*object_ref));
+      Serial.print(F("Storage::Load() ")); Serial.print(object_ref->T::storage_name);
+      Serial.print(F(" from address ")); Serial.print(T::eeprom_address+T::checksum_size);
+      Serial.print(F(" with stored/calc chksm 0x")); Serial.print(stored_checksum, 16);
+      Serial.print(F(" 0x")); Serial.print(loaded_checksum, 16);
+      Serial.print(F(" of size ")); Serial.println(sizeof(*object_ref));
       
       if (stored_checksum != loaded_checksum) {
         if (Serial) Serial.println(F("Storage::Load() checksum mismatch"));
