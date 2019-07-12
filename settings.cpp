@@ -256,8 +256,9 @@
   // settings if checksum mismatch.
   void Settings::Load() {
     Serial.println(F("Settings::Load() BEGIN"));
-    
-    Storage::Load(&current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+
+    // Dunno if we need to qualify 'current' with the class name, but just to be safe.
+    Storage::Load(&Settings::current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
     
     uint16_t calculated_checksum = current.calculateChecksum();   
 
