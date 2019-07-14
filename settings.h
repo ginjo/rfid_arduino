@@ -43,7 +43,7 @@
 
     /***  Static  ***/
 
-    static Settings current;
+    static Settings Current;
 
     static void Load();
     static uint16_t GetStoredChecksum();
@@ -101,9 +101,9 @@
   /***  Global / External Vars & Funcs  ***/
 
   // This declares an extern 'S' of type Settings.
-  // This will be a ref (pointer?) to Settings::current
+  // This will be a ref (pointer?) to Settings::Current
   // and is intended as a convenience shortcut, since
-  // Settings::current is referred to so many times in the project.
+  // Settings::Current is referred to so many times in the project.
   extern Settings& S;
 
 

@@ -264,12 +264,6 @@
     // add the tag to Tags array if get_tag_from_scanner is 1.
     // This pushes tag_id as string directly into BTmenu::buff,
     // which then picks it up and processes it as if were manually entered.
-    //  if (BTmenu->get_tag_from_scanner == 1) {
-    //    char str[9];
-    //    sprintf(str, "%lu", tag_id);
-    //    strcpy(BTmenu->buff, str);
-    //    BTmenu->get_tag_from_scanner = 0;
-    //  }
     if (SerialMenu::Current->get_tag_from_scanner == 1) {
       char str[9];
       sprintf(str, "%lu", tag_id);

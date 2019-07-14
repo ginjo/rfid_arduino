@@ -260,26 +260,26 @@
   void Settings::Load() {
     Serial.println(F("Settings::Load() BEGIN"));
 
-    Storage::Load(&current, SETTINGS_EEPROM_ADDRESS);
-    uint16_t calculated_checksum = current.calculateChecksum();   
+    Storage::Load(&Current, SETTINGS_EEPROM_ADDRESS);
+    uint16_t calculated_checksum = Current.calculateChecksum();   
 
     // WARN: Can't reliably do DPRINT from here, since we don't have a confirmed
     // valid Settings instance yet. Printing settings data before it has been
     // verified can result in UB !!!
     //
     #ifdef DEBUG
-      Serial.print(F("Settings::Load() current.storage_name '"));
-      Serial.print(current.storage_name);
+      Serial.print(F("Settings::Load() Current.storage_name '"));
+      Serial.print(Current.storage_name);
       Serial.print(F("' settings_name '"));
-      Serial.print(current.settings_name);
+      Serial.print(Current.settings_name);
       Serial.print(F("' calc chksm 0x"));
       Serial.println(calculated_checksum, 16);
   
       //  // TEMP: Prints out all settings in tabular format.
-      //  Serial.println("Settings::Load() printing all values in Settings::current");
+      //  Serial.println("Settings::Load() printing all values in Settings::Current");
       //  for (int n=1; n <= SETTINGS_SIZE; n++) {
       //    char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      //    current.displaySetting(n, output);
+      //    Current.displaySetting(n, output);
       //    Serial.println(output);
       //  }
     #endif
@@ -287,9 +287,9 @@
     // Handles checksum mismatch by saving default settings.
     if (GetStoredChecksum() != calculated_checksum) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
-      current = Settings(); // This is ok, because we're passing out the value, not the pointer.
-      strlcpy(current.settings_name, "saved-default-settings", SETTINGS_NAME_SIZE);
-      current.save();
+      Current = Settings(); // This is ok, because we're passing out the value, not the pointer.
+      strlcpy(Current.settings_name, "saved-default-settings", SETTINGS_NAME_SIZE);
+      Current.save();
       Serial.print(F("Settings::Load() using default settings '"));
       
     } else {
@@ -297,7 +297,7 @@
       
     }
     
-    Serial.print(current.settings_name); Serial.println("'");
+    Serial.print(Current.settings_name); Serial.println("'");
     Serial.println(F("Settings::Load() END"));
     
   } // Settings::Load()
@@ -310,11 +310,11 @@
   // It seems necessary to initialize static member vars
   // before using them (seems kinda wasteful).
   // Maybe we don't need this if we move .ino items into setup().
-  //Settings Settings::current;// = *Settings::Load();
-  Settings Settings::current = Settings();
+  //Settings Settings::Current;// = *Settings::Load();
+  Settings Settings::Current = Settings();
 
   // a reference (alias?) from S to CurrentSettings
-  Settings& S = Settings::current;
+  Settings& S = Settings::Current;
 
 
   

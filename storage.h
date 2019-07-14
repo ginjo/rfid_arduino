@@ -7,15 +7,18 @@
 	//#define STORAGE_CHECKSUM_SIZE 9
   #define STORAGE_NAME_SIZE 16
 
-  /* All calls to static vars from base class must use templates
+  /*  Note that all calls to static vars from base class must use templates
    *  to qualify the derived class name. See my subclassing & template
-   *  cpp examples.
+   *  cpp examples. Also note that we are no longer using static vars in this way.
    *  
-   *  This base class, Storage, provides EEPROM persistance for any sublclass instance.
+   *  This is a base class, Storage, that provides EEPROM persistance for any sublclass instance.
    *  
-   *  The key to making this work is to make the base class a template class, and to
+   *  The key to making this work is to make the base class also a template class, and to
    *  pass in the subclass name when declaring the subclass. This is referred to as the CRTP
-   *  pattern "Curiously Recurring Template Pattern". 
+   *  pattern "Curiously Recurring Template Pattern". It helps subclasses make effective use
+   *  of base instance methods that need to know what subclass is calling them.
+   *  
+   *  Remember: templates are compiler features. No code is written until a class template is instanciated.
    */
 
   template <class T>

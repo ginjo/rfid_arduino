@@ -1,40 +1,40 @@
-// Serial Menu Class
-// Handles human-readable input and output between text-based serial port
-// and arduino application (classes, functions, data, et.c.).
-
-
-/*
-
-* Refactored SerialMenu with these features:
-
-* SerialMenu::run_mode is a shared static now.
-
-* Two more statics hold SW and HW serial-menu instances.
-
-* One static, Current, holds the ''chosen-one'', or defaults to HW.
-
-* SerialMenu::Begin() and SerialMenu::Loop() make sub-calls to
-SW and HW instances (both) until once is ''chosen'' (when user
-input triggers admin-mode 'run_mode == 1').
-
-* At that point, the static for Current is filled with the chosen instance.
-Other classes can access the SerialMenu::Current or SerialMenu::run_mode
-if necessary for admin-mode operations.
-
-*/
-
-
-// TODO: Create a function for menu option "Read Tag",
-// that temporarily switches run_mode to 0, gathers a single tag,
-// then returns run_mode to 1 so BTmenu can resume where it left off.
-// This could allow a menu option for "Add tag from scanner",
-// vs the current add-tag-from-keyboard menu option.
-
-#include "serial_menu.h"
-// This is here because it seems to avoid circular include,
-// which would happen if this was in serial_menu.h.
-// This is apparently a legitimate C/C++ technique.
-#include "rfid.h" 
+  // Serial Menu Class
+  // Handles human-readable input and output between text-based serial port
+  // and arduino application (classes, functions, data, et.c.).
+  
+  
+  /*
+  
+  * Refactored SerialMenu with these features:
+  
+  * SerialMenu::run_mode is a shared static now.
+  
+  * Two more statics hold SW and HW serial-menu instances.
+  
+  * One static, Current, holds the ''chosen-one'', or defaults to HW.
+  
+  * SerialMenu::Begin() and SerialMenu::Loop() make sub-calls to
+  SW and HW instances (both) until once is ''chosen'' (when user
+  input triggers admin-mode 'run_mode == 1').
+  
+  * At that point, the static for Current is filled with the chosen instance.
+  Other classes can access the SerialMenu::Current or SerialMenu::run_mode
+  if necessary for admin-mode operations.
+  
+  */
+  
+  
+  // TODO: Create a function for menu option "Read Tag",
+  // that temporarily switches run_mode to 0, gathers a single tag,
+  // then returns run_mode to 1 so BTmenu can resume where it left off.
+  // This could allow a menu option for "Add tag from scanner",
+  // vs the current add-tag-from-keyboard menu option.
+  
+  #include "serial_menu.h"
+  // This is here because it seems to avoid circular include,
+  // which would happen if this was in serial_menu.h.
+  // This is apparently a legitimate C/C++ technique.
+  #include "rfid.h" 
   
   // NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
   // This works in onlinegbd.com, but may not work for arduino.

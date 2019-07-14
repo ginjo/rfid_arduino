@@ -128,7 +128,7 @@
  //       Actually, it's ok, just don't boot with debug pin low for an admin session.
  //       You can always hold debug pin low after boot, for temporary debug mode.
  // TODO: √ Create a Settings function 'debugMode()' which compiles enable_debug with debug-pin.
- // NOTE: Milestone achieved! All basic functions required for real-world use are working.
+ // NOTE: √ Milestone achieved! All basic functions required for real-world use are working.
  //
  // TODO: √ Smooth out UI functionality in SerialMenu - it's still a little confusing what
  //       mode/state/options we're in at each prompt. Maybe there should be no generic prompts,
@@ -148,16 +148,22 @@
  //       then use the loaded reader only for reader functionality,
  //       including cycling and tag parsing, but not master-switch management
  //       or led triggering or Tag operations like add, delete, authentication (validation?).
- // TODO: Create a Gate class that handles all the other stuff RFID does now.
- // TODO: Consider again having a Storage class that Tags, Settings, and State all subclass from.
- // TODO: Create a fail-safe button, and a restore-defaults button
+ //       Maybe move reader subclasses to their own readers.cpp file.
+ // TODO: Create a Gate/Switch/Controller/State? class that handles all the other stuff RFID does now.
+ //       This class should take a Reader and Blinker instance onboard, since it's the glue
+ //       between those two entities.
+ // TODO: Then create a Tags class that manages everything tag-related (that's not part of Reader).
+ // TODO: √ Consider again having a Storage class that Tags, Settings, and State all subclass from.
+ // TODO: Create a fail-safe button and/or a restore-defaults button.
  // TODO: √ Have BTmenu listen on hardware serial as well.
- // TODO: For callback functions or event-response functions, use "onBufferReady()" naming style.
+ // TODO: For callback functions or event-response functions, consider "onBufferReady()" naming style.
  //       Examples: onTagReady(int tag_id), onMenuAddTag(), onSerialPortData(byte).
  //       Really? Do we want truly event-driven behavior? Would it be better to put a ready-tag
  //       in a static-member var, and let whatever function pick it up?
- // TODO: Change Settings::current to title-case Settings::Current.
- // NOTE: Don't use strcpy or strncpy. DO use strlcpy (it ensures a null terminator).
+ // TODO: √ Change Settings::current to title-case Settings::Current.
+ // TODO: √ Don't use strcpy or strncpy. DO use strlcpy (it ensures a null terminator).
+ // NOTE: Milestone achieved! Created generic Storage base class, that is also a class template (CRTP).
+ //       Settings are currently using this... next are tags (need a Tags class where 1 record is array of tags).
  
  
   #include <SoftwareSerial.h>
@@ -194,7 +200,7 @@
     Serial.println(F("Initialized default serial port @ 57600 baud"));
     
     //Settings::Load(SETTINGS_EEPROM_ADDRESS);
-    //Settings::Load(&Settings::current);
+    //Settings::Load(&Settings::Current);
     Settings::Load();
 
     // Normal, when debugging not needed.
