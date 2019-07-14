@@ -35,14 +35,16 @@
       
       EEPROM.get(eeprom_address+checksum_size, *object_ref); // According to docs .get() also expects data, not pointer.
       loaded_checksum = object_ref->calculateChecksum();
-  
-      Serial.print(F("eeprom_address ")); Serial.println(eeprom_address);
-      Serial.print(F("checksum_size ")); Serial.println(checksum_size);
-      Serial.print(F("stored_checksum ")); Serial.println(stored_checksum, 16);
-      Serial.print(F("loaded_checksum ")); Serial.println(loaded_checksum, 16);
-      Serial.print(F("object_ref->storage_name '")); Serial.print(object_ref->storage_name); Serial.println("'");
-      Serial.print(F("sizeof(*object_ref) ")); Serial.println(sizeof(*object_ref));
-      Serial.print(F("sizeof(T) ")); Serial.println(sizeof(T));
+
+      #ifdef DEBUG
+        Serial.print(F("eeprom_address ")); Serial.println(eeprom_address);
+        Serial.print(F("checksum_size ")); Serial.println(checksum_size);
+        Serial.print(F("stored_checksum ")); Serial.println(stored_checksum, 16);
+        Serial.print(F("loaded_checksum ")); Serial.println(loaded_checksum, 16);
+        Serial.print(F("object_ref->storage_name '")); Serial.print(object_ref->storage_name); Serial.println("'");
+        Serial.print(F("sizeof(*object_ref) ")); Serial.println(sizeof(*object_ref));
+        Serial.print(F("sizeof(T) ")); Serial.println(sizeof(T));
+      #endif
   
       if (stored_checksum != loaded_checksum) {
         Serial.println(F("Storage::Load() checksum mismatch"));
@@ -62,7 +64,9 @@
     static uint16_t GetStoredChecksum(int eeprom_address) {
       uint16_t stored_checksum = 0;
       EEPROM.get(eeprom_address, stored_checksum);
-      Serial.print(F("Storage::GetStoredChecksum(int): 0x")); Serial.println(stored_checksum, 16);
+      //  #ifdef DEBUG
+      //    Serial.print(F("Storage::GetStoredChecksum(int): 0x")); Serial.println(stored_checksum, 16);
+      //  #endif
       return stored_checksum;
     }
   
@@ -81,12 +85,14 @@
       uint16_t calculated_checksum = calculateChecksum();
       int checksum_size = sizeof(stored_checksum);
 
-      Serial.print(F("Storage::save() '")); Serial.print(storage_name);
-      Serial.print(F("' to address ")); Serial.print(eeprom_address+checksum_size);
-      Serial.print(F(" with stored/calced chksm 0x")); Serial.print(stored_checksum, 16);
-      Serial.print(F(" 0x")); Serial.print(calculated_checksum, 16);
-      //Serial.print(F(" sizeof(*this) ")); Serial.println(sizeof(*this));
-      Serial.print(F(" sizeof(T) ")); Serial.println(sizeof(T));
+      #ifdef DEBUG
+        Serial.print(F("Storage::save() '")); Serial.print(storage_name);
+        Serial.print(F("' to address ")); Serial.print(eeprom_address+checksum_size);
+        Serial.print(F(" with stored/calced chksm 0x")); Serial.print(stored_checksum, 16);
+        Serial.print(F(" 0x")); Serial.print(calculated_checksum, 16);
+        //Serial.print(F(" sizeof(*this) ")); Serial.println(sizeof(*this));
+        Serial.print(F(" sizeof(T) ")); Serial.println(sizeof(T));
+      #endif
       
       if (stored_checksum != calculated_checksum) {
         Serial.println(F("Storage::save() chksm mismatch, performing EEPROM.put()"));
@@ -116,10 +122,12 @@
       for ( uint16_t i = 0 ; i < len ; i+=2 ) {
         xxor = xxor ^ ((obj[i]<<8) | (i==len-1 ? 0 : obj[i+1]));
       }
-  
-      Serial.print(F("Storage::claculateChecksum() 0x")); Serial.print(xxor, 16);
-      Serial.print(F(" for storage_name '")); Serial.print(storage_name);
-      Serial.print(F("' of size ")); Serial.println(len);
+
+      //  #ifdef DEBUG
+      //    Serial.print(F("Storage::claculateChecksum() 0x")); Serial.print(xxor, 16);
+      //    Serial.print(F(" for storage_name '")); Serial.print(storage_name);
+      //    Serial.print(F("' of size ")); Serial.println(len);
+      //  #endif
       
       return xxor;    
     }

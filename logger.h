@@ -3,8 +3,12 @@
 
   #include <Arduino.h>
   //#include "settings.h"
+
+  // DEBUG controls compilation of debug code, it does not control runtime debug behavior.
+  //  If you comment-out DEBUG, the DPRINT & DPRINTLN lines are defined as blank,
+  //  and any lines between '#ifdef DEBUG' and '#endif' will be ommitted from compilation.
+  #define DEBUG
   
-  #define DEBUG   //If you comment this line, the DPRINT & DPRINTLN lines are defined as blank.
   #ifdef DEBUG    //Macros are usually in all capital letters.
     #define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);} // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
     #define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);} // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line

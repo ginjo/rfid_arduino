@@ -122,8 +122,8 @@
         LED_PIN = (int)strtol(_data, NULL, 10);
         break;
       case 11:
+        // TODO: BT_RXTX needs a proper setter for updateSetting().
         //BT_RXTX = (int)strtol(_data, NULL, 10);
-        Serial.println(F("BT_RXTX needs a proper setter for updateSetting()"));
         break;
       case 12:
         RFID_SERIAL_RX = (int)strtol(_data, NULL, 10);
@@ -241,10 +241,10 @@
   }
 
   int Settings::save() {
-    Serial.println(F("Settings::save() BEGIN"));
-    //int result = Storage<Settings>::save(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    //Serial.println(F("Settings::save() BEGIN"));
     int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
-    Serial.println(F("Settings::save() END"));
+    Serial.print(F("Settings::save() result: ")); Serial.println(result);
+    //Serial.println(F("Settings::save() END"))
     return result;
   }
 
@@ -258,17 +258,13 @@
   void Settings::Load() {
     Serial.println(F("Settings::Load() BEGIN"));
 
-    // Dunno if we need to qualify 'current' with the class name, but just to be safe.
-    //Storage::Load(&current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
     Storage::Load(&current, SETTINGS_EEPROM_ADDRESS);
-    //Settings *result = Storage::Load<Settings>(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
-    //current = *result;
-    
     uint16_t calculated_checksum = current.calculateChecksum();   
 
-    // TODO: Can't reliably do DPRINT from here, since we don't have a confirmed
-    // valid Settings instance yet.
-
+    // WARN: Can't reliably do DPRINT from here, since we don't have a confirmed
+    // valid Settings instance yet. Printing settings data before it has been
+    // verified can result in UB !!!
+    //
     #ifdef DEBUG
       Serial.print(F("Settings::Load() current.storage_name '"));
       Serial.print(current.storage_name);
@@ -289,8 +285,7 @@
     // Handles checksum mismatch by saving default settings.
     if (GetStoredChecksum() != calculated_checksum) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
-      // TODO: Is it ok to use new here? Is it necessary? Can we just use Settings().
-      current = *(new Settings);
+      current = Settings(); // This is ok, because we're passing out the value, not the pointer.
       strlcpy(current.settings_name, "saved-default-settings", SETTINGS_NAME_SIZE);
       current.save();
       Serial.print(F("Settings::Load() using default settings '"));
@@ -306,7 +301,7 @@
   } // Settings::Load()
 
   uint16_t Settings::GetStoredChecksum() {
-    if (Serial) Serial.println(F("Settings::GetStoredChecksum()"));
+    //Serial.println(F("Settings::GetStoredChecksum()"));
     return Storage::GetStoredChecksum(SETTINGS_EEPROM_ADDRESS);
   }
   
