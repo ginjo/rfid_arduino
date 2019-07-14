@@ -6,7 +6,7 @@
     Storage("settings"),
   
     // See for explanation: https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-    settings_name("default_settings"),
+    settings_name("default-settings"),
   
     // ultimate valid-tag timeout
     TAG_LAST_READ_TIMEOUT(15), // seconds
@@ -116,7 +116,7 @@
         break;
       case 9:
         //strcpy(DEFAULT_READER, (char *)_data);
-        strncpy(DEFAULT_READER, (char *)_data, sizeof(DEFAULT_READER));
+        strlcpy(DEFAULT_READER, (char *)_data, sizeof(DEFAULT_READER));
         break;
       case 10:
         LED_PIN = (int)strtol(_data, NULL, 10);
@@ -147,7 +147,7 @@
         return false;
     }
 
-    strcpy(settings_name, "custom_settings");
+    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
     save();
     
     return true;
@@ -242,7 +242,8 @@
 
   int Settings::save() {
     Serial.println(F("Settings::save() BEGIN"));
-    int result = Storage::save(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    //int result = Storage<Settings>::save(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
     Serial.println(F("Settings::save() END"));
     return result;
   }
@@ -258,31 +259,41 @@
     Serial.println(F("Settings::Load() BEGIN"));
 
     // Dunno if we need to qualify 'current' with the class name, but just to be safe.
-    Storage::Load(&Settings::current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    //Storage::Load(&current, SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    Storage::Load(&current, SETTINGS_EEPROM_ADDRESS);
+    //Settings *result = Storage::Load<Settings>(SETTINGS_EEPROM_ADDRESS, STORAGE_CHECKSUM_SIZE);
+    //current = *result;
     
     uint16_t calculated_checksum = current.calculateChecksum();   
 
-    DPRINT(F("Settings::Load() current.storage_name '"));
-    DPRINT((char *)current.storage_name);
-    DPRINT(F("' settings_name '"));
-    DPRINT((char *)current.settings_name);
-    DPRINT(F("' calc chksm 0x"));
-    DPRINTLN(calculated_checksum, 16);
+    // TODO: Can't reliably do DPRINT from here, since we don't have a confirmed
+    // valid Settings instance yet.
 
-    // TEMP: Prints out all settings in tabular format.
-    Serial.println("Settings::Load() printing all values in Settings::current");
-    for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      current.displaySetting(n, output);
-      Serial.println(output);
-    }
-    
+    #ifdef DEBUG
+      Serial.print(F("Settings::Load() current.storage_name '"));
+      Serial.print(current.storage_name);
+      Serial.print(F("' settings_name '"));
+      Serial.print(current.settings_name);
+      Serial.print(F("' calc chksm 0x"));
+      Serial.println(calculated_checksum, 16);
+  
+      //  // TEMP: Prints out all settings in tabular format.
+      //  Serial.println("Settings::Load() printing all values in Settings::current");
+      //  for (int n=1; n <= SETTINGS_SIZE; n++) {
+      //    char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
+      //    current.displaySetting(n, output);
+      //    Serial.println(output);
+      //  }
+    #endif
+
+    // Handles checksum mismatch by saving default settings.
     if (GetStoredChecksum() != calculated_checksum) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
-      current = Settings();
-      strcpy(current.settings_name, "saved_settings");
+      // TODO: Is it ok to use new here? Is it necessary? Can we just use Settings().
+      current = *(new Settings);
+      strlcpy(current.settings_name, "saved-default-settings", SETTINGS_NAME_SIZE);
       current.save();
-      Serial.print(F("Settings::Load() using default settings saved as '"));
+      Serial.print(F("Settings::Load() using default settings '"));
       
     } else {
       Serial.print(F("Settings::Load() using loaded settings '"));

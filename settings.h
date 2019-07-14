@@ -29,7 +29,7 @@
   #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var name
-  #define SETTINGS_EEPROM_ADDRESS 100 // see class definition
+  #define SETTINGS_EEPROM_ADDRESS 800 // see class definition
   //#define SETTINGS_CHECKSUM_SIZE // see class definition
   
 
@@ -37,7 +37,7 @@
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
 
-  class Settings : public Storage {
+  class Settings : public Storage<Settings> {
   public:
 
 
