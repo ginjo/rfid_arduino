@@ -25,6 +25,7 @@
     Stream *serial_port;
     // TODO: I think run_mode should be a global.
     //int run_mode; // 0=run, 1=admin // This was moved to static member.
+    // NOTE: instance_name is a two-character string with a terminating null.
     char instance_name[3];
     uint32_t previous_ms;
     uint32_t admin_timeout; // seconds

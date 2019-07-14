@@ -156,6 +156,8 @@
  //       Examples: onTagReady(int tag_id), onMenuAddTag(), onSerialPortData(byte).
  //       Really? Do we want truly event-driven behavior? Would it be better to put a ready-tag
  //       in a static-member var, and let whatever function pick it up?
+ // TODO: Change Settings::current to title-case Settings::Current.
+ // NOTE: Don't use strcpy or strncpy. DO use strlcpy (it ensures a null terminator).
  
  
   #include <SoftwareSerial.h>

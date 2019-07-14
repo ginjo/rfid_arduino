@@ -4,15 +4,14 @@
   
   // Defines Reader Constructor
   Reader::Reader(const char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
-    //reader_name(_name),
     raw_tag_length(_raw_tag_length),
     id_begin(_id_begin),
     id_end(_id_end),
     power_control_logic(_control_logic)
   {
     //strncpy(reader_name, _name, sizeof(reader_name));
-    strcpy(reader_name, _name);
-    // WARN: Probably bad to reference any global var or funcs in a constructor.
+    //strcpy(reader_name, _name);
+    strlcpy(reader_name, _name, sizeof(reader_name));
     Serial.print(F("Constructing Reader for: "));
     Serial.println(_name);
   }

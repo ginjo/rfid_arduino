@@ -81,6 +81,7 @@
     DPRINT(_index); DPRINT(", ");
 
     char setting_name[SETTINGS_NAME_SIZE];
+    // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
 
     DPRINT(setting_name); DPRINT(", ");
@@ -154,6 +155,7 @@
   }
 
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
+    // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
     DPRINT(F("Settings::getSettingByIndex: ")); DPRINT(index); DPRINT(", "); DPRINT(setting_name);
     

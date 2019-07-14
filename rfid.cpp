@@ -273,7 +273,7 @@
     if (SerialMenu::Current->get_tag_from_scanner == 1) {
       char str[9];
       sprintf(str, "%lu", tag_id);
-      strcpy(SerialMenu::Current->buff, str);
+      strlcpy(SerialMenu::Current->buff, str, sizeof(SerialMenu::buff));
       SerialMenu::Current->get_tag_from_scanner = 0;
     }
 

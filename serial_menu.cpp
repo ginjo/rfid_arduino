@@ -108,7 +108,7 @@ if necessary for admin-mode operations.
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
-    strncpy(instance_name, _instance_name, 3);
+    strlcpy(instance_name, _instance_name, sizeof(instance_name));
 	}
 	
   void SerialMenu::begin() {    
@@ -316,7 +316,7 @@ if necessary for admin-mode operations.
   // NOTE: Migrating to line-mode for all functions.
   void SerialMenu::setInputMode(const char str[]) {
     // All input uses 'line' now, but option to use 'char' is still here.
-    strncpy(input_mode, str, INPUT_MODE_LENGTH);
+    strlcpy(input_mode, str, INPUT_MODE_LENGTH);
     
     DPRINT(F("setInputMode(): "));
     DPRINTLN(input_mode);
@@ -338,7 +338,7 @@ if necessary for admin-mode operations.
     if (func_name[0] != 0) {
       DPRINT(F("setCallbackFunction(): "));
       DPRINTLN(func_name);
-      strncpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
+      strlcpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
     }
   }
 
