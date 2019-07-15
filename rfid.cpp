@@ -55,6 +55,9 @@
 
     LoadTags();
 
+    // This is for the new Tags class.
+    Tags::Load();
+
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.
     // This might work on the surface, but I don't think it allows each instance
@@ -421,12 +424,14 @@
 
   /*  Static Vars & Functions  */
 
-  //int RFID::add_tag_from_scanner = 0;
+  // This is for aliasing the original Tags list to the new Tags list.
+  // See beginning of .h file for typedef.
+  array_type& RFID::Tags = Tags::TagSet.tags;
+
 
   // A tag-id is 32 bit for a max of 4,294,967,295 unique combinations
-  // NOTE: The API here may change in future, when the higher-frequency
-  //       (UHF?) readers are accomodated in this class.
-  uint32_t RFID::Tags[TAG_LIST_SIZE];
+  // This is necessary for the original RFID::Tags implementation.
+  //uint32_t RFID::Tags[TAG_LIST_SIZE];
 
   uint32_t *RFID::LoadTags() {
     unsigned int stored_checksum;

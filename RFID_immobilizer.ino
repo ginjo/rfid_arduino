@@ -165,7 +165,7 @@
  // NOTE: Milestone achieved! Created generic Storage base class, that is also a class template (CRTP).
  //       Settings are currently using this... next are tags (need a Tags class where 1 record is array of tags).
  
- 
+
   #include <SoftwareSerial.h>
   // TODO: Implement settings with eeprom, instead of #define macros, something like this:
   #include "settings.h"

@@ -21,15 +21,22 @@
   #include "reader.h"
   #include "led_blinker.h"
   #include "serial_menu.h"
+  #include "tags.h"
 
   #define MAX_TAG_LENGTH 16
+
+  // These two will be moved to tags.h
   #define TAG_LIST_SIZE 10
   #define TAGS_EEPROM_ADDRESS 32
-  
+
+  // This is for aliasing RFID::Tags to the new Tags class (Tags::TagSet.tags).
+  typedef uint32_t array_type[TAG_LIST_SIZE];
+
 
   class RFID {
   public:
-    // Vars
+    /***  Variables  ***/
+    
     uint8_t buff[MAX_TAG_LENGTH];
     uint8_t buff_index;
     int proximity_state;
@@ -51,11 +58,13 @@
     Reader * reader;
 
     
-    // Constructors
+    /***  Constructors  ***/
+    
     //RFID(Stream*, Led*, Reader*);
     RFID(Stream*, Led*);
 
-    // Functions
+    /***  Functions  ***/
+    
     void begin();
     void loop();
     void resetBuffer();
@@ -75,9 +84,14 @@
 
 
     /***  Static Vars & Functions  ***/
-    
-    static uint32_t Tags[TAG_LIST_SIZE];
 
+    // This is experimental for the new Tags class
+    // See above for the actual typedef
+    //typedef uint32_t array_type[TAG_LIST_SIZE];
+    static array_type& Tags;
+
+    // These are for the RFID::Tags implementation.
+    //static uint32_t Tags[TAG_LIST_SIZE];
     static uint32_t *LoadTags();
     static void SaveTags();
     static int CountTags();
