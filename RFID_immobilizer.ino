@@ -164,6 +164,10 @@
  // TODO: √ Don't use strcpy or strncpy. DO use strlcpy (it ensures a null terminator).
  // NOTE: Milestone achieved! Created generic Storage base class, that is also a class template (CRTP).
  //       Settings are currently using this... next are tags (need a Tags class where 1 record is array of tags).
+ // TODO: Refactor Storage Class, saving all needed data (including EEPROM address) in Storage instance.
+ //       See storage.h. (also maybe mentioned in other places too, like Tags. storage.h should be the official TODO).
+
+ 
  
 
   #include <SoftwareSerial.h>

@@ -26,11 +26,8 @@
   #define MAX_TAG_LENGTH 16
 
   // These two will be moved to tags.h
-  #define TAG_LIST_SIZE 10
-  #define TAGS_EEPROM_ADDRESS 32
-
-  // This is for aliasing RFID::Tags to the new Tags class (Tags::TagSet.tags).
-  typedef uint32_t array_type[TAG_LIST_SIZE];
+  //#define TAG_LIST_SIZE 10
+  //#define TAGS_EEPROM_ADDRESS 32
 
 
   class RFID {
@@ -86,23 +83,23 @@
     /***  Static Vars & Functions  ***/
 
     // This is experimental for the new Tags class
-    // See above for the actual typedef
-    //typedef uint32_t array_type[TAG_LIST_SIZE];
-    static array_type& Tags;
+    // See tags.h for typedef TagArray.
+    //typedef uint32_t TagArray[TAG_LIST_SIZE];
+    static TagArray& Tags;
 
     // These are for the RFID::Tags implementation.
     //static uint32_t Tags[TAG_LIST_SIZE];
-    static uint32_t *LoadTags();
-    static void SaveTags();
-    static int CountTags();
-    static int GetTagIndex(uint32_t);
-    static void CompactTags();
-    static int AddTag(uint32_t);
-    static int DeleteTag(uint32_t);
-    static int DeleteTagIndex(int);
-    static int DeleteAllTags();
-    static unsigned int GetTagsChecksum();
-    
+    //  static uint32_t *LoadTags();
+    //  static void SaveTags();
+    //  static int CountTags();
+    //  static int GetTagIndex(uint32_t);
+    //  static void CompactTags();
+    //  static int AddTag(uint32_t);
+    //  static int DeleteTag(uint32_t);
+    //  static int DeleteTagIndex(int);
+    //  static int DeleteAllTags();
+    //  static unsigned int GetTagsChecksum();
+    //  
   };  // RFID
 
 #endif

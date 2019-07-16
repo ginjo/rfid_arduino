@@ -2,7 +2,7 @@
 #define __TAGS__
 
   #define TAG_LIST_SIZE 10
-  #define TAGS_EEPROM_ADDRESS 32
+  #define TAGS_EEPROM_ADDRESS 700
 
   #include <Arduino.h>
   #include "storage.h"
@@ -44,7 +44,14 @@
   //       the checksum and the data. This makes the persistance layer portable,
   //       extensible, and scaleable.
   //       
-  // TODO: Split this into .h and .cpp files.
+  // TODO: √ Split this into .h and .cpp files.
+  // 
+  // TODO: This class now works with RFID and SerialMenu, but storage_name is getting garbled.
+  
+
+  // This is for aliasing RFID::Tags to the new Tags class (Tags::TagSet.tags).
+  // It can also be used as a type for any array that holds 32-bit tag ids.
+  typedef uint32_t TagArray[TAG_LIST_SIZE];
   
  
   class Tags : public Storage<Tags> {
@@ -64,11 +71,13 @@
     // A tag-id is 32 bit for a max of 4,294,967,295 unique combinations
     // NOTE: The API here may change in future, when the higher-frequency
     //       (UHF?) readers are accomodated in this class.
+    // This cannot be of type TagArray, since that is used to alias this variable.
     uint32_t tag_array[TAG_LIST_SIZE];
     
-    // Creates alias of tag_array. See https://stackoverflow.com/questions/6827610/when-declaring-a-reference-to-an-array-of-ints-why-must-it-be-a-reference-to-a
-    typedef uint32_t array_type[TAG_LIST_SIZE];
-    array_type& tags = tag_array;
+    // Creates alias of tag_array.
+    // See typdef above.
+    // See https://stackoverflow.com/questions/6827610/when-declaring-a-reference-to-an-array-of-ints-why-must-it-be-a-reference-to-a
+    TagArray& tags = tag_array;
 
     Tags();
 

@@ -1,25 +1,28 @@
   #include "tags.h"
 
+
   /***  Static Class Vars & Functions  ***/
 
   // Initializes Tags::TagSet static var.
   Tags Tags::TagSet = Tags();
   
 
-  Tags Tags::Load() { 
-    Storage::Load(&TagSet, TAGS_EEPROM_ADDRESS);
+  Tags Tags::Load() {
+    Serial.println(F("Tags::Load() BEGIN"));
+    Tags * tag_set = Storage::Load(&TagSet, TAGS_EEPROM_ADDRESS);
 
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      Serial.print(TagSet.tags[i]); Serial.print(",");
+      Serial.print(tag_set->tag_array[i]); Serial.print(",");
     }
     Serial.println();
 
-    if (GetStoredChecksum() != TagSet.calculateChecksum()) {
+    if (GetStoredChecksum() != tag_set->calculateChecksum()) {
       Serial.println(F("LoadTags() checksum mismatch"));
     }
 
-    TagSet.compactTags();
-    
+    tag_set->compactTags();
+
+    Serial.println(F("Tags::Load() END"));
     return TagSet;
   } // Load()
   
@@ -32,54 +35,51 @@
 
   /***  Instance Vars & Functions  ***/
 
-  // A tag-id is 32 bit for a max of 4,294,967,295 unique combinations
-  // NOTE: The API here may change in future, when the higher-frequency
-  //       (UHF?) readers are accomodated in this class.
-  //uint32_t tag_array[TAG_LIST_SIZE];
-  
-  // Creates alias of tag_array. See https://stackoverflow.com/questions/6827610/when-declaring-a-reference-to-an-array-of-ints-why-must-it-be-a-reference-to-a
-  //typedef uint32_t array_type[TAG_LIST_SIZE];
-  //array_type& tags = tag_array;
-
-  Tags::Tags() : Storage("tags") {}
+  Tags::Tags() :
+    Storage("tags"),
+    tag_array {}
+  {;}
 
   void Tags::saveTags() {
     compactTags();
     
-    unsigned int stored_checksum;
-    EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
-    unsigned int loaded_checksum = calculateChecksum();
+    //  unsigned int stored_checksum;
+    //  EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
+    //  unsigned int loaded_checksum = calculateChecksum();
 
-    if (loaded_checksum == stored_checksum) {
-      Serial.print(F("Tags::TagSet.saveTags() aborted, checksums already match: 0x"));
-      Serial.print(loaded_checksum, 16);
-      return;
-    }
+    //  if (loaded_checksum == stored_checksum) {
+    //    Serial.print(F("Tags::TagSet.saveTags() aborted, checksums already match: 0x"));
+    //    Serial.print(loaded_checksum, 16);
+    //    return;
+    //  }
 
     Serial.print(F("Saving tags with checksum 0x"));
-    Serial.print(loaded_checksum, 16);
+    Serial.print(calculateChecksum(), 16);
     Serial.print(F(" to address "));
     Serial.println(TAGS_EEPROM_ADDRESS);
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      Serial.print(tags[i]); Serial.print(",");
+      Serial.print(tag_array[i]); Serial.print(",");
     }
     Serial.println();
+
+    Storage::save(TAGS_EEPROM_ADDRESS);
     
-    EEPROM.put(TAGS_EEPROM_ADDRESS, loaded_checksum);
-    EEPROM.put(TAGS_EEPROM_ADDRESS+4, tags);
+    //  EEPROM.put(TAGS_EEPROM_ADDRESS, loaded_checksum);
+    //  EEPROM.put(TAGS_EEPROM_ADDRESS+4, tag_array);
   }
+
 
   int Tags::countTags(){
     int n = 0;
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      if (tags[i] > 0) n++;
+      if (tag_array[i] > 0) n++;
     }
     return n;
   }
 
   int Tags::getTagIndex(uint32_t tag) {
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      if (tags[i] == tag) return i;
+      if (tag_array[i] == tag) return i;
     }
     return -1;
   }
@@ -87,11 +87,11 @@
   void Tags::compactTags() {
     int n=-1;
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      if (tags[i] == 0 && n < 0) {
+      if (tag_array[i] == 0 && n < 0) {
         n=i;
-      } else if ( tags[i] > 0 && i>0 && n>=0) {
-        tags[n] = tags[i];
-        tags[i] = 0;
+      } else if ( tag_array[i] > 0 && i>0 && n>=0) {
+        tag_array[n] = tag_array[i];
+        tag_array[i] = 0;
         i = n;
         n = -1;
       }
@@ -115,8 +115,8 @@
       return 3;
     }
 
-    tags[tag_count] = new_tag;
-    if (tags[tag_count] == new_tag) {
+    tag_array[tag_count] = new_tag;
+    if (tag_array[tag_count] == new_tag) {
       saveTags();
       Serial.println(F("addTag() success"));
       return 0;
@@ -137,7 +137,7 @@
     Serial.print(F("deleteTagIndex(): "));
     Serial.println(index);
     if (index >= 0) {
-      tags[index] = 0;
+      tag_array[index] = 0;
       saveTags();
       return 0;
     } else {
@@ -147,7 +147,7 @@
 
   int Tags::deleteAllTags() {
     Serial.println(F("deleteAllTags()"));
-    memset(tags, 0, TAG_LIST_SIZE*4);
+    memset(tag_array, 0, TAG_LIST_SIZE*4);
     //Tags = new uint32_t[TAG_LIST_SIZE];
     saveTags();
     return 0;

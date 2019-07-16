@@ -3,6 +3,7 @@
 
   #include <Arduino.h>
   #include <EEPROM.h>
+  #include "logger.h"
 
 	//#define STORAGE_CHECKSUM_SIZE 9
   #define STORAGE_NAME_SIZE 16
@@ -19,6 +20,18 @@
    *  of base instance methods that need to know what subclass is calling them.
    *  
    *  Remember: templates are compiler features. No code is written until a class template is instanciated.
+   *  
+   *  TODO: Refactor:
+   *        Store eeprom_address in Storage instance.
+   *        Make Storage::Load the only function that requires passing eeprom_address,
+   *          but allow other functions to optionally receive eeprom_address.
+   *        Make GetStoredChecksum() an instance method, getStoredChecksum(),
+   *          and retrieve the stored-checkum to an instance var, stored_checksum, whenever
+   *          the Storage instance is loaded (or re-loaded) from eeprom.
+   *          Then save the update and save the stored checksum, whenever instance is stored.
+   *        Warning: This gets tricky, because we don't want to store the stored_checksum
+   *          in the Storage instance, when we store the Storage instance.
+   *          It becomes a chicken/egg problem.
    */
 
   template <class T>

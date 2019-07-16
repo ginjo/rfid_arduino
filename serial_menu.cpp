@@ -396,7 +396,8 @@
       // TODO: Should probably validate the entire string of digits.
       // But... do it here, or do it in RFID class?
       // (or in Tags class, when we develop that)?
-      result = RFID::AddTag(strtol(str, NULL, 10));
+      //result = RFID::AddTag(strtol(str, NULL, 10));
+      result = Tags::TagSet.addTag(strtol(str, NULL, 10));
     }
 
     serial_port->print(F("Tag entered: "));
@@ -435,7 +436,8 @@
       serial_port->println();
       return 1;
     } else {
-      int rslt = RFID::DeleteTagIndex(tag_index);
+      //int rslt = RFID::DeleteTagIndex(tag_index);
+      int rslt = Tags::TagSet.deleteTagIndex(tag_index);
       serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
       serial_port->println();
@@ -448,16 +450,16 @@
     buff_index = 0;
   }
 
-  // This is just for logging.
-  void SerialMenu::showInfo() {
-    //serial_port->println(F("serial_port is active!"));
-    Serial.print(F("SerialMenu::setup input_mode: "));
-    Serial.println(input_mode);
-    Serial.print(F("SerialMenu::setup buff_index: "));
-    Serial.println(buff_index);
-    Serial.print(F("SerialMenu::setup RFID::Tags[2]: "));
-    Serial.println(RFID::Tags[2]);
-  }
+  //  // This is just for logging.
+  //  void SerialMenu::showInfo() {
+  //    //serial_port->println(F("serial_port is active!"));
+  //    Serial.print(F("SerialMenu::setup input_mode: "));
+  //    Serial.println(input_mode);
+  //    Serial.print(F("SerialMenu::setup buff_index: "));
+  //    Serial.println(buff_index);
+  //    Serial.print(F("SerialMenu::setup RFID::Tags[2]: "));
+  //    Serial.println(RFID::Tags[2]);
+  //  }
 
   // TODO: I think every action that results in a prompt should call a specific prompt(),
   // and not just allow the previous prompt's settings to be used.
@@ -554,15 +556,19 @@
   // Lists tags for menu.
   void SerialMenu::menuListTags() {
     serial_port->print(F("Tags, chksm 0x"));
-    serial_port->print(RFID::GetTagsChecksum(), 16);
+    //serial_port->print(RFID::GetTagsChecksum(), 16);
+    serial_port->print(Tags::GetStoredChecksum(), 16);
     serial_port->print(F(", size "));
-    serial_port->println(sizeof(RFID::Tags));
+    //serial_port->println(sizeof(RFID::Tags));
+    serial_port->println(sizeof(Tags::TagSet));
     
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      if (RFID::Tags[i] > 0) {
+      //if (RFID::Tags[i] > 0) {
+      if (Tags::TagSet.tag_array[i] > 0) {
         serial_port->print(i);
         serial_port->print(F(". "));
-        serial_port->print(RFID::Tags[i]);
+        //serial_port->print(RFID::Tags[i]);
+        serial_port->print(Tags::TagSet.tag_array[i]);
         serial_port->println("");
       }
     }
@@ -590,7 +596,8 @@
   void SerialMenu::menuDeleteAllTags() {
     serial_port->println(F("Delete all Tags"));
     serial_port->println("");
-    RFID::DeleteAllTags();
+    //RFID::DeleteAllTags();
+    Tags::TagSet.deleteAllTags();
     menuListTags();
   }
 
