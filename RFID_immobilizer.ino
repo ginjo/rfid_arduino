@@ -214,7 +214,7 @@
       delay(15);
     }
     delay(15);
-    Serial.print(F("Re-initialized serial port from loaded settings: "));
+    Serial.print(F("Re-initialized serial port with loaded settings: "));
     Serial.println(S.HW_SERIAL_BAUD);
 
     Serial.print(F("Loaded Settings '"));

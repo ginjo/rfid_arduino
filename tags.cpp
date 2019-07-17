@@ -38,11 +38,18 @@
   Tags::Tags() :
     Storage("tags"),
     tag_array {}
-  {;}
+  {
+    if (strcmp(storage_name, "") || storage_name[0] == 0) {
+      strlcpy(storage_name, "tags-loaded", sizeof(storage_name));
+    }
+  }
 
   void Tags::save() {
     compactTags();
-    strlcpy(storage_name, "tags-saved", sizeof(storage_name));
+    
+    if (strcmp(storage_name, "") || storage_name[0] == 0) {
+      strlcpy(storage_name, "tags-saved", sizeof(storage_name));
+    }
     
     //  unsigned int stored_checksum;
     //  EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
