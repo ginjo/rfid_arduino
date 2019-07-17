@@ -81,7 +81,7 @@
 
     Tags();
 
-    void saveTags();
+    void save();
     int countTags();
     int getTagIndex(uint32_t);
     void compactTags();

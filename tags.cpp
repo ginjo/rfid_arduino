@@ -40,15 +40,16 @@
     tag_array {}
   {;}
 
-  void Tags::saveTags() {
+  void Tags::save() {
     compactTags();
+    strlcpy(storage_name, "tags-saved", sizeof(storage_name));
     
     //  unsigned int stored_checksum;
     //  EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
     //  unsigned int loaded_checksum = calculateChecksum();
 
     //  if (loaded_checksum == stored_checksum) {
-    //    Serial.print(F("Tags::TagSet.saveTags() aborted, checksums already match: 0x"));
+    //    Serial.print(F("Tags::TagSet.save() aborted, checksums already match: 0x"));
     //    Serial.print(loaded_checksum, 16);
     //    return;
     //  }
@@ -63,9 +64,6 @@
     Serial.println();
 
     Storage::save(TAGS_EEPROM_ADDRESS);
-    
-    //  EEPROM.put(TAGS_EEPROM_ADDRESS, loaded_checksum);
-    //  EEPROM.put(TAGS_EEPROM_ADDRESS+4, tag_array);
   }
 
 
@@ -117,7 +115,7 @@
 
     tag_array[tag_count] = new_tag;
     if (tag_array[tag_count] == new_tag) {
-      saveTags();
+      save();
       Serial.println(F("addTag() success"));
       return 0;
     } else {
@@ -138,7 +136,7 @@
     Serial.println(index);
     if (index >= 0) {
       tag_array[index] = 0;
-      saveTags();
+      save();
       return 0;
     } else {
       return 1;
@@ -149,7 +147,7 @@
     Serial.println(F("deleteAllTags()"));
     memset(tag_array, 0, TAG_LIST_SIZE*4);
     //Tags = new uint32_t[TAG_LIST_SIZE];
-    saveTags();
+    save();
     return 0;
   }
 
