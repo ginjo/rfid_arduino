@@ -31,9 +31,10 @@
     }
     Serial.println();
 
-    //if (GetStoredChecksum() != tag_set->calculateChecksum()) {
     if (! tag_set->checksumMatch()) {
-      Serial.println(F("Tags::Load() checksum mismatch"));
+      Serial.println(F("Tags::Load() checksum mismatch, creating new tag-set"));
+      tag_set = new Tags();
+      tag_set->save();
     }
 
     tag_set->compactTags();
@@ -58,8 +59,8 @@
     Storage("tags", TAGS_EEPROM_ADDRESS),
     tag_array {}
   {
-    if (strcmp(storage_name, "") || storage_name[0] == 0) {
-      strlcpy(storage_name, "tags-loaded", sizeof(storage_name));
+    if (strcmp(storage_name, "") == 0 || storage_name[0] == 0) {
+      strlcpy(storage_name, "tags-default", sizeof(storage_name));
     }
   }
 
@@ -69,9 +70,9 @@
   void Tags::save() {
     compactTags();
     
-    if (strcmp(storage_name, "") || storage_name[0] == 0) {
-      strlcpy(storage_name, "tags-saved", sizeof(storage_name));
-    }
+    //  if (strcmp(storage_name, "") == 0 || storage_name[0] == 0) {
+    //    strlcpy(storage_name, "tags-saved", sizeof(storage_name));
+    //  }
     
     //  unsigned int stored_checksum;
     //  EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);

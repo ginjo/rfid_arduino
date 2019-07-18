@@ -40,55 +40,27 @@
 
     /***  Static / Class Vars & Functions  ***/
         
-    //static Storage * Load(Storage*, int, int);
-    //template <class T>
-    static T* Load (T * object_ref, int eeprom_address) {  //, int checksum_size) {
-    //static T* Load (int eeprom_address, int checksum_size) {
+    static T* Load (T * object_ref, int eeprom_address) {
       Serial.println(F("Storage::Load() BEGIN"));
       
-      //uint16_t stored_checksum = storedChecksum(eeprom_address);
-      //uint16_t loaded_checksum;
-      //int checksum_size = sizeof(stored_checksum);
-      
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
-      
-      //loaded_checksum = object_ref->calculateChecksum();
 
+      object_ref->eeprom_address = eeprom_address;
+      
       if (! object_ref->checksumMatch()) {
         Serial.println(F("Storage::Load() checksum mismatch"));
         //object_ref->checksum = (uint16_t)0;
       }
 
-      object_ref->eeprom_address = eeprom_address;
-
       #ifdef DEBUG
         Serial.print(F("eeprom_address ")); Serial.println(eeprom_address);
-        //Serial.print(F("checksum_size ")); Serial.println(checksum_size);
-        //Serial.print(F("stored_checksum ")); Serial.println(stored_checksum, 16);
-        //Serial.print(F("loaded_checksum ")); Serial.println(loaded_checksum, 16);
         Serial.print(F("object_ref->storage_name '")); Serial.print(object_ref->storage_name); Serial.println("'");
         Serial.print(F("sizeof(*object_ref) ")); Serial.println(sizeof(*object_ref));
         Serial.print(F("sizeof(T) ")); Serial.println(sizeof(T));
       #endif
   
-      //  if (stored_checksum != loaded_checksum || stored_checksum == 0xFFFF) {
-      //    Serial.println(F("Storage::Load() checksum mismatch"));
-      //    stored_checksum = (uint16_t)0;
-      //    EEPROM.put(eeprom_address, stored_checksum);
-      //  }
-  
       Serial.println(F("Storage::Load() END"));
       return object_ref;
-    }
-
-    // TODO: This is obsolete now, delete it after decoupling from other classes.
-    static uint16_t GetStoredChecksum(int eeprom_address) {
-      uint16_t stored_checksum = 0;
-      EEPROM.get(eeprom_address, stored_checksum);
-      //  #ifdef DEBUG
-      //    Serial.print(F("Storage::GetStoredChecksum(int): 0x")); Serial.println(stored_checksum, 16);
-      //  #endif
-      return stored_checksum;
     }
 
 
@@ -110,24 +82,22 @@
     int save(int _eeprom_address = -1) {
       Serial.println(F("Storage::save() BEGIN"));
 
+      if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
+
       #ifdef DEBUG
         Serial.print(F("Storage::save() '")); Serial.print(storage_name);
-        Serial.print(F("' to address ")); Serial.print(_eeprom_address || eeprom_address);
-        Serial.print(F(" with chksm 0x")); Serial.print(checksum, 16);
+        Serial.print(F("' to address ")); Serial.print(eeprom_address);
         Serial.print(F(" sizeof(T) ")); Serial.println(sizeof(T));
       #endif
       
       if (! checksumMatch()) {
         Serial.println(F("Storage::save() chksm mismatch, calling EEPROM.put()"));
 
-        if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
         checksum = calculateChecksum();
         
-        //EEPROM.put(eeprom_address, calculated_checksum);
         // Must use dereferenced data here, or you store pointer address instead of data.
         // The use of the class template is very important here, as the eepprom
         // functions don't seem to get it when called from a subclass.
-        //EEPROM.put(eeprom_address+checksum_size, *(T*)this);
         EEPROM.put(eeprom_address, *(T*)this);
   
         Serial.println(F("Storage::save() END"));
@@ -140,6 +110,11 @@
     }
   
     uint16_t calculateChecksum() {
+      // The 'checksum' field needs to always be 0 when
+      // calculating object checksum.
+      uint16_t stored_checksum = checksum;
+      checksum = (uint16_t)0;
+      
       unsigned char *obj = (unsigned char *) (T*)this;
       //uint16_t len = sizeof(*this); // de-references pointer, so we get size of actual data.
       uint16_t len = sizeof(T);
@@ -155,16 +130,27 @@
       //    Serial.print(F(" for storage_name '")); Serial.print(storage_name);
       //    Serial.print(F("' of size ")); Serial.println(len);
       //  #endif
+
+      checksum = stored_checksum;
       
       return xxor;    
     }
 
     bool checksumMatch() {
-      uint16_t stored_checksum = checksum;
-      checksum = (uint16_t)0;
+      //  uint16_t stored_checksum = checksum;
+      //  checksum = (uint16_t)0;
       uint16_t calculated_checksum = calculateChecksum();
-      bool result = (stored_checksum == calculated_checksum && stored_checksum != (uint16_t)0 && stored_checksum != 0xFFFF);
-      checksum = stored_checksum;
+      bool result = (
+        checksum == calculated_checksum &&
+        checksum != (uint16_t)0 &&
+        checksum != 0xFFFF
+      );
+      
+      Serial.print("Storage::checksumMatch() 0x"); Serial.print(checksum, 16);
+      Serial.print(" 0x"); Serial.print(calculated_checksum, 16);
+      Serial.print(", bool-result: "); Serial.println(result);
+      
+      //  checksum = stored_checksum;
       return result;
     }
     

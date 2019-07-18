@@ -3,13 +3,14 @@
 #include <EEPROM.h>
   
   Settings::Settings() :
-    Storage("settings"),
+    Storage("settings", SETTINGS_EEPROM_ADDRESS),
   
     // See for explanation: https://stackoverflow.com/questions/7405740/how-can-i-initialize-base-class-member-variables-in-derived-class-constructor
-    settings_name("default-settings"),
+    // I don't think you can initialize char arrays like this. See below for alternative.
+    //settings_name("default-settings"),
   
     // ultimate valid-tag timeout
-    TAG_LAST_READ_TIMEOUT(15), // seconds
+    TAG_LAST_READ_TIMEOUT(30), // seconds
 
     // time between attempts to listen to reader
     TAG_READ_SLEEP_INTERVAL(1000), // millis
@@ -48,9 +49,8 @@
     RFID_BAUD(9600),
 
     OUTPUT_SWITCH_PIN(13)
-  { 
-    //storage_name = "settings";
-    
+  {     
+    strlcpy(settings_name, "default-settings", sizeof(settings_name)),
     // ONLY use this for debugging.
     // Always comment this out for production.
     proximity_state = 1;
@@ -244,7 +244,8 @@
 
   int Settings::save() {
     //Serial.println(F("Settings::save() BEGIN"));
-    int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
+    //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
+    int result = Storage::save();
     Serial.print(F("Settings::save() result: ")); Serial.println(result);
     //Serial.println(F("Settings::save() END"))
     return result;
@@ -294,7 +295,8 @@
     if (! Current.checksumMatch()) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
       Current = Settings(); // This is ok, because we're passing out the value, not the pointer.
-      strlcpy(Current.settings_name, "saved-default-settings", SETTINGS_NAME_SIZE);
+      strlcpy(Current.settings_name, "default-settings", SETTINGS_NAME_SIZE);
+      //Current.eeprom_address = SETTINGS_EEPROM_ADDRESS;
       Current.save();
       Serial.print(F("Settings::Load() using default settings '"));
       
@@ -307,16 +309,9 @@
     Serial.println(F("Settings::Load() END"));
     
   } // Settings::Load()
-
-  //  uint16_t Settings::GetStoredChecksum() {
-  //    //Serial.println(F("Settings::GetStoredChecksum()"));
-  //    return Storage::GetStoredChecksum(SETTINGS_EEPROM_ADDRESS);
-  //  }
   
-  // It seems necessary to initialize static member vars
-  // before using them (seems kinda wasteful).
-  // Maybe we don't need this if we move .ino items into setup().
-  //Settings Settings::Current;// = *Settings::Load();
+  
+  // It's necessary to initialize static member vars before using them.
   Settings Settings::Current = Settings();
 
   // a reference (alias?) from S to CurrentSettings

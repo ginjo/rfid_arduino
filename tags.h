@@ -7,37 +7,9 @@
   #include <Arduino.h>
   #include "storage.h"
 
-  // NOTE, WARN: The current state of this code is not accurate to the current
-  //       interface for tags in the RFID class. Review the RFID class before
-  //       continuing developement here.
+  // A tag-id is a 32 bit unsigned integer for a max of 4,294,967,295 unique combinations
   //
-  // TODO: I think the below suggestion is wrong.
-  //       Remember that an instance of the Storage subclass is what
-  //       gets saved, not just the uint32_t array.
-  //
-  //       So I think some of the RFID tag functions will become instance methods,
-  //       and some will remain as static class methods.
-  //
-  // The original TODO (see new TODO above):
-  //       Consider making all tag functions instance methods.
-  //       So you would instanciate a tagset first,
-  //       then use it to load/use/save tags and tag lists.
-  //       Basically, everything currently done by static RFID methods
-  //       make into Tags instance methods.
-  //
-  // Here are the functions from RFID.
-  //  static uint32_t *LoadTags();
-  //  static void SaveTags();
-  //  static int CountTags();
-  //  static int GetTagIndex(uint32_t);
-  //  static void CompactTags();
-  //  static int AddTag(uint32_t);
-  //  static int DeleteTag(uint32_t);
-  //  static int DeleteTagIndex(int);
-  //  static int DeleteAllTags();
-  //  static unsigned int GetTagsChecksum();
-  //
-  // TODO: Save the eeprom_address with the tag-set record.
+  // TODO: √ Save the eeprom_address with the tag-set record.
   //       Make all tag functions instance methods, including getStoredChecksum().
   //       The only function that should be static is Load, and you pass it an eeprom_address.
   //       After that, the Storage instance handles everything about where to load/store
