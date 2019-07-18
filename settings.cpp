@@ -265,11 +265,17 @@
   // See Tags::Load() for potential refactor solution to decouple this function
   // from the static var Settings::Current().
   //
-  void Settings::Load() {
+  // Here's the line from Tags:
+  // Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
+  //
+  //   void Settings::Load() {
+  //
+  Settings* Settings::Load(Settings* settings_obj, int _eeprom_address) {
     Serial.println(F("Settings::Load() BEGIN"));
 
-    Storage::Load(&Current, SETTINGS_EEPROM_ADDRESS);
-    //uint16_t calculated_checksum = Current.calculateChecksum();   
+    //uint16_t calculated_checksum = Current.calculateChecksum();
+    //Storage::Load(&Current, _eeprom_address);
+    Storage::Load(settings_obj, _eeprom_address);
 
     // WARN: Can't reliably do DPRINT from here, since we don't have a confirmed
     // valid Settings instance yet. Printing settings data before it has been
@@ -277,30 +283,29 @@
     //
     #ifdef DEBUG
       Serial.print(F("Settings::Load() storage_name '"));
-      Serial.print(Current.storage_name);
+      Serial.print(settings_obj->storage_name);
       Serial.print(F("' settings_name '"));
-      Serial.print(Current.settings_name);
+      Serial.print(settings_obj->settings_name);
       Serial.print(F("' chksm 0x"));
-      //Serial.println(calculated_checksum, 16);
-      Serial.println(Current.checksum, 16);
+      Serial.println(settings_obj->checksum, 16);
   
       //  // TEMP: Prints out all settings in tabular format.
       //  Serial.println("Settings::Load() printing all values in Settings::Current");
       //  for (int n=1; n <= SETTINGS_SIZE; n++) {
       //    char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      //    Current.displaySetting(n, output);
+      //    settings_obj->displaySetting(n, output);
       //    Serial.println(output);
       //  }
     #endif
 
     // Handles checksum mismatch by saving default settings.
     //if (GetStoredChecksum() != calculated_checksum) {
-    if (! Current.checksumMatch()) {
+    if (! settings_obj->checksumMatch()) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
-      Current = Settings(); // This is ok, because we're passing out the value, not the pointer.
-      strlcpy(Current.settings_name, "default-settings", SETTINGS_NAME_SIZE);
-      //Current.eeprom_address = SETTINGS_EEPROM_ADDRESS;
-      Current.save();
+      settings_obj = new Settings();
+      strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
+      settings_obj->eeprom_address = _eeprom_address;
+      settings_obj->save();
       Serial.print(F("Settings::Load() using default settings '"));
       
     } else {
@@ -308,9 +313,10 @@
       
     }
     
-    Serial.print(Current.settings_name); Serial.println("'");
+    Serial.print(settings_obj->settings_name); Serial.println("'");
     Serial.println(F("Settings::Load() END"));
-    
+
+    return settings_obj;
   } // Settings::Load()
   
   

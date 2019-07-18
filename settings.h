@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre114"
+  #define VERSION "v0.1.0.pre116"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -45,7 +45,8 @@
 
     static Settings Current;
 
-    static void Load();
+    //static void Load();
+    static Settings* Load(Settings* settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
     //static uint16_t GetStoredChecksum();
     
 

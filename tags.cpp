@@ -1,57 +1,8 @@
   #include "tags.h"
 
 
-  /***  Static Class Vars & Functions  ***/
-
-  // Defines/initializes Tags::TagSet static var.
-  Tags Tags::TagSet = Tags();  
-
-  // TODO: Decouple these functions from the TagSet static var.
-  // We should be able to load any tag set from any address
-  // without affecting Tags::TagSet var.
-  //
-  // Ok, I think this (below) provides decoupled solution as an option.
-  //
-  // Tags::TagSet initializes with Tags() (see above),
-  // and Tags::Load() defaults to filling Tags::TagSet with loaded result (see tags.h).
-  // Then the following is called from the main .ino file.
-  //   Tags::Load();
-  // Note that Tags::Load can be passed any eeprom-address, and any pointer to a Tags var,
-  // and it will happily use those custom vars/values to load a custom tag-set into a custom var.
-  //
-  // TODO: Is this decoupled option appropriate for the Settings class too?
-  //
-  Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
-    Serial.println(F("Tags::Load() BEGIN"));
-    
-    Storage::Load(tag_set, _eeprom_address);
-
-    for (int i=0; i < TAG_LIST_SIZE; i++) {
-      Serial.print(tag_set->tag_array[i]); Serial.print(",");
-    }
-    Serial.println();
-
-    if (! tag_set->checksumMatch()) {
-      Serial.println(F("Tags::Load() checksum mismatch, creating new tag-set"));
-      tag_set = new Tags();
-      tag_set->save();
-    }
-
-    tag_set->compactTags();
-
-    Serial.println(F("Tags::Load() END"));
-    return tag_set;
-  } // Load()
-  
-
-  //  uint16_t Tags::GetStoredChecksum() {
-  //    return Storage::GetStoredChecksum(TAGS_EEPROM_ADDRESS);
-  //  }
-
-
 
   /***  Instance Vars & Functions  ***/
-
 
   /* Constructors */
 
@@ -65,7 +16,7 @@
   }
 
 
-  /* Storage operations */
+  /* Storage Operations */
 
   void Tags::save() {
     compactTags();
@@ -97,7 +48,7 @@
   }
 
 
-  /* Tag operations */
+  /* Tag Operations */
 
   int Tags::countTags(){
     int n = 0;
@@ -182,3 +133,53 @@
     save();
     return 0;
   }
+
+
+
+  /***  Static Class Vars & Functions  ***/
+
+  // Defines/initializes Tags::TagSet static var.
+  Tags Tags::TagSet = Tags();  
+
+
+  // TODO: Decouple these functions from the TagSet static var.
+  // We should be able to load any tag set from any address
+  // without affecting Tags::TagSet var.
+  //
+  // Ok, I think this (below) provides decoupled solution as an option.
+  //
+  // Tags::TagSet initializes with Tags() (see above),
+  // and Tags::Load() defaults to filling Tags::TagSet with loaded result (see tags.h).
+  // Then the following is called from the main .ino file.
+  //   Tags::Load();
+  // Note that Tags::Load can be passed any eeprom-address, and any pointer to a Tags var,
+  // and it will happily use those custom vars/values to load a custom tag-set into a custom var.
+  //
+  // TODO: Is this decoupled option appropriate for the Settings class too?
+  //
+  Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
+    Serial.println(F("Tags::Load() BEGIN"));
+    
+    Storage::Load(tag_set, _eeprom_address);
+
+    for (int i=0; i < TAG_LIST_SIZE; i++) {
+      Serial.print(tag_set->tag_array[i]); Serial.print(",");
+    }
+    Serial.println();
+
+    if (! tag_set->checksumMatch()) {
+      Serial.println(F("Tags::Load() checksum mismatch, creating new tag-set"));
+      tag_set = new Tags();
+      tag_set->save();
+    }
+
+    tag_set->compactTags();
+
+    Serial.println(F("Tags::Load() END"));
+    return tag_set;
+  } // Load()
+  
+
+  //  uint16_t Tags::GetStoredChecksum() {
+  //    return Storage::GetStoredChecksum(TAGS_EEPROM_ADDRESS);
+  //  }
