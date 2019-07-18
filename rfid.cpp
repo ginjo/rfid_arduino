@@ -30,42 +30,20 @@
   //  }
 
   void RFID::begin() {
-    pinMode(S.OUTPUT_SWITCH_PIN, OUTPUT);
+    // Moved output switch initialization to its own function.
+    // Make sure to run this somewhere, if not here.
+    //initializeOutput();
+    
     pinMode(S.READER_POWER_CONTROL_PIN, OUTPUT);
-    
-    
-    // Starts up with whatever state we left off in.
-    // Protects against thief using 'admin' to move
-    // in fits and starts, since a failed proximity
-    // timeout will set S.proximity_state to 0.
-    // This also tells the proximityStateController
-    // where we left off at power-down (or reset).
-    proximity_state = S.proximity_state;
-
-    Serial.print(F("Setting output switch per saved proximity_state: "));
-    Serial.println(proximity_state);
-    // Switches the main load according to current proximity_state.
-    // This turns on the load if saved prox-state was "on".
-    // This begins the courtesey grace period until the system can
-    // start processing tags (at which time, it will immediately
-    // shut down output until a successful tag read).
-    // TODO: Protect this action with a gate of some sort.
-    //       Use a setting, or a pin, or a key-press.
-    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
-
-    //LoadTags();
-
-    // This is for the new Tags class.
-    //Tags::Load();
-    //Tags::TagSet = Tags::Load();
 
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.
     // This might work on the surface, but I don't think it allows each instance
-    // to properly differentiate from the base class.
+    // to properly differentiate when called from the base class.
     //WL125 * reader = &WL125(); 
 
     // This must go after the Readers array is defined and initialized.
+    // Why not put defining and initializing into this function?
     ReaderArraySetup();
 
     // Sets local 'reader' to instance of Reader.
@@ -180,7 +158,30 @@
   //    return cycleLowFinishMs() + readerPowerCycleHighDuration()*1000;
   //  }
 
-  
+
+  // Initializes output switch.
+  void RFID::initializeOutput() {
+    pinMode(S.OUTPUT_SWITCH_PIN, OUTPUT);    
+    
+    // Starts up with whatever state we left off in.
+    // Protects against thief using 'admin' to move
+    // in fits and starts, since a failed proximity
+    // timeout will set S.proximity_state to 0.
+    // This also tells the proximityStateController
+    // where we left off at power-down (or reset).
+    proximity_state = S.proximity_state;
+
+    Serial.print(F("Setting output switch per saved proximity_state: "));
+    Serial.println(proximity_state);
+    // Switches the main load according to current proximity_state.
+    // This turns on the load if saved prox-state was "on".
+    // This begins the courtesey grace period until the system can
+    // start processing tags (at which time, it will immediately
+    // shut down output until a successful tag read).
+    // TODO: Protect this action with a gate of some sort.
+    //       Use a setting, or a pin, or a key-press.
+    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+  }
 
   // Polls reader serial port and processes incoming tag data.
   void RFID::pollReader() {

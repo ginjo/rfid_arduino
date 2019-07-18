@@ -262,6 +262,8 @@
 
     /*  Run setups  */
 
+    Rfid->initializeOutput();
+
     Blinker->StartupBlink();
 
     // Activates the software-serial port for admin console.

@@ -71,6 +71,7 @@
     void setProximityState(int);
     void proximityStateController();
     void processTagData(uint8_t []);
+    void initializeOutput();
     uint32_t msSinceLastTagRead();
     uint32_t msSinceLastReaderPowerCycle();
     uint32_t msReaderCycleTotal();
