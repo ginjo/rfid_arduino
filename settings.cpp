@@ -35,8 +35,9 @@
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
-    DEFAULT_READER("WL-125"),
-    //DEFAULT_READER("R7941E")
+    // Can't do this with strings.
+    //DEFAULT_READER("R7941E"),
+    //DEFAULT_READER("WL-125"),
 
     state_dev_tmp(1),
 
@@ -50,7 +51,9 @@
 
     OUTPUT_SWITCH_PIN(13)
   {     
-    strlcpy(settings_name, "default-settings", sizeof(settings_name)),
+    strlcpy(settings_name, "default-settings", sizeof(settings_name));
+    strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));
+    
     // ONLY use this for debugging.
     // Always comment this out for production.
     proximity_state = 1;

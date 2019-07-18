@@ -97,7 +97,7 @@
     //run_mode(0), // moved to static member.
     previous_ms(0),
     admin_timeout(0),
-    input_mode("menu"),
+    //input_mode("menu"),
     buff {},
     buff_index(0),
     current_function(""),
@@ -108,6 +108,7 @@
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
+    strlcpy(input_mode, "menu", sizeof(input_mode));
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
 	}
 	

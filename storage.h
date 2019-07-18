@@ -2,6 +2,7 @@
 #define __STORAGE_H__
 
   #include <Arduino.h>
+  #include <string.h>
   #include <EEPROM.h>
   #include "logger.h"
 
