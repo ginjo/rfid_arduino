@@ -556,10 +556,8 @@
   // Lists tags for menu.
   void SerialMenu::menuListTags() {
     serial_port->print(F("Tags, chksm 0x"));
-    //serial_port->print(RFID::GetTagsChecksum(), 16);
-    serial_port->print(Tags::GetStoredChecksum(), 16);
+    serial_port->print(Tags::TagSet.checksum, 16);
     serial_port->print(F(", size "));
-    //serial_port->println(sizeof(RFID::Tags));
     serial_port->println(sizeof(Tags::TagSet));
     
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {

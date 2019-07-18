@@ -257,23 +257,28 @@
   // This is a settings-specific wrapper for Storage::Load().
   // It handles settings-specific behavior, like saving default
   // settings if checksum mismatch.
+  //
+  // See Tags::Load() for potential refactor solution to decouple this function
+  // from the static var Settings::Current().
+  //
   void Settings::Load() {
     Serial.println(F("Settings::Load() BEGIN"));
 
     Storage::Load(&Current, SETTINGS_EEPROM_ADDRESS);
-    uint16_t calculated_checksum = Current.calculateChecksum();   
+    //uint16_t calculated_checksum = Current.calculateChecksum();   
 
     // WARN: Can't reliably do DPRINT from here, since we don't have a confirmed
     // valid Settings instance yet. Printing settings data before it has been
     // verified can result in UB !!!
     //
     #ifdef DEBUG
-      Serial.print(F("Settings::Load() Current.storage_name '"));
+      Serial.print(F("Settings::Load() storage_name '"));
       Serial.print(Current.storage_name);
       Serial.print(F("' settings_name '"));
       Serial.print(Current.settings_name);
-      Serial.print(F("' calc chksm 0x"));
-      Serial.println(calculated_checksum, 16);
+      Serial.print(F("' chksm 0x"));
+      //Serial.println(calculated_checksum, 16);
+      Serial.println(Current.checksum, 16);
   
       //  // TEMP: Prints out all settings in tabular format.
       //  Serial.println("Settings::Load() printing all values in Settings::Current");
@@ -285,7 +290,8 @@
     #endif
 
     // Handles checksum mismatch by saving default settings.
-    if (GetStoredChecksum() != calculated_checksum) {
+    //if (GetStoredChecksum() != calculated_checksum) {
+    if (! Current.checksumMatch()) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
       Current = Settings(); // This is ok, because we're passing out the value, not the pointer.
       strlcpy(Current.settings_name, "saved-default-settings", SETTINGS_NAME_SIZE);
@@ -302,10 +308,10 @@
     
   } // Settings::Load()
 
-  uint16_t Settings::GetStoredChecksum() {
-    //Serial.println(F("Settings::GetStoredChecksum()"));
-    return Storage::GetStoredChecksum(SETTINGS_EEPROM_ADDRESS);
-  }
+  //  uint16_t Settings::GetStoredChecksum() {
+  //    //Serial.println(F("Settings::GetStoredChecksum()"));
+  //    return Storage::GetStoredChecksum(SETTINGS_EEPROM_ADDRESS);
+  //  }
   
   // It seems necessary to initialize static member vars
   // before using them (seems kinda wasteful).

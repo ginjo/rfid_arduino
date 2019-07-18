@@ -36,47 +36,52 @@
 
   template <class T>
   struct Storage {
-    
-		//static uint16_t GetStoredChecksum(int);
-    
+
+
+    /***  Static / Class Vars & Functions  ***/
+        
     //static Storage * Load(Storage*, int, int);
     //template <class T>
     static T* Load (T * object_ref, int eeprom_address) {  //, int checksum_size) {
     //static T* Load (int eeprom_address, int checksum_size) {
       Serial.println(F("Storage::Load() BEGIN"));
       
-      uint16_t stored_checksum = GetStoredChecksum(eeprom_address);
-      uint16_t loaded_checksum;
-      int checksum_size = sizeof(stored_checksum);
+      //uint16_t stored_checksum = storedChecksum(eeprom_address);
+      //uint16_t loaded_checksum;
+      //int checksum_size = sizeof(stored_checksum);
       
-      EEPROM.get(eeprom_address+checksum_size, *object_ref); // According to docs .get() also expects data, not pointer.
-      loaded_checksum = object_ref->calculateChecksum();
+      EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
+      
+      //loaded_checksum = object_ref->calculateChecksum();
+
+      if (! object_ref->checksumMatch()) {
+        Serial.println(F("Storage::Load() checksum mismatch"));
+        //object_ref->checksum = (uint16_t)0;
+      }
+
+      object_ref->eeprom_address = eeprom_address;
 
       #ifdef DEBUG
         Serial.print(F("eeprom_address ")); Serial.println(eeprom_address);
-        Serial.print(F("checksum_size ")); Serial.println(checksum_size);
-        Serial.print(F("stored_checksum ")); Serial.println(stored_checksum, 16);
-        Serial.print(F("loaded_checksum ")); Serial.println(loaded_checksum, 16);
+        //Serial.print(F("checksum_size ")); Serial.println(checksum_size);
+        //Serial.print(F("stored_checksum ")); Serial.println(stored_checksum, 16);
+        //Serial.print(F("loaded_checksum ")); Serial.println(loaded_checksum, 16);
         Serial.print(F("object_ref->storage_name '")); Serial.print(object_ref->storage_name); Serial.println("'");
         Serial.print(F("sizeof(*object_ref) ")); Serial.println(sizeof(*object_ref));
         Serial.print(F("sizeof(T) ")); Serial.println(sizeof(T));
       #endif
   
-      if (stored_checksum != loaded_checksum) {
-        Serial.println(F("Storage::Load() checksum mismatch"));
-        stored_checksum = (uint16_t)0;
-        EEPROM.put(eeprom_address, stored_checksum);
-      }
+      //  if (stored_checksum != loaded_checksum || stored_checksum == 0xFFFF) {
+      //    Serial.println(F("Storage::Load() checksum mismatch"));
+      //    stored_checksum = (uint16_t)0;
+      //    EEPROM.put(eeprom_address, stored_checksum);
+      //  }
   
       Serial.println(F("Storage::Load() END"));
       return object_ref;
     }
 
-    char storage_name[STORAGE_NAME_SIZE];
-    //Storage(const char*);
-    //int save(int, int);
-		//uint16_t calculateChecksum();
-
+    // TODO: This is obsolete now, delete it after decoupling from other classes.
     static uint16_t GetStoredChecksum(int eeprom_address) {
       uint16_t stored_checksum = 0;
       EEPROM.get(eeprom_address, stored_checksum);
@@ -85,39 +90,45 @@
       //  #endif
       return stored_checksum;
     }
-  
-  
-    Storage(const char *_storage_name) {
+
+
+    /***  Instance Vars & Functions  ***/
+
+    int eeprom_address;
+    uint16_t checksum;
+    char storage_name[STORAGE_NAME_SIZE];
+
+    /* Constructor */
+    Storage(const char *_storage_name, int _eeprom_address = -1) {
       strlcpy(storage_name, _storage_name, STORAGE_NAME_SIZE);
+      if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
     }
     
     // Saves this Storage instance to the correct storage address.
     // Sub-classes, like Settings, should carry the info about
     // what address to use.
-    int save(int eeprom_address) {  //, int checksum_size) {
+    int save(int _eeprom_address = -1) {
       Serial.println(F("Storage::save() BEGIN"));
-
-      uint16_t stored_checksum = GetStoredChecksum(eeprom_address);
-      uint16_t calculated_checksum = calculateChecksum();
-      int checksum_size = sizeof(stored_checksum);
 
       #ifdef DEBUG
         Serial.print(F("Storage::save() '")); Serial.print(storage_name);
-        Serial.print(F("' to address ")); Serial.print(eeprom_address+checksum_size);
-        Serial.print(F(" with stored/calced chksm 0x")); Serial.print(stored_checksum, 16);
-        Serial.print(F(" 0x")); Serial.print(calculated_checksum, 16);
-        //Serial.print(F(" sizeof(*this) ")); Serial.println(sizeof(*this));
+        Serial.print(F("' to address ")); Serial.print(_eeprom_address || eeprom_address);
+        Serial.print(F(" with chksm 0x")); Serial.print(checksum, 16);
         Serial.print(F(" sizeof(T) ")); Serial.println(sizeof(T));
       #endif
       
-      if (stored_checksum != calculated_checksum) {
-        Serial.println(F("Storage::save() chksm mismatch, performing EEPROM.put()"));
+      if (! checksumMatch()) {
+        Serial.println(F("Storage::save() chksm mismatch, calling EEPROM.put()"));
+
+        if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
+        checksum = calculateChecksum();
         
-        EEPROM.put(eeprom_address, calculated_checksum);
+        //EEPROM.put(eeprom_address, calculated_checksum);
         // Must use dereferenced data here, or you store pointer address instead of data.
         // The use of the class template is very important here, as the eepprom
         // functions don't seem to get it when called from a subclass.
-        EEPROM.put(eeprom_address+checksum_size, *(T*)this);
+        //EEPROM.put(eeprom_address+checksum_size, *(T*)this);
+        EEPROM.put(eeprom_address, *(T*)this);
   
         Serial.println(F("Storage::save() END"));
         return 0;
@@ -146,6 +157,15 @@
       //  #endif
       
       return xxor;    
+    }
+
+    bool checksumMatch() {
+      uint16_t stored_checksum = checksum;
+      checksum = (uint16_t)0;
+      uint16_t calculated_checksum = calculateChecksum();
+      bool result = (stored_checksum == calculated_checksum && stored_checksum != (uint16_t)0 && stored_checksum != 0xFFFF);
+      checksum = stored_checksum;
+      return result;
     }
     
   };

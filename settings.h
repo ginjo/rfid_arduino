@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre111"
+  #define VERSION "v0.1.0.pre113"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -46,7 +46,7 @@
     static Settings Current;
 
     static void Load();
-    static uint16_t GetStoredChecksum();
+    //static uint16_t GetStoredChecksum();
     
 
     /***  Instance  ***/

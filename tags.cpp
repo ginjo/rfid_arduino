@@ -3,46 +3,68 @@
 
   /***  Static Class Vars & Functions  ***/
 
-  // Initializes Tags::TagSet static var.
-  Tags Tags::TagSet = Tags();
-  
+  // Defines/initializes Tags::TagSet static var.
+  Tags Tags::TagSet = Tags();  
 
-  Tags Tags::Load() {
+  // TODO: Decouple these functions from the TagSet static var.
+  // We should be able to load any tag set from any address
+  // without affecting Tags::TagSet var.
+  //
+  // Ok, I think this (below) provides decoupled solution as an option.
+  //
+  // Tags::TagSet initializes with Tags() (see above),
+  // and Tags::Load() defaults to filling Tags::TagSet with loaded result (see tags.h).
+  // Then the following is called from the main .ino file.
+  //   Tags::Load();
+  // Note that Tags::Load can be passed any eeprom-address, and any pointer to a Tags var,
+  // and it will happily use those custom vars/values to load a custom tag-set into a custom var.
+  //
+  // TODO: Is this decoupled option appropriate for the Settings class too?
+  //
+  Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
     Serial.println(F("Tags::Load() BEGIN"));
-    Tags * tag_set = Storage::Load(&TagSet, TAGS_EEPROM_ADDRESS);
+    
+    Storage::Load(tag_set, _eeprom_address);
 
     for (int i=0; i < TAG_LIST_SIZE; i++) {
       Serial.print(tag_set->tag_array[i]); Serial.print(",");
     }
     Serial.println();
 
-    if (GetStoredChecksum() != tag_set->calculateChecksum()) {
-      Serial.println(F("LoadTags() checksum mismatch"));
+    //if (GetStoredChecksum() != tag_set->calculateChecksum()) {
+    if (! tag_set->checksumMatch()) {
+      Serial.println(F("Tags::Load() checksum mismatch"));
     }
 
     tag_set->compactTags();
 
     Serial.println(F("Tags::Load() END"));
-    return TagSet;
+    return tag_set;
   } // Load()
   
 
-  uint16_t Tags::GetStoredChecksum() {
-    return Storage::GetStoredChecksum(TAGS_EEPROM_ADDRESS);
-  }
+  //  uint16_t Tags::GetStoredChecksum() {
+  //    return Storage::GetStoredChecksum(TAGS_EEPROM_ADDRESS);
+  //  }
 
 
 
   /***  Instance Vars & Functions  ***/
 
+
+  /* Constructors */
+
   Tags::Tags() :
-    Storage("tags"),
+    Storage("tags", TAGS_EEPROM_ADDRESS),
     tag_array {}
   {
     if (strcmp(storage_name, "") || storage_name[0] == 0) {
       strlcpy(storage_name, "tags-loaded", sizeof(storage_name));
     }
   }
+
+
+  /* Storage operations */
 
   void Tags::save() {
     compactTags();
@@ -64,15 +86,17 @@
     Serial.print(F("Saving tags with checksum 0x"));
     Serial.print(calculateChecksum(), 16);
     Serial.print(F(" to address "));
-    Serial.println(TAGS_EEPROM_ADDRESS);
+    Serial.println(eeprom_address);
     for (int i=0; i < TAG_LIST_SIZE; i++) {
       Serial.print(tag_array[i]); Serial.print(",");
     }
     Serial.println();
 
-    Storage::save(TAGS_EEPROM_ADDRESS);
+    Storage::save(eeprom_address);
   }
 
+
+  /* Tag operations */
 
   int Tags::countTags(){
     int n = 0;
@@ -157,18 +181,3 @@
     save();
     return 0;
   }
-
-  // This was the original RFID::getTagsChecksum()
-  //
-  //  unsigned int getTagsChecksum() {
-  //    unsigned char *obj = (unsigned char *) Tags;
-  //    unsigned int len = sizeof(Tags);
-  //    unsigned int xxor = 0;
-  //
-  //    // Converts to 16-bit checksum, and handles odd bytes at end of obj.
-  //    for ( unsigned int i = 0 ; i < len ; i+=2 ) {
-  //      xxor = xxor ^ ((obj[i]<<8) | (i==len-1 ? 0 : obj[i+1]));
-  //    }
-  //    
-  //    return xxor;
-  //  }

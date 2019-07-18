@@ -56,7 +56,8 @@
     //LoadTags();
 
     // This is for the new Tags class.
-    Tags::Load();
+    //Tags::Load();
+    //Tags::TagSet = Tags::Load();
 
     // Temp test to see if this class works with manually instanciated reader.
     //reader = new WL125; // I think this works.

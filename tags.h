@@ -62,9 +62,8 @@
   
     static Tags TagSet;
 
-    static Tags Load();
-    static uint16_t GetStoredChecksum();
-
+    static Tags* Load(Tags* tag_set = &TagSet, int _eeprom_address = TAGS_EEPROM_ADDRESS);
+    
 
     /***  Instance Vars & Functions  ***/
 

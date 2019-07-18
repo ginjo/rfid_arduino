@@ -166,8 +166,10 @@
  //       Settings are currently using this... next are tags (need a Tags class where 1 record is array of tags).
  // TODO: Refactor Storage Class, saving all needed data (including EEPROM address) in Storage instance.
  //       See storage.h. (also maybe mentioned in other places too, like Tags. storage.h should be the official TODO).
+ // NEXT: Storage refactor compiles. Now need to decouple it from the other classes, then review code, then try it.
+ // TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
+ // TODO: Consider validation code in Tags to handle bad tag-id.
 
- 
  
 
   #include <SoftwareSerial.h>
@@ -251,6 +253,10 @@
 
     SerialMenu::HW = new SerialMenu(&Serial, Blinker, "HW");
     SerialMenu::SW = new SerialMenu(BTserial, Blinker, "SW");
+
+    // Tags::TagSet initializes to Tags(),
+    // and Tags::Load() defaults to filling Tags::TagSet with load-result.
+    Tags::Load();
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 
