@@ -299,7 +299,7 @@
   
     if (int(byt) == 13 || int(byt) == 10) {
       //serial_port->println(F("\r\n"));
-      serial_port->println();
+      serial_port->println((char)10);
   
       //  DPRINT(F("You entered: "));
       //  DPRINT((char*)buff);
