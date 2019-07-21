@@ -88,20 +88,7 @@
     // See tags.h for typedef TagArray.
     //typedef uint32_t TagArray[TAG_LIST_SIZE];
     static TagArray& Tags;
-
-    // These are for the RFID::Tags implementation.
-    //static uint32_t Tags[TAG_LIST_SIZE];
-    //  static uint32_t *LoadTags();
-    //  static void SaveTags();
-    //  static int CountTags();
-    //  static int GetTagIndex(uint32_t);
-    //  static void CompactTags();
-    //  static int AddTag(uint32_t);
-    //  static int DeleteTag(uint32_t);
-    //  static int DeleteTagIndex(int);
-    //  static int DeleteAllTags();
-    //  static unsigned int GetTagsChecksum();
-    //  
+  
   };  // RFID
 
 #endif
