@@ -8,6 +8,11 @@
   //#include <stdlib.h>
   #include <string.h>
   #include "settings.h"
+  #include "serial_menu.h"
+  #include "tags.h"
+
+  #define MAX_TAG_LENGTH 16
+
 
   struct Reader {
   public:
@@ -31,13 +36,46 @@
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
     bool power_control_logic;
 
+
+
+    /****  From RFID  ***/
+    
+    uint8_t buff[MAX_TAG_LENGTH];
+    uint8_t buff_index;
+    uint32_t current_ms;
+    uint32_t last_tag_read_ms;
+    uint32_t last_reader_power_cycle_ms;
+    uint32_t reader_power_cycle_high_duration; // seconds
+    uint32_t ms_since_last_tag_read;
+    uint32_t ms_since_last_reader_power_cycle;
+    uint32_t ms_reader_cycle_total;
+    uint32_t cycle_low_finish_ms;
+    uint32_t cycle_high_finish_ms;
+    //uint32_t tag_last_read_timeout_x_1000;
+    Stream * serial_port;
+
+    void resetBuffer();
+    void pollReader();
+    void cycleReaderPower();
+    // void processTagData(uint8_t []); // Had to change name after moving to Reader.
+    void processTag(uint8_t []);
+    uint32_t msSinceLastTagRead();
+    uint32_t msSinceLastReaderPowerCycle();
+    uint32_t msReaderCycleTotal();
+    uint32_t readerPowerCycleHighDuration();
+    uint32_t tagLastReadTimeoutX1000();
+    //uint32_t cycleLowFinishMs();
+    //uint32_t cycleHighFinishMs();
+    
+
+
     // Constructor(s)
     Reader(const char[], uint8_t, uint8_t, uint8_t, bool);
 
     // Functions
     virtual uint32_t processTagData(uint8_t[]);
-    //void preProcessTagData();
     //int echo(int);
+    void loop();
   };
 
 
@@ -45,8 +83,9 @@
   // TODO: Convert these to static Reader functions. See TODO in .cpp file.
   extern Reader** Readers;
   //extern Reader * Readers[3];
-  extern void ReaderArraySetup();
-  extern Reader * GetReader(const char[]);
+  extern int ReaderArraySetup();
+  //extern Reader * GetReader(const char[]);
+  extern Reader * GetReader(const char[], Stream*);
 
 
   // For inherited class constructor syntax, see:

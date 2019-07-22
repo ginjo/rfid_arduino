@@ -148,7 +148,7 @@
  //       then use the loaded reader only for reader functionality,
  //       including cycling and tag parsing, but not master-switch management
  //       or led triggering or Tag operations like add, delete, authentication (validation?).
- //       Maybe move reader subclasses to their own readers.cpp file.
+ //       √ Maybe move reader subclasses to their own readers.cpp file.
  // TODO: Create a Gate/Switch/Controller/State? class that handles all the other stuff RFID does now.
  //       This class should take a Reader and Blinker instance onboard, since it's the glue
  //       between those two entities.
@@ -171,7 +171,10 @@
  //       √ This has been done with Tags, next do with Settings (then with State - for proximity_state).
  // TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
  // TODO: Consider validation code in Tags to handle bad tag-id.
-
+ // TODO: Handle reader looping for add-tag entirely within serial-menu class.
+ //       Reader class should be unaware of SerialMenu class.
+ // TODO: Implement more efficient GetReader, and move to Reader::GetReader().
+ //       See example file "C++ polymorphism with factory pattern in base.cpp".
  
 
   #include <SoftwareSerial.h>
@@ -191,6 +194,9 @@
 
   // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;//(91,90);
+
+  // Declares rfid reader instance.
+  Reader *RfidReader;
   
   // Declares instance of RFID handler.
   RFID *Rfid;
@@ -257,7 +263,12 @@
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 
-    Rfid = new RFID(RfidSerial, Blinker);
+    ReaderArraySetup();
+
+    RfidReader = GetReader(S.DEFAULT_READER, RfidSerial);
+
+    //Rfid = new RFID(RfidSerial, Blinker);
+    Rfid = new RFID(RfidReader, Blinker);
 
 
     /*  Run setups  */
@@ -304,6 +315,7 @@
       RfidSerial->listen();
       while (! RfidSerial->isListening()) delay(15);
       delay(SerialMenu::Current->get_tag_from_scanner ? 50 : 0);
+      RfidReader->loop();
       Rfid->loop();
     }
     
