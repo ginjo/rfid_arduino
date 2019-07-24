@@ -170,11 +170,14 @@
  // NEXT: √ Storage refactor compiles. Now need to decouple it from the other classes, then review code, then try it.
  //       √ This has been done with Tags, next do with Settings (then with State - for proximity_state).
  // TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
- // TODO: Consider validation code in Tags to handle bad tag-id.
- // TODO: Handle reader looping for add-tag entirely within serial-menu class.
- //       Reader class should be unaware of SerialMenu class.
+ // TODO: Need validation code in Tags or Reader to handle bad tag-id.
+ // TODO: √ Handle reader looping for add-tag entirely within serial-menu class.
+ //       Reader class should be unaware of SerialMenu instances.
  // TODO: Implement more efficient GetReader, and move to Reader::GetReader().
  //       See example file "C++ polymorphism with factory pattern in base.cpp".
+ // TODO: Can all specific reader declarations/definitions go into a single file "readers.cpp" ???
+ // TODO: Consider funcstion pointers for SerialMenu callbacks, instead of the large switch/if/then statements.
+ 
  
 
   #include <SoftwareSerial.h>
@@ -258,14 +261,17 @@
 
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    SerialMenu::HW = new SerialMenu(&Serial, Blinker, "HW");
-    SerialMenu::SW = new SerialMenu(BTserial, Blinker, "SW");
+    //  SerialMenu::HW = new SerialMenu(&Serial, Blinker, "HW");
+    //  SerialMenu::SW = new SerialMenu(BTserial, Blinker, "SW");
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 
     ReaderArraySetup();
 
     RfidReader = GetReader(S.DEFAULT_READER, RfidSerial);
+
+    SerialMenu::HW = new SerialMenu(&Serial, RfidReader, Blinker, "HW");
+    SerialMenu::SW = new SerialMenu(BTserial, RfidReader, Blinker, "SW");
 
     //Rfid = new RFID(RfidSerial, Blinker);
     Rfid = new RFID(RfidReader, Blinker);
@@ -309,15 +315,20 @@
 
     if (SerialMenu::run_mode > 0) {
       SerialMenu::Loop();
-    }
-  
-    if (SerialMenu::run_mode == 0 || SerialMenu::Current->get_tag_from_scanner > 0) {
-      RfidSerial->listen();
-      while (! RfidSerial->isListening()) delay(15);
-      delay(SerialMenu::Current->get_tag_from_scanner ? 50 : 0);
+    } else if (SerialMenu::run_mode == 0) {
       RfidReader->loop();
-      Rfid->loop();
+      Rfid->loop();      
     }
+
+    // This is now handled in the SerialMenu class.
+    //
+    //  if (SerialMenu::run_mode == 0 || SerialMenu::Current->get_tag_from_scanner > 0) {
+    //    RfidSerial->listen();
+    //    while (! RfidSerial->isListening()) delay(15);
+    //    delay(SerialMenu::Current->get_tag_from_scanner ? 50 : 0);
+    //    RfidReader->loop();
+    //    Rfid->loop();
+    //  }
     
   } // end loop()
 

@@ -12,6 +12,7 @@
 
 
   #include "settings.h"
+  #include "reader.h"
   #include "led_blinker.h"
   //#include "rfid.h" // This would cause circular include. See .cpp file for better solution.
   
@@ -23,6 +24,7 @@
   class SerialMenu {
   public:
     Stream *serial_port;
+    Reader *reader;
     // TODO: I think run_mode should be a global.
     //int run_mode; // 0=run, 1=admin // This was moved to static member.
     // NOTE: instance_name is a two-character string with a terminating null.
@@ -45,7 +47,7 @@
     // from Serial (HardwareSerial) or SoftwareSerial.
     // TODO: Is the parameter name required here? What about the pointer?
     //SerialMenu(Stream *stream_ref);
-    SerialMenu(Stream*, Led*, const char* = "");
+    SerialMenu(Stream*, Reader*, Led*, const char* = "");
     
     void begin();
     void showInfo();
@@ -78,6 +80,7 @@
     void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void exitAdmin();
     void prompt(const char = 0, const char* = "", const char* = "");
+    void getTagFromScanner();
     void loop();
 
 

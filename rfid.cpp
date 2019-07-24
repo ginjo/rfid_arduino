@@ -111,8 +111,6 @@
     //    DPRINTLN(reader->readerPowerCycleHighDuration());
     //  DPRINT(F("RPCHD*1000: "));
     //    DPRINTLN(reader->readerPowerCycleHighDuration()*1000UL);
-    //  DPRINT(F("S.READER_CYCLE_LOW_DURATION: "));
-    //    DPRINTLN(S.READER_CYCLE_LOW_DURATION);
     //  DPRINTLN(F("***"));
     //
     //  DPRINT("RFID::loop() about to touch reader: ");

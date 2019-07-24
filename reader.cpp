@@ -21,7 +21,8 @@
     ms_since_last_reader_power_cycle(0UL),
     ms_reader_cycle_total(0UL),
     cycle_low_finish_ms(0UL),
-    cycle_high_finish_ms(0UL)
+    cycle_high_finish_ms(0UL),
+    current_tag_id(0UL)
     //tag_last_read_timeout_x_1000(0UL),
     
   {
@@ -46,6 +47,9 @@
   /***  From RFID  ***/
 
   void Reader::loop() {
+
+    serial_port->listen();
+    while (! serial_port->isListening()) delay(15);
 
     DPRINT(F("*** READER LOOP BEGIN "));
     current_ms = millis();
@@ -80,14 +84,14 @@
       DPRINTLN(readerPowerCycleHighDuration());
     DPRINT(F("RPCHD*1000: "));
       DPRINTLN(readerPowerCycleHighDuration()*1000UL);
-    DPRINT(F("S.READER_CYCLE_LOW_DURATION: "));
-      DPRINTLN(S.READER_CYCLE_LOW_DURATION);
     DPRINTLN(F("***"));
     
     if (msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL) {
       // Checks the rfid reader for new data.
       pollReader();
     }
+
+    if (msSinceLastTagRead() > ms_reader_cycle_total) current_tag_id = 0;
   }
   
 
@@ -209,16 +213,18 @@
     DPRINT(F("Tag result from Reader: "));
     DPRINTLN(tag_id);
 
+    // This is now handled from the SerialMenu class.
+    //
     // Assuming successful tag-read at this point,
     // add the tag to Tags array if get_tag_from_scanner is 1.
     // This pushes tag_id as string directly into BTmenu::buff,
     // which then picks it up and processes it as if were manually entered.
-    if (SerialMenu::Current->get_tag_from_scanner == 1) {
-      char str[9];
-      sprintf(str, "%lu", tag_id);
-      strlcpy(SerialMenu::Current->buff, str, sizeof(SerialMenu::buff));
-      SerialMenu::Current->get_tag_from_scanner = 0;
-    }
+    //  if (SerialMenu::Current->get_tag_from_scanner == 1) {
+    //    char str[9];
+    //    sprintf(str, "%lu", tag_id);
+    //    strlcpy(SerialMenu::Current->buff, str, sizeof(SerialMenu::buff));
+    //    SerialMenu::Current->get_tag_from_scanner = 0;
+    //  }
 
     // If tag is valid, immediatly update proximity-state.
     // Actually, in the refactored Reader implementation, just update last_tag_read_ms,
@@ -235,10 +241,11 @@
     } else {
       Serial.print(F("Unauthorized or invalid tag: "));
     }
-    
+
     Serial.println(tag_id);
+    current_tag_id = tag_id;
     
-  }
+  } // processTag()
 
   void Reader::resetBuffer() {
     buff_index = 0U;
@@ -287,7 +294,7 @@
   /***  Global functions and variables  ***/
 
   //Reader * GetReader(char _name[SETTINGS_VALUE_SIZE]) {
-  Reader * GetReader(const char *_name, Stream *_serial_port) {
+  Reader * GetReader(const char *_name, SoftwareSerial *_serial_port) {
     DPRINT(F("GetReader() called with name: "));
     DPRINTLN((char *)_name);
 

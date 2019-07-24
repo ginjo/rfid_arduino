@@ -20,19 +20,26 @@
    *  pattern "Curiously Recurring Template Pattern". It helps subclasses make effective use
    *  of base instance methods that need to know what subclass is calling them.
    *  
-   *  Remember: templates are compiler features. No code is written until a class template is instanciated.
+   *  IMPORTANT: templates are compiler features. No code is written until a class template is instanciated.
+   *  
+   *  IMPORTANT: The CRTP pattern draws a separate base class for each subclass.
+   *             Therefore, extra steps need to be taken if you need a polymorphic base (google it).
+   *             This Storage class is not used polymorphicly, so not a problem here.
    *  
    *  TODO: Refactor:
-   *        Store eeprom_address in Storage instance.
-   *        Make Storage::Load the only function that requires passing eeprom_address,
+   *        √ Store eeprom_address in Storage instance.
+   *        √ Make Storage::Load the only function that requires passing eeprom_address,
    *          but allow other functions to optionally receive eeprom_address.
-   *        Make GetStoredChecksum() an instance method, getStoredChecksum(),
+   *        √ Make GetStoredChecksum() an instance method, getStoredChecksum(),
    *          and retrieve the stored-checkum to an instance var, stored_checksum, whenever
    *          the Storage instance is loaded (or re-loaded) from eeprom.
    *          Then save the update and save the stored checksum, whenever instance is stored.
    *        Warning: This gets tricky, because we don't want to store the stored_checksum
    *          in the Storage instance, when we store the Storage instance.
    *          It becomes a chicken/egg problem.
+   *        Update: Actually, we do store the checksum in the storage instance,
+   *          but we set it to 0 whenever we re-calculate the checksum, so we
+   *          avoid the chicken/egg issue.
    */
 
   template <class T>

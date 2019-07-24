@@ -91,9 +91,10 @@
 
   /*** Constructors and Setup ***/
 
-  SerialMenu::SerialMenu(Stream *stream_ref, Led * _blinker, const char _instance_name[]) :
+  SerialMenu::SerialMenu(Stream *stream_ref, Reader *_reader, Led * _blinker, const char _instance_name[]) :
     serial_port(stream_ref),
-
+    reader(_reader),
+    
     // TODO: Initialize the rest of this class's vars. See .h file.
     //run_mode(0), // moved to static member.
     previous_ms(0),
@@ -136,11 +137,14 @@
     //DPRINTLN(F("/*** MENU LOOP BEGIN ***/"));
     //serial_port->println(F("SerialMenu::loop() calling serial_port->println()"));
 
+    getTagFromScanner();
+
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: Create a Switch object that handles all switch actions (start, stop, initial, cleanup, etc).
     if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
+    //getTagFromScanner();
     checkSerialPort();
     runCallbacks();
   }
@@ -217,7 +221,7 @@
         }
       }
 
-      // If someone typed anything into any serial port,
+      // If someone typed anything into this serial port,
       // make this instance the Current one.
       Current = this;
 
@@ -290,6 +294,7 @@
 
   // Builds a line of input in variable 'buff' until CR or LF is detected,
   // then resets buff_index to 0.
+  // Data in buff, with buff_index == 0, indicates a line of input is ready for processing.
   void SerialMenu::getLine(char byt) {
     DPRINT(F("getLine() byt"));
     DPRINTLN(char(byt));
@@ -387,6 +392,22 @@
     //return (int)strtol(str, NULL, 10); // convert the string of digits to int.
     // I don't think we need to use the str... it should the exactly the same as byt.
     return (int)strtol(&byt, NULL, 10);
+  }
+
+  // This should loop as long as get_tag_from_scanner == 1,
+  // until reader has current_tag_id, then this will set buff
+  // with reader's current_tag_id and set get_tag_from_scanner to 0.
+  void SerialMenu::getTagFromScanner() {
+    if (get_tag_from_scanner) {
+      reader->loop();
+      if (reader->current_tag_id) {
+        char str[9];
+        sprintf(str, "%lu", reader->current_tag_id);
+        strlcpy(buff, str, sizeof(buff));
+        reader->current_tag_id = 0;
+        get_tag_from_scanner = 0;
+      }
+    }
   }
 
   int SerialMenu::addTagString(char str[]) {
