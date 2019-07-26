@@ -53,17 +53,19 @@
     void begin();
     void showInfo();
     void checkSerialPort();
-    void menuSelectedMainItem(void *dat = NULL);
-    void menuMain(void *dat = NULL);
-    void menuListTags(void *dat = NULL);
-    void menuAddTag(void *dat = NULL);
-    void menuDeleteTag(void *dat = NULL);
-    void menuDeleteAllTags(void *dat = NULL);
+    void menuSelectedMainItem(void* = NULL);
+    void menuMain(void* = NULL);
+    void menuListTags(void* = NULL);
+    void menuAddTag(void* = NULL);
+    void menuDeleteTag(void* = NULL);
+    void menuDeleteAllTags(void* = NULL);
     void menuShowFreeMemory();
-    void menuSettings(void *dat = NULL);
-    void menuSelectedSetting(void *dat = NULL); // (char[]);
+    void menuSettings(void* = NULL);
+    void menuSelectedSetting(void* = NULL); // (char[]);
     int  byteToAsciiChrNum(char);
     void getLine(char);
+    void readLineWithCallback(CB, bool=false);
+    void readLine(void* = NULL);
     void receiveTagInput(char);
     //  void setInputMode(const char[]);
     //  bool matchInputMode(const char[]);
@@ -72,15 +74,16 @@
     //  bool inputAvailable();
     //  bool inputAvailable(const char[]);
     //  const char * inputAvailableFor();
-    void runCallbacks();
-    int addTagString(char[]);
-    int deleteTag(char[]);
+    //  void runCallbacks();
+    void addTagString(void*);
+    void deleteTag(void*);
+    void updateSetting(void*);
     void resetInputBuffer();
     void adminTimeout();
     // argument defaults must be declared here, not defined in implementation.
     void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void exitAdmin();
-    void prompt(const char = 0, const char* = "", const char* = "");
+    void prompt(const char[] = "", CB = NULL);
     void getTagFromScanner();
     void loop();
 

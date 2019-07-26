@@ -50,9 +50,9 @@
   //  }
 
 
-  //  // Instanciates the built-in reset function.
-  //  // TODO: This should be somewhere more global to the application.
-  //  void(* resetFunc) (void) = 0;
+  // Instanciates the built-in reset function.
+  // WARN: This does not work if placed in settings.h (where you would think it should be).
+  void(* resetFunc) (void) = 0;
 
 
 
@@ -224,101 +224,13 @@
     } 
   }
 
-  // Checks for callbacks every cycle.
-  // TODO: I think enum's can be used here instead of matching strings.
-  // Could then use 'switch' statement.
-
-  // TODO: Make sure all of these are represented in the conversion to callback stack,
-  //       then delete this function.
-  void SerialMenu::runCallbacks() {
-    // If completed input, ready for processing, is available.
-    // Either a string (with a LF ending), of a char.
-    if (inputAvailable()) {
-      //Serial.print(F("runCallbacks() inputAvailableFor(): "));
-      //Serial.println(inputAvailableFor());
-
-      if (inputAvailable("menuAddTag")) {
-        DPRINTLN(F("runCallbacks() inputAvailable for menuAddTag"));
-        addTagString(buff);
-        menuListTags();
-
-      } else if (inputAvailable("menuDeleteTag")) {
-        DPRINTLN(F("runCallbacks() inputAvailable for menuDeleteTag"));
-        deleteTag(buff);
-        menuListTags();
-        
-      } else if (inputAvailable("menuSelectedMainItem")) {
-        DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedMainItem"));
-        menuSelectedMainItem(buff[0]);
-
-      } else if (inputAvailable("menuSelectedSetting")) {
-        DPRINTLN(F("runCallbacks() inputAvailable for menuSelectedSetting"));
-        menuSelectedSetting(buff);
-
-      } else if (inputAvailable("updateSetting")) {
-        DPRINT(F("runCallbacks() inputAvailable for updateSetting: "));
-        DPRINT(selected_menu_item);
-        DPRINT(", ");
-        DPRINTLN((char *)buff);
-        
-        if (S.updateSetting(selected_menu_item, buff)) {
-          // Because we need this after updating any SerialMenu settings
-          // and there isn't a better place for this (yet?).
-          updateAdminTimeout();          
-        } else {
-          Serial.println(F("runCallbacks() call to S.updateSetting() failed"));
-        }
-        
-        //selected_menu_item = NULL;
-        selected_menu_item = -1;
-        menuSettings();
-      
-      } else {
-        Serial.println(F("runCallbacks() no condition was selected"));
-        
-        // Should we be resetting-buffer here? I think so, unless
-        // we want to save the available-input for something else... ?
-        
-        prompt('l', "", "menuSelectedMainItem");
-      }
-
-      resetInputBuffer();
-    }
-  }
 
 
   /*** Menu and State Logic ***/
 
-  //  // Builds a line of input in variable 'buff' until CR or LF is detected,
-  //  // then resets buff_index to 0.
-  //  // Data in buff, with buff_index == 0, indicates a line of input is ready for processing.
-  //  void SerialMenu::getLine(char byt) {
-  //    DPRINT(F("getLine() byt"));
-  //    DPRINTLN(char(byt));
-  //    
-  //    buff[buff_index] = byt;
-  //    buff_index ++;
-  //    serial_port->write(byt);
-  //  
-  //    if (int(byt) == 13 || int(byt) == 10) {
-  //      //serial_port->println(F("\r\n"));
-  //      serial_port->println((char)10);
-  //  
-  //      //  DPRINT(F("You entered: "));
-  //      //  DPRINT((char*)buff);
-  //      //  DPRINTLN("");
-  //
-  //      // Adds string terminator to end of buff.
-  //      buff[buff_index + 1] = 0;
-  //
-  //      // Resets buff_index.
-  //      buff_index = 0;
-  //    }
-  //  }
-
-  void SerialMenu::readLineWithCallback(CB cback, _read_tag=false) {
+  void SerialMenu::readLineWithCallback(CB cback, bool _read_tag) {
     push(cback);
-    push(readLine);
+    push(&SerialMenu::readLine);
     readLine();
   }
 
@@ -326,7 +238,8 @@
   // Optionally checks other input sources, like tag-reader, and reads to buff.
   // Reacts to buff EOL by calling stack callback.
   // Removes readLine() and callback from stack.
-  void SerialMenu::readLine(void *dat = NULL) {
+  //
+  void SerialMenu::readLine(void *dat) {
     DPRINT(F("readLine()"));
     //DPRINTLN(char(byt));
 
@@ -342,6 +255,7 @@
       buff[buff_index] = 0;
 
       // Resets buff_index.
+      // buff_index == 0 indicates a line of input is ready for processing.
       buff_index = 0;
 
       // Removes readLine() from stack.
@@ -351,61 +265,6 @@
       call(buff, true);
     }
   }
-
-  //  // Sets input mode to character or line.
-  //  // NOTE: Migrating to line-mode for all functions.
-  //  void SerialMenu::setInputMode(const char str[]) {
-  //    // All input uses 'line' now, but option to use 'char' is still here.
-  //    strlcpy(input_mode, str, INPUT_MODE_LENGTH);
-  //    
-  //    DPRINT(F("setInputMode(): "));
-  //    DPRINTLN(input_mode);
-  //  }
-  //
-  //  bool SerialMenu::matchInputMode(const char mode[]) {
-  //    //  Serial.print(F("matchInputMode() mode, input_mode: "));
-  //    //  Serial.print(mode);
-  //    //  Serial.print(", ");
-  //    //  Serial.println(input_mode);
-  //    
-  //    return strcmp(mode, input_mode) == 0;
-  //  }
-  //  
-  //  void SerialMenu::setCallbackFunction(const char *func_name) {
-  //    //  DPRINT(F("setCallbackFunction() received func_name: ("));
-  //    //  DPRINTLN(func_name));
-  //    
-  //    if (func_name[0] != 0) {
-  //      DPRINT(F("setCallbackFunction(): "));
-  //      DPRINTLN(func_name);
-  //      strlcpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
-  //    }
-  //  }
-  //
-  //  bool SerialMenu::matchCurrentFunction(const char func[]) {
-  //    //  Serial.print(F("matchCurrentFunction() with: "));
-  //    //  Serial.print(func);
-  //    //  Serial.print(", ");
-  //    //  Serial.println(current_function);
-  //    
-  //    return strcmp(current_function, func) == 0;
-  //  }
-  //
-  //  bool SerialMenu::inputAvailable() {
-  //    return buff_index == 0 && buff[0] > 0;
-  //  }
-  //  
-  //  bool SerialMenu::inputAvailable(const char func[]) {
-  //    return inputAvailable() && matchCurrentFunction(func);
-  //  }
-  //
-  //  const char * SerialMenu::inputAvailableFor() {
-  //    if(inputAvailable()) {
-  //      return current_function;
-  //    } else {
-  //      return "";
-  //    }
-  //  }
 
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
@@ -443,7 +302,8 @@
     }
   }
 
-  int SerialMenu::addTagString(char str[]) {
+  void SerialMenu::addTagString(void *dat) {
+    char *str = (char*)dat;
     int result;
     
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
@@ -482,27 +342,50 @@
     serial_port->println(); serial_port->println();
     resetInputBuffer();
     get_tag_from_scanner = 0;
-    return result;
+    //return result;
+    menuListTags();
   }
 
   //int SerialMenu::deleteTag(char str[]) {
-  int SerialMenu::deleteTag(void *input) {
-    char *str = (char*)input;
+  void SerialMenu::deleteTag(void *dat) {
+    char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
     
     if (str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
       serial_port->println(F("DeleteTag() aborted"));
       serial_port->println();
-      return 1;
+      //return 1;
     } else {
       //int rslt = RFID::DeleteTagIndex(tag_index);
       int rslt = Tags::TagSet.deleteTagIndex(tag_index);
       serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
       serial_port->println();
-      return rslt;
+      //return rslt;
     }
     menuListTags();
+  }
+
+  void SerialMenu::updateSetting(void *dat) {
+    char *str = (char*)dat;
+    
+    DPRINT(F("runCallbacks() inputAvailable for updateSetting: "));
+    DPRINT(selected_menu_item);
+    DPRINT(", ");
+    //DPRINTLN((char *)buff);
+    DPRINTLN(str);
+    
+    //if (S.updateSetting(selected_menu_item, buff)) {
+    if (S.updateSetting(selected_menu_item, str)) {
+      // Because we need this after updating any SerialMenu settings
+      // and there isn't a better place for this (yet?).
+      updateAdminTimeout();          
+    } else {
+      Serial.println(F("updateSetting() call to S.updateSetting() failed"));
+    }
+
+    selected_menu_item = -1;
+    menuSettings();
   }
 
   void SerialMenu::resetInputBuffer() {
@@ -510,27 +393,6 @@
     buff_index = 0;
   }
 
-  // TODO: I think every action that results in a prompt should call a specific prompt(),
-  // and not just allow the previous prompt's settings to be used.
-  //  void SerialMenu::prompt(const char _input_mode, const char _message[], const char _callback_function[]) {
-  //    if (_input_mode == 'l') {
-  //      setInputMode("line");
-  //    } else if (_input_mode == 'c') {
-  //      setInputMode("char");
-  //    }
-  //
-  //    if (_callback_function[0] != 0) {
-  //      setCallbackFunction(_callback_function);
-  //    }
-  //
-  //    if (_message[0] != 0) {
-  //      serial_port->print(_message);
-  //      serial_port->print(" ");
-  //    }
-  //
-  //    //resetInputBuffer(); // WARN: This might break some things, being called here.
-  //    serial_port->print("> ");
-  //  }
   void SerialMenu::prompt(const char _message[], CB _cback) {
     //push(_cback);
     
@@ -546,9 +408,12 @@
     readLineWithCallback(_cback);
   }
 
+
+
+
   /*** Draw Menu Items and Log Messages ***/
   
-  void SerialMenu::menuMain(void *dat = NULL) {
+  void SerialMenu::menuMain(void *dat) {
     serial_port->println(F("Menu"));
     serial_port->println(F("0. Exit"));
     serial_port->println(F("1. List tags"));
@@ -617,7 +482,7 @@
   } // menuSelectedMainItem
 
   // Lists tags for menu.
-  void SerialMenu::menuListTags(void *dat = NULL) {
+  void SerialMenu::menuListTags(void *dat) {
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
     serial_port->print(F(", size "));
@@ -641,19 +506,18 @@
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
   // TODO: Saving this till last: Need to update this to use stack.
-  void SerialMenu::menuAddTag(void *dat = NULL) {
-    //RFID::add_tag_from_scanner = 1;
+  void SerialMenu::menuAddTag(void *dat) {
     SerialMenu::get_tag_from_scanner = 1;
-    prompt('l', "Enter (or scan) a tag number (unsigned long) to store", __FUNCTION__);
+    prompt("Enter (or scan) a tag number (unsigned long) to store", &SerialMenu::addTagString);
   }
 
   // Asks user for index of tag to delete from EEPROM.
-  void SerialMenu::menuDeleteTag(void *dat = NULL) {
+  void SerialMenu::menuDeleteTag(void *dat) {
     prompt("Enter tag index to delete", &SerialMenu::deleteTag);
   }
 
   // Deletes all tags from EEPROM.
-  void SerialMenu::menuDeleteAllTags(void *dat = NULL) {
+  void SerialMenu::menuDeleteAllTags(void *dat) {
     serial_port->println(F("Delete all Tags"));
     serial_port->println("");
 
@@ -668,7 +532,7 @@
     prompt();
   }
 
-  void SerialMenu::menuSettings(void *dat = NULL) {
+  void SerialMenu::menuSettings(void *dat) {
     //selected_menu_item = NULL;
     selected_menu_item = -1;
     serial_port->print(F("Settings, chksm 0x"));
@@ -685,7 +549,7 @@
 
     serial_port->println();
 
-    prompt("Select a setting to edit", &menuSelectedSetting);
+    prompt("Select a setting to edit", &SerialMenu::menuSelectedSetting);
   }
 
   // Handle selected setting.
@@ -707,7 +571,7 @@
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);
-      prompt("Type a new value for setting", updateSetting);
+      prompt("Type a new value for setting", &SerialMenu::updateSetting);
       
     // If user selects "0", return, or enter, then go back to main menu.
     } else if (bytes[0] == '0' || bytes[0] == '\r' || bytes[0] == '\n') {

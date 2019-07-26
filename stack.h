@@ -15,7 +15,8 @@
   template <class T>
   class Stack {
   public:
-    typedef int (T::*CB)(void*);
+    // TODO: Consider returning int instead of void from this type.
+    typedef void (T::*CB)(void*);
 
     CB stack[FUNCTION_STACK_SIZE] = {};
     int stack_index = -1;
@@ -44,7 +45,7 @@
 
     virtual void call(void *dat = NULL, bool _pop = false) {
         printf("call: %i\n", stack_index);
-        if (stack_index < 0) return;
+        if (stack_index < 0 || top() == NULL) return;
         ((T*)this->*top())(dat);
         if (_pop) pop();
     }
@@ -55,7 +56,9 @@
       //  for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
       //    stack[i] = NULL;
       //  }
-      push(func);
+      if (func != NULL) {
+        push(func);
+      }
     }
     
   };

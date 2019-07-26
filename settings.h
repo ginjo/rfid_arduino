@@ -38,8 +38,8 @@
   // How would we do this? Probably need a hardware pin to signal it?
 
   // Instanciates the built-in reset function.
-  // NOTE: This was previously in serial_menu.cpp.
-  void(* resetFunc) (void) = 0;
+  // WARN: This causes multiple-definition errors if run here. See serial_menu.cpp.
+  //void(* resetFunc) (void) = 0;
 
 
   class Settings : public Storage<Settings> {
