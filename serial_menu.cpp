@@ -202,23 +202,10 @@
         
         DPRINT(F("checkSerialPort() received byte: "));
         DPRINTLN(char(byt));
-        //  DPRINT(F("checkSerialPort input_mode is: "));
-        //  DPRINTLN(input_mode);
+        serial_port->write(byt);
         
-        if (matchInputMode("char")) {
-          //DPRINTLN(F("checkSerialPort() matchInputMode('char') is TRUE"));
-          buff[0] = byt;
-  
-        } else if (matchInputMode("line")) {
-          //DPRINTLN(F("checkSerialPort() matchInputMode('line') is TRUE"));
-          getLine(byt);
-          
-        } else {
-          // last-resort default just writes byt to serial_port
-          // this should not happen under normal circumstances
-          Serial.println(F("checkSerialPort() user input with no matching input mode: "));
-          serial_port->write(byt); serial_port->println("");
-        }
+        buff[buff_index] = byt;
+        buff_index += 1;
       }
 
       // If someone typed anything into this serial port,
@@ -227,7 +214,7 @@
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
-    } // checkSerialPort()
+    } 
   }
 
   // Checks for callbacks every cycle.
@@ -292,87 +279,123 @@
 
   /*** Menu and State Logic ***/
 
-  // Builds a line of input in variable 'buff' until CR or LF is detected,
-  // then resets buff_index to 0.
-  // Data in buff, with buff_index == 0, indicates a line of input is ready for processing.
-  void SerialMenu::getLine(char byt) {
-    DPRINT(F("getLine() byt"));
-    DPRINTLN(char(byt));
+  //  // Builds a line of input in variable 'buff' until CR or LF is detected,
+  //  // then resets buff_index to 0.
+  //  // Data in buff, with buff_index == 0, indicates a line of input is ready for processing.
+  //  void SerialMenu::getLine(char byt) {
+  //    DPRINT(F("getLine() byt"));
+  //    DPRINTLN(char(byt));
+  //    
+  //    buff[buff_index] = byt;
+  //    buff_index ++;
+  //    serial_port->write(byt);
+  //  
+  //    if (int(byt) == 13 || int(byt) == 10) {
+  //      //serial_port->println(F("\r\n"));
+  //      serial_port->println((char)10);
+  //  
+  //      //  DPRINT(F("You entered: "));
+  //      //  DPRINT((char*)buff);
+  //      //  DPRINTLN("");
+  //
+  //      // Adds string terminator to end of buff.
+  //      buff[buff_index + 1] = 0;
+  //
+  //      // Resets buff_index.
+  //      buff_index = 0;
+  //    }
+  //  }
+
+  void SerialMenu::readLineWithCallback(CB cback, _read_tag=false) {
+    push(cback);
+    push(readLine);
+    readLine();
+  }
+
+  // Checks serial_port & reads to buff.
+  // Optionally checks other input sources, like tag-reader, and reads to buff.
+  // Reacts to buff EOL by calling stack callback.
+  // Removes readLine() and callback from stack.
+  void SerialMenu::readLine(void *dat = NULL) {
+    DPRINT(F("readLine()"));
+    //DPRINTLN(char(byt));
+
+    checkSerialPort();
+    int index = buff_index-1;
+    uint8_t byt = buff[index];
     
-    buff[buff_index] = byt;
-    buff_index ++;
-    serial_port->write(byt);
-  
     if (int(byt) == 13 || int(byt) == 10) {
       //serial_port->println(F("\r\n"));
       serial_port->println((char)10);
-  
-      //  DPRINT(F("You entered: "));
-      //  DPRINT((char*)buff);
-      //  DPRINTLN("");
 
       // Adds string terminator to end of buff.
-      buff[buff_index + 1] = 0;
+      buff[buff_index] = 0;
 
       // Resets buff_index.
       buff_index = 0;
+
+      // Removes readLine() from stack.
+      pop();
+
+      // Calls callback, passing in buff (true removes callback from stack).
+      call(buff, true);
     }
   }
 
-  // Sets input mode to character or line.
-  // NOTE: Migrating to line-mode for all functions.
-  void SerialMenu::setInputMode(const char str[]) {
-    // All input uses 'line' now, but option to use 'char' is still here.
-    strlcpy(input_mode, str, INPUT_MODE_LENGTH);
-    
-    DPRINT(F("setInputMode(): "));
-    DPRINTLN(input_mode);
-  }
-
-  bool SerialMenu::matchInputMode(const char mode[]) {
-    //  Serial.print(F("matchInputMode() mode, input_mode: "));
-    //  Serial.print(mode);
-    //  Serial.print(", ");
-    //  Serial.println(input_mode);
-    
-    return strcmp(mode, input_mode) == 0;
-  }
-  
-  void SerialMenu::setCallbackFunction(const char *func_name) {
-    //  DPRINT(F("setCallbackFunction() received func_name: ("));
-    //  DPRINTLN(func_name));
-    
-    if (func_name[0] != 0) {
-      DPRINT(F("setCallbackFunction(): "));
-      DPRINTLN(func_name);
-      strlcpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
-    }
-  }
-
-  bool SerialMenu::matchCurrentFunction(const char func[]) {
-    //  Serial.print(F("matchCurrentFunction() with: "));
-    //  Serial.print(func);
-    //  Serial.print(", ");
-    //  Serial.println(current_function);
-    
-    return strcmp(current_function, func) == 0;
-  }
-
-  bool SerialMenu::inputAvailable() {
-    return buff_index == 0 && buff[0] > 0;
-  }
-  
-  bool SerialMenu::inputAvailable(const char func[]) {
-    return inputAvailable() && matchCurrentFunction(func);
-  }
-
-  const char * SerialMenu::inputAvailableFor() {
-    if(inputAvailable()) {
-      return current_function;
-    } else {
-      return "";
-    }
-  }
+  //  // Sets input mode to character or line.
+  //  // NOTE: Migrating to line-mode for all functions.
+  //  void SerialMenu::setInputMode(const char str[]) {
+  //    // All input uses 'line' now, but option to use 'char' is still here.
+  //    strlcpy(input_mode, str, INPUT_MODE_LENGTH);
+  //    
+  //    DPRINT(F("setInputMode(): "));
+  //    DPRINTLN(input_mode);
+  //  }
+  //
+  //  bool SerialMenu::matchInputMode(const char mode[]) {
+  //    //  Serial.print(F("matchInputMode() mode, input_mode: "));
+  //    //  Serial.print(mode);
+  //    //  Serial.print(", ");
+  //    //  Serial.println(input_mode);
+  //    
+  //    return strcmp(mode, input_mode) == 0;
+  //  }
+  //  
+  //  void SerialMenu::setCallbackFunction(const char *func_name) {
+  //    //  DPRINT(F("setCallbackFunction() received func_name: ("));
+  //    //  DPRINTLN(func_name));
+  //    
+  //    if (func_name[0] != 0) {
+  //      DPRINT(F("setCallbackFunction(): "));
+  //      DPRINTLN(func_name);
+  //      strlcpy(current_function, func_name, CURRENT_FUNCTION_LENGTH);
+  //    }
+  //  }
+  //
+  //  bool SerialMenu::matchCurrentFunction(const char func[]) {
+  //    //  Serial.print(F("matchCurrentFunction() with: "));
+  //    //  Serial.print(func);
+  //    //  Serial.print(", ");
+  //    //  Serial.println(current_function);
+  //    
+  //    return strcmp(current_function, func) == 0;
+  //  }
+  //
+  //  bool SerialMenu::inputAvailable() {
+  //    return buff_index == 0 && buff[0] > 0;
+  //  }
+  //  
+  //  bool SerialMenu::inputAvailable(const char func[]) {
+  //    return inputAvailable() && matchCurrentFunction(func);
+  //  }
+  //
+  //  const char * SerialMenu::inputAvailableFor() {
+  //    if(inputAvailable()) {
+  //      return current_function;
+  //    } else {
+  //      return "";
+  //    }
+  //  }
 
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
@@ -452,8 +475,11 @@
     return result;
   }
 
-  int SerialMenu::deleteTag(char str[]) {
+  //int SerialMenu::deleteTag(char str[]) {
+  int SerialMenu::deleteTag(void *input) {
+    char *str = (char*)input;
     int tag_index = strtol(str, NULL, 10);
+    
     if (str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
       serial_port->println(F("DeleteTag() aborted"));
       serial_port->println();
@@ -466,6 +492,7 @@
       serial_port->println();
       return rslt;
     }
+    menuListTags();
   }
 
   void SerialMenu::resetInputBuffer() {
@@ -473,39 +500,41 @@
     buff_index = 0;
   }
 
-  //  // This is just for logging.
-  //  void SerialMenu::showInfo() {
-  //    //serial_port->println(F("serial_port is active!"));
-  //    Serial.print(F("SerialMenu::setup input_mode: "));
-  //    Serial.println(input_mode);
-  //    Serial.print(F("SerialMenu::setup buff_index: "));
-  //    Serial.println(buff_index);
-  //    Serial.print(F("SerialMenu::setup RFID::Tags[2]: "));
-  //    Serial.println(RFID::Tags[2]);
-  //  }
-
   // TODO: I think every action that results in a prompt should call a specific prompt(),
   // and not just allow the previous prompt's settings to be used.
-  void SerialMenu::prompt(const char _input_mode, const char _message[], const char _callback_function[]) {
-    if (_input_mode == 'l') {
-      setInputMode("line");
-    } else if (_input_mode == 'c') {
-      setInputMode("char");
-    }
-
-    if (_callback_function[0] != 0) {
-      setCallbackFunction(_callback_function);
-    }
-
+  //  void SerialMenu::prompt(const char _input_mode, const char _message[], const char _callback_function[]) {
+  //    if (_input_mode == 'l') {
+  //      setInputMode("line");
+  //    } else if (_input_mode == 'c') {
+  //      setInputMode("char");
+  //    }
+  //
+  //    if (_callback_function[0] != 0) {
+  //      setCallbackFunction(_callback_function);
+  //    }
+  //
+  //    if (_message[0] != 0) {
+  //      serial_port->print(_message);
+  //      serial_port->print(" ");
+  //    }
+  //
+  //    //resetInputBuffer(); // WARN: This might break some things, being called here.
+  //    serial_port->print("> ");
+  //  }
+  void SerialMenu::prompt(const char _message[], CB _cback) {
+    //push(_cback);
+    
     if (_message[0] != 0) {
       serial_port->print(_message);
       serial_port->print(" ");
     }
 
-    //resetInputBuffer(); // WARN: This might break some things, being called here.
+    // WARN: This might break some things, being called here.
+    //resetInputBuffer(); // 
+    
     serial_port->print("> ");
+    readLineWithCallback(_cback);
   }
-
 
   /*** Draw Menu Items and Log Messages ***/
   
@@ -521,22 +550,20 @@
     
     serial_port->println("");
 
-    //  resetInputBuffer(); // just to be safe, since it's the home position
-    //  setInputMode("char");
-    //  setCallbackFunction("menuSelectedMainItem");
-    prompt('l', "Select a menu item", "menuSelectedMainItem");
+    resetStack();
+    prompt("Select a menu item", menuSelectedMainItem);
   }
 
   // Activates an incoming menu selection.
-  void SerialMenu::menuSelectedMainItem(char byt) {
-    DPRINT(F("menuSelectedMainItem received byte: "));
-    DPRINT(char(byt));
-    DPRINT(F(" ("));
-    DPRINT(byt);
-    DPRINTLN(")");
+  // TODO: Figure out when we pop() the stack ?!? This methods should always pop() itself out of the stack.
+  void SerialMenu::menuSelectedMainItem(void *bytes) {
+    DPRINT(F("menuSelectedMainItem received bytes: "));
+    DPRINTLN((char*)bytes);
 
-    selected_menu_item = byteToAsciiChrNum(byt);
-    DPRINT(F("menuSelectedMainItem converted byte: "));
+    pop();
+    selected_menu_item = strtol((char*)bytes, NULL, 10);
+
+    DPRINT(F("menuSelectedMainItem converted bytes: "));
     DPRINTLN(selected_menu_item);
 
     // Note that we're still using byt and character ascii codes in
@@ -545,29 +572,32 @@
     // For example, if the user hits Enter key, we don't have a
     // selected_menu_item index to correspond with that (since the ascii
     // Enter character doesn't represent a specific integer).
-    switch (byt) {
+    // UPDATE: We are not using the above any more, as we need numerics
+    // that can go into double-digits.
+    
+    switch (selected_menu_item) {
       // warn: a missing 'break' will allow
       // drop-thru to the next case.
-      case '0':
+      case 0:
         //serial_port->println(F("Exiting admin console\r\n\r\n"));
         updateAdminTimeout(0);
         break;
-      case '1':
+      case 1:
         menuListTags();
         break;
-      case '2':
+      case 2:
         menuAddTag();
         break;
-      case '3':
+      case 3:
         menuDeleteTag();
         break;
-      case '4':
+      case 4:
         menuShowFreeMemory();
         break;
-      case '5':
+      case 5:
         menuSettings();
         break;
-      case '6':
+      case 6:
         menuDeleteAllTags();
         break;
       default:
@@ -595,13 +625,12 @@
     }
     serial_port->println("");
 
-    // The '\0' tells prompt() to use the last known input-mode,
-    // which in this case should be "line".
-    prompt('\0', "Select a main menu item", "menuSelectedMainItem");
+    prompt("Select a main menu item", menuSelectedMainItem);
   }
 
   // Asks user for full tag,
-  // sets mode to receive-text-line-from-serial,
+  // sets mode to receive-text-line-from-serial
+  // TODO: Saving this till last: Need to update this to use stack.
   void SerialMenu::menuAddTag() {
     //RFID::add_tag_from_scanner = 1;
     SerialMenu::get_tag_from_scanner = 1;
@@ -610,14 +639,14 @@
 
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag() {
-    prompt('l', "Enter tag index to delete", __FUNCTION__);
+    prompt("Enter tag index to delete", deleteTag);
   }
 
-  // Asks user for index of tag to delete from EEPROM.
+  // Deletes all tags from EEPROM.
   void SerialMenu::menuDeleteAllTags() {
     serial_port->println(F("Delete all Tags"));
     serial_port->println("");
-    //RFID::DeleteAllTags();
+
     Tags::TagSet.deleteAllTags();
     menuListTags();
   }
@@ -646,13 +675,14 @@
 
     serial_port->println();
 
-    //  setInputMode("line");
-    //  setCallbackFunction("menuSelectedSetting");
-    prompt('l', "Select a setting to edit", "menuSelectedSetting");
+    prompt("Select a setting to edit", menuSelectedSetting);
   }
 
   // Handle selected setting.
-  void SerialMenu::menuSelectedSetting(char bytes[]) {
+  //void SerialMenu::menuSelectedSetting(char bytes[]) {
+  void SerialMenu::menuSelectedSetting(void *input) {
+    char *bytes = (char*)input;
+    
     // DPRINT(F("menuSelectedSetting received bytes: "));
     // DPRINTLN((char *)bytes);
 
@@ -661,13 +691,15 @@
     DPRINT(F("menuSelectedSetting set selected_menu_item to: "));
     DPRINTLN(selected_menu_item);
 
+    // If user selected valid settings item.
     if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
       char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);
-      prompt('l', "Type a new value for setting", "updateSetting");
-    // If use hits "0", return, or enter, go back to main menu.
+      prompt("Type a new value for setting", updateSetting);
+      
+    // If user selects "0", return, or enter, then go back to main menu.
     } else if (bytes[0] == '0' || bytes[0] == '\r' || bytes[0] == '\n') {
       menuMain();
     } else {

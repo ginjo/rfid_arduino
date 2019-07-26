@@ -14,6 +14,7 @@
   #include "settings.h"
   #include "reader.h"
   #include "led_blinker.h"
+  #include "stack.h"
   //#include "rfid.h" // This would cause circular include. See .cpp file for better solution.
   
   #define INPUT_BUFFER_LENGTH 24
@@ -21,7 +22,7 @@
   #define CURRENT_FUNCTION_LENGTH 24
 
 
-  class SerialMenu {
+  class SerialMenu : public Stack<SerialMenu> {
   public:
     Stream *serial_port;
     Reader *reader;

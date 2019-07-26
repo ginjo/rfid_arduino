@@ -3,12 +3,15 @@
 #ifndef __FUNCTION_STACK_H__
 #define __FUNCTION_STACK_H__
 
+  #include <Arduino.h>
+  #define FUNCTION_STACK_SIZE 5
+
   template <class T>
   class Stack {
   public:
     typedef int (T::*CB)(void*);
 
-    CB stack[5] = {};
+    CB stack[FUNCTION_STACK_SIZE] = {};
     int stack_index = -1;
     
     virtual void push(CB func) {
@@ -38,6 +41,15 @@
         if (stack_index < 0) return;
         ((T*)this->*top())(dat);
         if (_pop) pop();
+    }
+
+    // TODO: Consider receiving a function to add to position 0 of the stack.
+    virtual void resetStack(CB func = NULL) {
+      stack_index = -1;
+      for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
+        stack[i] = NULL;
+      }
+      push(func);
     }
     
   };
