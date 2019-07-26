@@ -34,10 +34,12 @@
   // This is here because it seems to avoid circular include,
   // which would happen if this was in serial_menu.h.
   // This is apparently a legitimate C/C++ technique.
-  #include "rfid.h" 
+  #include "rfid.h"
   
   
   // NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
+  // TODO: Move this out of the live code files. Maybe make it an <example>.cpp file in the
+  //       top-level folder of RFID_Immobilizer.
   // This works in onlinegbd.com, but may not work for arduino.
   //  #include <stdlib.h>
   //  int main()
@@ -48,9 +50,10 @@
   //  }
 
 
-  // Instanciates the built-in reset function.
-  // TODO: This should be somewhere more global to the application.
-  void(* resetFunc) (void) = 0;
+  //  // Instanciates the built-in reset function.
+  //  // TODO: This should be somewhere more global to the application.
+  //  void(* resetFunc) (void) = 0;
+
 
 
   /***  Static Vars & Funtions  ***/
@@ -117,6 +120,7 @@
   void SerialMenu::begin() {    
     updateAdminTimeout(2);
     resetInputBuffer();
+    //resetStack(&SerialMenu::menuMain);
     
     // If this is hardware instance, don't print info.
     if (strcmp(instance_name, "HW") != 0) {
@@ -127,7 +131,7 @@
       serial_port->println();
     }
     
-    prompt('l', "", "menuSelectedMainItem");
+    prompt("Press Enter to admin", &SerialMenu::menuSelectedMainItem);
  	}
 
 
@@ -137,6 +141,8 @@
     //DPRINTLN(F("/*** MENU LOOP BEGIN ***/"));
     //serial_port->println(F("SerialMenu::loop() calling serial_port->println()"));
 
+    // TODO: Move this into serial_menu, controled by callback stack.
+    // TODO: Disable this here as soon as doing so won't affect any other calls.
     getTagFromScanner();
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
@@ -144,9 +150,10 @@
     if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
-    //getTagFromScanner();
-    checkSerialPort();
-    runCallbacks();
+    //checkSerialPort();
+    //runCallbacks();
+    
+    call();
   }
 
   // Starts, restarts, resets admin with timeout.
@@ -220,6 +227,9 @@
   // Checks for callbacks every cycle.
   // TODO: I think enum's can be used here instead of matching strings.
   // Could then use 'switch' statement.
+
+  // TODO: Make sure all of these are represented in the conversion to callback stack,
+  //       then delete this function.
   void SerialMenu::runCallbacks() {
     // If completed input, ready for processing, is available.
     // Either a string (with a LF ending), of a char.
@@ -538,7 +548,7 @@
 
   /*** Draw Menu Items and Log Messages ***/
   
-  void SerialMenu::menuMain() {
+  void SerialMenu::menuMain(void *dat = NULL) {
     serial_port->println(F("Menu"));
     serial_port->println(F("0. Exit"));
     serial_port->println(F("1. List tags"));
@@ -551,7 +561,7 @@
     serial_port->println("");
 
     resetStack();
-    prompt("Select a menu item", menuSelectedMainItem);
+    prompt("Select a menu item", &SerialMenu::menuSelectedMainItem);
   }
 
   // Activates an incoming menu selection.
@@ -607,7 +617,7 @@
   } // menuSelectedMainItem
 
   // Lists tags for menu.
-  void SerialMenu::menuListTags() {
+  void SerialMenu::menuListTags(void *dat = NULL) {
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
     serial_port->print(F(", size "));
@@ -625,25 +635,25 @@
     }
     serial_port->println("");
 
-    prompt("Select a main menu item", menuSelectedMainItem);
+    prompt("Select a main menu item", &SerialMenu::menuSelectedMainItem);
   }
 
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
   // TODO: Saving this till last: Need to update this to use stack.
-  void SerialMenu::menuAddTag() {
+  void SerialMenu::menuAddTag(void *dat = NULL) {
     //RFID::add_tag_from_scanner = 1;
     SerialMenu::get_tag_from_scanner = 1;
     prompt('l', "Enter (or scan) a tag number (unsigned long) to store", __FUNCTION__);
   }
 
   // Asks user for index of tag to delete from EEPROM.
-  void SerialMenu::menuDeleteTag() {
-    prompt("Enter tag index to delete", deleteTag);
+  void SerialMenu::menuDeleteTag(void *dat = NULL) {
+    prompt("Enter tag index to delete", &SerialMenu::deleteTag);
   }
 
   // Deletes all tags from EEPROM.
-  void SerialMenu::menuDeleteAllTags() {
+  void SerialMenu::menuDeleteAllTags(void *dat = NULL) {
     serial_port->println(F("Delete all Tags"));
     serial_port->println("");
 
@@ -658,7 +668,7 @@
     prompt();
   }
 
-  void SerialMenu::menuSettings() {
+  void SerialMenu::menuSettings(void *dat = NULL) {
     //selected_menu_item = NULL;
     selected_menu_item = -1;
     serial_port->print(F("Settings, chksm 0x"));
@@ -675,7 +685,7 @@
 
     serial_port->println();
 
-    prompt("Select a setting to edit", menuSelectedSetting);
+    prompt("Select a setting to edit", &menuSelectedSetting);
   }
 
   // Handle selected setting.

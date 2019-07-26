@@ -31,11 +31,16 @@
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var name
   #define SETTINGS_EEPROM_ADDRESS 800 // see class definition
   //#define SETTINGS_CHECKSUM_SIZE // see class definition
-  
 
+  
   // TODO: Maybe make it like OpenWRT, with a basic failsafe boot mode, allowing you
   // to do basic things like reset, reboot, configure, etc.
   // How would we do this? Probably need a hardware pin to signal it?
+
+  // Instanciates the built-in reset function.
+  // NOTE: This was previously in serial_menu.cpp.
+  void(* resetFunc) (void) = 0;
+
 
   class Settings : public Storage<Settings> {
   public:

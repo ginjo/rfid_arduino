@@ -1,5 +1,11 @@
 /* Provides function-pointer stack features */
 
+/* Note that when passing c++ member function pointers,
+ *  it is necessary to use the full-qual name of the object,
+ *  and often you will need to precede with ampersand, '&',
+ *  but could also be preceded with nothing.
+ */
+
 #ifndef __FUNCTION_STACK_H__
 #define __FUNCTION_STACK_H__
 
@@ -14,7 +20,7 @@
     CB stack[FUNCTION_STACK_SIZE] = {};
     int stack_index = -1;
     
-    virtual void push(CB func) {
+    virtual void push(CB func = NULL) {
         printf("push: %i -> %i\n", stack_index, stack_index+1);
         //((T*)this->*func)((char*)"push() called with this func");
         stack_index += 1;
@@ -46,9 +52,9 @@
     // TODO: Consider receiving a function to add to position 0 of the stack.
     virtual void resetStack(CB func = NULL) {
       stack_index = -1;
-      for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
-        stack[i] = NULL;
-      }
+      //  for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
+      //    stack[i] = NULL;
+      //  }
       push(func);
     }
     
