@@ -90,9 +90,9 @@
       DPRINTLN("calling SerialMenu::SW->loop()");
       SW->loop();
     }
-
-    if (Current && HW && Current == SW) delete(HW);
-    if (Current && SW && Current == HW) delete(SW);
+    // Suspect UB!
+    //  if (Current && HW && Current == SW) delete(HW);
+    //  if (Current && SW && Current == HW) delete(SW);
     
   } // main Loop()
 
@@ -168,7 +168,7 @@
   }
 
   // Starts, restarts, resets admin with timeout.
-  void SerialMenu::updateAdminTimeout(uint32_t seconds) {
+  void SerialMenu::updateAdminTimeout(unsigned long seconds) {
     if (admin_timeout != seconds) {
       Serial.print(F("updateAdminTimeout(): "));
       Serial.println(seconds);
@@ -190,12 +190,15 @@
     //  Serial.print(current_ms); Serial.print(" ");
     //  Serial.println(previous_ms);
 
-    if (run_mode == 0) { return; }
-    if ( elapsed_ms/1000 > admin_timeout ) {
+    //if (run_mode == 0) { return; }
+    if ( elapsed_ms/1000 > admin_timeout || run_mode == 0 ) {
       exitAdmin();
     }
   }
 
+  // Exits admin and starts main RFID/proximity loop.
+  // Alternatively, reboots the arduino.
+  //
   void SerialMenu::exitAdmin() {
     DPRINTLN("Menu::exitAdmin()");
     if (true || admin_timeout == 2) {
@@ -203,7 +206,8 @@
       serial_port->println(F("Entering run mode\r\n"));
       blinker->Off();
       run_mode = 0;
-      Current = HW;
+      resetInputBuffer();
+      resetStack();
     } // else {
       //    Serial.println(F("\r\nMenu rebooting arduino"));
       //    serial_port->println(F("Exiting admin console\r\n"));
@@ -317,6 +321,7 @@
         sprintf(str, "%lu", reader->current_tag_id);
         strlcpy(buff, str, sizeof(buff));
         reader->current_tag_id = 0;
+        reader->resetBuffer();
         get_tag_from_scanner = 0;
       }
     }
@@ -439,7 +444,7 @@
 
 
 
-  /*** Draw Menu Items and Log Messages ***/
+  /*** Menu Item Controllers ***/
   
   void SerialMenu::menuMain(void *dat) {
     DPRINTLN("Menu::menuMain()");
