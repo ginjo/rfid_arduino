@@ -10,6 +10,7 @@
 #define __FUNCTION_STACK_H__
 
   #include <Arduino.h>
+  #include "settings.h"
   #define FUNCTION_STACK_SIZE 5
 
   template <class T>
@@ -21,16 +22,20 @@
     CB stack[FUNCTION_STACK_SIZE] = {};
     int stack_index = -1;
     
-    virtual void push(CB func = NULL) {
-        printf("push: %i -> %i\n", stack_index, stack_index+1);
-        //((T*)this->*func)((char*)"push() called with this func");
+    virtual void push(CB func) {
+      //DPRINT("Stack::push() to index "); DPRINTLN(stack_index+1);   // DPRINT(T::instance_name); DPRINT(", ");
+      //((T*)this->*func)((char*)"push() called with this func");
+      if (func) {
         stack_index += 1;
         stack[stack_index] = func;
+      } else {
+        Serial.println("Tried to push nullptr to stack.");
+      }
     }
 
     virtual CB pop() {
-        printf("pop: %i -> %i\n", stack_index, stack_index-1);
-        if (stack_index < 0) return NULL;
+        //DPRINT("Stack::pop() from index "); DPRINTLN(stack_index);
+        if (stack_index < 0) return nullptr;
         CB func = top();
         stack_index -= 1;
         //((T*)this->*func)((char*)"pop() called, returning this func");
@@ -38,29 +43,36 @@
     }
     
     virtual CB top() {
-        printf("top: %i\n", stack_index);
-        if (stack_index < 0) return NULL;
+        //DPRINT("Stack::top() index "); DPRINTLN(stack_index);
+        if (stack_index < 0) return nullptr;
         return stack[stack_index];
     }
 
-    virtual void call(void *dat = NULL, bool _pop = false) {
-        printf("call: %i\n", stack_index);
-        if (stack_index < 0 || top() == NULL) return;
-        ((T*)this->*top())(dat);
+    virtual void call(void *dat = nullptr, bool _pop = false) {
+        //DPRINT("Stack::call() index "); DPRINTLN(stack_index);
+        CB cback = top();
+        if (stack_index < 0 || !cback) return;
+        // Need to pop before calling, otherwise pop will happen
+        // after called func has ended, which causes problems downstream.
+        //((T*)this->*top())(dat);
         if (_pop) pop();
+        ((T*)this->*cback)(dat);
     }
 
-    // TODO: Consider receiving a function to add to position 0 of the stack.
-    virtual void resetStack(CB func = NULL) {
+    // Optionally receives function pointer of type CB.
+    virtual void resetStack(CB func = nullptr) {
+      //DPRINT("Stack::resetStack() with index "); DPRINTLN(stack_index);
       stack_index = -1;
-      //  for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
-      //    stack[i] = NULL;
-      //  }
-      if (func != NULL) {
+      
+      for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
+        stack[i] = nullptr;
+      }
+      
+      if (func) {
         push(func);
       }
     }
     
-  };
+  }; // end Stack
 
 #endif

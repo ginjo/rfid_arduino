@@ -75,19 +75,24 @@
   void SerialMenu::Loop() {
 
     // Runs hardware-serial loop().
-    if (Current == NULL || Current == HW) {
+    if (!Current || Current == HW) {
       delay(HW->get_tag_from_scanner ? 25 : 1);
+      DPRINTLN("calling SerialMenu::HW->loop()");
       HW->loop();
     }
 
     // Runs software-serial loop().
-    if (Current == NULL || Current == SW) {
+    if (!Current || Current == SW) {
       SoftwareSerial * sp = (SoftwareSerial*)SW->serial_port;
       sp->listen();
       while (! sp->isListening()) delay(15);
       delay(SW->get_tag_from_scanner ? 25 : 1);
+      DPRINTLN("calling SerialMenu::SW->loop()");
       SW->loop();
     }
+
+    if (Current && Current == SW) delete(HW);
+    if (Current && Current == HW) delete(SW);
     
   } // main Loop()
 
@@ -105,7 +110,7 @@
     //input_mode("menu"),
     buff {},
     buff_index(0),
-    current_function(""),
+    //current_function(""),
     selected_menu_item(-1),
     get_tag_from_scanner(0),
     blinker(_blinker)
@@ -129,9 +134,15 @@
       serial_port->print(", ");
       serial_port->println(TIMESTAMP);
       serial_port->println();
+      // passing an empty string will hide the default menuMain prompt string,
+      // but will still create the ">" prompt and push the necessary functions
+      // to the stack.
+      menuMainPrompt("");
+    } else {
+      readLineWithCallback(&SerialMenu::menuSelectedMainItem);
     }
     
-    prompt("Press Enter to admin", &SerialMenu::menuSelectedMainItem);
+    
  	}
 
 
@@ -159,7 +170,7 @@
   // Starts, restarts, resets admin with timeout.
   void SerialMenu::updateAdminTimeout(uint32_t seconds) {
     if (admin_timeout != seconds) {
-      Serial.print(F("updateAdminTimeout() seconds: "));
+      Serial.print(F("updateAdminTimeout(): "));
       Serial.println(seconds);
     }
     
@@ -186,34 +197,46 @@
   }
 
   void SerialMenu::exitAdmin() {
+    DPRINTLN("Menu::exitAdmin()");
     if (true || admin_timeout == 2) {
-      Serial.println(F("\r\nSerialMenu setting run_mode to 0 'run'"));
+      Serial.println(F("\r\nMenu setting run_mode to 0 'run'"));
       serial_port->println(F("Entering run mode\r\n"));
       blinker->Off();
       run_mode = 0;
       Current = HW;
-    } else {
-      Serial.println(F("\r\nSerialMenu rebooting arduino"));
-      serial_port->println(F("Exiting admin console\r\n"));
-      delay(100);
-      resetFunc();
-    }
+    } // else {
+      //    Serial.println(F("\r\nMenu rebooting arduino"));
+      //    serial_port->println(F("Exiting admin console\r\n"));
+      //    delay(100);
+      //    resetFunc();
+    //  }
   }
 
-	// Checks serial_port every cycle.
-  void SerialMenu::checkSerialPort() {
+
+  /*** Menu and State Logic ***/
+
+  // Clears any data waiting on serial port, if any.
+  void SerialMenu::clearSerialBuffer() {
+    DPRINTLN("Menu::clearSerialBuffer()");
+    while (serial_port->available()) serial_port->read();    
+  }
+
+  void SerialMenu::readLineWithCallback(CB cback, bool _read_tag) {
+    DPRINTLN("Menu::readLineWithCallback()");
+    push(cback);
+    push(&SerialMenu::readLine);
+    // TODO: Should this be here or in prompt()?
+    clearSerialBuffer();
+    //readLine();
+  }
+
+  // Checks serial_port (which reads to buff).
+  // Optionally checks other input sources, like tag-reader, and reads to buff.
+  // Reacts to buff EOL by calling stack callback.
+  // Removes readLine() and callback from stack.
+  //
+  void SerialMenu::readLine(void *dat) {
     if (serial_port->available()) {
-      while (serial_port->available()) {
-        //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
-        char byt = serial_port->read();
-        
-        DPRINT(F("checkSerialPort() received byte: "));
-        DPRINTLN(char(byt));
-        serial_port->write(byt);
-        
-        buff[buff_index] = byt;
-        buff_index += 1;
-      }
 
       // If someone typed anything into this serial port,
       // make this instance the Current one.
@@ -221,62 +244,59 @@
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
-    } 
-  }
+      
+      while (serial_port->available()) {
+        //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
+        char byt = serial_port->read();
+        
+        DPRINT(F("readLine() received byte: "));
+        DPRINTLN((int)byt);
+        //  DPRINT(" (");
+        //  DPRINT((char)byt);
+        //  DPRINTLN(")");
 
+        serial_port->write(byt);
+        
+        buff[buff_index] = byt;
+        buff_index += 1;
 
-
-  /*** Menu and State Logic ***/
-
-  void SerialMenu::readLineWithCallback(CB cback, bool _read_tag) {
-    push(cback);
-    push(&SerialMenu::readLine);
-    readLine();
-  }
-
-  // Checks serial_port & reads to buff.
-  // Optionally checks other input sources, like tag-reader, and reads to buff.
-  // Reacts to buff EOL by calling stack callback.
-  // Removes readLine() and callback from stack.
-  //
-  void SerialMenu::readLine(void *dat) {
-    DPRINT(F("readLine()"));
-    //DPRINTLN(char(byt));
-
-    checkSerialPort();
-    int index = buff_index-1;
-    uint8_t byt = buff[index];
+        if ((int)byt == 13 || (int)byt == 10 || (int)byt == 0 ) {
+          DPRINT("readLine EOL at index: "); DPRINTLN(buff_index-1);
+          //serial_port->println(F("\r\n"));
+          serial_port->println((char)10);
     
-    if (int(byt) == 13 || int(byt) == 10) {
-      //serial_port->println(F("\r\n"));
-      serial_port->println((char)10);
-
-      // Adds string terminator to end of buff.
-      buff[buff_index] = 0;
-
-      // Resets buff_index.
-      // buff_index == 0 indicates a line of input is ready for processing.
-      buff_index = 0;
-
-      // Removes readLine() from stack.
-      pop();
-
-      // Calls callback, passing in buff (true removes callback from stack).
-      call(buff, true);
-    }
-  }
+          // Adds string terminator to end of buff.
+          buff[buff_index] = 0;
+    
+          // Resets buff_index.
+          // buff_index == 0 indicates a line of input is ready for processing.
+          buff_index = 0;
+    
+          // Removes readLine() from stack.
+          pop();
+    
+          // Calls callback, passing in buff (true removes callback from stack).
+          call(buff, true);
+          
+        } // if EOL        
+      } // while data available
+      
+    } // if data available
+  } // readLine()
 
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
   int SerialMenu::byteToAsciiChrNum(const char byt) {
-    DPRINT(F("SerialMenu::byteToAsciiChrNum received byte: "));
-    DPRINT(char(byt));
-    DPRINT(" (");
-    DPRINT(byt);
-    DPRINTLN(")");
-    
+    DPRINT(F("Menu::byteToAsciiChrNum rcvd byte: "));
+    DPRINTLN((int)byt);
+    //  DPRINT(" (");
+    //  DPRINT(byt);
+    //  DPRINTLN(")");
+
+    // Returns -1 if ascii chr of byte is not a numeric.
     if (byt < 48 || byt > 57) {
-      return '0';
+      //return '0';
+      return -1;
     }
     //char str[2]; // need room for null-terminator?
     //sprintf(str, "%c", byt); // convert the byte to ascii string.
@@ -348,6 +368,8 @@
 
   //int SerialMenu::deleteTag(char str[]) {
   void SerialMenu::deleteTag(void *dat) {
+    DPRINTLN("Menu::deleteTag()");
+    
     char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
     
@@ -369,7 +391,7 @@
   void SerialMenu::updateSetting(void *dat) {
     char *str = (char*)dat;
     
-    DPRINT(F("runCallbacks() inputAvailable for updateSetting: "));
+    DPRINT(F("Menu::updateSetting(): "));
     DPRINT(selected_menu_item);
     DPRINT(", ");
     //DPRINTLN((char *)buff);
@@ -394,18 +416,24 @@
   }
 
   void SerialMenu::prompt(const char _message[], CB _cback) {
-    //push(_cback);
     
-    if (_message[0] != 0) {
+    if (_message[0]) {
       serial_port->print(_message);
       serial_port->print(" ");
     }
 
     // WARN: This might break some things, being called here.
-    //resetInputBuffer(); // 
+    //resetInputBuffer(); //
+
+    // Always clear serial buffer before prompting for new data.
+    // TODO: Should this be here or in readLineWithCallback() ?
+    //clearSerialBuffer();
+
+    // This can only go BEFORE the ">" IF it doesn't call anything (just does set-up).
+    // Otherwise it should go after the ">" (but then any errors will show up after the prompt).
+    readLineWithCallback(_cback);
     
     serial_port->print("> ");
-    readLineWithCallback(_cback);
   }
 
 
@@ -414,6 +442,7 @@
   /*** Draw Menu Items and Log Messages ***/
   
   void SerialMenu::menuMain(void *dat) {
+    DPRINTLN("Menu::menuMain()");
     serial_port->println(F("Menu"));
     serial_port->println(F("0. Exit"));
     serial_port->println(F("1. List tags"));
@@ -425,30 +454,36 @@
     
     serial_port->println("");
 
+    menuMainPrompt();
+  }
+
+  // Resets stack and gives default main-menu prompt.
+  void SerialMenu::menuMainPrompt(const char str[]) { // See .h for default string.
     resetStack();
-    prompt("Select a menu item", &SerialMenu::menuSelectedMainItem);
+    prompt(str, &SerialMenu::menuSelectedMainItem);
   }
 
   // Activates an incoming menu selection.
   // TODO: Figure out when we pop() the stack ?!? This methods should always pop() itself out of the stack.
   void SerialMenu::menuSelectedMainItem(void *bytes) {
-    DPRINT(F("menuSelectedMainItem received bytes: "));
+    DPRINT(F("menuSelectedMainItem rcvd bytes: "));
     DPRINTLN((char*)bytes);
 
-    pop();
-    selected_menu_item = strtol((char*)bytes, NULL, 10);
+    // pop(); // I think the prompt() that set up this callback
+    // will automatically pop() it, so we shouldn't need this.
 
-    DPRINT(F("menuSelectedMainItem converted bytes: "));
+    // If first chr is not a numeric, set selected_menu_item to
+    // something that will trigger default response.
+    // TODO: This could all be encapsulated in byteToAsciiChrNum() function.
+    //
+    if (byteToAsciiChrNum(((int*)bytes)[0]) == -1) {
+      selected_menu_item = -1;
+    } else {
+      selected_menu_item = strtol((char*)bytes, NULL, 10);
+    }
+
+    DPRINT(F("menuSelectedMainItem bytes to num: "));
     DPRINTLN(selected_menu_item);
-
-    // Note that we're still using byt and character ascii codes in
-    // the switch statement, instead of using selected_menu_item and
-    // literal integers. This gives us more range of what we can compare.
-    // For example, if the user hits Enter key, we don't have a
-    // selected_menu_item index to correspond with that (since the ascii
-    // Enter character doesn't represent a specific integer).
-    // UPDATE: We are not using the above any more, as we need numerics
-    // that can go into double-digits.
     
     switch (selected_menu_item) {
       // warn: a missing 'break' will allow
@@ -483,6 +518,7 @@
 
   // Lists tags for menu.
   void SerialMenu::menuListTags(void *dat) {
+    DPRINTLN("Menu::menuListTags()");
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
     serial_port->print(F(", size "));
@@ -500,24 +536,27 @@
     }
     serial_port->println("");
 
-    prompt("Select a main menu item", &SerialMenu::menuSelectedMainItem);
+    menuMainPrompt(); 
   }
 
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
   // TODO: Saving this till last: Need to update this to use stack.
   void SerialMenu::menuAddTag(void *dat) {
+    DPRINTLN("Menu::menuAddTag()");
     SerialMenu::get_tag_from_scanner = 1;
     prompt("Enter (or scan) a tag number (unsigned long) to store", &SerialMenu::addTagString);
   }
 
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag(void *dat) {
+    DPRINTLN("Menu::menuDeleteTag()");
     prompt("Enter tag index to delete", &SerialMenu::deleteTag);
   }
 
   // Deletes all tags from EEPROM.
   void SerialMenu::menuDeleteAllTags(void *dat) {
+    DPRINTLN("Menu::menuDeleteAllTags()");
     serial_port->println(F("Delete all Tags"));
     serial_port->println("");
 
@@ -526,13 +565,15 @@
   }
 
   void SerialMenu::menuShowFreeMemory() {
+    DPRINTLN("Menu::menuShowFreeMemory()");
     serial_port->println(F("Free Memory: n/a"));
     //serial_port->println(freeMemory());
     //serial_port->println();
-    prompt();
+    menuMainPrompt(); 
   }
 
   void SerialMenu::menuSettings(void *dat) {
+    DPRINTLN("Menu::menuSettings()");
     //selected_menu_item = NULL;
     selected_menu_item = -1;
     serial_port->print(F("Settings, chksm 0x"));
@@ -555,6 +596,8 @@
   // Handle selected setting.
   //void SerialMenu::menuSelectedSetting(char bytes[]) {
   void SerialMenu::menuSelectedSetting(void *input) {
+    DPRINTLN("Menu::menuSelectedSetting()");
+    
     char *bytes = (char*)input;
     
     // DPRINT(F("menuSelectedSetting received bytes: "));

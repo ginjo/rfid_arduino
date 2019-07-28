@@ -294,17 +294,15 @@
   /***  Global functions and variables  ***/
 
   //Reader * GetReader(char _name[SETTINGS_VALUE_SIZE]) {
-  Reader * GetReader(const char *_name, SoftwareSerial *_serial_port) {
+  Reader *GetReader(const char _name[], SoftwareSerial *_serial_port) {
     DPRINT(F("GetReader() called with name: "));
-    DPRINTLN((char *)_name);
+    DPRINTLN((char*)_name);
 
-    //return Readers[2];
-
-    Reader * result;
+    Reader *result;
     int n;
 
     for (n=0; n < 3; n++) {
-      if (strcmp((char *)_name, (char *)Readers[n]->reader_name) == 0) {
+      if (strcmp((char *)_name, (char *)(Readers[n]->reader_name)) == 0) {
         result = Readers[n];
         break;
       }
@@ -314,8 +312,10 @@
       DPRINT(F("GetReader() selected: "));
       DPRINTLN(result->reader_name);
     } else {
-      DPRINTLN(F("No reader was selected"));
-      return Readers[0];
+      DPRINTLN(F("GetReader() using default Readers[0]"));
+      //return Readers[0];
+      //return nullptr;
+      result = Readers[0];
     }
 
     result->serial_port = _serial_port;

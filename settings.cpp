@@ -270,7 +270,7 @@
   //
   //   void Settings::Load() {
   //
-  Settings* Settings::Load(Settings* settings_obj, int _eeprom_address) {
+  Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
     Serial.println(F("Settings::Load() BEGIN"));
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
@@ -310,11 +310,19 @@
       
     } else {
       Serial.print(F("Settings::Load() using loaded settings '"));
-      
     }
     
     Serial.print(settings_obj->settings_name); Serial.println("'");
     Serial.println(F("Settings::Load() END"));
+
+    //  // Prints out all settings in tabular format.
+    //  Serial.println();
+    //  for (int n=1; n <= SETTINGS_SIZE; n++) {
+    //    char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
+    //    settings_obj->displaySetting(n, output);
+    //    Serial.println(output);
+    //  }
+    //  Serial.println();
 
     return settings_obj;
   } // Settings::Load()

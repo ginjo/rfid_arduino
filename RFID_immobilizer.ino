@@ -181,9 +181,7 @@
  
 
   #include <SoftwareSerial.h>
-  // TODO: Implement settings with eeprom, instead of #define macros, something like this:
   #include "settings.h"
-  
   #include "led_blinker.h"
   #include "serial_menu.h"
   #include "rfid.h"
@@ -253,6 +251,15 @@
       Serial.println(F("Debug pin LOW ... enabling debug"));
       S.enable_debug = 1;
     }
+
+    // Prints out all settings in tabular format.
+    Serial.println();
+    for (int n=1; n <= SETTINGS_SIZE; n++) {
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
+      S.displaySetting(n, output);
+      Serial.println(output);
+    }
+    //Serial.println();
     
 
     /*  Initialize main objects  */
@@ -261,22 +268,19 @@
 
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    //  SerialMenu::HW = new SerialMenu(&Serial, Blinker, "HW");
-    //  SerialMenu::SW = new SerialMenu(BTserial, Blinker, "SW");
-
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 
     ReaderArraySetup();
 
     RfidReader = GetReader(S.DEFAULT_READER, RfidSerial);
-
+    
     SerialMenu::HW = new SerialMenu(&Serial, RfidReader, Blinker, "HW");
     SerialMenu::SW = new SerialMenu(BTserial, RfidReader, Blinker, "SW");
 
     //Rfid = new RFID(RfidSerial, Blinker);
     Rfid = new RFID(RfidReader, Blinker);
 
-
+    
     /*  Run setups  */
 
     Rfid->initializeOutput();
@@ -298,14 +302,6 @@
     // Activates the RFID handler.
     Rfid->begin();
 
-    // Prints out all settings in tabular format.
-    Serial.println();
-    for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      S.displaySetting(n, output);
-      Serial.println(output);
-    }
-
   } // setup()
 
 
@@ -319,16 +315,6 @@
       RfidReader->loop();
       Rfid->loop();      
     }
-
-    // This is now handled in the SerialMenu class.
-    //
-    //  if (SerialMenu::run_mode == 0 || SerialMenu::Current->get_tag_from_scanner > 0) {
-    //    RfidSerial->listen();
-    //    while (! RfidSerial->isListening()) delay(15);
-    //    delay(SerialMenu::Current->get_tag_from_scanner ? 50 : 0);
-    //    RfidReader->loop();
-    //    Rfid->loop();
-    //  }
     
   } // end loop()
 

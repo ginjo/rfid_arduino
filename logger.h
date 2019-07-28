@@ -7,7 +7,7 @@
   // DEBUG controls compilation of debug code, it does not control runtime debug behavior.
   //  If you comment-out DEBUG, the DPRINT & DPRINTLN lines are defined as blank,
   //  and any lines between '#ifdef DEBUG' and '#endif' will be ommitted from compilation.
- #define DEBUG
+  #define DEBUG
   
   #ifdef DEBUG    //Macros are usually in all capital letters.
     #define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);} // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
