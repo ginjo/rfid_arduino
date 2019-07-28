@@ -177,6 +177,13 @@
  //       See example file "C++ polymorphism with factory pattern in base.cpp".
  // TODO: Can all specific reader declarations/definitions go into a single file "readers.cpp" ???
  // TODO: Consider funcstion pointers for SerialMenu callbacks, instead of the large switch/if/then statements.
+ // TODO: menuAddTag and addTag are all messed up, in different ways, for both HW & SW interfaces.
+ //       Need to make sure that SerialMenu class always cleans up after going anything with menuAddTag.
+ //       Currently, a messy state causes the run-level 0 to behave eratically, switching on/off the proximity-state
+ //       eeeprom setting repeatedly.
+ //       Letting SerialMenu timeout naturally and go into run-mode 0, also leaves a mess,
+ //       yielding authorized tags but never activating the switch.
+ //       LED remains in boot state.
  
  
 
@@ -259,7 +266,7 @@
       S.displaySetting(n, output);
       Serial.println(output);
     }
-    //Serial.println();
+    Serial.println();
     
 
     /*  Initialize main objects  */
@@ -270,14 +277,12 @@
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
 
-    ReaderArraySetup();
-
-    RfidReader = GetReader(S.DEFAULT_READER, RfidSerial);
+    RfidReader = Reader::GetReader(S.DEFAULT_READER);
+    RfidReader->serial_port = RfidSerial;
     
     SerialMenu::HW = new SerialMenu(&Serial, RfidReader, Blinker, "HW");
     SerialMenu::SW = new SerialMenu(BTserial, RfidReader, Blinker, "SW");
 
-    //Rfid = new RFID(RfidSerial, Blinker);
     Rfid = new RFID(RfidReader, Blinker);
 
     

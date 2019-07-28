@@ -8,7 +8,6 @@
   //#include <stdlib.h>
   #include <string.h>
   #include "settings.h"
-  //#include "serial_menu.h"
   #include "tags.h"
 
   #define MAX_TAG_LENGTH 16
@@ -77,16 +76,25 @@
     virtual uint32_t processTagData(uint8_t[]);
     //int echo(int);
     void loop();
-  };
 
 
-  // External Global vars & functions.
-  // TODO: Convert these to static Reader functions. See TODO in .cpp file.
-  extern Reader** Readers;
-  //extern Reader * Readers[3];
-  extern int ReaderArraySetup();
-  //extern Reader * GetReader(const char[]);
-  extern Reader * GetReader(const char[], SoftwareSerial*);
+    /***  Static Vars & Functions  ***/
+
+    static Reader* GetReader(const char*);
+    
+    template <class T>
+    static bool TestReader(const char* _name) {
+      T obj = T();
+      //printf("obj.name: %s, _name: %s\n", obj.name, _name);
+      if (strcmp(obj.reader_name, _name) == 0) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  }; // class Reader
+
 
 
   // For inherited class constructor syntax, see:
@@ -110,5 +118,6 @@
     WL125();
     uint32_t processTagData(uint8_t[]);
   };
+
 
 #endif

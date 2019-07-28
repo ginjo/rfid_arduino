@@ -91,8 +91,8 @@
       SW->loop();
     }
 
-    if (Current && Current == SW) delete(HW);
-    if (Current && Current == HW) delete(SW);
+    if (Current && HW && Current == SW) delete(HW);
+    if (Current && SW && Current == HW) delete(SW);
     
   } // main Loop()
 

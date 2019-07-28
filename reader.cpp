@@ -291,64 +291,13 @@
 
 
 
-  /***  Global functions and variables  ***/
-
-  //Reader * GetReader(char _name[SETTINGS_VALUE_SIZE]) {
-  Reader *GetReader(const char _name[], SoftwareSerial *_serial_port) {
-    DPRINT(F("GetReader() called with name: "));
-    DPRINTLN((char*)_name);
-
-    Reader *result;
-    int n;
-
-    for (n=0; n < 3; n++) {
-      if (strcmp((char *)_name, (char *)(Readers[n]->reader_name)) == 0) {
-        result = Readers[n];
-        break;
-      }
-    }
-
-    if (n < 3) {
-      DPRINT(F("GetReader() selected: "));
-      DPRINTLN(result->reader_name);
-    } else {
-      DPRINTLN(F("GetReader() using default Readers[0]"));
-      //return Readers[0];
-      //return nullptr;
-      result = Readers[0];
-    }
-
-    result->serial_port = _serial_port;
-    return result;
-  }
-
-  // Defines Readers array.
-  // NOTE: Using 'new' keyword usually requires a 'delete' somewhere to prevent memory leaks.
-  // But with this application, I don't think we'll hit that problem.
-  // TODO: Convert these extern/global things to static Reader things.
-  // TODO: Even better, don't store instances of all readers, just load the one(s) you need!
-  // You could then eliminate the entire Readers array!
-  //
-  // The following is an excellent example of Creating an Array of
-  // pointers to struct (or class) objects.
-  Reader** Readers = new Reader*[3];
-  //extern Reader * Readers[3] = {}; // I don't think this works.
+  /***  Static Vars & Functions  ***/
   
-  // Defines global function for Readers array setup.
-  int ReaderArraySetup() {
-    Serial.println(F("ReaderArraySetup() building array of readers."));
-    // These work with Reader as abstract class (with pure virtual functions),
-    // and they also works with the Reader as regular base class (no pure virtual funcs).
-    // This is the ONLY form that works. I've tried many others, and none get
-    // the job done correctly.
-    Readers[0] = new RDM6300;
-    Readers[1] = new R7941E;
-    Readers[2] = new WL125;
+  Reader* Reader::GetReader(const char *_name) {
+    if (TestReader<RDM6300>(_name)) return (new RDM6300);
+    if (TestReader<R7941E>(_name)) return (new R7941E);
+    if (TestReader<WL125>(_name)) return (new WL125);
 
-    return 0;
+    // otherwise default...
+    return (new RDM6300);
   }
-
-  //  // Can this go here?
-  //  namespace {
-  //    int output = ReaderArraySetup();
-  //  }
