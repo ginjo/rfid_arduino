@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre127"
+  #define VERSION "v0.1.0.pre131"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -28,7 +28,7 @@
     
   #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
-  #define SETTINGS_VALUE_SIZE 16 // max length of a setting var name
+  #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   #define SETTINGS_EEPROM_ADDRESS 800 // see class definition
   //#define SETTINGS_CHECKSUM_SIZE // see class definition
 
@@ -105,6 +105,8 @@
 
 
   /***  Global / External Vars & Funcs  ***/
+
+  extern int FreeRam(const char[] = "");
 
   // This declares an extern 'S' of type Settings.
   // This will be a ref (pointer?) to Settings::Current

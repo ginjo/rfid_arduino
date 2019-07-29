@@ -37,16 +37,6 @@
     
     pinMode(S.READER_POWER_CONTROL_PIN, OUTPUT);
 
-    // Temp test to see if this class works with manually instanciated reader.
-    //reader = new WL125; // I think this works.
-    // This might work on the surface, but I don't think it allows each instance
-    // to properly differentiate when called from the base class.
-    //WL125 * reader = &WL125(); 
-
-    // This must go after the Readers array is defined and initialized.
-    // Why not put defining and initializing into this function?
-    //ReaderArraySetup();
-
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into RFID::RFID().
 

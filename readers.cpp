@@ -8,7 +8,7 @@
 
   uint32_t RDM6300::processTagData(uint8_t _tag[24]) {
 
-    DPRINT(F("RDM6300::processTagData() with input: "));
+    DPRINT(F("RDM6300 prcs tag inpt: "));
     DPRINTLN(strtol((char *)_tag, NULL, HEX));
 
     uint8_t id_len = id_end - id_begin;
@@ -20,7 +20,7 @@
 
     uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
   
-    DPRINT(F("RDM6300 Tag success: "));
+    DPRINT(F("RDM6300 tag read: "));
     DPRINT((char *)tmp_str);
     DPRINT(", ");
     DPRINTLN(tag_id);
@@ -34,7 +34,7 @@
   { ; }
     
   uint32_t R7941E::processTagData(uint8_t _tag[]) {
-    DPRINT(F("R7941E::processTagData() with "));
+    DPRINT(F("R7941E prcs tag inpt: "));
     //DPRINT((char *)_tag);
     DPRINT(F("id_begin: "));
     DPRINT(id_begin);
@@ -56,7 +56,7 @@
 
     uint32_t tag_id = strtol(id_hex, NULL, 16);
   
-    DPRINT(F("R7941E Tag read: "));
+    DPRINT(F("R7941E tag read: "));
     DPRINT(id_hex);
     DPRINT(", ");
     DPRINTLN(tag_id);
@@ -78,7 +78,7 @@
 
     //Reader::preProcessTagData();
 
-    DPRINT(F("WL125::processTagData() with input: "));
+    DPRINT(F("WL125 prcs tag inpt: "));
     DPRINT(F("id_begin: "));
     DPRINT(id_begin);
     DPRINT(F(", id_end: "));
@@ -100,7 +100,7 @@
 
     uint32_t tag_id = strtol(id_char, NULL, 16);
   
-    DPRINT(F("WL125 Tag success: "));
+    DPRINT(F("WL125 read: "));
     DPRINT(id_char);
     DPRINT(", ");
     DPRINTLN(tag_id);

@@ -85,6 +85,7 @@
     template <class T>
     static bool TestReader(const char* _name) {
       T obj = T();
+      FreeRam("after TestReader");
       //printf("obj.name: %s, _name: %s\n", obj.name, _name);
       if (strcmp(obj.reader_name, _name) == 0) {
         return true;

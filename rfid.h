@@ -24,9 +24,6 @@
   #include "serial_menu.h"
   #include "tags.h"
 
-  // Moved to Reader.
-  //  #define MAX_TAG_LENGTH 16
-
 
   class RFID {
   public:

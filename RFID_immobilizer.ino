@@ -184,9 +184,11 @@
  //       Letting SerialMenu timeout naturally and go into run-mode 0, also leaves a mess,
  //       yielding authorized tags but never activating the switch.
  //       LED remains in boot state.
+ // TODO: Remove stuff from SerialMenu and Reader that isn't used any more.
+ //       Remember to check obsolete macros and global vars in .h files.
+ // TODO: Try to consolidate all reader definitions in the Readers.cpp file. Is possible?
  
- 
-
+  #include <Arduino.h>
   #include <SoftwareSerial.h>
   #include "settings.h"
   #include "led_blinker.h"
@@ -219,6 +221,8 @@
     }
     delay(15);
     Serial.println(F("Initialized default serial port @ 57600 baud"));
+
+    FreeRam("setup() pre load-stngs");
     
     //Settings::Load(SETTINGS_EEPROM_ADDRESS);
     //Settings::Load(&Settings::Current);
@@ -267,7 +271,8 @@
       Serial.println(output);
     }
     Serial.println();
-    
+
+    FreeRam("setup() pre obj new");
 
     /*  Initialize main objects  */
 
@@ -285,6 +290,8 @@
 
     Rfid = new RFID(RfidReader, Blinker);
 
+    FreeRam("setup() pre obj stp");
+    
     
     /*  Run setups  */
 
@@ -306,6 +313,9 @@
 
     // Activates the RFID handler.
     Rfid->begin();
+
+    FreeRam("end setup()");
+    
 
   } // setup()
 

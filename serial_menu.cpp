@@ -35,19 +35,6 @@
   // which would happen if this was in serial_menu.h.
   // This is apparently a legitimate C/C++ technique.
   #include "rfid.h"
-  
-  
-  // NOTE: Here is a simple formula to convert a hex string to dec integer (unsigned long).
-  // TODO: Move this out of the live code files. Maybe make it an <example>.cpp file in the
-  //       top-level folder of RFID_Immobilizer.
-  // This works in onlinegbd.com, but may not work for arduino.
-  //  #include <stdlib.h>
-  //  int main()
-  //  {
-  //      char str[] = "9F8E7D6C";
-  //      unsigned long num = strtol(str, NULL, 16);
-  //      printf("%u", num);
-  //  }
 
 
   // Instanciates the built-in reset function.
@@ -76,8 +63,10 @@
 
     // Runs hardware-serial loop().
     if (!Current || Current == HW) {
+      // TODO: Consider moving this delay to the beginning of loop(),
+      // since it's the same as in the SW version below.
       delay(HW->get_tag_from_scanner ? 25 : 1);
-      DPRINTLN("calling SerialMenu::HW->loop()");
+      DPRINTLN("Menu::HW->loop()");
       HW->loop();
     }
 
@@ -87,12 +76,9 @@
       sp->listen();
       while (! sp->isListening()) delay(15);
       delay(SW->get_tag_from_scanner ? 25 : 1);
-      DPRINTLN("calling SerialMenu::SW->loop()");
+      DPRINTLN("Menu::SW->loop()");
       SW->loop();
     }
-    // Suspect UB!
-    //  if (Current && HW && Current == SW) delete(HW);
-    //  if (Current && SW && Current == HW) delete(SW);
     
   } // main Loop()
 
@@ -118,7 +104,7 @@
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
-    strlcpy(input_mode, "menu", sizeof(input_mode));
+    //strlcpy(input_mode, "menu", sizeof(input_mode));
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
 	}
 	
@@ -141,12 +127,12 @@
     } else {
       readLineWithCallback(&SerialMenu::menuSelectedMainItem);
     }
-    
-    
+
  	}
 
 
-  /*** Looping Functions ***/
+
+  /***  Control  ***/
 
   void SerialMenu::loop() {
     //DPRINTLN(F("/*** MENU LOOP BEGIN ***/"));
@@ -154,29 +140,18 @@
 
     // TODO: Move this into serial_menu, controled by callback stack.
     // TODO: Disable this here as soon as doing so won't affect any other calls.
-    getTagFromScanner();
+    //getTagFromScanner();
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: Create a Switch object that handles all switch actions (start, stop, initial, cleanup, etc).
     if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
+
+    // TODO: Re-enable this after decoupling from readLine (wich should only care about completed buff).
     //checkSerialPort();
-    //runCallbacks();
     
     call();
-  }
-
-  // Starts, restarts, resets admin with timeout.
-  void SerialMenu::updateAdminTimeout(unsigned long seconds) {
-    if (admin_timeout != seconds) {
-      Serial.print(F("updateAdminTimeout(): "));
-      Serial.println(seconds);
-    }
-    
-    admin_timeout = seconds;
-    run_mode = 1;
-    previous_ms = millis();
   }
 
   // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
@@ -195,6 +170,18 @@
       exitAdmin();
     }
   }
+  
+  // Starts, restarts, resets admin with timeout.
+  void SerialMenu::updateAdminTimeout(unsigned long seconds) {
+    if (admin_timeout != seconds) {
+      Serial.print(F("updateAdminTimeout(): "));
+      Serial.println(seconds);
+    }
+    
+    admin_timeout = seconds;
+    run_mode = 1;
+    previous_ms = millis();
+  }
 
   // Exits admin and starts main RFID/proximity loop.
   // Alternatively, reboots the arduino.
@@ -208,6 +195,7 @@
       run_mode = 0;
       resetInputBuffer();
       resetStack();
+      FreeRam("exitAdmin()");
     } // else {
       //    Serial.println(F("\r\nMenu rebooting arduino"));
       //    serial_port->println(F("Exiting admin console\r\n"));
@@ -217,29 +205,17 @@
   }
 
 
-  /*** Menu and State Logic ***/
 
-  // Clears any data waiting on serial port, if any.
-  void SerialMenu::clearSerialBuffer() {
-    DPRINTLN("Menu::clearSerialBuffer()");
-    while (serial_port->available()) serial_port->read();    
-  }
 
-  void SerialMenu::readLineWithCallback(CB cback, bool _read_tag) {
-    DPRINTLN("Menu::readLineWithCallback()");
-    push(cback);
-    push(&SerialMenu::readLine);
-    // TODO: Should this be here or in prompt()?
-    clearSerialBuffer();
-    //readLine();
-  }
+  /***  Input  ***/
 
-  // Checks serial_port (which reads to buff).
-  // Optionally checks other input sources, like tag-reader, and reads to buff.
-  // Reacts to buff EOL by calling stack callback.
-  // Removes readLine() and callback from stack.
+  // Checks & reads data from serial port, until EOL is detected.
   //
-  void SerialMenu::readLine(void *dat) {
+  // Stop reading serial input after CR/LF
+  // is received. Only start reading in data again, after the buff
+  // is reset (to null, with buff_index = 0).
+  //
+  void SerialMenu::checkSerialPort() {
     if (serial_port->available()) {
 
       // If someone typed anything into this serial port,
@@ -247,47 +223,142 @@
       Current = this;
 
       // Always update the admin timeout when user inputs anything.
-      updateAdminTimeout(); //(S.admin_timeout) // See header for default function values.
+      updateAdminTimeout();
       
-      while (serial_port->available()) {
-        //Serial.println(F("checkSerialPort() serial_port->available() is TRUE"));
+      while (serial_port->available() && !bufferReady()) {
         char byt = serial_port->read();
-        
-        DPRINT(F("readLine() received byte: "));
-        DPRINTLN((int)byt);
-        //  DPRINT(" (");
-        //  DPRINT((char)byt);
-        //  DPRINTLN(")");
-
         serial_port->write(byt);
+        
+        DPRINT(F("checkSerialPort() rcvd byte: "));
+        DPRINTLN((int)byt);
         
         buff[buff_index] = byt;
         buff_index += 1;
 
-        if ((int)byt == 13 || (int)byt == 10 || (int)byt == 0 ) {
-          DPRINT("readLine EOL at index: "); DPRINTLN(buff_index-1);
+        if ((int)byt == 13 || (int)byt == 10 || (int)byt == 0) {
+          DPRINT("readLine EOL indx: "); DPRINTLN(buff_index-1);
           //serial_port->println(F("\r\n"));
           serial_port->println((char)10);
     
           // Adds string terminator to end of buff.
           buff[buff_index] = 0;
-    
-          // Resets buff_index.
-          // buff_index == 0 indicates a line of input is ready for processing.
-          buff_index = 0;
-    
-          // Removes readLine() from stack.
-          pop();
-    
-          // Calls callback, passing in buff (true removes callback from stack).
-          call(buff, true);
           
-        } // if EOL        
-      } // while data available
+        } // end if
+        
+      } // end while
+    } // end if
+  }
+
+  // Clears any data waiting on serial port, if any.
+  void SerialMenu::clearSerialPort() {
+    DPRINTLN("Menu::clearSerialPort()");
+    while (serial_port->available()) serial_port->read();    
+  }
+
+  void SerialMenu::resetInputBuffer() {
+    DPRINTLN("Menu::resetInputBuffer()");
+    memset(buff, 0, INPUT_BUFFER_LENGTH);
+    buff_index = 0;
+    get_tag_from_scanner = 0;
+  }
+  
+  bool SerialMenu::bufferReady() {
+    bool rslt = (
+      buff_index > 0 &&
+      buff[0] != 0 && (
+        buff[buff_index-1] == 13 ||
+        buff[buff_index-1] == 10 ||
+        buff[buff_index-1] == 0  ||
+        buff[buff_index]   == 13 ||
+        buff[buff_index]   == 10 ||
+        buff[buff_index]   == 0
+      )
+    );
+
+    if (rslt) { DPRINTLN("Menu::bufferReady(): "); DPRINTLN(buff); }
+    
+    return rslt;
+  }
+
+  void SerialMenu::prompt(const char _message[], CB _cback) {
+    
+    if (_message[0]) {
+      serial_port->print(_message);
+      serial_port->print(" ");
+    }
+
+    // This can only go BEFORE the ">" IF it doesn't call anything (just does set-up).
+    // Otherwise it should go after the ">" (but then any errors will show up after the prompt).
+    readLineWithCallback(_cback);
+    
+    serial_port->print("> ");
+  }
+
+  void SerialMenu::readLineWithCallback(CB cback, bool _read_tag) {
+    DPRINTLN("Menu::readLineWithCallback()");
+    push(cback);
+    push(&SerialMenu::readLine);
+    clearSerialPort();
+    resetInputBuffer();
+  }
+
+  // Checks for bufferReady() and reacts by calling stack-callback.
+  // Removes readLine() and callback from stack.
+  //
+  void SerialMenu::readLine(void *dat) {
+    getTagFromScanner();
+    checkSerialPort();
+    
+    if (bufferReady()) {
+
+      char input[INPUT_BUFFER_LENGTH];
+      strlcpy(input, buff, sizeof(input));
+
+      resetInputBuffer();
       
-    } // if data available
+      // Removes readLine() from stack.
+      pop();
+
+      serial_port->println();
+  
+      // Calls callback, passing in buff (true removes callback from stack).
+      call(input, true);
+
+    } // end if
   } // readLine()
 
+  // This should loop as long as get_tag_from_scanner == 1,
+  // until reader has current_tag_id, then this will set buff
+  // with reader's current_tag_id and set get_tag_from_scanner to 0.
+  //
+  // The tag reader needs to be checked and handled regardless
+  // of whether or not typed input is available on the UI serial-port.
+  //
+  void SerialMenu::getTagFromScanner() {
+    if (get_tag_from_scanner) {
+      reader->loop();
+      if (reader->current_tag_id) {
+        DPRINT("Menu::getTagFromScanner() found tag "); DPRINTLN(reader->current_tag_id);
+        char str[9];
+        sprintf(str, "%lu", reader->current_tag_id);
+        strlcpy(buff, str, sizeof(buff));
+        for (uint8_t i=0; i < sizeof(buff); i++) {
+          if (buff[i] == 0) {
+            buff_index = i;
+            break;
+          }
+        }
+        reader->current_tag_id = 0;
+        reader->resetBuffer();
+        get_tag_from_scanner = 0;
+      }
+    }
+  }
+
+
+
+  /***  Data  ***/
+  
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
   int SerialMenu::byteToAsciiChrNum(const char byt) {
@@ -308,23 +379,6 @@
     //return (int)strtol(str, NULL, 10); // convert the string of digits to int.
     // I don't think we need to use the str... it should the exactly the same as byt.
     return (int)strtol(&byt, NULL, 10);
-  }
-
-  // This should loop as long as get_tag_from_scanner == 1,
-  // until reader has current_tag_id, then this will set buff
-  // with reader's current_tag_id and set get_tag_from_scanner to 0.
-  void SerialMenu::getTagFromScanner() {
-    if (get_tag_from_scanner) {
-      reader->loop();
-      if (reader->current_tag_id) {
-        char str[9];
-        sprintf(str, "%lu", reader->current_tag_id);
-        strlcpy(buff, str, sizeof(buff));
-        reader->current_tag_id = 0;
-        reader->resetBuffer();
-        get_tag_from_scanner = 0;
-      }
-    }
   }
 
   void SerialMenu::addTagString(void *dat) {
@@ -366,7 +420,6 @@
     
     serial_port->println(); serial_port->println();
     resetInputBuffer();
-    get_tag_from_scanner = 0;
     //return result;
     menuListTags();
   }
@@ -415,36 +468,10 @@
     menuSettings();
   }
 
-  void SerialMenu::resetInputBuffer() {
-    memset(buff, 0, INPUT_BUFFER_LENGTH);
-    buff_index = 0;
-  }
-
-  void SerialMenu::prompt(const char _message[], CB _cback) {
-    
-    if (_message[0]) {
-      serial_port->print(_message);
-      serial_port->print(" ");
-    }
-
-    // WARN: This might break some things, being called here.
-    //resetInputBuffer(); //
-
-    // Always clear serial buffer before prompting for new data.
-    // TODO: Should this be here or in readLineWithCallback() ?
-    //clearSerialBuffer();
-
-    // This can only go BEFORE the ">" IF it doesn't call anything (just does set-up).
-    // Otherwise it should go after the ">" (but then any errors will show up after the prompt).
-    readLineWithCallback(_cback);
-    
-    serial_port->print("> ");
-  }
 
 
 
-
-  /*** Menu Item Controllers ***/
+  /***  Menu  ***/
   
   void SerialMenu::menuMain(void *dat) {
     DPRINTLN("Menu::menuMain()");

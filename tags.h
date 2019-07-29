@@ -1,7 +1,7 @@
 #ifndef __TAGS__
 #define __TAGS__
 
-  #define TAG_LIST_SIZE 10
+  #define TAG_LIST_SIZE 5
   #define TAGS_EEPROM_ADDRESS 700
 
   #include <Arduino.h>

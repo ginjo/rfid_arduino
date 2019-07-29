@@ -335,4 +335,12 @@
   Settings& S = Settings::Current;
 
 
+  // Free ram calc  from https://forum.arduino.cc/index.php?topic=431912.0
+  extern int FreeRam (const char txt[]) {
+    extern int __heap_start, *__brkval; 
+    int v; 
+    int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+    Serial.print("FREE RAM ("); Serial.print(rslt); Serial.print(") "); Serial.println(txt);
+    return rslt;
+  }
   

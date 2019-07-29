@@ -18,8 +18,8 @@
   //#include "rfid.h" // This would cause circular include. See .cpp file for better solution.
   
   #define INPUT_BUFFER_LENGTH 24
-  #define INPUT_MODE_LENGTH 16
-  #define CURRENT_FUNCTION_LENGTH 24
+  //#define INPUT_MODE_LENGTH 16
+  //#define CURRENT_FUNCTION_LENGTH 24
 
 
   class SerialMenu : public Stack<SerialMenu> {
@@ -33,7 +33,7 @@
     uint32_t previous_ms;
     uint32_t admin_timeout; // seconds
   	
-  	char input_mode[INPUT_MODE_LENGTH];
+  	//char input_mode[INPUT_MODE_LENGTH];
   
   	// Byte buffer for incoming serial strings
   	char buff[INPUT_BUFFER_LENGTH];
@@ -45,14 +45,35 @@
     Led * blinker;
 
     // Constructor receives a serial port instance
-    // from Serial (HardwareSerial) or SoftwareSerial.
-    // TODO: Is the parameter name required here? What about the pointer?
+    // from HardwareSerial or SoftwareSerial.
     //SerialMenu(Stream *stream_ref);
     SerialMenu(Stream*, Reader*, Led*, const char* = "");
-    
+
+    /* Control */
     void begin();
-    void showInfo();
+    void loop();
+    void adminTimeout();
+    void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
+    void exitAdmin();
+
+    /* Input */
     void checkSerialPort();
+    void clearSerialPort();
+    void resetInputBuffer();
+    bool bufferReady();
+    void prompt(const char[] = "", CB = nullptr);
+    //void getLine(char);
+    void readLineWithCallback(CB, bool=false);
+    void readLine(void* = nullptr);
+    void getTagFromScanner();
+
+    /* Data */
+    int  byteToAsciiChrNum(char);
+    void addTagString(void*);
+    void deleteTag(void*);
+    void updateSetting(void*);
+
+    /* Commands */
     void menuSelectedMainItem(void* = nullptr);
     void menuMain(void* = nullptr);
     void menuMainPrompt(const char[] = "Select a menu item");
@@ -62,32 +83,7 @@
     void menuDeleteAllTags(void* = nullptr);
     void menuShowFreeMemory();
     void menuSettings(void* = nullptr);
-    void menuSelectedSetting(void* = nullptr); // (char[]);
-    int  byteToAsciiChrNum(char);
-    void getLine(char);
-    void clearSerialBuffer();
-    void readLineWithCallback(CB, bool=false);
-    void readLine(void* = nullptr);
-    void receiveTagInput(char);
-    //  void setInputMode(const char[]);
-    //  bool matchInputMode(const char[]);
-    //  void setCallbackFunction(const char[]);
-    //  bool matchCurrentFunction(const char[]);
-    //  bool inputAvailable();
-    //  bool inputAvailable(const char[]);
-    //  const char * inputAvailableFor();
-    //  void runCallbacks();
-    void addTagString(void*);
-    void deleteTag(void*);
-    void updateSetting(void*);
-    void resetInputBuffer();
-    void adminTimeout();
-    // argument defaults must be declared here, not defined in implementation.
-    void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
-    void exitAdmin();
-    void prompt(const char[] = "", CB = nullptr);
-    void getTagFromScanner();
-    void loop();
+    void menuSelectedSetting(void* = nullptr); // (char[]);    
 
 
     /*  Static Vars & Functions  */

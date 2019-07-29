@@ -6,7 +6,6 @@
   #include <EEPROM.h>
   #include "logger.h"
 
-	//#define STORAGE_CHECKSUM_SIZE 9
   #define STORAGE_NAME_SIZE 16
 
   /*  Note that all calls to static vars from base class must use templates

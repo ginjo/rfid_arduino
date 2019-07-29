@@ -29,7 +29,7 @@
     //strncpy(reader_name, _name, sizeof(reader_name));
     //strcpy(reader_name, _name);
     strlcpy(reader_name, _name, sizeof(reader_name));
-    Serial.print(F("Constructing Reader for: "));
+    Serial.print(F("Constructing Reader: "));
     Serial.println(_name);
   }
 
@@ -38,7 +38,7 @@
   //  }
 
   uint32_t Reader::processTagData(uint8_t[]) {
-    DPRINTLN(F("Error: You are attempting to call processTagData() on the generic Reader class"));
+    DPRINTLN(F("Error: Called processTagData() on base Reader clss"));
     return 0UL;
   }
 
@@ -207,7 +207,8 @@
     //  int tst = echo(24);
     //  DPRINTLN(tst);
 
-    DPRINTLN(F("Reader::processTag() calling processTagData(_tag)"));
+    // This calls the reader-specific process code.
+    //DPRINTLN(F("Reader::processTag() calling processTagData()"));
     uint32_t tag_id = processTagData(_tag);
     
     DPRINT(F("Tag result from Reader: "));
