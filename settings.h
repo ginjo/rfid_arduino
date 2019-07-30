@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre131"
+  #define VERSION "v0.1.0.pre134"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -24,6 +24,24 @@
   //#include <EEPROM.h>
 
   #include "logger.h"
+
+  // Comment lines to disable debug code for each class.
+  #define INO_DEBUG  // main ino file
+  //#define BK_DEBUG   // blinker
+  #define RD_DEBUG   // reader
+  //#define RF_DEBUG   // proximity controller
+  #define SM_DEBUG   // serial menu
+  //#define SK_DEBUG   // stack
+  //#define ST_DEBUG   // settings
+  
+  #ifdef ST_DEBUG
+    #define ST_PRINT(...) DPRINT(__VA_ARGS__)
+    #define ST_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define ST_PRINT(...)
+    #define ST_PRINTLN(...)
+  #endif
+  
   #include "storage.h"
     
   #define SETTINGS_SIZE 17 // quantity of settings vars

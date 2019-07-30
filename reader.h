@@ -10,6 +10,16 @@
   #include "settings.h"
   #include "tags.h"
 
+  // Comment this line to disable debug code for this class.
+  //#define RD_DEBUG
+  #ifdef RD_DEBUG
+    #define RD_PRINT(...) DPRINT(__VA_ARGS__)
+    #define RD_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define RD_PRINT(...)
+    #define RD_PRINTLN(...)
+  #endif
+
   #define MAX_TAG_LENGTH 16
 
 

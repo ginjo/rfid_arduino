@@ -24,6 +24,16 @@
   #include "serial_menu.h"
   #include "tags.h"
 
+  // Comment this line to disable debug code for this class.
+  //#define RF_DEBUG
+  #ifdef RF_DEBUG
+    #define RF_PRINT(...) DPRINT(__VA_ARGS__)
+    #define RF_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define RF_PRINT(...)
+    #define RF_PRINTLN(...)
+  #endif
+
 
   class RFID {
   public:

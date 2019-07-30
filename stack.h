@@ -9,6 +9,16 @@
 #ifndef __FUNCTION_STACK_H__
 #define __FUNCTION_STACK_H__
 
+  // Comment this line to disable debug code for this class.
+  //#define SK_DEBUG
+  #ifdef SK_DEBUG
+    #define SK_PRINT(...) DPRINT(__VA_ARGS__)
+    #define SK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define SK_PRINT(...)
+    #define SK_PRINTLN(...)
+  #endif
+
   #include <Arduino.h>
   #include "settings.h"
   #define FUNCTION_STACK_SIZE 5
@@ -23,7 +33,7 @@
     int stack_index = -1;
     
     virtual void push(CB func) {
-      //DPRINT("Stack::push() to index "); DPRINTLN(stack_index+1);   // DPRINT(T::instance_name); DPRINT(", ");
+      SK_PRINT("Stack::push() to index "); SK_PRINTLN(stack_index+1); // SK_PRINT(T::instance_name); SK_PRINT(", ");
       //((T*)this->*func)((char*)"push() called with this func");
       if (func) {
         stack_index += 1;
@@ -34,7 +44,7 @@
     }
 
     virtual CB pop() {
-        //DPRINT("Stack::pop() from index "); DPRINTLN(stack_index);
+        SK_PRINT("Stack::pop() from index "); SK_PRINTLN(stack_index);
         if (stack_index < 0) return nullptr;
         CB func = top();
         stack_index -= 1;
@@ -43,13 +53,13 @@
     }
     
     virtual CB top() {
-        //DPRINT("Stack::top() index "); DPRINTLN(stack_index);
+        SK_PRINT("Stack::top() index "); SK_PRINTLN(stack_index);
         if (stack_index < 0) return nullptr;
         return stack[stack_index];
     }
 
     virtual void call(void *dat = nullptr, bool _pop = false) {
-        //DPRINT("Stack::call() index "); DPRINTLN(stack_index);
+        SK_PRINT("Stack::call() index "); SK_PRINTLN(stack_index);
         CB cback = top();
         if (stack_index < 0 || !cback) return;
         // Need to pop before calling, otherwise pop will happen
@@ -61,7 +71,7 @@
 
     // Optionally receives function pointer of type CB.
     virtual void resetStack(CB func = nullptr) {
-      //DPRINT("Stack::resetStack() with index "); DPRINTLN(stack_index);
+      SK_PRINT("Stack::resetStack() with index "); SK_PRINTLN(stack_index);
       stack_index = -1;
       
       for (int i=0; i < FUNCTION_STACK_SIZE; i++) {

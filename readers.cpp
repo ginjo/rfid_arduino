@@ -8,8 +8,8 @@
 
   uint32_t RDM6300::processTagData(uint8_t _tag[24]) {
 
-    DPRINT(F("RDM6300 prcs tag inpt: "));
-    DPRINTLN(strtol((char *)_tag, NULL, HEX));
+    RD_PRINT(F("RDM6300 prcs tag inpt: "));
+    RD_PRINTLN(strtol((char *)_tag, NULL, HEX));
 
     uint8_t id_len = id_end - id_begin;
     char tmp_str[id_len+1] = "";
@@ -20,10 +20,10 @@
 
     uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
   
-    DPRINT(F("RDM6300 tag read: "));
-    DPRINT((char *)tmp_str);
-    DPRINT(", ");
-    DPRINTLN(tag_id);
+    RD_PRINT(F("RDM6300 tag read: "));
+    RD_PRINT((char *)tmp_str);
+    RD_PRINT(", ");
+    RD_PRINTLN(tag_id);
     
     return tag_id;
   }
@@ -34,19 +34,19 @@
   { ; }
     
   uint32_t R7941E::processTagData(uint8_t _tag[]) {
-    DPRINT(F("R7941E prcs tag inpt: "));
-    //DPRINT((char *)_tag);
-    DPRINT(F("id_begin: "));
-    DPRINT(id_begin);
-    DPRINT(F(", id_end: "));
-    DPRINT(id_end);
+    RD_PRINT(F("R7941E prcs tag inpt: "));
+    //RD_PRINT((char *)_tag);
+    RD_PRINT(F("id_begin: "));
+    RD_PRINT(id_begin);
+    RD_PRINT(F(", id_end: "));
+    RD_PRINT(id_end);
     
     uint8_t id_len = (id_end - id_begin +1)*2;
-    DPRINT(F(", id_len: "));
-    DPRINT(id_len);
+    RD_PRINT(F(", id_len: "));
+    RD_PRINT(id_len);
     
-    DPRINT(F(", checksum (dec): "));
-    DPRINTLN(_tag[8]);
+    RD_PRINT(F(", checksum (dec): "));
+    RD_PRINTLN(_tag[8]);
     
     char id_hex[id_len+1] = ""; // need to initialize this to empty.
 
@@ -56,10 +56,10 @@
 
     uint32_t tag_id = strtol(id_hex, NULL, 16);
   
-    DPRINT(F("R7941E tag read: "));
-    DPRINT(id_hex);
-    DPRINT(", ");
-    DPRINTLN(tag_id);
+    RD_PRINT(F("R7941E tag read: "));
+    RD_PRINT(id_hex);
+    RD_PRINT(", ");
+    RD_PRINTLN(tag_id);
           
     return tag_id;
   }
@@ -78,19 +78,19 @@
 
     //Reader::preProcessTagData();
 
-    DPRINT(F("WL125 prcs tag inpt: "));
-    DPRINT(F("id_begin: "));
-    DPRINT(id_begin);
-    DPRINT(F(", id_end: "));
-    DPRINT(id_end);
+    RD_PRINT(F("WL125 prcs tag inpt: "));
+    RD_PRINT(F("id_begin: "));
+    RD_PRINT(id_begin);
+    RD_PRINT(F(", id_end: "));
+    RD_PRINT(id_end);
     
     uint8_t id_len = (id_end - id_begin +1);
     
-    DPRINT(F(", id_len: "));
-    DPRINT(id_len);
+    RD_PRINT(F(", id_len: "));
+    RD_PRINT(id_len);
     
-    DPRINT(F(", checksum (raw bytes): "));
-    DPRINT(_tag[11]); DPRINT(","); DPRINTLN(_tag[12]);
+    RD_PRINT(F(", checksum (raw bytes): "));
+    RD_PRINT(_tag[11]); RD_PRINT(","); RD_PRINTLN(_tag[12]);
 
     char id_char[id_len+1] = ""; // need to initialize this to empty.
     
@@ -100,10 +100,10 @@
 
     uint32_t tag_id = strtol(id_char, NULL, 16);
   
-    DPRINT(F("WL125 read: "));
-    DPRINT(id_char);
-    DPRINT(", ");
-    DPRINTLN(tag_id);
+    RD_PRINT(F("WL125 read: "));
+    RD_PRINT(id_char);
+    RD_PRINT(", ");
+    RD_PRINTLN(tag_id);
     
     return tag_id;
   }

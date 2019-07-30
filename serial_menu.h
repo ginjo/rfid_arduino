@@ -16,6 +16,16 @@
   #include "led_blinker.h"
   #include "stack.h"
   //#include "rfid.h" // This would cause circular include. See .cpp file for better solution.
+
+  // Comment this line to disable debug code for this class.
+  //#define SM_DEBUG
+  #ifdef SM_DEBUG
+    #define SM_PRINT(...) DPRINT(__VA_ARGS__)
+    #define SM_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define SM_PRINT(...)
+    #define SM_PRINTLN(...)
+  #endif
   
   #define INPUT_BUFFER_LENGTH 24
   //#define INPUT_MODE_LENGTH 16
@@ -61,7 +71,7 @@
     void clearSerialPort();
     void resetInputBuffer();
     bool bufferReady();
-    void prompt(const char[] = "", CB = nullptr);
+    void prompt(const char[] = "", CB = nullptr, bool=false);
     //void getLine(char);
     void readLineWithCallback(CB, bool=false);
     void readLine(void* = nullptr);

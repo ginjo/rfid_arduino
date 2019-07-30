@@ -9,6 +9,16 @@
   #include <string.h>
 
   #include "settings.h"
+
+  // Comment this line to disable debug code for this class.
+  //#define BK_DEBUG
+  #ifdef BK_DEBUG
+    #define BK_PRINT(...) DPRINT(__VA_ARGS__)
+    #define BK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define BK_PRINT(...)
+    #define BK_PRINTLN(...)
+  #endif
   
   // Max allowed size of intervals array.
   #define INTERVALS_LENGTH 20 // for a max of 10 on/off cycles

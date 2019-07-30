@@ -7,6 +7,7 @@
   // DEBUG controls compilation of debug code, it does not control runtime debug behavior.
   //  If you comment-out DEBUG, the DPRINT & DPRINTLN lines are defined as blank,
   //  and any lines between '#ifdef DEBUG' and '#endif' will be ommitted from compilation.
+  // Each class also has its own controls for managing debug code. See the .h files.
   #define DEBUG
   
   #ifdef DEBUG    //Macros are usually in all capital letters.

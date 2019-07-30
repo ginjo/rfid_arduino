@@ -80,15 +80,15 @@
   // Updates a setting given setting index and data.
   bool Settings::updateSetting(int _index, char _data[]) {
 
-    DPRINT(F("S.updateSetting() "));
-    DPRINT(_index); DPRINT(", ");
+    ST_PRINT(F("S.updateSetting() "));
+    ST_PRINT(_index); ST_PRINT(", ");
 
     char setting_name[SETTINGS_NAME_SIZE];
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
 
-    DPRINT(setting_name); DPRINT(", ");
-    DPRINTLN(_data);
+    ST_PRINT(setting_name); ST_PRINT(", ");
+    ST_PRINTLN(_data);
 
     // Note that this is a 1-based list (not 0-based).
     switch (_index) {
@@ -160,7 +160,7 @@
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
-    DPRINT(F("Settings::getSettingByIndex: ")); DPRINT(index); DPRINT(", "); DPRINT(setting_name);
+    ST_PRINT(F("Settings::getSettingByIndex: ")); ST_PRINT(index); ST_PRINT(", "); ST_PRINT(setting_name);
     
     switch(index) {
       case 1 :
@@ -219,7 +219,7 @@
         break;
     } // switch
 
-    DPRINT(", "); DPRINTLN(setting_value);
+    ST_PRINT(", "); ST_PRINTLN(setting_value);
   } // function
 
   // Prints out one line of settings. Can use variable int '*' in format string here,
@@ -231,10 +231,10 @@
     char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
     getSettingByIndex(index, setting_name, setting_value);
     sprintf(output, "%2i. %-32s %s", index, setting_name, setting_value);
-    DPRINT(F("Settings::displaySetting() gathered: "));
-    DPRINT(setting_name); DPRINT(", "); DPRINTLN(setting_value);
-    DPRINT(F("Settings::displaySetting() returning: "));
-    DPRINTLN(output);
+    ST_PRINT(F("Settings::displaySetting() gathered: "));
+    ST_PRINT(setting_name); ST_PRINT(", "); ST_PRINTLN(setting_value);
+    ST_PRINT(F("Settings::displaySetting() returning: "));
+    ST_PRINTLN(output);
   }
 
   int Settings::debugMode() {
@@ -277,7 +277,7 @@
     //Storage::Load(&Current, _eeprom_address);
     Storage::Load(settings_obj, _eeprom_address);
 
-    // WARN: Can't reliably do DPRINT from here, since we don't have a confirmed
+    // WARN: Can't reliably do ST_PRINT from here, since we don't have a confirmed
     // valid Settings instance yet. Printing settings data before it has been
     // verified can result in UB !!!
     //

@@ -40,7 +40,7 @@
   }
   
   void Led::loop() {
-    //DPRINTLN(F("*** LED LOOP BEGIN ***"));
+    //BK_PRINTLN(F("*** LED LOOP BEGIN ***"));
     current_ms = millis();
     handleBlinker();
   }
@@ -48,7 +48,7 @@
   int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
     int n;
     for (n = 0; n < INTERVALS_LENGTH; n ++) {
-      //DPRINT(F("_intervals: ")); DPRINT(n); DPRINT(F(" ")); DPRINTLN(_intervals[n]);
+      //BK_PRINT(F("_intervals: ")); BK_PRINT(n); BK_PRINT(F(" ")); BK_PRINTLN(_intervals[n]);
       if (_intervals[n] <= 0) {
         break;
       }
@@ -69,7 +69,7 @@
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
-    DPRINT(F("Led::update _intervals[0]: ")); DPRINTLN(_intervals[0]);
+    BK_PRINT(F("Led::update _intervals[0]: ")); BK_PRINTLN(_intervals[0]);
     if(S.debugMode()) {
       Serial.println(F("Led::update with intervals current, new:"));
       printIntervals(intervals);
@@ -108,45 +108,45 @@
   }
 
   void Led::Steady() {
-    DPRINT(F("Led::Steady(), _intervals[0]: "));
+    BK_PRINT(F("Led::Steady(), _intervals[0]: "));
     const int _intervals[INTERVALS_LENGTH] = {1000};
-    DPRINTLN(_intervals[0]);
+    BK_PRINTLN(_intervals[0]);
     update(0, _intervals);
   }
 
   void Led::Off() {
-    DPRINTLN(F("Led::Off()"));
+    BK_PRINTLN(F("Led::Off()"));
     const int _intervals[INTERVALS_LENGTH] = {0};
     update(0, _intervals);
   }
 
   void Led::SlowBlink() {
-    DPRINTLN(F("Led::SlowBlink()"));
+    BK_PRINTLN(F("Led::SlowBlink()"));
     const int _intervals[INTERVALS_LENGTH] = {500,500};
     update(0, _intervals);
   }
 
   void Led::FastBlink() {
-    DPRINTLN(F("Led::FastBlink()"));
+    BK_PRINTLN(F("Led::FastBlink()"));
     const int _intervals[INTERVALS_LENGTH] = {70,70};
     update(0, _intervals);
   }
 
   void Led::StartupBlink() {
-    DPRINTLN(F("Led::StartupBlink()"));
+    BK_PRINTLN(F("Led::StartupBlink()"));
     const int _intervals[INTERVALS_LENGTH] = {470,30};
     update(0, _intervals);
   }
     
   // Handles start-stop blinker and blinker cycling
   void Led::handleBlinker() {
-    //DPRINTLN("Led::handleBlinker() current data:");
-    //DPRINTLN(current_phase);
-    //DPRINTLN(intervals[current_phase]);
-    //DPRINTLN(led_state);
-    //DPRINTLN(current_ms);
-    //DPRINTLN(previous_ms);
-    //DPRINTLN(" ");
+    //BK_PRINTLN("Led::handleBlinker() current data:");
+    //BK_PRINTLN(current_phase);
+    //BK_PRINTLN(intervals[current_phase]);
+    //BK_PRINTLN(led_state);
+    //BK_PRINTLN(current_ms);
+    //BK_PRINTLN(previous_ms);
+    //BK_PRINTLN(" ");
 
     // If the current interval has expired
     if (current_ms - previous_ms >= (unsigned long)intervals[current_phase]) {

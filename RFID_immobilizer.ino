@@ -106,7 +106,7 @@
  //       Update: this only happens in production mode - in debug mode, the reader works fine. Arrrgg!
  //       √ Update: I might have fixed this - that pin didn't have a pinMode() call, leaving it floating.
  // TODO: √ Booting under external power in debug mode (debug pin) is causing problems,
- //       maybe because of a load-order thing with DPRINT. But this doesn't seem to happen
+ //       maybe because of a load-order thing with INO_PRINT. But this doesn't seem to happen
  //       when powered by USB.
  //       Update: The whole power-on bug was because load order wasn't allowing objects to initialize
  //       before being used.
@@ -194,6 +194,16 @@
   #include "led_blinker.h"
   #include "serial_menu.h"
   #include "rfid.h"
+
+  // Comment this line to disable debug code for this class.
+  //#define INO_DEBUG
+  #ifdef INO_DEBUG
+    #define INO_PRINT(...) DPRINT(__VA_ARGS__)
+    #define INO_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  #else
+    #define INO_PRINT(...)
+    #define INO_PRINTLN(...)
+  #endif
 
 
   // Declares blinker LED.
