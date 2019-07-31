@@ -61,7 +61,7 @@
     uint32_t cycle_low_finish_ms;
     uint32_t cycle_high_finish_ms;
     //uint32_t tag_last_read_timeout_x_1000;
-    uint32_t current_tag_id;
+    uint32_t last_tag_read_id;
     SoftwareSerial * serial_port;
 
     void resetBuffer();

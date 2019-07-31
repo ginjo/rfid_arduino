@@ -52,7 +52,7 @@
   SerialMenu * SerialMenu::SW;
 
   void SerialMenu::Begin() {
-    Serial.println(F("SerialMenu::begin()"));
+    Serial.println(F("SerialMenu::Begin()"));
     HW->begin();
     SW->begin();
 
@@ -65,18 +65,16 @@
     if (!Current || Current == HW) {
       // TODO: Consider moving this delay to the beginning of loop(),
       // since it's the same as in the SW version below.
-      delay(HW->get_tag_from_scanner ? 25 : 1);
-      //SM_PRINTLN(F("Menu::HW->loop()"));
+      //delay(HW->get_tag_from_scanner ? 25 : 1);
       HW->loop();
     }
 
     // Runs software-serial loop().
     if (!Current || Current == SW) {
-      SoftwareSerial * sp = (SoftwareSerial*)SW->serial_port;
-      sp->listen();
-      while (! sp->isListening()) delay(15);
-      delay(SW->get_tag_from_scanner ? 25 : 1);
-      //SM_PRINTLN(F("Menu::SW->loop()"));
+      //  SoftwareSerial * sp = (SoftwareSerial*)SW->serial_port;
+      //  sp->listen();
+      //  while (! sp->isListening()) delay(2);
+      //  //delay(SW->get_tag_from_scanner ? 15 : 1);
       SW->loop();
     }
     
@@ -135,8 +133,7 @@
   /***  Control  ***/
 
   void SerialMenu::loop() {
-    //SM_PRINTLN(F("/*** MENU LOOP BEGIN ***/"));
-    //serial_port->println(F("SerialMenu::loop() calling serial_port->println()"));
+    SM_PRINT(F("MENU LOOP BEGIN: ")); SM_PRINTLN(instance_name);
 
     // TODO: Move this into serial_menu, controled by callback stack.
     // TODO: Disable this here as soon as doing so won't affect any other calls.
@@ -152,6 +149,7 @@
     //checkSerialPort();
     
     call();
+    SM_PRINTLN(F("MENU LOOP END"));
   }
 
   // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
@@ -216,6 +214,13 @@
   // is reset (to null, with buff_index = 0).
   //
   void SerialMenu::checkSerialPort() {
+    if (strcmp(instance_name, "SW") == 0) {
+      SoftwareSerial * sp = (SoftwareSerial*)serial_port;
+      sp->listen();
+      while (! sp->isListening()) delay(2);
+      delay(get_tag_from_scanner ? 10 : 1);
+    }
+    
     if (serial_port->available()) {
 
       // If someone typed anything into this serial port,
@@ -224,6 +229,9 @@
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout();
+
+      // As soon as user types something, disable get-tag-from-scanner.
+      get_tag_from_scanner = 0;
       
       while (serial_port->available() && !bufferReady()) {
         char byt = serial_port->read();
@@ -235,7 +243,7 @@
         buff[buff_index] = byt;
         buff_index += 1;
 
-        if ((int)byt == 13 || (int)byt == 10 || (int)byt == 0) {
+        if ((int)byt == 13 || (int)byt == 10) {   // || (int)byt == 0) {
           SM_PRINT(F("checkSerialPort EOL indx: ")); SM_PRINTLN(buff_index-1);
           //serial_port->println(F("\r\n"));
           //serial_port->println((char)10);
@@ -263,21 +271,36 @@
   }
   
   bool SerialMenu::bufferReady() {
-    bool rslt = (
-      buff_index > 0 &&
-      buff[0] != 0 && (
-        buff[buff_index-1] == 13 ||
-        buff[buff_index-1] == 10 ||
-        buff[buff_index-1] == 0  ||
-        buff[buff_index]   == 13 ||
-        buff[buff_index]   == 10 ||
-        buff[buff_index]   == 0
-      )
-    );
-
-    if (rslt) { SM_PRINT(F("Menu::bufferReady(): ")); SM_PRINTLN(buff); }
+    bool bool_result = false;
     
-    return rslt;
+    // Previous implementation.
+    //
+    //(
+    //buff_index > 0 &&
+    //buff[0] != 0 && (
+    //  buff[buff_index-1] == 13 ||
+    //  buff[buff_index-1] == 10 ||
+    //  //buff[buff_index-1] == 0  ||
+    //  buff[buff_index]   == 13 ||
+    //  buff[buff_index]   == 10 ||
+    //  //buff[buff_index]   == 0
+    //)
+
+    // New implementation.
+    //
+    SM_PRINT("bufferReady? bytes: ");
+    for (uint8_t i=0; i < sizeof(buff); i++) {
+      SM_PRINT((int)buff[i]); SM_PRINT(",");
+      if (buff[i] == 10 || buff[i] == 13) {
+        bool_result = true;
+        break;
+      }
+    }
+    SM_PRINTLN();
+
+    if (bool_result) { SM_PRINT(F("Menu::bufferReady(): ")); SM_PRINTLN(buff); }
+    
+    return bool_result;
   }
 
   void SerialMenu::prompt(const char _message[], CB _cback, bool _read_tag) {
@@ -329,8 +352,8 @@
   } // readLine()
 
   // This should loop as long as get_tag_from_scanner == 1,
-  // until reader has current_tag_id, then this will set buff
-  // with reader's current_tag_id and set get_tag_from_scanner to 0.
+  // until reader has last_tag_read_id, then this will set buff
+  // with reader's last_tag_read_id and set get_tag_from_scanner to 0.
   //
   // The tag reader needs to be checked and handled regardless
   // of whether or not typed input is available on the UI serial-port.
@@ -338,18 +361,20 @@
   void SerialMenu::getTagFromScanner() {
     if (get_tag_from_scanner) {
       reader->loop();
-      if (reader->current_tag_id) {
-        SM_PRINT(F("Menu::getTagFromScanner() found tag ")); SM_PRINTLN(reader->current_tag_id);
+      if (reader->last_tag_read_id) {
+        SM_PRINT(F("Menu::getTagFromScanner() found tag ")); SM_PRINTLN(reader->last_tag_read_id);
         char str[9];
-        sprintf(str, "%lu", reader->current_tag_id);
+        sprintf(str, "%lu", reader->last_tag_read_id);
         strlcpy(buff, str, sizeof(buff));
         for (uint8_t i=0; i < sizeof(buff); i++) {
           if (buff[i] == 0) {
-            buff_index = i;
+            buff[i] = 10;
+            buff[i+1] = 0;
+            buff_index = i+1;
             break;
           }
         }
-        reader->current_tag_id = 0;
+        reader->last_tag_read_id = 0;
         reader->resetBuffer();
         get_tag_from_scanner = 0;
       }
@@ -498,7 +523,7 @@
   // Activates an incoming menu selection.
   // TODO: Figure out when we pop() the stack ?!? This methods should always pop() itself out of the stack.
   void SerialMenu::menuSelectedMainItem(void *bytes) {
-    SM_PRINT(F("menuSelectedMainItem rcvd bytes: "));
+    SM_PRINT(F("menuSelectedMainItem rcvd data: "));
     SM_PRINTLN((char*)bytes);
 
     // pop(); // I think the prompt() that set up this callback
@@ -597,9 +622,9 @@
 
   void SerialMenu::menuShowFreeMemory() {
     SM_PRINTLN(F("Menu::menuShowFreeMemory()"));
-    serial_port->println(F("Free Memory: n/a"));
-    //serial_port->println(freeMemory());
-    //serial_port->println();
+    serial_port->print(F("Free Memory: "));
+    serial_port->println(FreeRam());
+    serial_port->println();
     menuMainPrompt(); 
   }
 

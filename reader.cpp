@@ -22,7 +22,7 @@
     ms_reader_cycle_total(0UL),
     cycle_low_finish_ms(0UL),
     cycle_high_finish_ms(0UL),
-    current_tag_id(0UL)
+    last_tag_read_id(0UL)
     //tag_last_read_timeout_x_1000(0UL),
     
   {
@@ -49,17 +49,18 @@
   void Reader::loop() {
 
     serial_port->listen();
-    while (! serial_port->isListening()) delay(15);
+    while (! serial_port->isListening()) delay(2);
+    delay(20);
 
-    RD_PRINT(F("*** READER LOOP BEGIN "));
+    RD_PRINT(F("READER LOOP BEGIN "));
     current_ms = millis();
-    RD_PRINT(current_ms); RD_PRINTLN(F(" ***"));
+    RD_PRINTLN(current_ms);
     
     cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION);
     cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
     
-    RD_PRINT(F("cycle_low_finish_ms: ")); RD_PRINTLN(cycle_low_finish_ms);
-    RD_PRINT(F("cycle_high_finish_ms: ")); RD_PRINTLN(cycle_high_finish_ms);
+    //RD_PRINT(F("cycle_low_finish_ms: ")); RD_PRINTLN(cycle_low_finish_ms);
+    //RD_PRINT(F("cycle_high_finish_ms: ")); RD_PRINTLN(cycle_high_finish_ms);
     
     ms_reader_cycle_total = (uint32_t)(S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000UL);
     //tag_last_read_timeout_x_1000 = (uint32_t)(S.TAG_LAST_READ_TIMEOUT*1000UL);
@@ -78,20 +79,22 @@
       RD_PRINTLN(msSinceLastReaderPowerCycle());
     RD_PRINT(F("ms_reader_cycle_total: "));
       RD_PRINTLN(ms_reader_cycle_total);
-    RD_PRINT(F("tagLastReadTimeoutX1000(): "));
-      RD_PRINTLN(tagLastReadTimeoutX1000());
-    RD_PRINT(F("readerPowerCycleHighDuration()"))
-      RD_PRINTLN(readerPowerCycleHighDuration());
-    RD_PRINT(F("RPCHD*1000: "));
-      RD_PRINTLN(readerPowerCycleHighDuration()*1000UL);
-    RD_PRINTLN(F("***"));
-    
+    //RD_PRINT(F("tagLastReadTimeoutX1000(): "));
+    //  RD_PRINTLN(tagLastReadTimeoutX1000());
+    //RD_PRINT(F("readerPowerCycleHighDuration()"))
+    //  RD_PRINTLN(readerPowerCycleHighDuration());
+    //RD_PRINT(F("RPCHD*1000: "));
+    //  RD_PRINTLN(readerPowerCycleHighDuration()*1000UL);
+          
     if (msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL) {
       // Checks the rfid reader for new data.
       pollReader();
     }
 
-    if (msSinceLastTagRead() > ms_reader_cycle_total) current_tag_id = 0;
+    //if (msSinceLastTagRead() > ms_reader_cycle_total) last_tag_read_id = 0;
+
+    RD_PRINT("Reader::last_tag_read_id: "); RD_PRINTLN(last_tag_read_id);
+    RD_PRINT(F("READER LOOP END ")); RD_PRINTLN(millis());
   }
   
 
@@ -131,9 +134,9 @@
   // Polls reader serial port and processes incoming tag data.
   void Reader::pollReader() {
     // If data available on RFID serial port, do something.
-    RD_PRINT(F("Reader::pollReader() reader_name: "));
-    RD_PRINTLN(reader_name);    
-    RD_PRINT(F("Reader::pollReader() raw_tag_length: "));
+    RD_PRINT(F("Reader::pollReader() reader_name, raw_tag_length: "));
+    RD_PRINT(reader_name);    
+    RD_PRINT(F(", "));
     RD_PRINTLN(raw_tag_length);
 
     // TODO (from RFID class): Consider moving this if/then condition to RFID::loop() function.
@@ -199,7 +202,7 @@
   // NOTE (from RFID): array args in func definitions can only use absolute constants, not vars.
   // TODO (from RFID): create macro definition for max-tag-length that can be used in func definition array args.
   void Reader::processTag(uint8_t _tag[]) {
-    RD_PRINT(F("Reader::processTag() received buffer, using reader: "));
+    RD_PRINT(F("Reader::processTag() received buffer w/reader: "));
     RD_PRINTLN(reader_name);
 
     // DEV (from RFID): Use this to ensure that virtual functions are working in derived classes.
@@ -211,21 +214,8 @@
     //RD_PRINTLN(F("Reader::processTag() calling processTagData()"));
     uint32_t tag_id = processTagData(_tag);
     
-    RD_PRINT(F("Tag result from Reader: "));
+    RD_PRINT(F("Tag result from processTagData(): "));
     RD_PRINTLN(tag_id);
-
-    // This is now handled from the SerialMenu class.
-    //
-    // Assuming successful tag-read at this point,
-    // add the tag to Tags array if get_tag_from_scanner is 1.
-    // This pushes tag_id as string directly into BTmenu::buff,
-    // which then picks it up and processes it as if were manually entered.
-    //  if (SerialMenu::Current->get_tag_from_scanner == 1) {
-    //    char str[9];
-    //    sprintf(str, "%lu", tag_id);
-    //    strlcpy(SerialMenu::Current->buff, str, sizeof(SerialMenu::buff));
-    //    SerialMenu::Current->get_tag_from_scanner = 0;
-    //  }
 
     // If tag is valid, immediatly update proximity-state.
     // Actually, in the refactored Reader implementation, just update last_tag_read_ms,
@@ -244,16 +234,17 @@
     }
 
     Serial.println(tag_id);
-    current_tag_id = tag_id;
+    last_tag_read_id = tag_id;
     
   } // processTag()
 
   void Reader::resetBuffer() {
+    RD_PRINTLN("Reader::resetBuffer");
     buff_index = 0U;
     //strncpy(buff, NULL, reader->raw_tag_length);
     //strncpy(buff, NULL, MAX_TAG_LENGTH);
     //memcpy(buff, 0, MAX_TAG_LENGTH);
-    memset(buff, 0, MAX_TAG_LENGTH);
+    memset(buff, 0U, MAX_TAG_LENGTH);
   }
 
   void Reader::cycleReaderPower() {
@@ -272,10 +263,12 @@
       if (last_reader_power_cycle_ms > 0UL) {
         //Serial.print((ms_since_last_reader_power_cycle)/1000UL);
         Serial.print(msSinceLastReaderPowerCycle()/1000UL);
-        Serial.println(F(" seconds ago"));
+        Serial.print(F(" seconds ago"));
       } else {
-        Serial.println(F("never"));
+        Serial.print(F("never"));
       }
+      
+      Serial.print(F(", uptime: ")); Serial.println(((float)millis()/(float)1000/(float)60));
 
       RD_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
             

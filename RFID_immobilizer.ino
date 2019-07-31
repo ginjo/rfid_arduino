@@ -91,7 +91,7 @@
  // DONE: √ Finally fixed the nasty bugs in RFID and Reader, well most anyway. Ongoing search for UB.
  // TODO: √ Try swapping the RFID::loop() functions back to the way they were... Still work?
  // TODO: √ Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
- // TODO: - Consider instance vars in Reader for current_tag_id and current_tag_code (hex, I think).
+ // TODO: - Consider instance vars in Reader for last_tag_read_id and current_tag_code (hex, I think).
  //       This is trickier that it seems because it would create a curcular requirement between classes.
  //       Turning the logging features into their own class might help.
  // TODO: - I got debug logging to work with BTmenu, but it breaks the RFID cycle.
@@ -192,7 +192,13 @@
  //       Remember to check obsolete macros and global vars in .h files.
  // TODO: Include uptime in cycleReaderPower periodic output.
  // TODO: Don't forget failsafe mode and reset-factor-defaults command.
-
+ // TODO: Undo the timing changes around calls to listen() for both soft-serial ports.
+ //       Then split the whole menuAddTag into two functions: one for scanner and one for tty serial.
+ // TODO: Consider disabling all clearing of serial ports, unless they are solving a specific problem.
+ // TODO: Longer delays may actually hinder serial ports. Consider shorter delays placed more strategically,
+ //       like as long before the port needs to be read as possible. 
+ // TODO: Add settings for rfid-reader-add-tag-delay and menu-add-tag-delay,
+ //       so they can be adjusted without re-flashing device.
  
  
   #include <Arduino.h>
@@ -233,9 +239,7 @@
     
     // For debugging, so Settings operations can be logged.
     Serial.begin(57600);
-    while (! Serial) {
-      delay(15);
-    }
+    while (! Serial) delay(10);
     delay(15);
     Serial.println(F("Initialized default serial port @ 57600 baud"));
 
@@ -248,9 +252,7 @@
     // Normal, when debugging not needed.
     Serial.flush();
     Serial.begin(S.HW_SERIAL_BAUD);
-    while (! Serial) {
-      delay(15);
-    }
+    while (! Serial) delay(10);
     delay(15);
     Serial.print(F("Re-initialized serial port with loaded settings: "));
     Serial.println(S.HW_SERIAL_BAUD);
