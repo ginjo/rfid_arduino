@@ -81,6 +81,7 @@
     int  byteToAsciiChrNum(char);
     void addTagString(void*);
     void deleteTag(void*);
+    void deleteAllTags(void*);
     void updateSetting(void*);
 
     /* Commands */

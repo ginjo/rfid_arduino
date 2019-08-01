@@ -47,7 +47,7 @@
     delay(15);
     Serial.println(F("Initialized default serial port @ 57600 baud"));
 
-    FreeRam("setup() pre load-stngs");
+    FreeRam("setup() pre load-setngs");
     
     //Settings::Load(SETTINGS_EEPROM_ADDRESS);
     //Settings::Load(&Settings::Current);
@@ -95,7 +95,7 @@
     }
     Serial.println();
 
-    FreeRam("setup() pre obj new");
+    FREERAM("setup() pre obj new");
 
     /*  Initialize main objects  */
 
@@ -113,7 +113,7 @@
 
     Rfid = new RFID(RfidReader, Blinker);
 
-    FreeRam("setup() pre obj stp");
+    FREERAM("setup() pre obj stp");
     
     
     /*  Run setups  */

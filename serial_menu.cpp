@@ -39,6 +39,7 @@
 
   // Instanciates the built-in reset function.
   // WARN: This does not work if placed in settings.h (where you would think it should be).
+  // NOTE: This is a function pointer.
   void(* resetFunc) (void) = 0;
 
 
@@ -449,7 +450,6 @@
     menuListTags();
   }
 
-  //int SerialMenu::deleteTag(char str[]) {
   void SerialMenu::deleteTag(void *dat) {
     SM_PRINTLN(F("Menu::deleteTag()"));
     
@@ -459,15 +459,20 @@
     if (str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
       serial_port->println(F("DeleteTag() aborted"));
       serial_port->println();
-      //return 1;
     } else {
       //int rslt = RFID::DeleteTagIndex(tag_index);
       int rslt = Tags::TagSet.deleteTagIndex(tag_index);
       serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
       serial_port->println();
-      //return rslt;
     }
+    menuListTags();
+  }
+
+  void SerialMenu::deleteAllTags(void *dat) {
+    char *str = (char*)dat;
+    int input = (int)(str[0]);
+    if (input == 'y' || input == 'Y') Tags::TagSet.deleteAllTags();
     menuListTags();
   }
 
@@ -613,17 +618,17 @@
   // Deletes all tags from EEPROM.
   void SerialMenu::menuDeleteAllTags(void *dat) {
     SM_PRINTLN(F("Menu::menuDeleteAllTags()"));
-    serial_port->println(F("Delete all Tags"));
-    serial_port->println("");
+    prompt("Delete all tags [y/N]?", &SerialMenu::deleteAllTags); 
 
-    Tags::TagSet.deleteAllTags();
-    menuListTags();
+//    Tags::TagSet.deleteAllTags();
+//    menuListTags();
   }
 
   void SerialMenu::menuShowFreeMemory() {
     SM_PRINTLN(F("Menu::menuShowFreeMemory()"));
+    int ram = FreeRam();
     serial_port->print(F("Free Memory: "));
-    serial_port->println(FreeRam());
+    serial_port->println(ram);
     serial_port->println();
     menuMainPrompt(); 
   }
