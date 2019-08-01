@@ -1,4 +1,5 @@
-#include "logger.h"
+  #include "logger.h"
+  #include "settings.h"
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   extern int FreeRam (const char txt[]) {
