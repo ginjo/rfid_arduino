@@ -1,5 +1,3 @@
-// RFID Reader struct
-
 #ifndef __READER_H__
 #define __READER_H__
 

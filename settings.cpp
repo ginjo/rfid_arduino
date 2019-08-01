@@ -1,6 +1,6 @@
-#include "settings.h"
-// This is moved here by suggestion to stop EEPROM warnings.
-#include <EEPROM.h>
+  #include "settings.h"
+  // This is moved here by suggestion to stop EEPROM warnings.
+  #include <EEPROM.h>
   
   Settings::Settings() :
     Storage("settings", SETTINGS_EEPROM_ADDRESS),
@@ -333,6 +333,3 @@
 
   // a reference (alias?) from S to CurrentSettings
   Settings& S = Settings::Current;
-
-
-  

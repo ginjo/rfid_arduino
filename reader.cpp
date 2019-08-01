@@ -1,6 +1,4 @@
-/***  READERS  ***/
-
-#include "reader.h"
+  #include "reader.h"
   
   // Defines Reader Constructor
   Reader::Reader(const char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :

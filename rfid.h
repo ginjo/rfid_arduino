@@ -1,6 +1,5 @@
-// RFID Tag Class
-
-/*
+/* This description is old:
+ *  
  * Read, save, and delete tags to/from EEPROM
  * Receive tags from serial port reader hardware
  * Interface with hardware using Reader structs

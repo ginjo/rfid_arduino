@@ -1,6 +1,4 @@
-// LED Blinker Class
-
-#include "led_blinker.h"
+  #include "led_blinker.h"
   
   Led::Led(int pin) : 
     led_pin(pin),
@@ -162,8 +160,3 @@
 
     digitalWrite(led_pin, led_state);
   }
-
-
-  /*  Extern & Global  */
-
-  //  Led Blinker(13);

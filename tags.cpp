@@ -1,7 +1,6 @@
   #include "tags.h"
 
 
-
   /***  Instance Vars & Functions  ***/
 
   /* Constructors */
@@ -172,4 +171,3 @@
     Serial.println(F("Tags::Load() END"));
     return tag_set;
   } // Load()
-  
