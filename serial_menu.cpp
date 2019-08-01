@@ -193,7 +193,7 @@
       run_mode = 0;
       resetInputBuffer();
       resetStack();
-      FreeRam("exitAdmin()");
+      FREERAM("exitAdmin()");
     } // else {
       //    Serial.println(F("\r\nMenu rebooting arduino"));
       //    serial_port->println(F("Exiting admin console\r\n"));

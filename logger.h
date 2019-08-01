@@ -13,9 +13,14 @@
   #ifdef DEBUG    //Macros are usually in all capital letters.
     #define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);} // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
     #define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);} // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
+    #define FREERAM(...)   if(S.debugMode()){FreeRam(__VA_ARGS__);}
   #else
     #define DPRINT(...)     //now defines a blank line
     #define DPRINTLN(...)   //now defines a blank line
+    #define FREERAM(...)
   #endif
+
+  // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
+  extern int FreeRam(const char[] = "");
 
 #endif

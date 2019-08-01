@@ -154,9 +154,9 @@
  // TODO: Create a Gate/Switch/Controller/State? class that handles all the other stuff RFID does now.
  //       This class should take a Reader and Blinker instance onboard, since it's the glue
  //       between those two entities.
- //
  // TODO: √ Then create a Tags class that manages everything tag-related (that's not part of Reader).
  // TODO: √ Consider again having a Storage class that Tags, Settings, and State all subclass from.
+ // 
  // TODO: Create a fail-safe button and/or a restore-defaults button.
  // TODO: √ Have BTmenu listen on hardware serial as well.
  // TODO: - For callback functions or event-response functions, consider "onBufferReady()" naming style.
@@ -173,32 +173,43 @@
  // NEXT: √ Storage refactor compiles. Now need to decouple it from the other classes, then review code, then try it.
  //       √ This has been done with Tags, next do with Settings (then with State - for proximity_state).
  // TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
- // TODO: Need validation code in Tags or Reader to handle bad tag-id.
+ // TODO: Need validation routine in Tags or Reader to handle bad tag-id.
  // TODO: √ Handle reader looping for add-tag entirely within serial-menu class.
  //       √ Reader class should be unaware of SerialMenu instances.
  // TODO: √ Implement more efficient GetReader, and move to Reader::GetReader().
  //       See example file "C++ polymorphism with factory pattern in base.cpp".
  // TODO: Can all specific reader declarations/definitions go into a single file "readers.cpp" ???
  // TODO: √ Consider function pointers for SerialMenu callbacks, instead of the large switch/if/then statements.
- // TODO: menuAddTag and addTag are all messed up, in different ways, for both HW & SW interfaces.
- //       Need to make sure that SerialMenu class always cleans up after doing anything with menuAddTag.
- //       Currently, a messy state causes the run-level 0 to behave eratically, switching on/off the proximity-state
+ // TODO: √ menuAddTag and addTag are all messed up, in different ways, for both HW & SW interfaces.
+ //       √ Need to make sure that SerialMenu class always cleans up after doing anything with menuAddTag.
+ //       √ Currently, a messy state causes the run-level 0 to behave eratically, switching on/off the proximity-state
  //       eeeprom setting repeatedly.
- //       Letting SerialMenu timeout naturally and go into run-mode 0, also leaves a mess,
+ //       √ Letting SerialMenu timeout naturally and go into run-mode 0, also leaves a mess,
  //       yielding authorized tags but never activating the switch.
  //       LED remains in boot state.
- //       Update: I think most of this issue is solved. Double-check on BTserial interface.
+ //       Update: I think most of this issue is solved was UB from out-of-mem.
+ //       Double-check on BTserial interface.
  // TODO: Remove stuff from SerialMenu and Reader that isn't used any more.
  //       Remember to check obsolete macros and global vars in .h files.
- // TODO: Include uptime in cycleReaderPower periodic output.
- // TODO: Don't forget failsafe mode and reset-factor-defaults command.
- // TODO: Undo the timing changes around calls to listen() for both soft-serial ports.
+ // TODO: √ Include uptime in cycleReaderPower periodic output.
+ // TODO: Don't forget failsafe mode and reset-factory-defaults command.
+ // TODO: - Undo the timing changes around calls to listen() for both soft-serial ports.
  //       Then split the whole menuAddTag into two functions: one for scanner and one for tty serial.
- // TODO: Consider disabling all clearing of serial ports, unless they are solving a specific problem.
- // TODO: Longer delays may actually hinder serial ports. Consider shorter delays placed more strategically,
+ // TODO: √ Consider disabling all clearing of serial ports, unless they are solving a specific problem.
+ //       It's only done once anyway.
+ // TODO: √ Longer delays may actually hinder serial ports. Consider shorter delays placed more strategically,
  //       like as long before the port needs to be read as possible. 
  // TODO: Add settings for rfid-reader-add-tag-delay and menu-add-tag-delay,
  //       so they can be adjusted without re-flashing device.
+ // TODO: Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
+ // TODO: Make sure all 3 readers are working.
+ //       Do all readers start with 2 and end with 3 ?
+ //       Is each specific Reader subclass storing everything it needs for tag processing?
+ // TODO: √ Create FREERAM macro that only runs if debug mode. Use it everywhere u have FreeRam() now,
+ //       except at startup & other key places.
+
+ 
+ 
  
  
   #include <Arduino.h>

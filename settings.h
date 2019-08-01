@@ -124,8 +124,6 @@
 
   /***  Global / External Vars & Funcs  ***/
 
-  extern int FreeRam(const char[] = "");
-
   // This declares an extern 'S' of type Settings.
   // This will be a ref (pointer?) to Settings::Current
   // and is intended as a convenience shortcut, since
