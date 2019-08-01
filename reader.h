@@ -47,7 +47,13 @@
 
 
 
-    /****  From RFID  ***/
+    /***  Constructors  ***/
+    
+    Reader(const char[], uint8_t, uint8_t, uint8_t, bool);
+
+
+
+    /****  Functions  ***/
     
     uint8_t buff[MAX_TAG_LENGTH];
     uint8_t buff_index;
@@ -77,15 +83,10 @@
     //uint32_t cycleLowFinishMs();
     //uint32_t cycleHighFinishMs();
     
-
-
-    // Constructor(s)
-    Reader(const char[], uint8_t, uint8_t, uint8_t, bool);
-
-    // Functions
     virtual uint32_t processTagData(uint8_t[]);
     //int echo(int);
     void loop();
+
 
 
     /***  Static Vars & Functions  ***/
@@ -105,30 +106,5 @@
     }
 
   }; // class Reader
-
-
-
-  // For inherited class constructor syntax, see:
-  // https://www.learncpp.com/cpp-tutorial/114-constructors-and-initialization-of-derived-classes/
-
-  struct RDM6300 : public Reader {
-  public:
-    RDM6300();
-    uint32_t processTagData(uint8_t[]);
-  };
-
-  struct R7941E : public Reader {
-  public:
-    R7941E();
-    uint32_t processTagData(uint8_t[]);
-    //int echo(int) override;
-  };
-
-  struct WL125 : public Reader {
-  public:
-    WL125();
-    uint32_t processTagData(uint8_t[]);
-  };
-
 
 #endif

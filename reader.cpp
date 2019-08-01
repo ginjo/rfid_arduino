@@ -282,16 +282,3 @@
       digitalWrite(S.READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
     }
   }
-
-
-
-  /***  Static Vars & Functions  ***/
-  
-  Reader* Reader::GetReader(const char *_name) {
-    if (TestReader<RDM6300>(_name)) return (new RDM6300);
-    if (TestReader<R7941E>(_name)) return (new R7941E);
-    if (TestReader<WL125>(_name)) return (new WL125);
-
-    // otherwise default...
-    return (new RDM6300);
-  }
