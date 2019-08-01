@@ -199,10 +199,9 @@ TODO: √ Don't load all readers, only load the one we're using.
 
 TODO: Create an initial_state (for the grace period) setting: 0=off, 1=on, 2=last-known (S.proximity_state).
       This may also require an initialState() function to compile the various settings/options at runtime.
-//
-//
+
+
 FOR REFACTOR:
-//
 
 TODO: √ Move reader functions of RFID class into Reader base,
       then use the loaded reader only for reader functionality,
@@ -217,7 +216,6 @@ TODO: Create a Gate/Switch/Controller/State? class that handles all the other st
 TODO: √ Then create a Tags class that manages everything tag-related (that's not part of Reader).
 
 TODO: √ Consider again having a Storage class that Tags, Settings, and State all subclass from.
-
 
 TODO: Create a fail-safe button and/or a restore-defaults button.
 
@@ -261,7 +259,7 @@ TODO: √ menuAddTag and addTag are all messed up, in different ways, for both H
       √ Letting SerialMenu timeout naturally and go into run-mode 0, also leaves a mess,
       yielding authorized tags but never activating the switch.
       LED remains in boot state.
-      Update: I think most of this issue is solved was UB from out-of-mem.
+      Update: I think most of this issue is solved, was UB from out-of-mem condition.
       Double-check on BTserial interface.
 
 TODO: Remove stuff from SerialMenu and Reader that isn't used any more.
@@ -283,7 +281,8 @@ TODO: √ Longer delays may actually hinder serial ports. Consider shorter delay
 TODO: Add settings for rfid-reader-add-tag-delay and menu-add-tag-delay,
       so they can be adjusted without re-flashing device.
 
-TODO: Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
+TODO: - Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
+	  So far, having an "Esc" key abort should suffice.
 
 TODO: Make sure all 3 readers are working.
       Do all readers start with 2 and end with 3 ?

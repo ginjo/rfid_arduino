@@ -210,9 +210,16 @@
 
   // Checks & reads data from serial port, until EOL is detected.
   //
-  // Stop reading serial input after CR/LF
-  // is received. Only start reading in data again, after the buff
+  // Stops reading serial input after CR/LF is received.
+  // Only starts reading in data again, after the buff
   // is reset (to null, with buff_index = 0).
+  //
+  // The resulting "line", as bufferReady() reports true,
+  // will be any string, with ending \r or \n, terminated by null (0).
+  // The final buff_index will point to the terminating null.
+  //
+  // All upstream/downstream functions should assume the resulting
+  // line as described above.
   //
   void SerialMenu::checkSerialPort() {
     if (strcmp(instance_name, "SW") == 0) {
@@ -236,11 +243,19 @@
       
       while (serial_port->available() && !bufferReady()) {
         char byt = serial_port->read();
-        serial_port->write(byt);
         
         SM_PRINT(F("checkSerialPort() rcvd byte: "));
         SM_PRINTLN((int)byt);
+
+        // Escape key resets buffer and mimics Enter key, for data-entry abort.
+        if ((int)byt == 27) {
+          buff[0] = 10;
+          buff[1] = 0;
+          buff_index = 1;
+          return;
+        }
         
+        serial_port->write(byt);
         buff[buff_index] = byt;
         buff_index += 1;
 
@@ -456,12 +471,12 @@
     char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
     
-    if (str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
+    if (tag_index < 1 || str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
       serial_port->println(F("DeleteTag() aborted"));
       serial_port->println();
     } else {
       //int rslt = RFID::DeleteTagIndex(tag_index);
-      int rslt = Tags::TagSet.deleteTagIndex(tag_index);
+      int rslt = Tags::TagSet.deleteTagIndex(tag_index-1);
       serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
       serial_port->println();
@@ -484,9 +499,10 @@
     SM_PRINT(", ");
     //SM_PRINTLN((char *)buff);
     SM_PRINTLN(str);
-    
-    //if (S.updateSetting(selected_menu_item, buff)) {
-    if (S.updateSetting(selected_menu_item, str)) {
+
+    if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
+      Serial.println(F("updateSetting() aborted"));
+    } else if (S.updateSetting(selected_menu_item, str)) {
       // Because we need this after updating any SerialMenu settings
       // and there isn't a better place for this (yet?).
       updateAdminTimeout();          
@@ -589,7 +605,7 @@
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
       //if (RFID::Tags[i] > 0) {
       if (Tags::TagSet.tag_array[i] > 0) {
-        serial_port->print(i);
+        serial_port->print(i+1);
         serial_port->print(F(". "));
         //serial_port->print(RFID::Tags[i]);
         serial_port->print(Tags::TagSet.tag_array[i]);
@@ -612,6 +628,7 @@
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag(void *dat) {
     SM_PRINTLN(F("Menu::menuDeleteTag()"));
+    menuListTags();
     prompt("Enter tag index to delete", &SerialMenu::deleteTag);
   }
 

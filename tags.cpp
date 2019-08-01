@@ -18,22 +18,9 @@
 
   /* Storage Operations */
 
+  // Saves this stored tag set in EEPROM.
   void Tags::save() {
     compactTags();
-    
-    //  if (strcmp(storage_name, "") == 0 || storage_name[0] == 0) {
-    //    strlcpy(storage_name, "tags-saved", sizeof(storage_name));
-    //  }
-    
-    //  unsigned int stored_checksum;
-    //  EEPROM.get(TAGS_EEPROM_ADDRESS, stored_checksum);
-    //  unsigned int loaded_checksum = calculateChecksum();
-
-    //  if (loaded_checksum == stored_checksum) {
-    //    Serial.print(F("Tags::TagSet.save() aborted, checksums already match: 0x"));
-    //    Serial.print(loaded_checksum, 16);
-    //    return;
-    //  }
 
     Serial.print(F("Saving tags with checksum 0x"));
     Serial.print(calculateChecksum(), 16);
@@ -50,6 +37,7 @@
 
   /* Tag Operations */
 
+  // Counts number of stored tags in this set.
   int Tags::countTags(){
     int n = 0;
     for (int i=0; i < TAG_LIST_SIZE; i++) {
@@ -58,6 +46,7 @@
     return n;
   }
 
+  // Gets the array index of the given tag.
   int Tags::getTagIndex(uint32_t tag) {
     for (int i=0; i < TAG_LIST_SIZE; i++) {
       if (tag_array[i] == tag) return i;
@@ -65,6 +54,7 @@
     return -1;
   }
 
+  // Removes empty space from tag set, and slides all tags towards front of array (0).
   void Tags::compactTags() {
     int n=-1;
     for (int i=0; i < TAG_LIST_SIZE; i++) {
@@ -79,6 +69,7 @@
     }
   }
 
+  // Adds tag to this set, and saves the set in EEPROM.
   int Tags::addTag(uint32_t new_tag) {
     Serial.print(F("addTag() "));
     Serial.println(new_tag);
@@ -107,6 +98,7 @@
     }
   } // addTag()
 
+  // Deletes a tag from this set.
   int Tags::deleteTag(uint32_t deleteable_tag) {
     Serial.print(F("deleteTag(): "));
     Serial.println(deleteable_tag);
@@ -114,6 +106,7 @@
     return deleteTagIndex(tag_index);
   }
 
+  // Deletes a tag, by index, from this set.
   int Tags::deleteTagIndex(int index) {
     Serial.print(F("deleteTagIndex(): "));
     Serial.println(index);
@@ -126,6 +119,7 @@
     }
   }
 
+  // Deletes all tags from this set.
   int Tags::deleteAllTags() {
     Serial.println(F("deleteAllTags()"));
     memset(tag_array, 0, TAG_LIST_SIZE*4);
@@ -179,7 +173,3 @@
     return tag_set;
   } // Load()
   
-
-  //  uint16_t Tags::GetStoredChecksum() {
-  //    return Storage::GetStoredChecksum(TAGS_EEPROM_ADDRESS);
-  //  }
