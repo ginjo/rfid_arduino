@@ -88,7 +88,7 @@
     void menuSelectedMainItem(void* = nullptr);
     void menuMain(void* = nullptr);
     void menuMainPrompt(const char[] = "Select a menu item");
-    void menuListTags(void* = nullptr);
+    void menuListTags(void* = nullptr, CB = nullptr);
     void menuAddTag(void* = nullptr);
     void menuDeleteTag(void* = nullptr);
     void menuDeleteAllTags(void* = nullptr);

@@ -472,10 +472,9 @@
     int tag_index = strtol(str, NULL, 10);
     
     if (tag_index < 1 || str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
-      serial_port->println(F("DeleteTag() aborted"));
+      serial_port->println(F("deleteTag() aborted"));
       serial_port->println();
     } else {
-      //int rslt = RFID::DeleteTagIndex(tag_index);
       int rslt = Tags::TagSet.deleteTagIndex(tag_index-1);
       serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
@@ -487,7 +486,11 @@
   void SerialMenu::deleteAllTags(void *dat) {
     char *str = (char*)dat;
     int input = (int)(str[0]);
-    if (input == 'y' || input == 'Y') Tags::TagSet.deleteAllTags();
+    if (input == 'y' || input == 'Y') {
+      Tags::TagSet.deleteAllTags();
+    } else {
+      serial_port->println(F("deleteAllTags() aborted"));
+    }
     menuListTags();
   }
 
@@ -595,7 +598,7 @@
   } // menuSelectedMainItem
 
   // Lists tags for menu.
-  void SerialMenu::menuListTags(void *dat) {
+  void SerialMenu::menuListTags(void *dat, CB cback) {
     SM_PRINTLN(F("Menu::menuListTags()"));
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
@@ -614,7 +617,12 @@
     }
     serial_port->println("");
 
-    menuMainPrompt(); 
+    if (cback) {
+      char *str = (char*)dat;
+      prompt(str, cback);
+    } else {
+      menuMainPrompt();
+    } 
   }
 
   // Asks user for full tag,
@@ -628,17 +636,16 @@
   // Asks user for index of tag to delete from EEPROM.
   void SerialMenu::menuDeleteTag(void *dat) {
     SM_PRINTLN(F("Menu::menuDeleteTag()"));
-    menuListTags();
-    prompt("Enter tag index to delete", &SerialMenu::deleteTag);
+    //menuListTags();
+    //prompt("Enter tag index to delete", &SerialMenu::deleteTag);
+    menuListTags((void*)"Enter tag index to delete", &SerialMenu::deleteTag);
   }
 
   // Deletes all tags from EEPROM.
   void SerialMenu::menuDeleteAllTags(void *dat) {
     SM_PRINTLN(F("Menu::menuDeleteAllTags()"));
-    prompt("Delete all tags [y/N]?", &SerialMenu::deleteAllTags); 
-
-//    Tags::TagSet.deleteAllTags();
-//    menuListTags();
+    //prompt("Delete all tags [y/N]?", &SerialMenu::deleteAllTags);
+    menuListTags((void*)"Delete all tags [y/N]?", &SerialMenu::deleteAllTags);
   }
 
   void SerialMenu::menuShowFreeMemory() {
