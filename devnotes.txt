@@ -117,7 +117,7 @@ TODO: Create protection/failsafe against user-input of bad/empty/out-of-bounds s
       And the initial admin_timeout of 2s should not be modifiable by user.
       Generally make sure the Arduino cannot be bricked (requiring a re-flash).
       Update: Some protections have been added to SerialMenu class, but more are needed.
-      A failsafe boot mode would be helpful.
+      √ A failsafe boot mode would be helpful.
 
 TODO: √ Create a setting & control for reader-power-cycle polarity.
       Yes, but this is now done in the Reader (sub) classes.
@@ -226,7 +226,7 @@ TODO: √ Then create a Tags class that manages everything tag-related (that's n
 
 TODO: √ Consider again having a Storage class that Tags, Settings, and State all subclass from.
 
-TODO: Create a fail-safe button and/or a restore-defaults button.
+TODO: √ Create a fail-safe button and/or a restore-defaults button. Done: hold pin 12 LOW.
 
 TODO: √ Have BTmenu listen on hardware serial as well.
 
@@ -277,7 +277,8 @@ TODO: Remove stuff from SerialMenu and Reader that isn't used any more.
 
 TODO: √ Include uptime in cycleReaderPower periodic output.
 
-TODO: Don't forget failsafe mode and reset-factory-defaults command.
+TODO: √ Don't forget failsafe mode and reset-factory-defaults command.
+	  Done: Hold pin 12 LOW for failsafe boot. Save any setting to overwrite stored settings.
 
 TODO: - Undo the timing changes around calls to listen() for both soft-serial ports.
       Then split the whole menuAddTag into two functions: one for scanner and one for tty serial.

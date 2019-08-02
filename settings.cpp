@@ -258,6 +258,11 @@
 
   /***  Static & Extern  ***/
 
+ 
+  bool Settings::Failsafe() {
+    return digitalRead(FAILSAFE_PIN) == 0;
+  }
+
   // This is a settings-specific wrapper for Storage::Load().
   // It handles settings-specific behavior, like saving default
   // settings if checksum mismatch.
@@ -275,7 +280,11 @@
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
     //Storage::Load(&Current, _eeprom_address);
-    Storage::Load(settings_obj, _eeprom_address);
+    if (Failsafe()) {
+      Serial.println(F("Failsafe loading default settings"));
+    } else {
+      Storage::Load(settings_obj, _eeprom_address);
+    }
 
     // WARN: Can't reliably do ST_PRINT from here, since we don't have a confirmed
     // valid Settings instance yet. Printing settings data before it has been
@@ -300,12 +309,12 @@
 
     // Handles checksum mismatch by saving default settings.
     //if (GetStoredChecksum() != calculated_checksum) {
-    if (! settings_obj->checksumMatch()) {
+    if (!settings_obj->checksumMatch() || Failsafe()) {
       Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
       settings_obj = new Settings();
       strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
       settings_obj->eeprom_address = _eeprom_address;
-      settings_obj->save();
+      if (! Failsafe()) settings_obj->save();
       Serial.print(F("Settings::Load() using default settings '"));
       
     } else {

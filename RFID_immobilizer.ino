@@ -40,6 +40,7 @@
 
 
   void setup() {
+    pinMode(FAILSAFE_PIN, INPUT_PULLUP);
     
     // For debugging, so Settings operations can be logged.
     Serial.begin(57600);
