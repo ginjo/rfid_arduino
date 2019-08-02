@@ -333,3 +333,5 @@
 
   // a reference (alias?) from S to CurrentSettings
   Settings& S = Settings::Current;
+
+  

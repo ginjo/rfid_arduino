@@ -97,6 +97,7 @@
 
     FREERAM("setup() pre obj new");
 
+
     /*  Initialize main objects  */
 
     Blinker = new Led(S.LED_PIN);
@@ -138,7 +139,6 @@
     Rfid->begin();
 
     FreeRam("end setup()");
-    
 
   } // setup()
 
@@ -155,3 +155,5 @@
     }
     
   } // end loop()
+
+  

@@ -473,13 +473,12 @@
     
     if (tag_index < 1 || str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
       serial_port->println(F("deleteTag() aborted"));
-      serial_port->println();
     } else {
       int rslt = Tags::TagSet.deleteTagIndex(tag_index-1);
       serial_port->print(F("DeleteTag() result: "));
       serial_port->println(rslt);
-      serial_port->println();
     }
+    serial_port->println();
     menuListTags();
   }
 
@@ -491,6 +490,7 @@
     } else {
       serial_port->println(F("deleteAllTags() aborted"));
     }
+    serial_port->println();
     menuListTags();
   }
 
@@ -708,3 +708,5 @@
       menuSettings();
     }
   } // menuSelectedSetting()
+
+  

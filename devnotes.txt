@@ -302,3 +302,9 @@ TODO: Make sure all 3 readers are working.
 TODO: √ Create FREERAM macro that only runs if debug mode. Use it everywhere u have FreeRam() now,
       except at startup & other key places.
 
+TODO: Remove Blinker from SerialMenu -- there's really no need for it there.
+
+TODO: Rename SerialMenu to just Menu.
+
+TODO: Rename RFID to Control or Switch.
+
