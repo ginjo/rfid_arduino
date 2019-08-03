@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre148"
+  #define VERSION "v0.1.0.pre151"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -114,7 +114,7 @@
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char*, char*);
     void displaySetting(int, char*);
-    //unsigned int getChecksum();
+    void printSettings(Stream*);
     int debugMode();
     int save();
     

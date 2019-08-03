@@ -114,7 +114,7 @@
     
     // If this is hardware instance, don't print info.
     if (strcmp(instance_name, "HW") != 0) {
-      serial_port->print(F("Controller Immobilizer admin console, "));
+      serial_port->print(F("RFID admin console, "));
       serial_port->print(VERSION);
       serial_port->print(", ");
       serial_port->println(TIMESTAMP);
@@ -164,7 +164,6 @@
     //  Serial.print(current_ms); Serial.print(" ");
     //  Serial.println(previous_ms);
 
-    //if (run_mode == 0) { return; }
     if ( elapsed_ms/1000 > admin_timeout || run_mode == 0 ) {
       exitAdmin();
     }
@@ -182,25 +181,21 @@
     previous_ms = millis();
   }
 
-  // Exits admin and starts main Controller/proximity loop.
-  // Alternatively, reboots the arduino.
-  //
+  // Exits admin (and allows main Controller loop to run).
   void Menu::exitAdmin() {
     MU_PRINTLN(F("Menu::exitAdmin()"));
-    if (true || admin_timeout == 2) {
-      Serial.println(F("\r\nMenu setting run_mode to 0 'run'"));
-      serial_port->println(F("Entering run mode\r\n"));
+    resetInputBuffer();
+    resetStack();
+    if (run_mode != 0) {
+      Serial.print(instance_name);
+      Serial.println(F(" setting run_mode => 0"));
+      Serial.println();
+      serial_port->println(F("Entering run mode"));
+      serial_port->println();
       //blinker->Off();
       run_mode = 0;
-      resetInputBuffer();
-      resetStack();
       FREERAM("exitAdmin()");
-    } // else {
-      //    Serial.println(F("\r\nMenu rebooting arduino"));
-      //    serial_port->println(F("Exiting admin console\r\n"));
-      //    delay(100);
-      //    resetFunc();
-    //  }
+    }
   }
 
 
@@ -323,14 +318,14 @@
     
     if (_message[0]) {
       serial_port->print(_message);
-      serial_port->print(" ");
+      //serial_port->print(F(" "));
     }
 
     // This can only go BEFORE the ">" IF it doesn't call anything (just does set-up).
     // Otherwise it should go after the ">" (but then any errors will show up after the prompt).
     readLineWithCallback(_cback, _read_tag);
-    
-    serial_port->print(":# ");
+
+    serial_port->print(F(": "));
   }
 
   void Menu::readLineWithCallback(CB cback, bool _read_tag) {
@@ -667,11 +662,12 @@
     serial_port->println(sizeof(S));
 
     // Prints out all settings in tabular format.
-    for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      S.displaySetting(n, output);
-      serial_port->println(output);
-    }
+    //for (int n=1; n <= SETTINGS_SIZE; n++) {
+    //  char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
+    //  S.displaySetting(n, output);
+    //  serial_port->println(output);
+    //}
+    S.printSettings(serial_port);
 
     serial_port->println();
 

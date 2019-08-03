@@ -237,6 +237,14 @@
     ST_PRINTLN(output);
   }
 
+  void Settings::printSettings(Stream *sp) {
+    for (int n=1; n <= SETTINGS_SIZE; n++) {
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = "";
+      S.displaySetting(n, output);
+      sp->println(output);
+    }
+  }
+
   int Settings::debugMode() {
     if (digitalRead(DEBUG_PIN) == LOW || enable_debug == 1) {
       return 1;
@@ -297,14 +305,6 @@
       Serial.print(settings_obj->settings_name);
       Serial.print(F("' chksm 0x"));
       Serial.println(settings_obj->checksum, 16);
-  
-      //  // TEMP: Prints out all settings in tabular format.
-      //  Serial.println("Settings::Load() printing all values in Settings::Current");
-      //  for (int n=1; n <= SETTINGS_SIZE; n++) {
-      //    char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      //    settings_obj->displaySetting(n, output);
-      //    Serial.println(output);
-      //  }
     #endif
 
     // Handles checksum mismatch by saving default settings.
@@ -323,15 +323,6 @@
     
     Serial.print(settings_obj->settings_name); Serial.println("'");
     Serial.println(F("Settings::Load() END"));
-
-    //  // Prints out all settings in tabular format.
-    //  Serial.println();
-    //  for (int n=1; n <= SETTINGS_SIZE; n++) {
-    //    char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-    //    settings_obj->displaySetting(n, output);
-    //    Serial.println(output);
-    //  }
-    //  Serial.println();
 
     return settings_obj;
   } // Settings::Load()

@@ -50,9 +50,7 @@
 
     FreeRam("setup() pre load-setngs");
     
-    //Settings::Load(SETTINGS_EEPROM_ADDRESS);
-    //Settings::Load(&Settings::Current);
-    Settings::Load();
+    Settings::Load(); // (*settings_instance, eeprom_address)
 
     // Normal, when debugging not needed.
     Serial.flush();
@@ -87,13 +85,15 @@
       S.enable_debug = 1;
     }
 
+    // TODO: Move this to Settings class, and call it from here.
     // Prints out all settings in tabular format.
     Serial.println();
-    for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-      S.displaySetting(n, output);
-      Serial.println(output);
-    }
+    //for (int n=1; n <= SETTINGS_SIZE; n++) {
+    //  char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
+    //  S.displaySetting(n, output);
+    //  Serial.println(output);
+    //}
+    S.printSettings(&Serial);
     Serial.println();
 
     FREERAM("setup() pre obj new");
@@ -140,6 +140,9 @@
     Rfid->begin();
 
     FreeRam("end setup()");
+
+    // Add empty line before beginning loop.
+    Serial.println();
 
   } // setup()
 
