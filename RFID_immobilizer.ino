@@ -1,5 +1,5 @@
 /* 
- * Passive RFID activated switch, user-controllable with
+ * Passive Controller activated switch, user-controllable with
  * activation delay, for use in generic engine kill module.
  * 
  */
@@ -9,8 +9,8 @@
   #include <SoftwareSerial.h>
   #include "settings.h"
   #include "led_blinker.h"
-  #include "serial_menu.h"
-  #include "rfid.h"
+  #include "menu.h"
+  #include "controller.h"
 
   // Comment this line to disable debug code for this class.
   //#define INO_DEBUG
@@ -29,14 +29,14 @@
   // Declares a software-serial port for admin console.
   SoftwareSerial *BTserial;
 
-  // Declares serial port for RFID reader.
+  // Declares serial port for Controller reader.
   SoftwareSerial *RfidSerial;//(91,90);
 
   // Declares rfid reader instance.
   Reader *RfidReader;
   
-  // Declares instance of RFID handler.
-  RFID *Rfid;
+  // Declares instance of Controller handler.
+  Controller *Rfid;
 
 
   void setup() {
@@ -69,7 +69,7 @@
     Serial.print(F("' of size "));
     Serial.println(sizeof(S));
 
-    Serial.print(F("Booting RFID Immobilizer, "));
+    Serial.print(F("Booting Controller Immobilizer, "));
     Serial.print(VERSION);
     Serial.print(F(", "));
     Serial.println(TIMESTAMP);
@@ -110,10 +110,10 @@
     RfidReader = Reader::GetReader(S.DEFAULT_READER);
     RfidReader->serial_port = RfidSerial;
     
-    SerialMenu::HW = new SerialMenu(&Serial, RfidReader, Blinker, "HW");
-    SerialMenu::SW = new SerialMenu(BTserial, RfidReader, Blinker, "SW");
+    Menu::HW = new Menu(&Serial, RfidReader, Blinker, "HW");
+    Menu::SW = new Menu(BTserial, RfidReader, Blinker, "SW");
 
-    Rfid = new RFID(RfidReader, Blinker);
+    Rfid = new Controller(RfidReader, Blinker);
 
     FREERAM("setup() pre obj stp");
     
@@ -131,12 +131,12 @@
     Tags::Load();
 
     // Activates the admin console.
-    SerialMenu::Begin();
+    Menu::Begin();
 
-    // Activates the serial port for the RFID handler.
+    // Activates the serial port for the Controller handler.
     RfidSerial->begin(S.RFID_BAUD);
 
-    // Activates the RFID handler.
+    // Activates the Controller handler.
     Rfid->begin();
 
     FreeRam("end setup()");
@@ -148,9 +148,9 @@
     
     Blinker->loop();
 
-    if (SerialMenu::run_mode > 0) {
-      SerialMenu::Loop();
-    } else if (SerialMenu::run_mode == 0) {
+    if (Menu::run_mode > 0) {
+      Menu::Loop();
+    } else if (Menu::run_mode == 0) {
       RfidReader->loop();
       Rfid->loop();      
     }

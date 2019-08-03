@@ -1,7 +1,7 @@
 // Serial Menu Class
 
-#ifndef __SERIAL_MENU_H__
-#define __SERIAL_MENU_H__
+#ifndef __MENU_H__
+#define __MENU_H__
 
   #include <Arduino.h>
   //#include <Stream.h>
@@ -15,16 +15,16 @@
   #include "reader.h"
   #include "led_blinker.h"
   #include "stack.h"
-  //#include "rfid.h" // This would cause circular include. See .cpp file for better solution.
+  //#include "controller.h" // This would cause circular include. See .cpp file for better solution.
 
   // Comment this line to disable debug code for this class.
-  //#define SM_DEBUG
-  #ifdef SM_DEBUG
-    #define SM_PRINT(...) DPRINT(__VA_ARGS__)
-    #define SM_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  //#define MU_DEBUG
+  #ifdef MU_DEBUG
+    #define MU_PRINT(...) DPRINT(__VA_ARGS__)
+    #define MU_PRINTLN(...) DPRINTLN(__VA_ARGS__)
   #else
-    #define SM_PRINT(...)
-    #define SM_PRINTLN(...)
+    #define MU_PRINT(...)
+    #define MU_PRINTLN(...)
   #endif
   
   #define INPUT_BUFFER_LENGTH 24
@@ -32,7 +32,7 @@
   //#define CURRENT_FUNCTION_LENGTH 24
 
 
-  class SerialMenu : public Stack<SerialMenu> {
+  class Menu : public Stack<Menu> {
   public:
     Stream *serial_port;
     Reader *reader;
@@ -56,8 +56,8 @@
 
     // Constructor receives a serial port instance
     // from HardwareSerial or SoftwareSerial.
-    //SerialMenu(Stream *stream_ref);
-    SerialMenu(Stream*, Reader*, Led*, const char* = "");
+    //Menu(Stream *stream_ref);
+    Menu(Stream*, Reader*, Led*, const char* = "");
 
     /* Control */
     void begin();
@@ -101,13 +101,13 @@
 
     static int run_mode; // 0=run, 1=admin 
 
-    static SerialMenu * Current;
-    static SerialMenu * HW;
-    static SerialMenu * SW;
+    static Menu * Current;
+    static Menu * HW;
+    static Menu * SW;
     
     static void Begin();
     static void Loop();
     
-  }; // SerialMenu
+  }; // Menu
 
 #endif

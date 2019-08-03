@@ -217,10 +217,10 @@ TODO: √ Move reader functions of RFID class into Reader base,
       or led triggering or Tag operations like add, delete, authentication (validation?).
       √ Maybe move reader subclasses to their own readers.cpp file.
 
-TODO: Create a Gate/Switch/Controller/State? class that handles all the other stuff RFID does now.
+TODO: √ Create a Gate/Switch/Controller/State? class that handles all the other stuff RFID does now.
       This class should take a Reader and Blinker instance onboard, since it's the glue
       between those two entities.
-      Update: This is now just a matter of renaming the RFID class to something else, like Controller.
+      √ Update: This is now just a matter of renaming the RFID class to something else, like Controller.
 
 TODO: √ Then create a Tags class that manages everything tag-related (that's not part of Reader).
 
@@ -304,8 +304,13 @@ TODO: √ Create FREERAM macro that only runs if debug mode. Use it everywhere u
       except at startup & other key places.
 
 TODO: Remove Blinker from SerialMenu -- there's really no need for it there.
+      Partially done: disabled call to Blinker in Menu.
 
-TODO: Rename SerialMenu to just Menu.
+TODO: √ Rename SerialMenu to just Menu.
 
-TODO: Rename RFID to Control or Switch.
+TODO: √ Rename RFID to Controller or Switch.
+
+TODO: Re-enable proximity_state EEPROM retrieve/save (see above for initial_state suggestion).
+
+
 

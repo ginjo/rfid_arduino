@@ -1,10 +1,10 @@
-  #include "rfid.h"
+  #include "controller.h"
   #include <EEPROM.h>
 
   // Constructors
-  //RFID::RFID(Stream *_serial_port, Led *_blinker, Reader *_reader) :
-  //RFID::RFID(Stream *_serial_port, Led *_blinker) :
-  RFID::RFID(Reader *_reader, Led *_blinker) :
+  //Controller::Controller(Stream *_serial_port, Led *_blinker, Reader *_reader) :
+  //Controller::Controller(Stream *_serial_port, Led *_blinker) :
+  Controller::Controller(Reader *_reader, Led *_blinker) :
     //  buff {},
     //  buff_index(0UL),
     proximity_state(0),
@@ -30,7 +30,7 @@
 
 
   // TODO: Some (all?) of this needs to be moved to Reader setup().
-  void RFID::begin() {
+  void Controller::begin() {
     // Moved output switch initialization to its own function.
     // Make sure to run this somewhere, if not here.
     //initializeOutput();
@@ -38,9 +38,9 @@
     pinMode(S.READER_POWER_CONTROL_PIN, OUTPUT);
 
     // Sets local 'reader' to instance of Reader.
-    //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into RFID::RFID().
+    //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into Controller::Controller().
 
-    Serial.print(F("Starting RFID reader "));
+    Serial.print(F("Starting Controller reader "));
     Serial.print(reader->reader_name);
     Serial.print(F(", with EEPROM proximity state "));
     Serial.println(proximity_state);
@@ -56,7 +56,7 @@
     
   } // setup()
 
-  void RFID::loop() {
+  void Controller::loop() {
     // IMPORTANT: Some numbers use instance (global) vars, and some use functions.
     //   Which uses which might not make sense, but it's what works.
     //   Before finding the "magic" balance, I was getting calculation
@@ -66,15 +66,15 @@
     //   UPDATE: This problem might be gone, as it was caused by unrelated UB in the program.
 
     
-    //RF_PRINT(F("*** RFID LOOP BEGIN "));
+    //CT_PRINT(F("*** Controller LOOP BEGIN "));
     //  current_ms = millis();
-    //  RF_PRINT(current_ms); RF_PRINTLN(F(" ***"));
+    //  CT_PRINT(current_ms); CT_PRINTLN(F(" ***"));
     //  
     //  cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION);
     //  cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
     //  
-    //  RF_PRINT(F("cycle_low_finish_ms: ")); RF_PRINTLN(cycle_low_finish_ms);
-    //  RF_PRINT(F("cycle_high_finish_ms: ")); RF_PRINTLN(cycle_high_finish_ms);
+    //  CT_PRINT(F("cycle_low_finish_ms: ")); CT_PRINTLN(cycle_low_finish_ms);
+    //  CT_PRINT(F("cycle_high_finish_ms: ")); CT_PRINTLN(cycle_high_finish_ms);
     //  
     //  //ms_since_last_tag_read = (uint32_t)(current_ms - last_tag_read_ms);
     //  //ms_since_last_reader_power_cycle = (uint32_t)(current_ms - last_reader_power_cycle_ms);
@@ -85,26 +85,26 @@
     /***  Displays most if not all local vars.       ***/
     /***  TODO: Should this be put into a function?  ***/
     /***                                             ***/
-    //  RF_PRINT(F("last_tag_read_ms: "));
-    //    RF_PRINTLN(reader->last_tag_read_ms);
-    //  RF_PRINT(F("last_reader_power_cycle_ms: "));
-    //    RF_PRINTLN(reader->last_reader_power_cycle_ms);
-    //  RF_PRINT(F("msSinceLastTagRead(): "));
-    //    RF_PRINTLN(reader->msSinceLastTagRead());
-    //  RF_PRINT(F("msSinceLastReaderPowerCycle(): "));
-    //    RF_PRINTLN(reader->msSinceLastReaderPowerCycle());
-    //  RF_PRINT(F("ms_reader_cycle_total: "));
-    //    RF_PRINTLN(reader->ms_reader_cycle_total);
-    //  RF_PRINT(F("tagLastReadTimeoutX1000(): "));
-    //    RF_PRINTLN(reader->tagLastReadTimeoutX1000());
-    //  RF_PRINT(F("readerPowerCycleHighDuration()"))
-    //    RF_PRINTLN(reader->readerPowerCycleHighDuration());
-    //  RF_PRINT(F("RPCHD*1000: "));
-    //    RF_PRINTLN(reader->readerPowerCycleHighDuration()*1000UL);
-    //  RF_PRINTLN(F("***"));
+    //  CT_PRINT(F("last_tag_read_ms: "));
+    //    CT_PRINTLN(reader->last_tag_read_ms);
+    //  CT_PRINT(F("last_reader_power_cycle_ms: "));
+    //    CT_PRINTLN(reader->last_reader_power_cycle_ms);
+    //  CT_PRINT(F("msSinceLastTagRead(): "));
+    //    CT_PRINTLN(reader->msSinceLastTagRead());
+    //  CT_PRINT(F("msSinceLastReaderPowerCycle(): "));
+    //    CT_PRINTLN(reader->msSinceLastReaderPowerCycle());
+    //  CT_PRINT(F("ms_reader_cycle_total: "));
+    //    CT_PRINTLN(reader->ms_reader_cycle_total);
+    //  CT_PRINT(F("tagLastReadTimeoutX1000(): "));
+    //    CT_PRINTLN(reader->tagLastReadTimeoutX1000());
+    //  CT_PRINT(F("readerPowerCycleHighDuration()"))
+    //    CT_PRINTLN(reader->readerPowerCycleHighDuration());
+    //  CT_PRINT(F("RPCHD*1000: "));
+    //    CT_PRINTLN(reader->readerPowerCycleHighDuration()*1000UL);
+    //  CT_PRINTLN(F("***"));
     //
-    //  RF_PRINT("RFID::loop() about to touch reader: ");
-    //  RF_PRINTLN(reader->reader_name);
+    //  CT_PRINT("Controller::loop() about to touch reader: ");
+    //  CT_PRINTLN(reader->reader_name);
     
     //if (reader->msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL) {
       // Checks the rfid reader for new data.
@@ -116,21 +116,21 @@
     //}
   }
 
-  //  uint32_t RFID::msSinceLastTagRead() {
+  //  uint32_t Controller::msSinceLastTagRead() {
   //    return (uint32_t)(current_ms - last_tag_read_ms);
   //  }
   //
-  //  uint32_t RFID::msSinceLastReaderPowerCycle() {
+  //  uint32_t Controller::msSinceLastReaderPowerCycle() {
   //    return (uint32_t)(current_ms - last_reader_power_cycle_ms);
   //  }
   //
-  //  uint32_t RFID::msReaderCycleTotal() {
+  //  uint32_t Controller::msReaderCycleTotal() {
   //    //return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + readerPowerCycleHighDuration() * 1000;
   //    //return S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000;
   //    return (uint32_t)(S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000UL);
   //  }
   //
-  //  uint32_t RFID::readerPowerCycleHighDuration() {
+  //  uint32_t Controller::readerPowerCycleHighDuration() {
   //    if (reader_power_cycle_high_duration > 0UL) {
   //      return reader_power_cycle_high_duration;
   //    } else {
@@ -138,21 +138,21 @@
   //    }
   //  }
   //
-  //  uint32_t RFID::tagLastReadTimeoutX1000() {
+  //  uint32_t Controller::tagLastReadTimeoutX1000() {
   //    return (uint32_t)(S.TAG_LAST_READ_TIMEOUT*1000UL);
   //  }
   //
-  //  //  uint32_t RFID::cycleLowFinishMs() {
+  //  //  uint32_t Controller::cycleLowFinishMs() {
   //  //    return last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
   //  //  }
   //  //
-  //  //  uint32_t RFID::cycleHighFinishMs() {
+  //  //  uint32_t Controller::cycleHighFinishMs() {
   //  //    return cycleLowFinishMs() + readerPowerCycleHighDuration()*1000;
   //  //  }
 
 
   // Initializes output switch.
-  void RFID::initializeOutput() {
+  void Controller::initializeOutput() {
     pinMode(S.OUTPUT_SWITCH_PIN, OUTPUT);    
     
     // Starts up with whatever state we left off in.
@@ -177,14 +177,14 @@
 
   
   //  // Polls reader serial port and processes incoming tag data.
-  //  void RFID::pollReader() {
-  //    // If data available on RFID serial port, do something.
-  //    RF_PRINT(F("RFID::pollReader() reader->reader_name: "));
-  //    RF_PRINTLN(reader->reader_name);    
-  //    RF_PRINT(F("RFID::pollReader() reader->raw_tag_length: "));
-  //    RF_PRINTLN(reader->raw_tag_length);
+  //  void Controller::pollReader() {
+  //    // If data available on Controller serial port, do something.
+  //    CT_PRINT(F("Controller::pollReader() reader->reader_name: "));
+  //    CT_PRINTLN(reader->reader_name);    
+  //    CT_PRINT(F("Controller::pollReader() reader->raw_tag_length: "));
+  //    CT_PRINTLN(reader->raw_tag_length);
   //
-  //    // TODO: Consider moving this if/then condition to RFID::loop() function.
+  //    // TODO: Consider moving this if/then condition to Controller::loop() function.
   //    if (serial_port->available()) {
   //      while (serial_port->available()) {
   //        if (buff_index >= MAX_TAG_LENGTH || buff_index >= reader->raw_tag_length) {
@@ -194,18 +194,18 @@
   //        
   //        buff[buff_index] = serial_port->read();
   //
-  //        RF_PRINT(F("(")); RF_PRINT(buff_index); RF_PRINT(F(")"));
+  //        CT_PRINT(F("(")); CT_PRINT(buff_index); CT_PRINT(F(")"));
   //        if (
   //          (buff[buff_index] >= 48U && buff[buff_index] <= 57U) ||
   //          (buff[buff_index] >= 65U && buff[buff_index] <= 70U) ||
   //          (buff[buff_index] >= 97U && buff[buff_index] <= 102U)
-  //        ) { RF_PRINT((char)buff[buff_index]); }
+  //        ) { CT_PRINT((char)buff[buff_index]); }
   //        
-  //        RF_PRINT(":");
-  //        RF_PRINT(buff[buff_index], HEX); RF_PRINT(":");
-  //        RF_PRINT(buff[buff_index], DEC);
+  //        CT_PRINT(":");
+  //        CT_PRINT(buff[buff_index], HEX); CT_PRINT(":");
+  //        CT_PRINT(buff[buff_index], DEC);
   //
-  //        // TODO: Move this to main RFID::loop() function?
+  //        // TODO: Move this to main Controller::loop() function?
   //        //uint8_t final_index = S.RAW_TAG_LENGTH - 1;
   //        uint8_t final_index = reader->raw_tag_length - 1U;
   //  
@@ -213,15 +213,15 @@
   //          resetBuffer();
   //        } else if (buff_index == final_index && buff[final_index] != 3U) { // reset bogus read
   //          resetBuffer();
-  //          RF_PRINTLN("");
+  //          CT_PRINTLN("");
   //        } else if (buff_index > final_index || buff_index >= MAX_TAG_LENGTH) { // reset bogus read
   //          resetBuffer();
-  //          RF_PRINTLN("");
+  //          CT_PRINTLN("");
   //        } else if (buff_index < final_index) { // good read, add comma to log and keep reading
   //          buff_index++;
-  //          RF_PRINT(",");
+  //          CT_PRINT(",");
   //        } else { // tag complete, now process it
-  //          RF_PRINTLN("");
+  //          CT_PRINTLN("");
   //          processTagData(buff);
   //          //last_tag_read_ms = current_ms;
   //          resetBuffer();
@@ -229,7 +229,7 @@
   //        }
   //      }
   //
-  //    // If no data on RFID serial port and sufficient conditions exist,
+  //    // If no data on Controller serial port and sufficient conditions exist,
   //    // then call cycle-reader-power.
   //    } else if (
   //      msSinceLastTagRead() > readerPowerCycleHighDuration() * 1000UL ||
@@ -242,31 +242,31 @@
   //  // Processes a received array of tag bytes.
   //  // NOTE: array args in func definitions can only use absolute constants, not vars.
   //  // TODO: create macro definition for max-tag-length that can be used in func definition array args.
-  //  //void RFID::processTagData(uint8_t _tag[S.RAW_TAG_LENGTH]) {
-  //  void RFID::processTagData(uint8_t _tag[]) {
-  //    RF_PRINT(F("RFID::processTagData() received buffer, using reader: "));
-  //    RF_PRINTLN(reader->reader_name);
+  //  //void Controller::processTagData(uint8_t _tag[S.RAW_TAG_LENGTH]) {
+  //  void Controller::processTagData(uint8_t _tag[]) {
+  //    CT_PRINT(F("Controller::processTagData() received buffer, using reader: "));
+  //    CT_PRINTLN(reader->reader_name);
   //
   //    // DEV: Use this to ensure that virtual functions are working in derived classes.
-  //    //  RF_PRINT(F("RFID::processTagData() calling reader->echo(): "));
+  //    //  CT_PRINT(F("Controller::processTagData() calling reader->echo(): "));
   //    //  int tst = reader->echo(24);
-  //    //  RF_PRINTLN(tst);
+  //    //  CT_PRINTLN(tst);
   //
-  //    RF_PRINTLN(F("RFID::processTagData() calling reader->processTagData(_tag)"));
+  //    CT_PRINTLN(F("Controller::processTagData() calling reader->processTagData(_tag)"));
   //    uint32_t tag_id = reader->processTagData(_tag);
   //    
-  //    RF_PRINT(F("Tag result from Reader: "));
-  //    RF_PRINTLN(tag_id);
+  //    CT_PRINT(F("Tag result from Reader: "));
+  //    CT_PRINTLN(tag_id);
   //
   //    // Assuming successful tag-read at this point,
   //    // add the tag to Tags array if get_tag_from_scanner is 1.
   //    // This pushes tag_id as string directly into BTmenu::buff,
   //    // which then picks it up and processes it as if were manually entered.
-  //    if (SerialMenu::Current->get_tag_from_scanner == 1) {
+  //    if (Menu::Current->get_tag_from_scanner == 1) {
   //      char str[9];
   //      sprintf(str, "%lu", tag_id);
-  //      strlcpy(SerialMenu::Current->buff, str, sizeof(SerialMenu::buff));
-  //      SerialMenu::Current->get_tag_from_scanner = 0;
+  //      strlcpy(Menu::Current->buff, str, sizeof(Menu::buff));
+  //      Menu::Current->get_tag_from_scanner = 0;
   //    }
   //
   //    // If tag is valid, immediatly update proximity-state.
@@ -287,7 +287,7 @@
   //    
   //  }
   //
-  //  void RFID::resetBuffer() {
+  //  void Controller::resetBuffer() {
   //    buff_index = 0U;
   //    //strncpy(buff, NULL, reader->raw_tag_length);
   //    //strncpy(buff, NULL, MAX_TAG_LENGTH);
@@ -295,7 +295,7 @@
   //    memset(buff, 0, MAX_TAG_LENGTH);
   //  }
   //
-  //  void RFID::cycleReaderPower() {
+  //  void Controller::cycleReaderPower() {
   //    if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0UL) {
   //      
   //      Serial.print(F("cycleReaderPower() tag read: "));
@@ -316,14 +316,14 @@
   //        Serial.println(F("never"));
   //      }
   //
-  //      RF_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
+  //      CT_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
   //            
   //      //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
   //      digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
   //      last_reader_power_cycle_ms = current_ms;
   //      
   //    } else if (current_ms >= cycle_low_finish_ms) {
-  //      RF_PRINTLN(F("cycleReaderPower() setting reader power HIGH"));
+  //      CT_PRINTLN(F("cycleReaderPower() setting reader power HIGH"));
   //      //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
   //      digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
   //    }
@@ -332,15 +332,15 @@
   // The proximity_state var determines physical switch state
   // while this function is actively looping.
   // 
-  void RFID::proximityStateController() {
-    RF_PRINTLN(F("*** PROXIMITY ***"));
-    RF_PRINT(F("last_tag_read_ms: ")); RF_PRINTLN(reader->last_tag_read_ms);
-    RF_PRINT(F("last_reader_power_cycle_ms: ")); RF_PRINTLN(reader->last_reader_power_cycle_ms);
-    RF_PRINT(F("msSinceLastTagRead(): ")); RF_PRINTLN(reader->msSinceLastTagRead());
-    RF_PRINT(F("msSinceLastReaderPowerCycle(): ")); RF_PRINTLN(reader->msSinceLastReaderPowerCycle());
-    RF_PRINT(F("ms_reader_cycle_total: ")); RF_PRINTLN(reader->ms_reader_cycle_total);
-    RF_PRINT(F("tagLastReadTimeoutX1000(): ")); RF_PRINTLN(reader->tagLastReadTimeoutX1000());
-    RF_PRINTLN(F("***"));
+  void Controller::proximityStateController() {
+    CT_PRINTLN(F("*** PROXIMITY ***"));
+    CT_PRINT(F("last_tag_read_ms: ")); CT_PRINTLN(reader->last_tag_read_ms);
+    CT_PRINT(F("last_reader_power_cycle_ms: ")); CT_PRINTLN(reader->last_reader_power_cycle_ms);
+    CT_PRINT(F("msSinceLastTagRead(): ")); CT_PRINTLN(reader->msSinceLastTagRead());
+    CT_PRINT(F("msSinceLastReaderPowerCycle(): ")); CT_PRINTLN(reader->msSinceLastReaderPowerCycle());
+    CT_PRINT(F("ms_reader_cycle_total: ")); CT_PRINTLN(reader->ms_reader_cycle_total);
+    CT_PRINT(F("tagLastReadTimeoutX1000(): ")); CT_PRINTLN(reader->tagLastReadTimeoutX1000());
+    CT_PRINTLN(F("***"));
     
     // If NO TAG READ YET and reader has recently power cycled
     // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
@@ -350,7 +350,7 @@
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
       
-      RF_PRINTLN(F("proximityStateController() startup GRACE period timeout, no tag found"));
+      CT_PRINTLN(F("proximityStateController() startup GRACE period timeout, no tag found"));
       blinker->SlowBlink();
       setProximityState(0);
     
@@ -362,7 +362,7 @@
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
       
-      RF_PRINTLN(F("proximityStateController() TIMEOUT"));
+      CT_PRINTLN(F("proximityStateController() TIMEOUT"));
       blinker->SlowBlink();
       setProximityState(0);
 
@@ -374,14 +374,14 @@
       reader->msSinceLastTagRead() <= reader->tagLastReadTimeoutX1000()
       ){
 
-      //RF_PRINTLN(F("### AGING ###"));
-      //RF_PRINT(F("last_tag_read_ms: ")); RF_PRINTLN(last_tag_read_ms);
-      //RF_PRINT(F("msSinceLastTagRead(): ")); RF_PRINTLN(msSinceLastTagRead());
-      //RF_PRINT(F("ms_reader_cycle_total: ")); RF_PRINTLN(ms_reader_cycle_total);
-      //RF_PRINT(F("tagLastReadTimeoutX1000(): ")); RF_PRINTLN(tagLastReadTimeoutX1000());
-      //RF_PRINTLN(F("###  ###"));
+      //CT_PRINTLN(F("### AGING ###"));
+      //CT_PRINT(F("last_tag_read_ms: ")); CT_PRINTLN(last_tag_read_ms);
+      //CT_PRINT(F("msSinceLastTagRead(): ")); CT_PRINTLN(msSinceLastTagRead());
+      //CT_PRINT(F("ms_reader_cycle_total: ")); CT_PRINTLN(ms_reader_cycle_total);
+      //CT_PRINT(F("tagLastReadTimeoutX1000(): ")); CT_PRINTLN(tagLastReadTimeoutX1000());
+      //CT_PRINTLN(F("###  ###"));
 
-      RF_PRINTLN(F("proximityStateController() AGING"));
+      CT_PRINTLN(F("proximityStateController() AGING"));
       blinker->FastBlink();
       setProximityState(1);
 
@@ -391,21 +391,21 @@
       reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
       ){
         
-      RF_PRINTLN(F("proximityStateController() still YOUNG"));
+      CT_PRINTLN(F("proximityStateController() still YOUNG"));
       blinker->Steady();
       setProximityState(1);
 
     // No expected condition was met (not sure what to do here yet).
     } else {
-      RF_PRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
+      CT_PRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
     // TODO: Is there a better place for this?
-    if (SerialMenu::run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (Menu::run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
   }
 
-  void RFID::setProximityState(int _state) {
-    if (SerialMenu::run_mode == 0) {
+  void Controller::setProximityState(int _state) {
+    if (Menu::run_mode == 0) {
       proximity_state = _state;
       
       if (proximity_state == 0) {
@@ -423,6 +423,6 @@
 
   // This is for aliasing the original Tags list to the new Tags list.
   // See beginning of .h file for typedef.
-  TagArray& RFID::Tags = Tags::TagSet.tag_array;
+  TagArray& Controller::Tags = Tags::TagSet.tag_array;
 
   

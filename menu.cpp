@@ -5,20 +5,20 @@
   
   /*
   
-  * Refactored SerialMenu with these features:
+  * Refactored Menu with these features:
   
-  * SerialMenu::run_mode is a shared static now.
+  * Menu::run_mode is a shared static now.
   
   * Two more statics hold SW and HW serial-menu instances.
   
   * One static, Current, holds the ''chosen-one'', or defaults to HW.
   
-  * SerialMenu::Begin() and SerialMenu::Loop() make sub-calls to
+  * Menu::Begin() and Menu::Loop() make sub-calls to
   SW and HW instances (both) until once is ''chosen'' (when user
   input triggers admin-mode 'run_mode == 1').
   
   * At that point, the static for Current is filled with the chosen instance.
-  Other classes can access the SerialMenu::Current or SerialMenu::run_mode
+  Other classes can access the Menu::Current or Menu::run_mode
   if necessary for admin-mode operations.
   
   */
@@ -30,11 +30,11 @@
   // This could allow a menu option for "Add tag from scanner",
   // vs the current add-tag-from-keyboard menu option.
   
-  #include "serial_menu.h"
+  #include "menu.h"
   // This is here because it seems to avoid circular include,
-  // which would happen if this was in serial_menu.h.
+  // which would happen if this was in menu.h.
   // This is apparently a legitimate C/C++ technique.
-  #include "rfid.h"
+  #include "controller.h"
 
 
   // Instanciates the built-in reset function.
@@ -46,21 +46,21 @@
 
   /***  Static Vars & Funtions  ***/
 
-  int SerialMenu::run_mode = 0;
+  int Menu::run_mode = 0;
   
-  SerialMenu * SerialMenu::Current;
-  SerialMenu * SerialMenu::HW;
-  SerialMenu * SerialMenu::SW;
+  Menu * Menu::Current;
+  Menu * Menu::HW;
+  Menu * Menu::SW;
 
-  void SerialMenu::Begin() {
-    Serial.println(F("SerialMenu::Begin()"));
+  void Menu::Begin() {
+    Serial.println(F("Menu::Begin()"));
     HW->begin();
     SW->begin();
 
-    // NOTE: SerialMenu::Current is set in checkSerialPort() or in exitAdmin()
+    // NOTE: Menu::Current is set in checkSerialPort() or in exitAdmin()
   }
   
-  void SerialMenu::Loop() {
+  void Menu::Loop() {
 
     // Runs hardware-serial loop().
     if (!Current || Current == HW) {
@@ -84,7 +84,7 @@
 
   /*** Constructors and Setup ***/
 
-  SerialMenu::SerialMenu(Stream *stream_ref, Reader *_reader, Led * _blinker, const char _instance_name[]) :
+  Menu::Menu(Stream *stream_ref, Reader *_reader, Led * _blinker, const char _instance_name[]) :
     serial_port(stream_ref),
     reader(_reader),
     
@@ -107,14 +107,14 @@
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
 	}
 	
-  void SerialMenu::begin() {    
+  void Menu::begin() {    
     updateAdminTimeout(2);
     resetInputBuffer();
-    //resetStack(&SerialMenu::menuMain);
+    //resetStack(&Menu::menuMain);
     
     // If this is hardware instance, don't print info.
     if (strcmp(instance_name, "HW") != 0) {
-      serial_port->print(F("RFID Immobilizer admin console, "));
+      serial_port->print(F("Controller Immobilizer admin console, "));
       serial_port->print(VERSION);
       serial_port->print(", ");
       serial_port->println(TIMESTAMP);
@@ -124,7 +124,7 @@
       // to the stack.
       menuMainPrompt("");
     } else {
-      readLineWithCallback(&SerialMenu::menuSelectedMainItem);
+      readLineWithCallback(&Menu::menuSelectedMainItem);
     }
 
  	}
@@ -133,10 +133,10 @@
 
   /***  Control  ***/
 
-  void SerialMenu::loop() {
-    SM_PRINT(F("MENU LOOP BEGIN: ")); SM_PRINTLN(instance_name);
+  void Menu::loop() {
+    MU_PRINT(F("MENU LOOP BEGIN: ")); MU_PRINTLN(instance_name);
 
-    // TODO: Move this into serial_menu, controled by callback stack.
+    // TODO: Move this into menu, controled by callback stack.
     // TODO: Disable this here as soon as doing so won't affect any other calls.
     //getTagFromScanner();
 
@@ -150,11 +150,11 @@
     //checkSerialPort();
     
     call();
-    SM_PRINTLN(F("MENU LOOP END"));
+    MU_PRINTLN(F("MENU LOOP END"));
   }
 
   // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
-  void SerialMenu::adminTimeout() {
+  void Menu::adminTimeout() {
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
@@ -171,7 +171,7 @@
   }
   
   // Starts, restarts, resets admin with timeout.
-  void SerialMenu::updateAdminTimeout(unsigned long seconds) {
+  void Menu::updateAdminTimeout(unsigned long seconds) {
     if (admin_timeout != seconds) {
       Serial.print(F("updateAdminTimeout(): "));
       Serial.println(seconds);
@@ -182,15 +182,15 @@
     previous_ms = millis();
   }
 
-  // Exits admin and starts main RFID/proximity loop.
+  // Exits admin and starts main Controller/proximity loop.
   // Alternatively, reboots the arduino.
   //
-  void SerialMenu::exitAdmin() {
-    SM_PRINTLN(F("Menu::exitAdmin()"));
+  void Menu::exitAdmin() {
+    MU_PRINTLN(F("Menu::exitAdmin()"));
     if (true || admin_timeout == 2) {
       Serial.println(F("\r\nMenu setting run_mode to 0 'run'"));
       serial_port->println(F("Entering run mode\r\n"));
-      blinker->Off();
+      //blinker->Off();
       run_mode = 0;
       resetInputBuffer();
       resetStack();
@@ -221,7 +221,7 @@
   // All upstream/downstream functions should assume the resulting
   // line as described above.
   //
-  void SerialMenu::checkSerialPort() {
+  void Menu::checkSerialPort() {
     if (strcmp(instance_name, "SW") == 0) {
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
       sp->listen();
@@ -244,8 +244,8 @@
       while (serial_port->available() && !bufferReady()) {
         char byt = serial_port->read();
         
-        SM_PRINT(F("checkSerialPort() rcvd byte: "));
-        SM_PRINTLN((int)byt);
+        MU_PRINT(F("checkSerialPort() rcvd byte: "));
+        MU_PRINTLN((int)byt);
 
         // Escape key resets buffer and mimics Enter key, for data-entry abort.
         if ((int)byt == 27) {
@@ -260,7 +260,7 @@
         buff_index += 1;
 
         if ((int)byt == 13 || (int)byt == 10) {   // || (int)byt == 0) {
-          SM_PRINT(F("checkSerialPort EOL indx: ")); SM_PRINTLN(buff_index-1);
+          MU_PRINT(F("checkSerialPort EOL indx: ")); MU_PRINTLN(buff_index-1);
           //serial_port->println(F("\r\n"));
           //serial_port->println((char)10);
     
@@ -274,19 +274,19 @@
   }
 
   // Clears any data waiting on serial port, if any.
-  void SerialMenu::clearSerialPort() {
-    SM_PRINTLN(F("Menu::clearSerialPort()"));
+  void Menu::clearSerialPort() {
+    MU_PRINTLN(F("Menu::clearSerialPort()"));
     while (serial_port->available()) serial_port->read();    
   }
 
-  void SerialMenu::resetInputBuffer() {
-    SM_PRINTLN(F("Menu::resetInputBuffer()"));
+  void Menu::resetInputBuffer() {
+    MU_PRINTLN(F("Menu::resetInputBuffer()"));
     memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
     get_tag_from_scanner = 0;
   }
   
-  bool SerialMenu::bufferReady() {
+  bool Menu::bufferReady() {
     bool bool_result = false;
     
     // Previous implementation.
@@ -304,22 +304,22 @@
 
     // New implementation.
     //
-    SM_PRINT("bufferReady? bytes: ");
+    MU_PRINT("bufferReady? bytes: ");
     for (uint8_t i=0; i < sizeof(buff); i++) {
-      SM_PRINT((int)buff[i]); SM_PRINT(",");
+      MU_PRINT((int)buff[i]); MU_PRINT(",");
       if (buff[i] == 10 || buff[i] == 13) {
         bool_result = true;
         break;
       }
     }
-    SM_PRINTLN();
+    MU_PRINTLN();
 
-    if (bool_result) { SM_PRINT(F("Menu::bufferReady(): ")); SM_PRINTLN(buff); }
+    if (bool_result) { MU_PRINT(F("Menu::bufferReady(): ")); MU_PRINTLN(buff); }
     
     return bool_result;
   }
 
-  void SerialMenu::prompt(const char _message[], CB _cback, bool _read_tag) {
+  void Menu::prompt(const char _message[], CB _cback, bool _read_tag) {
     
     if (_message[0]) {
       serial_port->print(_message);
@@ -330,13 +330,13 @@
     // Otherwise it should go after the ">" (but then any errors will show up after the prompt).
     readLineWithCallback(_cback, _read_tag);
     
-    serial_port->print("> ");
+    serial_port->print(":# ");
   }
 
-  void SerialMenu::readLineWithCallback(CB cback, bool _read_tag) {
-    SM_PRINTLN(F("Menu::readLineWithCallback()"));
+  void Menu::readLineWithCallback(CB cback, bool _read_tag) {
+    MU_PRINTLN(F("Menu::readLineWithCallback()"));
     push(cback);
-    push(&SerialMenu::readLine);
+    push(&Menu::readLine);
     clearSerialPort();
     resetInputBuffer();
     if (_read_tag) get_tag_from_scanner = 1;
@@ -345,7 +345,7 @@
   // Checks for bufferReady() and reacts by calling stack-callback.
   // Removes readLine() and callback from stack.
   //
-  void SerialMenu::readLine(void *dat) {
+  void Menu::readLine(void *dat) {
     getTagFromScanner();
     checkSerialPort();
     
@@ -374,11 +374,11 @@
   // The tag reader needs to be checked and handled regardless
   // of whether or not typed input is available on the UI serial-port.
   //
-  void SerialMenu::getTagFromScanner() {
+  void Menu::getTagFromScanner() {
     if (get_tag_from_scanner) {
       reader->loop();
       if (reader->last_tag_read_id) {
-        SM_PRINT(F("Menu::getTagFromScanner() found tag ")); SM_PRINTLN(reader->last_tag_read_id);
+        MU_PRINT(F("Menu::getTagFromScanner() found tag ")); MU_PRINTLN(reader->last_tag_read_id);
         char str[9];
         sprintf(str, "%lu", reader->last_tag_read_id);
         strlcpy(buff, str, sizeof(buff));
@@ -403,12 +403,12 @@
   
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
-  int SerialMenu::byteToAsciiChrNum(const char byt) {
-    SM_PRINT(F("Menu::byteToAsciiChrNum rcvd byte: "));
-    SM_PRINTLN((int)byt);
-    //  SM_PRINT(" (");
-    //  SM_PRINT(byt);
-    //  SM_PRINTLN(")");
+  int Menu::byteToAsciiChrNum(const char byt) {
+    MU_PRINT(F("Menu::byteToAsciiChrNum rcvd byte: "));
+    MU_PRINTLN((int)byt);
+    //  MU_PRINT(" (");
+    //  MU_PRINT(byt);
+    //  MU_PRINTLN(")");
 
     // Returns -1 if ascii chr of byte is not a numeric.
     if (byt < 48 || byt > 57) {
@@ -423,7 +423,7 @@
     return (int)strtol(&byt, NULL, 10);
   }
 
-  void SerialMenu::addTagString(void *dat) {
+  void Menu::addTagString(void *dat) {
     char *str = (char*)dat;
     int result;
     
@@ -431,8 +431,8 @@
       result = 1;
     } else {
       // TODO: Should probably validate the entire string of digits.
-      // But... do it here? or do it in RFID class? or in Tags class?
-      //result = RFID::AddTag(strtol(str, NULL, 10));
+      // But... do it here? or do it in Controller class? or in Tags class?
+      //result = Controller::AddTag(strtol(str, NULL, 10));
       result = Tags::TagSet.addTag(strtol(str, NULL, 10));
     }
 
@@ -465,8 +465,8 @@
     menuListTags();
   }
 
-  void SerialMenu::deleteTag(void *dat) {
-    SM_PRINTLN(F("Menu::deleteTag()"));
+  void Menu::deleteTag(void *dat) {
+    MU_PRINTLN(F("Menu::deleteTag()"));
     
     char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
@@ -482,7 +482,7 @@
     menuListTags();
   }
 
-  void SerialMenu::deleteAllTags(void *dat) {
+  void Menu::deleteAllTags(void *dat) {
     char *str = (char*)dat;
     int input = (int)(str[0]);
     if (input == 'y' || input == 'Y') {
@@ -494,19 +494,19 @@
     menuListTags();
   }
 
-  void SerialMenu::updateSetting(void *dat) {
+  void Menu::updateSetting(void *dat) {
     char *str = (char*)dat;
     
-    SM_PRINT(F("Menu::updateSetting(): "));
-    SM_PRINT(selected_menu_item);
-    SM_PRINT(", ");
-    //SM_PRINTLN((char *)buff);
-    SM_PRINTLN(str);
+    MU_PRINT(F("Menu::updateSetting(): "));
+    MU_PRINT(selected_menu_item);
+    MU_PRINT(", ");
+    //MU_PRINTLN((char *)buff);
+    MU_PRINTLN(str);
 
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
       Serial.println(F("updateSetting() aborted"));
     } else if (S.updateSetting(selected_menu_item, str)) {
-      // Because we need this after updating any SerialMenu settings
+      // Because we need this after updating any Menu settings
       // and there isn't a better place for this (yet?).
       updateAdminTimeout();          
     } else {
@@ -522,8 +522,8 @@
 
   /***  Menu  ***/
   
-  void SerialMenu::menuMain(void *dat) {
-    SM_PRINTLN(F("Menu::menuMain()"));
+  void Menu::menuMain(void *dat) {
+    MU_PRINTLN(F("Menu::menuMain()"));
     serial_port->println(F("Menu"));
     serial_port->println(F("0. Exit"));
     serial_port->println(F("1. List tags"));
@@ -539,16 +539,16 @@
   }
 
   // Resets stack and gives default main-menu prompt.
-  void SerialMenu::menuMainPrompt(const char str[]) { // See .h for default string.
+  void Menu::menuMainPrompt(const char str[]) { // See .h for default string.
     resetStack();
-    prompt(str, &SerialMenu::menuSelectedMainItem);
+    prompt(str, &Menu::menuSelectedMainItem);
   }
 
   // Activates an incoming menu selection.
   // TODO: Figure out when we pop() the stack ?!? This methods should always pop() itself out of the stack.
-  void SerialMenu::menuSelectedMainItem(void *bytes) {
-    SM_PRINT(F("menuSelectedMainItem rcvd data: "));
-    SM_PRINTLN((char*)bytes);
+  void Menu::menuSelectedMainItem(void *bytes) {
+    MU_PRINT(F("menuSelectedMainItem rcvd data: "));
+    MU_PRINTLN((char*)bytes);
 
     // pop(); // I think the prompt() that set up this callback
     // will automatically pop() it, so we shouldn't need this.
@@ -563,8 +563,8 @@
       selected_menu_item = strtol((char*)bytes, NULL, 10);
     }
 
-    SM_PRINT(F("menuSelectedMainItem bytes to num: "));
-    SM_PRINTLN(selected_menu_item);
+    MU_PRINT(F("menuSelectedMainItem bytes to num: "));
+    MU_PRINTLN(selected_menu_item);
     
     switch (selected_menu_item) {
       // warn: a missing 'break' will allow
@@ -598,19 +598,19 @@
   } // menuSelectedMainItem
 
   // Lists tags for menu.
-  void SerialMenu::menuListTags(void *dat, CB cback) {
-    SM_PRINTLN(F("Menu::menuListTags()"));
+  void Menu::menuListTags(void *dat, CB cback) {
+    MU_PRINTLN(F("Menu::menuListTags()"));
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
     serial_port->print(F(", size "));
     serial_port->println(sizeof(Tags::TagSet));
     
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      //if (RFID::Tags[i] > 0) {
+      //if (Controller::Tags[i] > 0) {
       if (Tags::TagSet.tag_array[i] > 0) {
         serial_port->print(i+1);
         serial_port->print(F(". "));
-        //serial_port->print(RFID::Tags[i]);
+        //serial_port->print(Controller::Tags[i]);
         serial_port->print(Tags::TagSet.tag_array[i]);
         serial_port->println("");
       }
@@ -627,29 +627,29 @@
 
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
-  void SerialMenu::menuAddTag(void *dat) {
-    SM_PRINTLN(F("Menu::menuAddTag()"));
+  void Menu::menuAddTag(void *dat) {
+    MU_PRINTLN(F("Menu::menuAddTag()"));
     //get_tag_from_scanner = 1; // now handled by promt(,,true). See promt().
-    prompt("Enter (or scan) a tag number (unsigned long) to store", &SerialMenu::addTagString, true);
+    prompt("Enter (or scan) a tag number (unsigned long) to store", &Menu::addTagString, true);
   }
 
   // Asks user for index of tag to delete from EEPROM.
-  void SerialMenu::menuDeleteTag(void *dat) {
-    SM_PRINTLN(F("Menu::menuDeleteTag()"));
+  void Menu::menuDeleteTag(void *dat) {
+    MU_PRINTLN(F("Menu::menuDeleteTag()"));
     //menuListTags();
-    //prompt("Enter tag index to delete", &SerialMenu::deleteTag);
-    menuListTags((void*)"Enter tag index to delete", &SerialMenu::deleteTag);
+    //prompt("Enter tag index to delete", &Menu::deleteTag);
+    menuListTags((void*)"Enter tag index to delete", &Menu::deleteTag);
   }
 
   // Deletes all tags from EEPROM.
-  void SerialMenu::menuDeleteAllTags(void *dat) {
-    SM_PRINTLN(F("Menu::menuDeleteAllTags()"));
-    //prompt("Delete all tags [y/N]?", &SerialMenu::deleteAllTags);
-    menuListTags((void*)"Delete all tags [y/N]?", &SerialMenu::deleteAllTags);
+  void Menu::menuDeleteAllTags(void *dat) {
+    MU_PRINTLN(F("Menu::menuDeleteAllTags()"));
+    //prompt("Delete all tags [y/N]?", &Menu::deleteAllTags);
+    menuListTags((void*)"Delete all tags [y/N]?", &Menu::deleteAllTags);
   }
 
-  void SerialMenu::menuShowFreeMemory() {
-    SM_PRINTLN(F("Menu::menuShowFreeMemory()"));
+  void Menu::menuShowFreeMemory() {
+    MU_PRINTLN(F("Menu::menuShowFreeMemory()"));
     int ram = FreeRam();
     serial_port->print(F("Free Memory: "));
     serial_port->println(ram);
@@ -657,8 +657,8 @@
     menuMainPrompt(); 
   }
 
-  void SerialMenu::menuSettings(void *dat) {
-    SM_PRINTLN(F("Menu::menuSettings()"));
+  void Menu::menuSettings(void *dat) {
+    MU_PRINTLN(F("Menu::menuSettings()"));
     //selected_menu_item = NULL;
     selected_menu_item = -1;
     serial_port->print(F("Settings, chksm 0x"));
@@ -675,23 +675,23 @@
 
     serial_port->println();
 
-    prompt("Select a setting to edit", &SerialMenu::menuSelectedSetting);
+    prompt("Select a setting to edit", &Menu::menuSelectedSetting);
   }
 
   // Handle selected setting.
-  //void SerialMenu::menuSelectedSetting(char bytes[]) {
-  void SerialMenu::menuSelectedSetting(void *input) {
-    SM_PRINTLN(F("Menu::menuSelectedSetting()"));
+  //void Menu::menuSelectedSetting(char bytes[]) {
+  void Menu::menuSelectedSetting(void *input) {
+    MU_PRINTLN(F("Menu::menuSelectedSetting()"));
     
     char *bytes = (char*)input;
     
-    // SM_PRINT(F("menuSelectedSetting received bytes: "));
-    // SM_PRINTLN((char *)bytes);
+    // MU_PRINT(F("menuSelectedSetting received bytes: "));
+    // MU_PRINTLN((char *)bytes);
 
     selected_menu_item = strtol(bytes, NULL, 10);
     
-    SM_PRINT(F("menuSelectedSetting set selected_menu_item to: "));
-    SM_PRINTLN(selected_menu_item);
+    MU_PRINT(F("menuSelectedSetting set selected_menu_item to: "));
+    MU_PRINTLN(selected_menu_item);
 
     // If user selected valid settings item.
     if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
@@ -699,7 +699,7 @@
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);
-      prompt("Type a new value for setting", &SerialMenu::updateSetting);
+      prompt("Type a new value for setting", &Menu::updateSetting);
       
     // If user selects "0", return, or enter, then go back to main menu.
     } else if (bytes[0] == '0' || bytes[0] == '\r' || bytes[0] == '\n') {

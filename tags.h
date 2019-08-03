@@ -19,10 +19,10 @@
   //       
   // TODO: √ Split this into .h and .cpp files.
   // 
-  // TODO: This class now works with RFID and SerialMenu, but storage_name is getting garbled.
+  // TODO: This class now works with Controller and Menu, but storage_name is getting garbled.
   
 
-  // This is for aliasing RFID::Tags to the new Tags class (Tags::TagSet.tags).
+  // This is for aliasing Controller::Tags to the new Tags class (Tags::TagSet.tags).
   // It can also be used as a type for any array that holds 32-bit tag ids.
   typedef uint32_t TagArray[TAG_LIST_SIZE];
   

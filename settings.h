@@ -11,7 +11,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre147"
+  #define VERSION "v0.1.0.pre148"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -29,8 +29,8 @@
   #define INO_DEBUG  // main ino file
   //#define BK_DEBUG   // blinker
   #define RD_DEBUG   // reader
-  //#define RF_DEBUG   // proximity controller
-  #define SM_DEBUG   // serial menu
+  //#define CT_DEBUG   // proximity controller
+  #define MU_DEBUG   // serial menu
   //#define SK_DEBUG   // stack
   //#define ST_DEBUG   // settings
   
@@ -56,7 +56,7 @@
   // How would we do this? Probably need a hardware pin to signal it?
 
   // Instanciates the built-in reset function.
-  // WARN: This causes multiple-definition errors if run here. See serial_menu.cpp.
+  // WARN: This causes multiple-definition errors if run here. See menu.cpp.
   //void(* resetFunc) (void) = 0;
 
 
@@ -133,7 +133,7 @@
   // Creates an extern constant 2D char array 'SETTING_NAMES' that holds Settings var names.
   // This is used to get names/values by index and to iterate through Settings
   // for UI purposes (displaying lists, displaying individual settings).
-  // Note that this array is 0-based, unlike some other SerialMenu lists, which are 1-based.
+  // Note that this array is 0-based, unlike some other Menu lists, which are 1-based.
   //
   //  There are now 5 places where settings need to be managed:
   //  1. Declaration in settings.h

@@ -7,7 +7,7 @@
     id_end(_id_end),
     power_control_logic(_control_logic),
 
-    /* From RFID */
+    /* From Controller */
     buff {},
     buff_index(0UL),
     //proximity_state(0),
@@ -42,7 +42,7 @@
 
 
 
-  /***  From RFID  ***/
+  /***  From Controller  ***/
 
   void Reader::loop() {
 
@@ -131,13 +131,13 @@
 
   // Polls reader serial port and processes incoming tag data.
   void Reader::pollReader() {
-    // If data available on RFID serial port, do something.
+    // If data available on Controller serial port, do something.
     RD_PRINT(F("Reader::pollReader() reader_name, raw_tag_length: "));
     RD_PRINT(reader_name);    
     RD_PRINT(F(", "));
     RD_PRINTLN(raw_tag_length);
 
-    // TODO (from RFID class): Consider moving this if/then condition to RFID::loop() function.
+    // TODO (from Controller class): Consider moving this if/then condition to Controller::loop() function.
     if (serial_port->available()) {
       while (serial_port->available()) {
         if (buff_index >= MAX_TAG_LENGTH || buff_index >= raw_tag_length) {
@@ -158,7 +158,7 @@
         RD_PRINT(buff[buff_index], HEX); RD_PRINT(":");
         RD_PRINT(buff[buff_index], DEC);
 
-        // TODO: Move this to main RFID::loop() function?
+        // TODO: Move this to main Controller::loop() function?
         //uint8_t final_index = S.RAW_TAG_LENGTH - 1;
         uint8_t final_index = raw_tag_length - 1U;
   
@@ -182,7 +182,7 @@
         }
       }
 
-    // If no data on RFID serial port and sufficient conditions exist,
+    // If no data on Controller serial port and sufficient conditions exist,
     // then call cycle-reader-power.
     } else if (
       msSinceLastTagRead() > readerPowerCycleHighDuration() * 1000UL ||
@@ -192,18 +192,18 @@
     }    
   }
 
-  // TODO (Reader): I think part of this function should stay in RFID,
+  // TODO (Reader): I think part of this function should stay in Controller,
   // the part that decides what to do with a successfull tag read/authentication.
   // The big question is: Where/what do we do with the successfully read tag? Where do we store it?
   //
   // Processes a received array of tag bytes.
-  // NOTE (from RFID): array args in func definitions can only use absolute constants, not vars.
-  // TODO (from RFID): create macro definition for max-tag-length that can be used in func definition array args.
+  // NOTE (from Controller): array args in func definitions can only use absolute constants, not vars.
+  // TODO (from Controller): create macro definition for max-tag-length that can be used in func definition array args.
   void Reader::processTag(uint8_t _tag[]) {
     RD_PRINT(F("Reader::processTag() received buffer w/reader: "));
     RD_PRINTLN(reader_name);
 
-    // DEV (from RFID): Use this to ensure that virtual functions are working in derived classes.
+    // DEV (from Controller): Use this to ensure that virtual functions are working in derived classes.
     //  RD_PRINT(F("Reader::processTag() calling echo(): "));
     //  int tst = echo(24);
     //  RD_PRINTLN(tst);
@@ -218,9 +218,9 @@
     // If tag is valid, immediatly update proximity-state.
     // Actually, in the refactored Reader implementation, just update last_tag_read_ms,
     // and maybe store the last-read-tag in a var.
-    // Proximity state should be entirely handled by RFID (Gate/State) class.
+    // Proximity state should be entirely handled by Controller (Gate/State) class.
     if (tag_id > 0UL && ::Tags::TagSet.getTagIndex(tag_id) >= 0) { // 0 is valid index.  
-      // This should be handled in the RFID class, not here.
+      // This should be handled in the Controller class, not here.
       // TODO: Make sure it's ok to not run this here!
       //setProximityState(1);
       last_tag_read_ms = current_ms;

@@ -9,8 +9,8 @@
  * I think the output controls should be moved to a separate class.
  */
 
-#ifndef __RFID_H__
-#define __RFID_H__
+#ifndef __CONTROLLER_H__
+#define __CONTROLLER_H__
 
   #include <Arduino.h>
   //#include <Stream.h>
@@ -20,21 +20,21 @@
   #include "settings.h"
   #include "reader.h"
   #include "led_blinker.h"
-  #include "serial_menu.h"
+  #include "menu.h"
   #include "tags.h"
 
   // Comment this line to disable debug code for this class.
-  //#define RF_DEBUG
-  #ifdef RF_DEBUG
-    #define RF_PRINT(...) DPRINT(__VA_ARGS__)
-    #define RF_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+  //#define CT_DEBUG
+  #ifdef CT_DEBUG
+    #define CT_PRINT(...) DPRINT(__VA_ARGS__)
+    #define CT_PRINTLN(...) DPRINTLN(__VA_ARGS__)
   #else
-    #define RF_PRINT(...)
-    #define RF_PRINTLN(...)
+    #define CT_PRINT(...)
+    #define CT_PRINTLN(...)
   #endif
 
 
-  class RFID {
+  class Controller {
   public:
     /***  Variables  ***/
     
@@ -62,9 +62,9 @@
     
     /***  Constructors  ***/
     
-    //RFID(Stream*, Led*, Reader*);
-    //RFID(Stream*, Led*);
-    RFID(Reader*, Led*);
+    //Controller(Stream*, Led*, Reader*);
+    //Controller(Stream*, Led*);
+    Controller(Reader*, Led*);
 
     /***  Functions  ***/
     
@@ -94,6 +94,6 @@
     //typedef uint32_t TagArray[TAG_LIST_SIZE];
     static TagArray& Tags;
   
-  };  // RFID
+  };  // Controller
 
 #endif
