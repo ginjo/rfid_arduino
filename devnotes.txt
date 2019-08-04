@@ -312,5 +312,9 @@ TODO: √ Rename RFID to Controller or Switch.
 
 TODO: Re-enable proximity_state EEPROM retrieve/save (see above for initial_state suggestion).
 
+TODO: Review organization and labels in main .ino file.
+
+TODO: Test the latest build, since the logging code changes.
+
 
 

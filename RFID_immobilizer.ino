@@ -22,6 +22,9 @@
   #endif
 
 
+
+  /***  Declarations  ***/
+
   // Declares blinker LED.
   Led *Blinker;
 
@@ -38,10 +41,14 @@
   Controller *Rfid;
 
 
+
+  /*** setup()  ***/
+
   void setup() {
     pinMode(FAILSAFE_PIN, INPUT_PULLUP);
     
-    // For debugging, so Settings operations can be logged.
+    // Opens default hardware serial port.
+    // Requirement for Settings operations logging.
     Serial.begin(57600);
     while (! Serial) delay(10);
     delay(15);
@@ -51,8 +58,10 @@
     
     Settings::Load(); // (*settings_instance, eeprom_address)
 
-    // Normal, when debugging not needed.
-    Serial.flush();
+
+    /* For normal mode, when debugging not needed */
+    
+    Serial.flush(); // I think flushes only outbound data. See Serial class docs.
     Serial.begin(S.HW_SERIAL_BAUD);
     while (! Serial) delay(10);
     delay(15);
@@ -71,7 +80,9 @@
     Serial.print(F(", "));
     Serial.println(TIMESTAMP);
 
-    // For manual debug/log mode.
+
+    /* For manual debug/log mode */
+    
     pinMode(S.DEBUG_PIN, INPUT_PULLUP);
 
     int debug_pin_status = digitalRead(S.DEBUG_PIN);
@@ -84,14 +95,8 @@
       S.enable_debug = 1;
     }
 
-    // TODO: Move this to Settings class, and call it from here.
-    // Prints out all settings in tabular format.
+    // Wraps call to S.printSettings() in empty lines.
     Serial.println();
-    //for (int n=1; n <= SETTINGS_SIZE; n++) {
-    //  char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-    //  S.displaySetting(n, output);
-    //  Serial.println(output);
-    //}
     S.printSettings(&Serial);
     Serial.println();
 
