@@ -1,0 +1,59 @@
+Arduino Nano
+
+WL-125 RFID reader
+  1000 uf capacitor
+  antenna
+
+HC-06 bluetooth serial module
+
+5v power supply module
+
+2K/1K or 20K/10K resistors to form 3.3v voltage divider
+  for Ard tx output to BT rx pin.
+  
+Green LED (or RGB, or green + red)
+
+Resistor(s) for LED(s)
+
+Mosfet N-channel
+
+Resistor (pullup/down?) for mosfet
+
+Button for momentary debug mode
+
+Button for momentary failsafe mode
+
+SSR output relay (~5v => ~12v)
+
+PCB board
+
+Case
+
+Connectors/terminals for
+  power (2-3)
+  antenna/RFID (2-3)
+  LED (2-4)
+  output (2)
+  
+PCB barrel jack for power supply?
+
+JST XH right-angle connectors for board connections
+  ebay "jst right-angle connectors"
+
+JST SM connectors for external connections
+  ebay "jst sm connectors"
+  
+Screw terminals for board connections, if using JST SM connectors?
+
+Automotive fuse taps (1-2)
+
+Spade/sheath connectors (4-8)
+
+Fuel pump relay connector (1 male, 1 female)
+
+Zip ties
+
+Heavy duty velcro
+
+Regular velcro cable straps
+
