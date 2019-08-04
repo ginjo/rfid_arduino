@@ -12,8 +12,7 @@
   #include "menu.h"
   #include "controller.h"
 
-  // Comment this line to disable debug code for this class.
-  //#define INO_DEBUG
+  // See logger.h for master debug controls.
   #ifdef INO_DEBUG
     #define INO_PRINT(...) DPRINT(__VA_ARGS__)
     #define INO_PRINTLN(...) DPRINTLN(__VA_ARGS__)

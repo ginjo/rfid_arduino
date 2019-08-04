@@ -10,8 +10,7 @@
 
   #include "settings.h"
 
-  // Comment this line to disable debug code for this class.
-  //#define BK_DEBUG
+  // See logger.h for master debug controls.
   #ifdef BK_DEBUG
     #define BK_PRINT(...) DPRINT(__VA_ARGS__)
     #define BK_PRINTLN(...) DPRINTLN(__VA_ARGS__)

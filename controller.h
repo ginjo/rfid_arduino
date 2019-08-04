@@ -1,12 +1,5 @@
-/* This description is old:
- *  
- * Read, save, and delete tags to/from EEPROM
- * Receive tags from serial port reader hardware
- * Interface with hardware using Reader structs
- * Decode, process, validate tags against stored values
- * 
- * This also controls the mast output switch and all of its timing
- * I think the output controls should be moved to a separate class.
+/* 
+ * This controls the master output switch and its timing.
  */
 
 #ifndef __CONTROLLER_H__
@@ -23,8 +16,7 @@
   #include "menu.h"
   #include "tags.h"
 
-  // Comment this line to disable debug code for this class.
-  //#define CT_DEBUG
+  // See logger.h for master debug controls.
   #ifdef CT_DEBUG
     #define CT_PRINT(...) DPRINT(__VA_ARGS__)
     #define CT_PRINTLN(...) DPRINTLN(__VA_ARGS__)

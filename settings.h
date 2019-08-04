@@ -20,20 +20,10 @@
   // stdarg.h is used to process variadic function args.
   // I don't think we're using it yet.
   //#include <stdarg.h>
-  // Moved to .cpp to stop EEPROM warnings.
-  //#include <EEPROM.h>
 
   #include "logger.h"
 
-  // Comment lines to disable debug code for each class.
-  #define INO_DEBUG  // main ino file
-  //#define BK_DEBUG   // blinker
-  #define RD_DEBUG   // reader
-  //#define CT_DEBUG   // proximity controller
-  #define MU_DEBUG   // serial menu
-  //#define SK_DEBUG   // stack
-  //#define ST_DEBUG   // settings
-  
+  // See logger.h for master debug controls.
   #ifdef ST_DEBUG
     #define ST_PRINT(...) DPRINT(__VA_ARGS__)
     #define ST_PRINTLN(...) DPRINTLN(__VA_ARGS__)

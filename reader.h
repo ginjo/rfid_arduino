@@ -8,8 +8,7 @@
   #include "settings.h"
   #include "tags.h"
 
-  // Comment this line to disable debug code for this class.
-  //#define RD_DEBUG
+  // See logger.h for master debug controls.
   #ifdef RD_DEBUG
     #define RD_PRINT(...) DPRINT(__VA_ARGS__)
     #define RD_PRINTLN(...) DPRINTLN(__VA_ARGS__)

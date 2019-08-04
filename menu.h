@@ -17,8 +17,7 @@
   #include "stack.h"
   //#include "controller.h" // This would cause circular include. See .cpp file for better solution.
 
-  // Comment this line to disable debug code for this class.
-  //#define MU_DEBUG
+  // See logger.h for master debug controls.
   #ifdef MU_DEBUG
     #define MU_PRINT(...) DPRINT(__VA_ARGS__)
     #define MU_PRINTLN(...) DPRINTLN(__VA_ARGS__)

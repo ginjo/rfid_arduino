@@ -9,8 +9,7 @@
 #ifndef __FUNCTION_STACK_H__
 #define __FUNCTION_STACK_H__
 
-  // Comment this line to disable debug code for this class.
-  //#define SK_DEBUG
+  // See logger.h for master debug controls.
   #ifdef SK_DEBUG
     #define SK_PRINT(...) DPRINT(__VA_ARGS__)
     #define SK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
