@@ -1,6 +1,6 @@
 /* 
- * Passive Controller activated switch, user-controllable with
- * activation delay, for use in generic engine kill module.
+ * Passive RFID-activated switch with bluetooth serial admin console.
+ * For use in generic engine kill modules.
  * 
  */
  

@@ -601,11 +601,9 @@
     serial_port->println(sizeof(Tags::TagSet));
     
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      //if (Controller::Tags[i] > 0) {
       if (Tags::TagSet.tag_array[i] > 0) {
         serial_port->print(i+1);
         serial_port->print(F(". "));
-        //serial_port->print(Controller::Tags[i]);
         serial_port->print(Tags::TagSet.tag_array[i]);
         serial_port->println("");
       }
