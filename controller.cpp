@@ -4,7 +4,7 @@
   // Constructors
   //Controller::Controller(Stream *_serial_port, Led *_blinker, Reader *_reader) :
   //Controller::Controller(Stream *_serial_port, Led *_blinker) :
-  Controller::Controller(Reader *_reader, Led *_blinker) :
+  Controller::Controller(Reader *_reader, Led *_blinker[]) :
     proximity_state(0),
     reader(_reader),
     blinker(_blinker)
@@ -40,6 +40,7 @@
 
 
   void Controller::loop() {
+    reader->loop();
     proximityStateController();
   }
 
@@ -91,7 +92,8 @@
       ){
       
       CT_PRINTLN(F("proximityStateController() startup GRACE period timeout, no tag found"));
-      blinker->SlowBlink();
+      blinker[0]->SlowBlink();
+      blinker[1]->Off();
       setProximityState(0);
     
     // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
@@ -103,7 +105,8 @@
       ){
       
       CT_PRINTLN(F("proximityStateController() TIMEOUT"));
-      blinker->SlowBlink();
+      blinker[0]->SlowBlink();
+      blinker[1]->Off();
       setProximityState(0);
 
     // If last read is greater than reader-power-cycle-total AND
@@ -122,7 +125,7 @@
       //CT_PRINTLN(F("###  ###"));
 
       CT_PRINTLN(F("proximityStateController() AGING"));
-      blinker->FastBlink();
+      blinker[0]->FastBlink();
       setProximityState(1);
 
     // If we're STILL YOUNG.
@@ -132,7 +135,8 @@
       ){
         
       CT_PRINTLN(F("proximityStateController() still YOUNG"));
-      blinker->Steady();
+      blinker[1]->Steady();
+      blinker[0]->Off();
       setProximityState(1);
 
     // No expected condition was met (not sure what to do here yet).

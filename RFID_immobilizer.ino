@@ -21,12 +21,14 @@
     #define INO_PRINTLN(...)
   #endif
 
-
+  #define LED_RED_PIN 10
+  #define LED_GREEN_PIN 9
+  #define LED_BLUE_PIN 8
 
   /***  Declarations  ***/
 
   // Declares blinker LED.
-  Led *Blinker;
+  Led *led_red, *led_green, *led_blue, *Blinker;
 
   // Declares a software-serial port for admin console.
   SoftwareSerial *BTserial;
@@ -38,7 +40,7 @@
   Reader *RfidReader;
   
   // Declares instance of Controller handler.
-  Controller *Rfid;
+  Controller *OutputControl;
 
 
 
@@ -106,6 +108,10 @@
     /*  Initialize main objects  */
 
     Blinker = new Led(S.LED_PIN);
+    led_red   = new Led(LED_RED_PIN);
+    led_green = new Led(LED_GREEN_PIN);
+    led_blue  = new Led(LED_BLUE_PIN);
+    Led *RGB[] = {led_red,led_green,led_blue};
 
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
@@ -117,16 +123,18 @@
     Menu::HW = new Menu(&Serial, RfidReader, Blinker, "HW");
     Menu::SW = new Menu(BTserial, RfidReader, Blinker, "SW");
 
-    Rfid = new Controller(RfidReader, Blinker);
+    OutputControl = new Controller(RfidReader, RGB);
 
     FREERAM("setup() pre obj stp");
     
     
     /*  Run setup/begin/init functions  */
 
-    Rfid->initializeOutput();
+    OutputControl->initializeOutput();
 
     Blinker->StartupBlink();
+    led_green->StartupBlink();
+    led_red->StartupBlink();
 
     // Activates the software-serial port for admin console.
     BTserial->begin(S.BT_BAUD);
@@ -141,7 +149,7 @@
     RfidSerial->begin(S.RFID_BAUD);
 
     // Activates the Controller handler.
-    Rfid->begin();
+    OutputControl->begin();
 
     FreeRam("end setup()");
 
@@ -154,12 +162,15 @@
   void loop() {
     
     Blinker->loop();
+    led_red->loop();
+    led_green->loop();
+    //led_blue->loop();
 
     if (Menu::run_mode > 0) {
       Menu::Loop();
     } else if (Menu::run_mode == 0) {
-      RfidReader->loop();
-      Rfid->loop();      
+      //RfidReader->loop();
+      OutputControl->loop();      
     }
     
   } // end loop()
