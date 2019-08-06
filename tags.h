@@ -16,11 +16,7 @@
   //       After that, the Storage instance handles everything about where to load/store
   //       the checksum and the data. This makes the persistance layer portable,
   //       extensible, and scaleable.
-  //       
-  // TODO: √ Split this into .h and .cpp files.
-  // 
-  // TODO: This class now works with Controller and Menu, but storage_name is getting garbled.
-  
+
 
   // This is for aliasing Controller::Tags to the new Tags class (Tags::TagSet.tags).
   // It can also be used as a type for any array that holds 32-bit tag ids.

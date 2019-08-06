@@ -42,7 +42,7 @@
 
 
 
-  /*** setup()  ***/
+  /*** Setup  ***/
 
   void setup() {
     pinMode(FAILSAFE_PIN, INPUT_PULLUP);
@@ -95,7 +95,7 @@
       S.enable_debug = 1;
     }
 
-    // Wraps call to S.printSettings() in empty lines.
+    // Displays current settings.
     Serial.println();
     S.printSettings(&Serial);
     Serial.println();
@@ -122,7 +122,7 @@
     FREERAM("setup() pre obj stp");
     
     
-    /*  Run setups  */
+    /*  Run setup/begin/init functions  */
 
     Rfid->initializeOutput();
 
