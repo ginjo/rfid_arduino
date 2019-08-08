@@ -27,6 +27,9 @@
   public:
     // Sets the pin number
     int led_pin;  //LED_BUILTIN;
+
+    // Sets led name
+    char led_name[3];
     
     // Sets initial state of led
     int led_state;
@@ -49,12 +52,12 @@
     int intervals[INTERVALS_LENGTH];
 
     // constructor
-    Led(int);
+    Led(int, const char[]);
     
     void begin(int, const int[]);
     void update(int, const int[]);
     void loop();
-    void startPhase(int);
+    void startPhase(int = 0);
     void handleBlinker();
     void printIntervals(const int[]);
     int  countIntervals(const int[]);

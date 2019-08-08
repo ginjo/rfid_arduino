@@ -1,6 +1,6 @@
   #include "led_blinker.h"
   
-  Led::Led(int pin) : 
+  Led::Led(int pin, const char _name[]) : 
     led_pin(pin),
     led_state(0),
     current_phase(0),
@@ -10,12 +10,12 @@
     previous_ms(0),
     intervals {}
   {
-    ;
+    strlcpy(led_name, _name, 3);
   }
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
     if(S.debugMode()) {
-      Serial.println(F("Led::begin with intervals current, new:"));
+      Serial.print(F("Led::begin current, new:")); Serial.println(led_name);
       printIntervals(intervals);
       printIntervals(_intervals);
     }
@@ -69,14 +69,20 @@
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
     BK_PRINT(F("Led::update _intervals[0]: ")); BK_PRINTLN(_intervals[0]);
     if(S.debugMode()) {
-      Serial.println(F("Led::update with intervals current, new:"));
+      Serial.print(F("Led::update current, new: ")); Serial.println(led_name);
       printIntervals(intervals);
       printIntervals(_intervals);
     }
-    
+
+    // TODO: FIX: This doesn't work when intervals are all 0, as they are for Off().
+    // Update: The added logic of comparing countIntervals == 0 for current & new
+    //         should solve the problem now.
     if (
-        _num_cycles == num_cycles &&
-        memcmp(_intervals, intervals, countIntervals(_intervals)) == 0
+         _num_cycles == num_cycles &&
+         (
+            memcmp(_intervals, intervals, countIntervals(_intervals)) == 0 ||
+            (countIntervals(_intervals) == 0 && countIntervals(intervals) == 0)
+         )
        )
     {
       //Serial.println(F("Led::update() skipping begin()"));
@@ -87,7 +93,7 @@
   }
   
   // Starts a new blinker phase, given int
-  void Led::startPhase(int phz = 0) {
+  void Led::startPhase(int phz) {
     current_phase = phz;
     if (phz == 0) {
       cycle_count ++;

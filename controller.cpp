@@ -2,8 +2,6 @@
   #include <EEPROM.h>
 
   // Constructors
-  //Controller::Controller(Stream *_serial_port, Led *_blinker, Reader *_reader) :
-  //Controller::Controller(Stream *_serial_port, Led *_blinker) :
   Controller::Controller(Reader *_reader, Led *_blinker[]) :
     proximity_state(0),
     reader(_reader),
@@ -13,7 +11,6 @@
 
   // TODO: Some (all?) of this needs to be moved to Reader setup().
   void Controller::begin() {
-    // Moved output switch initialization to its own function.
     // Make sure to run this somewhere, if not here.
     //initializeOutput();
     
@@ -22,7 +19,7 @@
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into Controller::Controller().
 
-    Serial.print(F("Starting Controller reader "));
+    Serial.print(F("Starting Controller with reader "));
     Serial.print(reader->reader_name);
     Serial.print(F(", with EEPROM proximity state "));
     Serial.println(proximity_state);
