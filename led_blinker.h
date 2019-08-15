@@ -20,7 +20,7 @@
   #endif
   
   // Max allowed size of intervals array.
-  #define INTERVALS_LENGTH 20 // for a max of 10 on/off cycles
+  #define INTERVALS_LENGTH 10 // for a max of 5 on/off cycles
   
   
   class Led {

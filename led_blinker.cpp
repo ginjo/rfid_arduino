@@ -80,12 +80,12 @@
     if (
          _num_cycles == num_cycles &&
          (
-            memcmp(_intervals, intervals, countIntervals(_intervals)) == 0 ||
+            memcmp(_intervals, intervals, INTERVALS_LENGTH) == 0 ||
             (countIntervals(_intervals) == 0 && countIntervals(intervals) == 0)
          )
        )
     {
-      //Serial.println(F("Led::update() skipping begin()"));
+      BK_PRINTLN(F("Led::update() skipping begin()"));
     } else {
       //Serial.println(F("Led::update() calling begin()"));
       begin(_num_cycles, _intervals);      
@@ -112,32 +112,31 @@
   }
 
   void Led::Steady() {
-    BK_PRINT(F("Led::Steady(), _intervals[0]: "));
+    BK_PRINT(F("Led::Steady() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {1000};
-    BK_PRINTLN(_intervals[0]);
     update(0, _intervals);
   }
 
   void Led::Off() {
-    BK_PRINTLN(F("Led::Off()"));
+    BK_PRINT(F("Led::Off() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {0};
     update(0, _intervals);
   }
 
   void Led::SlowBlink() {
-    BK_PRINTLN(F("Led::SlowBlink()"));
+    BK_PRINT(F("Led::SlowBlink() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {500,500};
     update(0, _intervals);
   }
 
   void Led::FastBlink() {
-    BK_PRINTLN(F("Led::FastBlink()"));
+    BK_PRINT(F("Led::FastBlink() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {70,70};
     update(0, _intervals);
   }
 
   void Led::StartupBlink() {
-    BK_PRINTLN(F("Led::StartupBlink()"));
+    BK_PRINT(F("Led::StartupBlink() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {470,30};
     update(0, _intervals);
   }
