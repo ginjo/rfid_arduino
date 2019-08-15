@@ -61,12 +61,14 @@
     void handleBlinker();
     void printIntervals(const int[]);
     int  countIntervals(const int[]);
+    void reset();
 
     void Steady();
     void Off();
     void SlowBlink();
     void FastBlink();
     void StartupBlink();
+    void Once();
   
   };
 

@@ -215,6 +215,8 @@
     RD_PRINT(F("Tag result from processTagData(): "));
     RD_PRINTLN(tag_id);
 
+    if (tag_id) led_blue->Once();
+
     // If tag is valid, immediatly update proximity-state.
     // Actually, in the refactored Reader implementation, just update last_tag_read_ms,
     // and maybe store the last-read-tag in a var.

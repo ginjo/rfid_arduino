@@ -166,7 +166,7 @@
     //Blinker->loop();
     led_red->loop();
     led_green->loop();
-    //led_blue->loop();
+    led_blue->loop();
 
     if (Menu::run_mode > 0) {
       Menu::Loop();

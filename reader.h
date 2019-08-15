@@ -7,6 +7,7 @@
   #include <string.h>
   #include "settings.h"
   #include "tags.h"
+  #include "led_blinker.h"
 
   // See logger.h for master debug controls.
   #ifdef RD_DEBUG
@@ -18,6 +19,8 @@
   #endif
 
   #define MAX_TAG_LENGTH 16
+
+  extern Led *led_blue;
 
 
   struct Reader {

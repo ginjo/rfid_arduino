@@ -97,6 +97,13 @@
     current_phase = phz;
     if (phz == 0) {
       cycle_count ++;
+      
+      // TODO: This should be refactored so that it reverts to
+      // previous interval set after cycle_count goes above num_cycles.
+      if (num_cycles > 0 && cycle_count > num_cycles) {
+        reset();
+        return;
+      }
     }
 
     // //don't bother changing state if interval is 0
@@ -110,7 +117,42 @@
     
     previous_ms = current_ms;
   }
+    
+  // Handles start-stop blinker and blinker cycling
+  void Led::handleBlinker() {
+    //BK_PRINTLN("Led::handleBlinker() current data:");
+    //BK_PRINTLN(current_phase);
+    //BK_PRINTLN(intervals[current_phase]);
+    //BK_PRINTLN(led_state);
+    //BK_PRINTLN(current_ms);
+    //BK_PRINTLN(previous_ms);
+    //BK_PRINTLN(" ");
 
+    // If the current interval has expired
+    if (current_ms - previous_ms >= (unsigned long)intervals[current_phase]) {
+      // Increments the led phase, or resets it to zero,
+      // then calls startPhase()
+      //int ary_size = sizeof(intervals)/sizeof(*intervals);
+      if (current_phase >= countIntervals(intervals) - 1) {
+        startPhase(0);
+      } else {
+        startPhase(current_phase + 1);
+      }
+    }
+
+    digitalWrite(led_pin, led_state);
+  }
+
+  void Led::reset() {
+    led_state = 0;
+    current_phase = 0;
+    cycle_count = 0;
+    memset(intervals, 0, INTERVALS_LENGTH);
+  }
+
+
+  /*  Preset patterns  */
+  
   void Led::Steady() {
     BK_PRINT(F("Led::Steady() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {1000};
@@ -140,30 +182,11 @@
     const int _intervals[INTERVALS_LENGTH] = {470,30};
     update(0, _intervals);
   }
-    
-  // Handles start-stop blinker and blinker cycling
-  void Led::handleBlinker() {
-    //BK_PRINTLN("Led::handleBlinker() current data:");
-    //BK_PRINTLN(current_phase);
-    //BK_PRINTLN(intervals[current_phase]);
-    //BK_PRINTLN(led_state);
-    //BK_PRINTLN(current_ms);
-    //BK_PRINTLN(previous_ms);
-    //BK_PRINTLN(" ");
 
-    // If the current interval has expired
-    if (current_ms - previous_ms >= (unsigned long)intervals[current_phase]) {
-      // Increments the led phase, or resets it to zero,
-      // then calls startPhase()
-      //int ary_size = sizeof(intervals)/sizeof(*intervals);
-      if (current_phase >= countIntervals(intervals) - 1) {
-        startPhase(0);
-      } else {
-        startPhase(current_phase + 1);
-      }
-    }
-
-    digitalWrite(led_pin, led_state);
+  void Led::Once() {
+    BK_PRINT(F("Led::Once() ")); BK_PRINTLN(led_name);
+    const int _intervals[INTERVALS_LENGTH] = {70};
+    update(1, _intervals);    
   }
 
   
