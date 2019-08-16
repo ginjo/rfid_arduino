@@ -316,5 +316,10 @@ TODO: Review organization and labels in main .ino file.
 
 TODO: Test the latest build, since the logging code changes.
 
+TODO: Test changes to RGB implementation.
 
+TODO: Store pin assignments in code, not in settings.
+      Do this for all hardware-dependent settings.
+
+TODO: Document RGB color and pattern meanings.
 

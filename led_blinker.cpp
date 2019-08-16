@@ -11,6 +11,8 @@
     intervals {}
   {
     strlcpy(led_name, _name, 3);
+    pinMode(led_pin, OUTPUT);
+    digitalWrite(led_pin, LOW);
   }
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH]) {
@@ -20,7 +22,8 @@
       printIntervals(_intervals);
     }
     
-  	pinMode(led_pin, OUTPUT);
+    //	pinMode(led_pin, OUTPUT);
+    //  digitalWrite(led_pin, LOW);
 
     // Initialize state
     led_state = LOW;
@@ -140,6 +143,8 @@
       }
     }
 
+    // For debugging the raw outpout.
+    //BK_PRINT(F("LED write: ")); BK_PRINT(led_pin); BK_PRINT(F(" ")); BK_PRINTLN(led_state);
     digitalWrite(led_pin, led_state);
   }
 
@@ -185,7 +190,7 @@
 
   void Led::Once() {
     BK_PRINT(F("Led::Once() ")); BK_PRINTLN(led_name);
-    const int _intervals[INTERVALS_LENGTH] = {70};
+    const int _intervals[INTERVALS_LENGTH] = {120};
     update(1, _intervals);    
   }
 

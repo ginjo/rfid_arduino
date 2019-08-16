@@ -2,6 +2,7 @@
   #include <EEPROM.h>
 
   // Constructors
+  // Receives a Reader and an array of Led objecs (*RGB[] from .ino file).
   Controller::Controller(Reader *_reader, Led *_blinker[]) :
     proximity_state(0),
     reader(_reader),
@@ -64,6 +65,11 @@
     // TODO: Protect this action with a gate of some sort.
     //       Use a setting, or  a pin, or a key-press.
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (proximity_state) {
+      blinker[1]->StartupBlink();
+    } else {
+      blinker[0]->StartupBlink();
+    }
   }
 
 
@@ -122,7 +128,14 @@
       //CT_PRINTLN(F("###  ###"));
 
       CT_PRINTLN(F("proximityStateController() AGING"));
-      blinker[0]->FastBlink();
+      if (proximity_state) {
+        blinker[1]->FastBlink();
+        blinker[0]->Off();
+      } else {
+        blinker[0]->FastBlink();
+        blinker[1]->Off();        
+      }
+      
       setProximityState(1);
 
     // If we're STILL YOUNG.

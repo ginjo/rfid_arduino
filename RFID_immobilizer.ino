@@ -116,7 +116,7 @@
 
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, S.LED_PIN);
+    RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, 9);
 
     RfidReader = Reader::GetReader(S.DEFAULT_READER);
     RfidReader->serial_port = RfidSerial;
@@ -135,8 +135,8 @@
 
     //Blinker->StartupBlink();
     //led_green->StartupBlink();
-    led_green->Off();
-    led_red->StartupBlink();
+    //led_green->Off();
+    //led_red->StartupBlink();
 
     // Activates the software-serial port for admin console.
     BTserial->begin(S.BT_BAUD);
