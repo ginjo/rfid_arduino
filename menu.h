@@ -27,35 +27,25 @@
   #endif
   
   #define INPUT_BUFFER_LENGTH 24
-  //#define INPUT_MODE_LENGTH 16
-  //#define CURRENT_FUNCTION_LENGTH 24
 
 
   class Menu : public Stack<Menu> {
   public:
     Stream *serial_port;
     Reader *reader;
-    // TODO: I think run_mode should be a global.
-    //int run_mode; // 0=run, 1=admin // This was moved to static member.
     // NOTE: instance_name is a two-character string with a terminating null.
     char instance_name[3];
     uint32_t previous_ms;
     uint32_t admin_timeout; // seconds
-  	
-  	//char input_mode[INPUT_MODE_LENGTH];
-  
+  	  
   	// Byte buffer for incoming serial strings
   	char buff[INPUT_BUFFER_LENGTH];
   	int buff_index;
-    //char current_function[CURRENT_FUNCTION_LENGTH];
     int selected_menu_item;
     int get_tag_from_scanner;
 
-    //Led * blinker;
-
     // Constructor receives a serial port instance
     // from HardwareSerial or SoftwareSerial.
-    //Menu(Stream *stream_ref);
     Menu(Stream*, Reader*, const char* = "");
 
     /* Control */

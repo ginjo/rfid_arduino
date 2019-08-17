@@ -4,14 +4,12 @@
   
   This also demonstrates how to do globally accessible vars and functions.
   
-  TODO: SEE https://community.particle.io/t/eeprom-put-using-a-multi-variable-struct/30561/7
-        for an easier way to use EEPROM: put()'ing a struct object.
 */
 
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre157"
+  #define VERSION "v0.1.0.pre158"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -40,10 +38,6 @@
   #define SETTINGS_EEPROM_ADDRESS 800 // see class definition
   #define FAILSAFE_PIN 12
 
-  
-  // TODO: Maybe make it like OpenWRT, with a basic failsafe boot mode, allowing you
-  // to do basic things like reset, reboot, configure, etc.
-  // How would we do this? Probably need a hardware pin to signal it?
 
   // Instanciates the built-in reset function.
   // WARN: This causes multiple-definition errors if run here. See menu.cpp.

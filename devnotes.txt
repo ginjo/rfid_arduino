@@ -314,12 +314,18 @@ TODO: Re-enable proximity_state EEPROM retrieve/save (see above for initial_stat
 
 TODO: Review organization and labels in main .ino file.
 
-TODO: Test the latest build, since the logging code changes.
+TODO: √ Test the latest build, since the logging code changes.
 
-TODO: Test changes to RGB implementation.
+TODO: √ Test changes to RGB implementation.
 
 TODO: Store pin assignments in code, not in settings.
       Do this for all hardware-dependent settings.
 
-TODO: Document RGB color and pattern meanings.
+TODO: Document RGB LED color and pattern meanings.
+
+TODO: Handle saving of blinker interval-set, so previous set can be
+      revived after cycle-count goes over num-cycles.
+      See note in Led::startPhase(int).
+      
+      
 

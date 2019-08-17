@@ -20,7 +20,8 @@
 
   #define MAX_TAG_LENGTH 16
 
-  // TODO: Consider passing in RGB object in Reader constructor.
+  // TODO: Consider passing in RGB object in Reader constructor,
+  //       instead of making RGB an extern global.
   extern Led *RGB[];
 
 

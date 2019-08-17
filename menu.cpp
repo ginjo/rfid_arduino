@@ -24,12 +24,6 @@
   */
   
   
-  // TODO: Create a function for menu option "Read Tag",
-  // that temporarily switches run_mode to 0, gathers a single tag,
-  // then returns run_mode to 1 so BTmenu can resume where it left off.
-  // This could allow a menu option for "Add tag from scanner",
-  // vs the current add-tag-from-keyboard menu option.
-  
   #include "menu.h"
   // This is here because it seems to avoid circular include,
   // which would happen if this was in menu.h.
@@ -61,44 +55,29 @@
   }
   
   void Menu::Loop() {
-
     // Runs hardware-serial loop().
     if (!Current || Current == HW) {
-      // TODO: Consider moving this delay to the beginning of loop(),
-      // since it's the same as in the SW version below.
-      //delay(HW->get_tag_from_scanner ? 25 : 1);
       HW->loop();
     }
 
     // Runs software-serial loop().
     if (!Current || Current == SW) {
-      //  SoftwareSerial * sp = (SoftwareSerial*)SW->serial_port;
-      //  sp->listen();
-      //  while (! sp->isListening()) delay(2);
-      //  //delay(SW->get_tag_from_scanner ? 15 : 1);
       SW->loop();
-    }
-    
-  } // main Loop()
+    } 
+  }
 
 
   /*** Constructors and Setup ***/
 
   Menu::Menu(Stream *stream_ref, Reader *_reader, const char _instance_name[]) :
     serial_port(stream_ref),
-    reader(_reader),
-    
-    // TODO: Initialize the rest of this class's vars. See .h file.
-    //run_mode(0), // moved to static member.
+    reader(_reader),    
     previous_ms(0),
     admin_timeout(0),
-    //input_mode("menu"),
     buff {},
     buff_index(0),
-    //current_function(""),
     selected_menu_item(-1),
     get_tag_from_scanner(0)
-    //blinker(_blinker)
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
@@ -136,17 +115,14 @@
   void Menu::loop() {
     MU_PRINT(F("MENU LOOP BEGIN: ")); MU_PRINTLN(instance_name);
 
-    // TODO: Move this into menu, controled by callback stack.
-    // TODO: Disable this here as soon as doing so won't affect any other calls.
-    //getTagFromScanner();
-
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
-    // TODO: Create a Switch object that handles all switch actions (start, stop, initial, cleanup, etc).
+    // TODO: This should probably call something like Controller::outputOff().
     if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
 
-    // TODO: Re-enable this after decoupling from readLine (wich should only care about completed buff).
+    // TODO: Re-enable this after decoupling from readLine (which should only care about completed buff).
+    //       Really? Is this todo still relevant?
     //checkSerialPort();
     
     call();

@@ -62,8 +62,6 @@
     // This begins the courtesey grace period until the system can
     // start processing tags (at which time, it will immediately
     // shut down output until a successful tag read).
-    // TODO: Protect this action with a gate of some sort.
-    //       Use a setting, or  a pin, or a key-press.
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
     if (proximity_state) {
       blinker[1]->StartupBlink();
@@ -154,7 +152,7 @@
       CT_PRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
     }
 
-    // TODO: Is there a better place for this?
+    // TODO: Is there a better place for this? UPDATE: I don't think so.
     if (Menu::run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
     
   } // proximityStateController()
@@ -178,7 +176,8 @@
 
   // This is for aliasing the original Tags list to the new Tags list.
   // See beginning of .h file for typedef.
-  // TODO: Is this still used? Let's try disabling it.
+  // This is not currently used, but leaving here as example
+  // of c++ variable aliasing (referencing).
   //TagArray& Controller::Tags = Tags::TagSet.tag_array;
 
   

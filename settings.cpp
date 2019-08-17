@@ -127,6 +127,8 @@
         break;
       case 11:
         // TODO: BT_RXTX needs a proper setter for updateSetting().
+        // UPDATE: I think all pin assignments should be coded in macro globals,
+        //         not in user-space settings.
         //BT_RXTX = (int)strtol(_data, NULL, 10);
         break;
       case 12:
