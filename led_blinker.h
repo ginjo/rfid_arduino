@@ -18,6 +18,10 @@
     #define BK_PRINT(...)
     #define BK_PRINTLN(...)
   #endif
+
+  #define LED_RED_PIN 8
+  #define LED_GREEN_PIN 7
+  #define LED_BLUE_PIN 6
   
   // Max allowed size of intervals array.
   #define INTERVALS_LENGTH 10 // for a max of 5 on/off cycles

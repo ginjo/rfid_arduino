@@ -21,14 +21,14 @@
     #define INO_PRINTLN(...)
   #endif
 
-  #define LED_RED_PIN 8
-  #define LED_GREEN_PIN 7
-  #define LED_BLUE_PIN 6
 
   /***  Declarations  ***/
 
   // Declares blinker LED.
-  Led *led_red, *led_green, *led_blue;   //, *Blinker;
+  //Led *led_red, *led_green, *led_blue;
+
+  // Declares RGB LED.
+  Led *RGB[3];
 
   // Declares a software-serial port for admin console.
   SoftwareSerial *BTserial;
@@ -107,13 +107,10 @@
 
     /*  Initialize main objects  */
 
-    //Blinker = new Led(S.LED_PIN, "AA");
-    led_red   = new Led(LED_RED_PIN, "Rd");
-    led_green = new Led(LED_GREEN_PIN, "Gr");
-    led_blue  = new Led(LED_BLUE_PIN, "Bl");
+    RGB[0]  = new Led(LED_RED_PIN, "Rd");
+    RGB[1]  = new Led(LED_GREEN_PIN, "Gr");
+    RGB[2]  = new Led(LED_BLUE_PIN, "Bl");
     
-    Led *RGB[] = {led_red,led_green,led_blue};
-
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
     RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, 9);
@@ -121,8 +118,8 @@
     RfidReader = Reader::GetReader(S.DEFAULT_READER);
     RfidReader->serial_port = RfidSerial;
     
-    Menu::HW = new Menu(&Serial, RfidReader, led_red, "HW");
-    Menu::SW = new Menu(BTserial, RfidReader, led_red, "SW");
+    Menu::HW = new Menu(&Serial, RfidReader, "HW");
+    Menu::SW = new Menu(BTserial, RfidReader, "SW");
 
     OutputControl = new Controller(RfidReader, RGB);
 
@@ -131,12 +128,8 @@
     
     /*  Run setup/begin/init functions  */
 
+    // Initializes output controller, including switch relay and LEDs.
     OutputControl->initializeOutput();
-
-    //Blinker->StartupBlink();
-    //led_green->StartupBlink();
-    //led_green->Off();
-    //led_red->StartupBlink();
 
     // Activates the software-serial port for admin console.
     BTserial->begin(S.BT_BAUD);
@@ -162,11 +155,10 @@
 
 
   void loop() {
-    
-    //Blinker->loop();
-    led_red->loop();
-    led_green->loop();
-    led_blue->loop();
+
+    RGB[0]->loop();
+    RGB[1]->loop();
+    RGB[2]->loop();
 
     if (Menu::run_mode > 0) {
       Menu::Loop();

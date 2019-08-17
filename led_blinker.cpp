@@ -21,7 +21,8 @@
       printIntervals(intervals);
       printIntervals(_intervals);
     }
-    
+
+    // Moved to constructor.
     //	pinMode(led_pin, OUTPUT);
     //  digitalWrite(led_pin, LOW);
 
@@ -77,9 +78,6 @@
       printIntervals(_intervals);
     }
 
-    // TODO: FIX: This doesn't work when intervals are all 0, as they are for Off().
-    // Update: The added logic of comparing countIntervals == 0 for current & new
-    //         should solve the problem now.
     if (
          _num_cycles == num_cycles &&
          (
@@ -90,7 +88,6 @@
     {
       BK_PRINTLN(F("Led::update() skipping begin()"));
     } else {
-      //Serial.println(F("Led::update() calling begin()"));
       begin(_num_cycles, _intervals);      
     }
   }
@@ -102,7 +99,7 @@
       cycle_count ++;
       
       // TODO: This should be refactored so that it reverts to
-      // previous interval set after cycle_count goes above num_cycles.
+      // previous interval-set after cycle_count goes above num_cycles.
       if (num_cycles > 0 && cycle_count > num_cycles) {
         reset();
         return;
@@ -156,7 +153,7 @@
   }
 
 
-  /*  Preset patterns  */
+  /*  Pattern presets  */
   
   void Led::Steady() {
     BK_PRINT(F("Led::Steady() ")); BK_PRINTLN(led_name);
@@ -190,7 +187,7 @@
 
   void Led::Once() {
     BK_PRINT(F("Led::Once() ")); BK_PRINTLN(led_name);
-    const int _intervals[INTERVALS_LENGTH] = {120};
+    const int _intervals[INTERVALS_LENGTH] = {70};
     update(1, _intervals);    
   }
 

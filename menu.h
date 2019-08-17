@@ -13,7 +13,7 @@
 
   #include "settings.h"
   #include "reader.h"
-  #include "led_blinker.h"
+  //#include "led_blinker.h"
   #include "stack.h"
   //#include "controller.h" // This would cause circular include. See .cpp file for better solution.
 
@@ -51,12 +51,12 @@
     int selected_menu_item;
     int get_tag_from_scanner;
 
-    Led * blinker;
+    //Led * blinker;
 
     // Constructor receives a serial port instance
     // from HardwareSerial or SoftwareSerial.
     //Menu(Stream *stream_ref);
-    Menu(Stream*, Reader*, Led*, const char* = "");
+    Menu(Stream*, Reader*, const char* = "");
 
     /* Control */
     void begin();

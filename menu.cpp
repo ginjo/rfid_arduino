@@ -84,7 +84,7 @@
 
   /*** Constructors and Setup ***/
 
-  Menu::Menu(Stream *stream_ref, Reader *_reader, Led * _blinker, const char _instance_name[]) :
+  Menu::Menu(Stream *stream_ref, Reader *_reader, const char _instance_name[]) :
     serial_port(stream_ref),
     reader(_reader),
     
@@ -97,8 +97,8 @@
     buff_index(0),
     //current_function(""),
     selected_menu_item(-1),
-    get_tag_from_scanner(0),
-    blinker(_blinker)
+    get_tag_from_scanner(0)
+    //blinker(_blinker)
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.

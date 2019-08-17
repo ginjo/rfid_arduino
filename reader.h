@@ -20,7 +20,8 @@
 
   #define MAX_TAG_LENGTH 16
 
-  extern Led *led_blue;
+  // TODO: Consider passing in RGB object in Reader constructor.
+  extern Led *RGB[];
 
 
   struct Reader {
