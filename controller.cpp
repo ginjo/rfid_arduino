@@ -64,9 +64,9 @@
     // shut down output until a successful tag read).
     digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
     if (proximity_state) {
-      blinker[1]->StartupBlink();
+      blinker[1]->startupBlink();
     } else {
-      blinker[0]->StartupBlink();
+      blinker[0]->startupBlink();
     }
   }
 
@@ -93,8 +93,8 @@
       ){
       
       CT_PRINTLN(F("proximityStateController() startup GRACE period timeout, no tag found"));
-      blinker[0]->SlowBlink();
-      blinker[1]->Off();
+      blinker[0]->slowBlink();
+      blinker[1]->off();
       setProximityState(0);
     
     // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
@@ -106,8 +106,8 @@
       ){
       
       CT_PRINTLN(F("proximityStateController() TIMEOUT"));
-      blinker[0]->SlowBlink();
-      blinker[1]->Off();
+      blinker[0]->slowBlink();
+      blinker[1]->off();
       setProximityState(0);
 
     // If last read is greater than reader-power-cycle-total AND
@@ -127,11 +127,11 @@
 
       CT_PRINTLN(F("proximityStateController() AGING"));
       if (proximity_state) {
-        blinker[1]->FastBlink();
-        blinker[0]->Off();
+        blinker[1]->fastBlink();
+        blinker[0]->off();
       } else {
-        blinker[0]->FastBlink();
-        blinker[1]->Off();        
+        blinker[0]->fastBlink();
+        blinker[1]->off();        
       }
       
       setProximityState(1);
@@ -143,8 +143,8 @@
       ){
         
       CT_PRINTLN(F("proximityStateController() still YOUNG"));
-      blinker[1]->Steady();
-      blinker[0]->Off();
+      blinker[1]->steady();
+      blinker[0]->off();
       setProximityState(1);
 
     // No expected condition was met (not sure what to do here yet).

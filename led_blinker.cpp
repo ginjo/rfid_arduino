@@ -152,41 +152,52 @@
     memset(intervals, 0, INTERVALS_LENGTH);
   }
 
+  // Manually forces led state
+  void Led::go_low() {
+    led_state = LOW;
+    digitalWrite(led_pin, LOW);
+  }
+
+  void Led::go_high() {
+    led_state = HIGH;
+    digitalWrite(led_pin, HIGH);
+  }
+
 
   /*  Pattern presets  */
   
-  void Led::Steady() {
-    BK_PRINT(F("Led::Steady() ")); BK_PRINTLN(led_name);
+  void Led::steady() {
+    BK_PRINT(F("Led::steady() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {1000};
     update(0, _intervals);
   }
 
-  void Led::Off() {
-    BK_PRINT(F("Led::Off() ")); BK_PRINTLN(led_name);
+  void Led::off() {
+    BK_PRINT(F("Led::off() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {0};
     update(0, _intervals);
   }
 
-  void Led::SlowBlink() {
-    BK_PRINT(F("Led::SlowBlink() ")); BK_PRINTLN(led_name);
+  void Led::slowBlink() {
+    BK_PRINT(F("Led::slowBlink() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {500,500};
     update(0, _intervals);
   }
 
-  void Led::FastBlink() {
-    BK_PRINT(F("Led::FastBlink() ")); BK_PRINTLN(led_name);
+  void Led::fastBlink() {
+    BK_PRINT(F("Led::fastBlink() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {70,70};
     update(0, _intervals);
   }
 
-  void Led::StartupBlink() {
-    BK_PRINT(F("Led::StartupBlink() ")); BK_PRINTLN(led_name);
+  void Led::startupBlink() {
+    BK_PRINT(F("Led::startupBlink() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {470,30};
     update(0, _intervals);
   }
 
-  void Led::Once() {
-    BK_PRINT(F("Led::Once() ")); BK_PRINTLN(led_name);
+  void Led::once() {
+    BK_PRINT(F("Led::once() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {70};
     update(1, _intervals);    
   }

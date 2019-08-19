@@ -67,12 +67,14 @@
     int  countIntervals(const int[]);
     void reset();
 
-    void Steady();
-    void Off();
-    void SlowBlink();
-    void FastBlink();
-    void StartupBlink();
-    void Once();
+    void steady();
+    void off();
+    void slowBlink();
+    void fastBlink();
+    void startupBlink();
+    void once();
+    void go_low();
+    void go_high();
   
   };
 

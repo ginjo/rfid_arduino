@@ -116,7 +116,7 @@
     MU_PRINT(F("MENU LOOP BEGIN: ")); MU_PRINTLN(instance_name);
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
-    // TODO: This should probably call something like Controller::outputOff().
+    // TODO: This should probably call something like Controller::outputoff().
     if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
@@ -168,7 +168,7 @@
       Serial.println();
       serial_port->println(F("Entering run mode"));
       serial_port->println();
-      //blinker->Off();
+      //blinker->off();
       run_mode = 0;
       FREERAM("exitAdmin()");
     }

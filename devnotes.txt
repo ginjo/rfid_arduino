@@ -331,8 +331,11 @@ TODO: Consider reducing reader cycle interval to 3 sec whenever state goes to ag
       This is because there could be a 30+ second aging length, which would only
       cycle the reader once during that entire time (twice if you count the initial cycle).
 
-TODO: Create an off() and on() function that simply sets LED pin accordingly
+TODO: √ Create an off() and on() function that simply sets LED pin accordingly
       but doesn't change cycle state or intervals.
+      Update: New go_low() and go_high() set software state and electrical state.
+      This works much better than using Off() to clear the red LED when blue wants
+      to flash a momentary indicator.
       
       
 

@@ -216,8 +216,8 @@
     RD_PRINTLN(tag_id);
 
     if (tag_id) {
-      RGB[2]->Once();
-      RGB[0]->Off();
+      RGB[0]->go_low();
+      RGB[2]->once();
     }
 
     // If tag is valid, immediatly update proximity-state.
