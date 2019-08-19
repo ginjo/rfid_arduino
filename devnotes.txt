@@ -321,7 +321,8 @@ TODO: √ Test changes to RGB implementation.
 TODO: Store pin assignments in code, not in settings.
       Do this for all hardware-dependent settings.
 
-TODO: Document RGB LED color and pattern meanings.
+TODO: Document RGB LED color and pattern meanings for end-user.
+      Document RGB usage for developers.
 
 TODO: Handle saving of blinker interval-set, so previous set can be
       revived after cycle-count goes over num-cycles.
@@ -330,6 +331,8 @@ TODO: Handle saving of blinker interval-set, so previous set can be
 TODO: Consider reducing reader cycle interval to 3 sec whenever state goes to aging.
       This is because there could be a 30+ second aging length, which would only
       cycle the reader once during that entire time (twice if you count the initial cycle).
+      See controller.cpp proximityStateController() and setProximityState().
+      Move the setting of reader_power_cycle_high_duration into proximityStateController().
 
 TODO: √ Create an off() and on() function that simply sets LED pin accordingly
       but doesn't change cycle state or intervals.
@@ -337,6 +340,8 @@ TODO: √ Create an off() and on() function that simply sets LED pin accordingly
       This works much better than using Off() to clear the red LED when blue wants
       to flash a momentary indicator.
       
+TODO: Use a higher value resistor for green leg of RGB.
+
       
 
 
