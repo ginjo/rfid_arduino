@@ -327,5 +327,13 @@ TODO: Handle saving of blinker interval-set, so previous set can be
       revived after cycle-count goes over num-cycles.
       See note in Led::startPhase(int).
       
+TODO: Consider reducing reader cycle interval to 3 sec whenever state goes to aging.
+      This is because there could be a 30+ second aging length, which would only
+      cycle the reader once during that entire time (twice if you count the initial cycle).
+
+TODO: Create an off() and on() function that simply sets LED pin accordingly
+      but doesn't change cycle state or intervals.
       
+      
+
 
