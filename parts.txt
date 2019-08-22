@@ -1,3 +1,5 @@
+ELECCTRONIC COMPONENTS
+
 Arduino Nano
 
 WL-125 RFID reader
@@ -11,9 +13,13 @@ HC-06 bluetooth serial module
 2K/1K or 20K/10K resistors to form 3.3v voltage divider
   for Ard tx output to BT rx pin.
   
-Green LED (or RGB, or green + red)
+RGB LED
 
-Resistor(s) for LED(s)
+Resistors for LED
+  20k for green leg
+  none for red & blue leg
+  
+10k mini/micro PCB pot for RGB LED common
 
 Mosfet N-channel
 
@@ -27,12 +33,16 @@ SSR output relay (~5v => ~12v)
 
 PCB board
 
+
+
+ENCLOSURE, CONNECTORS, HARDWARE
+
 Case
 
 Connectors/terminals for
   power (2-3)
   antenna/RFID (2-3)
-  LED (2-4)
+  LED (4)
   output (2)
   
 PCB barrel jack for power supply?
@@ -56,4 +66,5 @@ Zip ties
 Heavy duty velcro
 
 Regular velcro cable straps
+
 
