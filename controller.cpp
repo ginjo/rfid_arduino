@@ -96,6 +96,7 @@
       blinker[0]->slowBlink();
       blinker[1]->off();
       setProximityState(0);
+      reader->reader_power_cycle_high_duration = 3UL;
     
     // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
     } else if (
@@ -109,6 +110,7 @@
       blinker[0]->slowBlink();
       blinker[1]->off();
       setProximityState(0);
+      reader->reader_power_cycle_high_duration = 3UL;
 
     // If last read is greater than reader-power-cycle-total AND
     // less than final timeout total, we're in the AGING zone.
@@ -135,6 +137,7 @@
       }
       
       setProximityState(1);
+      reader->reader_power_cycle_high_duration = 3UL;
 
     // If we're STILL YOUNG.
     } else if (
@@ -146,6 +149,7 @@
       blinker[1]->steady();
       blinker[0]->off();
       setProximityState(1);
+      reader->reader_power_cycle_high_duration = 0UL;
 
     // No expected condition was met (not sure what to do here yet).
     } else {
@@ -157,15 +161,18 @@
     
   } // proximityStateController()
 
+
   void Controller::setProximityState(int _state) {
     if (Menu::run_mode == 0) {
       proximity_state = _state;
       
-      if (proximity_state == 0) {
-        reader->reader_power_cycle_high_duration = 3UL;
-      } else {
-        reader->reader_power_cycle_high_duration = 0UL;
-      }
+      //  if (proximity_state == 0) {
+      //    // TODO: Is there a better place for this?
+      //    // Should this be renamed to reader_power_cycle_high_duration_override ?
+      //    reader->reader_power_cycle_high_duration = 3UL;
+      //  } else {
+      //    reader->reader_power_cycle_high_duration = 0UL;
+      //  }
       
       S.updateProximityState(_state);
     }

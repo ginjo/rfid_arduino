@@ -1,4 +1,4 @@
-ELECCTRONIC COMPONENTS
+ELECTRONIC COMPONENTS
 
 Arduino Nano
 
@@ -44,6 +44,8 @@ Connectors/terminals for
   antenna/RFID (2-3)
   LED (4)
   output (2)
+  
+PCB board with attachment screws
   
 PCB barrel jack for power supply?
 
