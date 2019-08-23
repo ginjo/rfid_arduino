@@ -14,8 +14,8 @@
   #define DEBUG        // master debug control
   #define INO_DEBUG    // main ino file
   #define BK_DEBUG     // blinker
-  #define RD_DEBUG     // reader
-  //#define CT_DEBUG   // proximity controller
+  //#define RD_DEBUG   // reader
+  //#define CT_DEBUG   // controller
   //#define MU_DEBUG   // serial menu
   //#define SK_DEBUG   // stack
   //#define ST_DEBUG   // settings

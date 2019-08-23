@@ -52,14 +52,20 @@
     unsigned long current_ms;
     unsigned long previous_ms; // will store last time LED was updateBlinkerd
 
+    // Beeper output frequency (Hz)
+    int frequency;
+
+    // PWM output value (0-255 on pins 3, 5, 6, 9, 10, 11)
+    uint8_t pwm;
+
     // The intervals.
     int intervals[INTERVALS_LENGTH];
 
     // constructor
     Led(int, const char[]);
     
-    void begin(int, const int[]);
-    void update(int, const int[]);
+    void begin(int, const int[], const int=0, const uint8_t=0U);
+    void update(int, const int[], const int=0, const uint8_t=0U);
     void loop();
     void startPhase(int = 0);
     void handleBlinker();
