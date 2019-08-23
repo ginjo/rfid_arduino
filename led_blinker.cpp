@@ -151,10 +151,14 @@
     //digitalWrite(led_pin, led_state);
     
     if (frequency == 0 && pwm == 0U) {
+      BK_PRINT(F("LED write: ")); BK_PRINT(led_pin); BK_PRINT(F(", ")); BK_PRINTLN(led_state);
       digitalWrite(led_pin, led_state);
+      noTone(led_pin);
     } else if (frequency > 0) {
+      BK_PRINT(F("LED tone: ")); BK_PRINT(led_pin); BK_PRINT(F(", ")); BK_PRINT(led_state); BK_PRINT(F(", ")); BK_PRINTLN(frequency);
       led_state ? tone(led_pin, frequency) : noTone(led_pin);
     } else if (pwm > 0U) {
+      BK_PRINT(F("LED pwm: ")); BK_PRINT(led_pin); BK_PRINT(F(", ")); BK_PRINT(led_state); BK_PRINT(F(", ")); BK_PRINTLN(pwm);
       led_state ? analogWrite(led_pin, pwm) : analogWrite(led_pin, 0U);
     }
   } // handleBlinker()
@@ -214,6 +218,12 @@
     BK_PRINT(F("Led::once() ")); BK_PRINTLN(led_name);
     const int _intervals[INTERVALS_LENGTH] = {70};
     update(1, _intervals);    
+  }
+
+  void Led::fastBeep(int _freq) {
+    BK_PRINT(F("Led::fastBeep() ")); BK_PRINT(led_name); BK_PRINT(F(" ")); BK_PRINTLN(_freq);
+    const int _intervals[INTERVALS_LENGTH] = {70,70};
+    update(0, _intervals, _freq);        
   }
 
   

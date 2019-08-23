@@ -342,6 +342,10 @@ TODO: √ Create an off() and on() function that simply sets LED pin accordingly
       
 TODO: Use a higher value resistor for green leg of RGB.
 
-      
+TODO: Create a io.h file with all pin assignments.
+
+TODO: Make beeper frequency a setting.
+
+
 
 

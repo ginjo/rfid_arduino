@@ -22,6 +22,7 @@
   #define LED_RED_PIN 8
   #define LED_GREEN_PIN 7
   #define LED_BLUE_PIN 6
+  #define BEEPER_PIN 9
   
   // Max allowed size of intervals array.
   #define INTERVALS_LENGTH 10 // for a max of 5 on/off cycles
@@ -53,6 +54,7 @@
     unsigned long previous_ms; // will store last time LED was updateBlinkerd
 
     // Beeper output frequency (Hz)
+    // See https://ux.stackexchange.com/questions/14170/is-there-a-standard-for-the-frequencies-and-or-duration-used-for-beeps
     int frequency;
 
     // PWM output value (0-255 on pins 3, 5, 6, 9, 10, 11)
@@ -79,6 +81,7 @@
     void fastBlink();
     void startupBlink();
     void once();
+    void fastBeep(int);
     void go_low();
     void go_high();
   

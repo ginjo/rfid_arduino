@@ -29,6 +29,9 @@
   // Declares RGB LED.
   Led *RGB[3];
 
+  // Declares beeper.
+  Led *Beeper;
+
   // Declares a software-serial port for admin console.
   SoftwareSerial *BTserial;
 
@@ -109,10 +112,12 @@
     RGB[0]  = new Led(LED_RED_PIN, "Rd");
     RGB[1]  = new Led(LED_GREEN_PIN, "Gr");
     RGB[2]  = new Led(LED_BLUE_PIN, "Bl");
+
+    Beeper  = new Led(BEEPER_PIN, "au");
     
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 
-    RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, 9);
+    RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, A6); // Assumes A6 is unused pin.
 
     RfidReader = Reader::GetReader(S.DEFAULT_READER);
     RfidReader->serial_port = RfidSerial;
@@ -120,7 +125,7 @@
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
     Menu::SW = new Menu(BTserial, RfidReader, "SW");
 
-    OutputControl = new Controller(RfidReader, RGB);
+    OutputControl = new Controller(RfidReader, RGB, Beeper);
 
     FREERAM("setup() pre obj stp");
     
@@ -158,6 +163,7 @@
     RGB[0]->loop();
     RGB[1]->loop();
     RGB[2]->loop();
+    Beeper->loop();
 
     if (Menu::run_mode > 0) {
       Menu::Loop();

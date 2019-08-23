@@ -34,13 +34,14 @@
     int proximity_state;
     Reader * reader;
     Led **blinker;
+    Led *beeper;
 
     
     /***  Constructors  ***/
     
     //Controller(Stream*, Led*, Reader*);
     //Controller(Stream*, Led*);
-    Controller(Reader*, Led*[]);
+    Controller(Reader*, Led*[], Led*);
 
 
     /***  Functions  ***/

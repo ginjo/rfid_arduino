@@ -3,10 +3,11 @@
 
   // Constructors
   // Receives a Reader and an array of Led objecs (*RGB[] from .ino file).
-  Controller::Controller(Reader *_reader, Led *_blinker[]) :
+  Controller::Controller(Reader *_reader, Led *_blinker[], Led *_beeper) :
     proximity_state(0),
     reader(_reader),
-    blinker(_blinker)
+    blinker(_blinker),
+    beeper(_beeper)
   { ; }
 
 
@@ -95,6 +96,7 @@
       CT_PRINTLN(F("proximityStateController() startup GRACE period timeout, no tag found"));
       blinker[0]->slowBlink();
       blinker[1]->off();
+      beeper->off();
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
     
@@ -109,6 +111,7 @@
       CT_PRINTLN(F("proximityStateController() TIMEOUT"));
       blinker[0]->slowBlink();
       blinker[1]->off();
+      beeper->off();
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
@@ -135,6 +138,8 @@
         blinker[0]->fastBlink();
         blinker[1]->off();        
       }
+
+      beeper->fastBeep(1000);
       
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 3UL;
@@ -148,6 +153,7 @@
       CT_PRINTLN(F("proximityStateController() still YOUNG"));
       blinker[1]->steady();
       blinker[0]->off();
+      beeper->off();
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 0UL;
 
