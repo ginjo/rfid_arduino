@@ -117,7 +117,7 @@
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: This should probably call something like Controller::outputoff().
-    if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(S.OUTPUT_SWITCH_PIN, 0); }
+    if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(OUTPUT_SWITCH_PIN, 0); }
     
     adminTimeout();
 

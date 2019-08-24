@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre163"
+  #define VERSION "v0.1.0.pre165"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -19,6 +19,7 @@
   // I don't think we're using it yet.
   //#include <stdarg.h>
 
+  #include "io.h"
   #include "logger.h"
 
   // See logger.h for master debug controls.
@@ -32,12 +33,10 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 17 // quantity of settings vars
+  #define SETTINGS_SIZE 12 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   #define SETTINGS_EEPROM_ADDRESS 800 // see class definition
-  #define FAILSAFE_PIN 12
-
 
   // Instanciates the built-in reset function.
   // WARN: This causes multiple-definition errors if run here. See menu.cpp.
@@ -64,7 +63,6 @@
     uint32_t TAG_READ_SLEEP_INTERVAL;
     uint32_t READER_CYCLE_LOW_DURATION;
     uint32_t READER_CYCLE_HIGH_DURATION;
-    uint8_t READER_POWER_CONTROL_PIN;
 
     uint32_t admin_timeout;
     int proximity_state;  //  Put this in a state.h file (and class).
@@ -77,14 +75,11 @@
     // NOTE: This is NOT part of Settings.
     int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 
-    int LED_PIN;
-    int BT_RXTX[2];
-    int RFID_SERIAL_RX;
     long HW_SERIAL_BAUD;
-    int DEBUG_PIN;
     long BT_BAUD;
     long RFID_BAUD;
-    int OUTPUT_SWITCH_PIN;
+
+    int tone_frequency;
 
 
     /*  Constructors  */
@@ -99,8 +94,8 @@
     void getSettingByIndex(int, char*, char*);
     void displaySetting(int, char*);
     void printSettings(Stream*);
-    int debugMode();
-    int save();
+    int  debugMode();
+    int  save();
     
   };  // class Settings
 
@@ -135,19 +130,14 @@
     const static char str_1[] PROGMEM = "TAG_READ_SLEEP_INTERVAL";
     const static char str_2[] PROGMEM = "READER_CYCLE_LOW_DURATION";
     const static char str_3[] PROGMEM =  "READER_CYCLE_HIGH_DURATION";
-    const static char str_4[] PROGMEM =  "READER_POWER_CONTROL_PIN";
-    const static char str_5[] PROGMEM =  "admin_timeout";
-    const static char str_6[] PROGMEM =  "proximity_state";
-    const static char str_7[] PROGMEM =  "enable_debug";
-    const static char str_8[] PROGMEM =  "DEFAULT_READER";
-    const static char str_9[] PROGMEM =  "LED_PIN";
-    const static char str_10[] PROGMEM = "BT_RXTX";
-    const static char str_11[] PROGMEM =  "RFID_SERIAL_RX";
-    const static char str_12[] PROGMEM =  "HW_SERIAL_BAUD";
-    const static char str_13[] PROGMEM =  "DEBUG_PIN";
-    const static char str_14[] PROGMEM =  "BT_BAUD";
-    const static char str_15[] PROGMEM =  "RFID_BAUD";
-    const static char str_16[] PROGMEM =  "OUTPUT_SWITCH_PIN";
+    const static char str_4[] PROGMEM =  "admin_timeout";
+    const static char str_5[] PROGMEM =  "proximity_state";
+    const static char str_6[] PROGMEM =  "enable_debug";
+    const static char str_7[] PROGMEM =  "DEFAULT_READER";
+    const static char str_8[] PROGMEM =  "HW_SERIAL_BAUD";
+    const static char str_9[] PROGMEM =  "BT_BAUD";
+    const static char str_10[] PROGMEM =  "RFID_BAUD";
+    const static char str_11[] PROGMEM =  "tone_frequency";
     extern const char *const SETTING_NAMES[] PROGMEM = {
       str_0,
       str_1,
@@ -160,12 +150,7 @@
       str_8,
       str_9,
       str_10,
-      str_11,
-      str_12,
-      str_13,
-      str_14,
-      str_15,
-      str_16
+      str_11
     };
   } // end nameless namespace
     

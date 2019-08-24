@@ -275,14 +275,14 @@
 
       RD_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
             
-      //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
-      digitalWrite(S.READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
+      //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
+      digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
       last_reader_power_cycle_ms = current_ms;
       
     } else if (current_ms >= cycle_low_finish_ms) {
       RD_PRINTLN(F("cycleReaderPower() setting reader power HIGH"));
-      //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
-      digitalWrite(S.READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
+      //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
+      digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
     }
   }
 

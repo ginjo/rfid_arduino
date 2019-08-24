@@ -22,9 +22,6 @@
     // also is duration before 'aging' stage begins
     READER_CYCLE_HIGH_DURATION(5), // seconds
 
-    // controls reader power thru mosfet
-    READER_POWER_CONTROL_PIN(5),
-
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
     admin_timeout(60), // seconds
@@ -35,21 +32,11 @@
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
-    // Can't do this with strings.
-    //DEFAULT_READER("R7941E"),
-    //DEFAULT_READER("WL-125"),
-
     state_dev_tmp(1),
-
-    LED_PIN(8),
-    BT_RXTX {2,3},
-    RFID_SERIAL_RX(4),
     HW_SERIAL_BAUD(57600),
-    DEBUG_PIN(11),
     BT_BAUD(9600),
     RFID_BAUD(9600),
-
-    OUTPUT_SWITCH_PIN(13)
+    tone_frequency(1024)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
     strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));
@@ -105,50 +92,32 @@
         READER_CYCLE_HIGH_DURATION = (uint32_t)strtol(_data, NULL, 10);
         break;
       case 5:
-        READER_POWER_CONTROL_PIN = (uint8_t)strtol(_data, NULL, 10);
-        break;
-      case 6:
         admin_timeout = (uint32_t)strtol(_data, NULL, 10);
         // This setting should never be so low as to prevent admining at startup.
         if (admin_timeout < 10) { admin_timeout = 10; }
         break;
-      case 7:
+      case 6:
         proximity_state = (int)strtol(_data, NULL, 10);
         break;
-      case 8:
+      case 7:
         enable_debug = (int)strtol(_data, NULL, 10);
         break;
-      case 9:
-        //strcpy(DEFAULT_READER, (char *)_data);
+      case 8:
         strlcpy(DEFAULT_READER, (char *)_data, sizeof(DEFAULT_READER));
         break;
-      case 10:
-        LED_PIN = (int)strtol(_data, NULL, 10);
-        break;
-      case 11:
-        // TODO: BT_RXTX needs a proper setter for updateSetting().
-        // UPDATE: I think all pin assignments should be coded in macro globals,
-        //         not in user-space settings.
-        //BT_RXTX = (int)strtol(_data, NULL, 10);
-        break;
-      case 12:
-        RFID_SERIAL_RX = (int)strtol(_data, NULL, 10);
-        break;
-      case 13:
+      case 9:
         HW_SERIAL_BAUD = (long)strtol(_data, NULL, 10);
         break;
-      case 14:
-        DEBUG_PIN = (int)strtol(_data, NULL, 10);
-        break;
-      case 15:
+      case 10:
         BT_BAUD = (long)strtol(_data, NULL, 10);
         break;
-      case 16:
+      case 11:
         RFID_BAUD = (long)strtol(_data, NULL, 10);
         break;
-      case 17:
-        OUTPUT_SWITCH_PIN = (int)strtol(_data, NULL, 10);
+      case 12:
+        tone_frequency = (int)strtol(_data, NULL, 10);
         break;
+        
       default :
         return false;
     }
@@ -178,45 +147,30 @@
         sprintf(setting_value, "%lu", READER_CYCLE_HIGH_DURATION);
         break;
       case 5 :
-        sprintf(setting_value, "%u", READER_POWER_CONTROL_PIN);
-        break;
-      case 6 :
         sprintf(setting_value, "%lu", admin_timeout);
         break;
-      case 7 :
+      case 6 :
         sprintf(setting_value, "%i", proximity_state);
         break;
-      case 8 :
+      case 7 :
         sprintf(setting_value, "%i", enable_debug);
         break;
-      case 9 :
+      case 8 :
         sprintf(setting_value, "%s", DEFAULT_READER);
         break;
-      case 10 :
-        sprintf(setting_value, "%i", LED_PIN);
-        break;
-      case 11 :
-        sprintf(setting_value, "%s", (char *)BT_RXTX);
-        break;
-      case 12 :
-        sprintf(setting_value, "%i", RFID_SERIAL_RX);
-        break;
-      case 13 :
+      case 9 :
         sprintf(setting_value, "%li", HW_SERIAL_BAUD);
         break;
-      case 14 :
-        sprintf(setting_value, "%i", DEBUG_PIN);
-        break;
-      case 15 :
+      case 10 :
         sprintf(setting_value, "%li", BT_BAUD);
         break;
-      case 16 :
+      case 11 :
         sprintf(setting_value, "%li", RFID_BAUD);
         break;
-      case 17 :
-        sprintf(setting_value, "%i", OUTPUT_SWITCH_PIN);
+      case 12 :
+        sprintf(setting_value, "%i", tone_frequency);
         break;
-        
+                
       default:
         break;
     } // switch

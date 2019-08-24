@@ -16,7 +16,7 @@
     // Make sure to run this somewhere, if not here.
     //initializeOutput();
     
-    pinMode(S.READER_POWER_CONTROL_PIN, OUTPUT);
+    pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
 
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into Controller::Controller().
@@ -26,14 +26,14 @@
     Serial.print(F(", with EEPROM proximity state "));
     Serial.println(proximity_state);
     //  Serial.print(F(", and output switch pin: "));
-    //  Serial.println(S.OUTPUT_SWITCH_PIN);
+    //  Serial.println(OUTPUT_SWITCH_PIN);
         
     // Initializes the reader power/reset control.
-    //digitalWrite(S.READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
+    //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
     // This first one is to clear any built-up charge, as something is holding the reader low at startup.
-    digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
+    digitalWrite(READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
     delay(50);
-    digitalWrite(S.READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
+    digitalWrite(READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
     
   } // setup()
 
@@ -46,7 +46,7 @@
 
   // Initializes output switch.
   void Controller::initializeOutput() {
-    pinMode(S.OUTPUT_SWITCH_PIN, OUTPUT);    
+    pinMode(OUTPUT_SWITCH_PIN, OUTPUT);    
     
     // Starts up with whatever state we left off in.
     // Protects against thief using 'admin' to move
@@ -63,7 +63,7 @@
     // This begins the courtesey grace period until the system can
     // start processing tags (at which time, it will immediately
     // shut down output until a successful tag read).
-    digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
     if (proximity_state) {
       blinker[1]->startupBlink();
     } else {
@@ -111,7 +111,7 @@
       CT_PRINTLN(F("proximityStateController() TIMEOUT"));
       blinker[0]->slowBlink();
       blinker[1]->off();
-      beeper->off();
+      beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
@@ -163,7 +163,7 @@
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.
-    if (Menu::run_mode == 0) digitalWrite(S.OUTPUT_SWITCH_PIN, proximity_state);
+    if (Menu::run_mode == 0) digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
     
   } // proximityStateController()
 

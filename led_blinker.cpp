@@ -107,7 +107,8 @@
       // TODO: This should be refactored so that it reverts to
       // previous interval-set after cycle_count goes above num_cycles.
       if (num_cycles > 0 && cycle_count > num_cycles) {
-        reset();
+        //reset();
+        led_state = 0;
         return;
       }
     }
@@ -166,7 +167,7 @@
     led_state = 0;
     current_phase = 0;
     cycle_count = 0;
-    memset(intervals, 0, INTERVALS_LENGTH);
+    //memset(intervals, 0, INTERVALS_LENGTH);
   }
 
   // Manually forces led state
@@ -215,14 +216,21 @@
 
   void Led::once() {
     BK_PRINT(F("Led::once() ")); BK_PRINTLN(led_name);
+    reset();
     const int _intervals[INTERVALS_LENGTH] = {70};
     update(1, _intervals);    
   }
 
-  void Led::fastBeep(int _freq) {
-    BK_PRINT(F("Led::fastBeep() ")); BK_PRINT(led_name); BK_PRINT(F(" ")); BK_PRINTLN(_freq);
+  void Led::fastBeep(int _count) {
+    BK_PRINT(F("Led::fastBeep() ")); BK_PRINT(led_name); BK_PRINT(F(" ")); BK_PRINTLN(_count);
     const int _intervals[INTERVALS_LENGTH] = {70,70};
-    update(0, _intervals, _freq);        
+    update(_count, _intervals);        
+  }
+
+  void Led::slowBeep(int _count) {
+    BK_PRINT(F("Led::fastBeep() ")); BK_PRINT(led_name); BK_PRINT(F(" ")); BK_PRINTLN(_count);
+    const int _intervals[INTERVALS_LENGTH] = {500,500};
+    update(_count, _intervals);        
   }
 
   

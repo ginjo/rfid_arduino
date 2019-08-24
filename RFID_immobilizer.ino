@@ -35,8 +35,8 @@
   // Declares a software-serial port for admin console.
   SoftwareSerial *BTserial;
 
-  // Declares serial port for Controller reader.
-  SoftwareSerial *RfidSerial;//(91,90);
+  // Declares serial port for RFID reader.
+  SoftwareSerial *RfidSerial;
 
   // Declares rfid reader instance.
   Reader *RfidReader;
@@ -87,9 +87,9 @@
 
     /* For manual debug/log mode */
     
-    pinMode(S.DEBUG_PIN, INPUT_PULLUP);
+    pinMode(DEBUG_PIN, INPUT_PULLUP);
 
-    int debug_pin_status = digitalRead(S.DEBUG_PIN);
+    int debug_pin_status = digitalRead(DEBUG_PIN);
 
     Serial.print(F("Debug pin status: "));
     Serial.println(debug_pin_status);
@@ -115,9 +115,9 @@
 
     Beeper  = new Led(BEEPER_PIN, "au", 1000);
     
-    BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
+    BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 
-    RfidSerial = new SoftwareSerial(S.RFID_SERIAL_RX, A6); // Assumes A6 is unused pin.
+    RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
     RfidReader = Reader::GetReader(S.DEFAULT_READER);
     RfidReader->serial_port = RfidSerial;

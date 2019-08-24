@@ -19,10 +19,10 @@
     #define BK_PRINTLN(...)
   #endif
 
-  #define LED_RED_PIN 8
-  #define LED_GREEN_PIN 7
-  #define LED_BLUE_PIN 6
-  #define BEEPER_PIN 9
+  //  #define LED_RED_PIN 8
+  //  #define LED_GREEN_PIN 7
+  //  #define LED_BLUE_PIN 6
+  //  #define BEEPER_PIN 9
   
   // Max allowed size of intervals array.
   #define INTERVALS_LENGTH 10 // for a max of 5 on/off cycles
@@ -81,7 +81,8 @@
     void fastBlink();
     void startupBlink();
     void once();
-    void fastBeep(int=-1);
+    void fastBeep(int=0);
+    void slowBeep(int=0);
     void go_low();
     void go_high();
   

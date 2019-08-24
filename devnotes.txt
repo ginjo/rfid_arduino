@@ -318,8 +318,9 @@ TODO: √ Test the latest build, since the logging code changes.
 
 TODO: √ Test changes to RGB implementation.
 
-TODO: Store pin assignments in code, not in settings.
-      Do this for all hardware-dependent settings.
+TODO: √ Store pin assignments in code, not in settings.
+      
+TODO: Store settings in code for all actual physical hardware settings.
 
 TODO: Document RGB LED color and pattern meanings for end-user.
       Document RGB usage for developers.
@@ -328,29 +329,38 @@ TODO: Handle saving of blinker interval-set, so previous set can be
       revived after cycle-count goes over num-cycles.
       See note in Led::startPhase(int).
       
-TODO: Consider reducing reader cycle interval to 3 sec whenever state goes to aging.
+TODO: √ Consider reducing reader cycle interval to 3 sec whenever state goes to aging.
       This is because there could be a 30+ second aging length, which would only
       cycle the reader once during that entire time (twice if you count the initial cycle).
       See controller.cpp proximityStateController() and setProximityState().
-      Move the setting of reader_power_cycle_high_duration into proximityStateController().
+      
+      √ Move the setting of reader_power_cycle_high_duration into
+      proximityStateController() and out of setProximityState().
+      
 
 TODO: √ Create an off() and on() function that simply sets LED pin accordingly
       but doesn't change cycle state or intervals.
       Update: New go_low() and go_high() set software state and electrical state.
       This works much better than using Off() to clear the red LED when blue wants
       to flash a momentary indicator.
-      
-TODO: Use a higher value resistor for green leg of RGB.
 
-TODO: Create a io.h file with all pin assignments.
+TODO: √ Create a io.h file with all pin assignments.
 
 TODO: Make beeper frequency a setting.
-      Allow blinker frequency & pwm to be passed during construction,
-      and also at update() or begin(). Make sure that defaults for update()
-      and begin() don't override values passed during construction.
-      Perhaps defaults for frequency and pwm should be negative?
-
-
+      
+TODO: √ Allow blinker frequency & pwm to be passed during construction,
+      and also at update() or begin().
+      
+TODO: √ Make sure that defaults for update() and begin() don't override
+      values passed during construction (this is handled with negative
+      argument-defaults).
+      
+TODO: Since hardcoding pin assignments, find where you had to compromise
+      functionality due to waiting for settings to load pin assignments.
+      Was it in logging? In LED stuff? In BT admin menu?
+      
+      Hard-coded pin assignments may allow some startup routines to
+      start logging earlier, or even begin themselves earlier.
 
 
 
