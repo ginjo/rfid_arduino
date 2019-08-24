@@ -1,6 +1,6 @@
   #include "led_blinker.h"
   
-  Led::Led(int pin, const char _name[]) : 
+  Led::Led(int pin, const char _name[], const int _freq, const int _pwm) : 
     led_pin(pin),
     led_state(0),
     current_phase(0),
@@ -8,8 +8,8 @@
     num_cycles(0),
     current_ms(millis()),
     previous_ms(0),
-    frequency(0),
-    pwm(0),
+    frequency(_freq),
+    pwm(_pwm),
     intervals {}
   {
     strlcpy(led_name, _name, 3);

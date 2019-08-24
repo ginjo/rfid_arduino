@@ -113,7 +113,7 @@
     RGB[1]  = new Led(LED_GREEN_PIN, "Gr");
     RGB[2]  = new Led(LED_BLUE_PIN, "Bl");
 
-    Beeper  = new Led(BEEPER_PIN, "au");
+    Beeper  = new Led(BEEPER_PIN, "au", 1000);
     
     BTserial = new SoftwareSerial(S.BT_RXTX[0], S.BT_RXTX[1]); // RX | TX
 

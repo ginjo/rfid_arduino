@@ -139,7 +139,7 @@
         blinker[1]->off();        
       }
 
-      beeper->fastBeep(1000);
+      beeper->fastBeep();
       
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 3UL;

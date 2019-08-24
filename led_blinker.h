@@ -64,7 +64,7 @@
     int intervals[INTERVALS_LENGTH];
 
     // constructor
-    Led(int, const char[]);
+    Led(int, const char[], const int=0, const int=0);
     
     void begin(int, const int[], const int=-1, const int=-1);
     void update(int, const int[], const int=-1, const int=-1);
@@ -81,7 +81,7 @@
     void fastBlink();
     void startupBlink();
     void once();
-    void fastBeep(int);
+    void fastBeep(int=-1);
     void go_low();
     void go_high();
   
