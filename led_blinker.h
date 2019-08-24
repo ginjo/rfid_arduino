@@ -58,7 +58,7 @@
     int frequency;
 
     // PWM output value (0-255 on pins 3, 5, 6, 9, 10, 11)
-    uint8_t pwm;
+    int pwm;
 
     // The intervals.
     int intervals[INTERVALS_LENGTH];
@@ -66,8 +66,8 @@
     // constructor
     Led(int, const char[]);
     
-    void begin(int, const int[], const int=0, const uint8_t=0U);
-    void update(int, const int[], const int=0, const uint8_t=0U);
+    void begin(int, const int[], const int=-1, const int=-1);
+    void update(int, const int[], const int=-1, const int=-1);
     void loop();
     void startPhase(int = 0);
     void handleBlinker();

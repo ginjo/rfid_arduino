@@ -9,7 +9,7 @@
     current_ms(millis()),
     previous_ms(0),
     frequency(0),
-    pwm(0U),
+    pwm(0),
     intervals {}
   {
     strlcpy(led_name, _name, 3);
@@ -17,7 +17,7 @@
     digitalWrite(led_pin, LOW);
   }
   
-  void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const uint8_t _pwm) {
+  void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
     if(S.debugMode()) {
       Serial.print(F("Led::begin current, new:")); Serial.println(led_name);
       printIntervals(intervals);
@@ -33,8 +33,8 @@
     current_phase = 0;
     cycle_count = 0;
     num_cycles = _num_cycles;
-    frequency = _freq;
-    pwm = _pwm;
+    if (_freq >=0) frequency = _freq;
+    if (_pwm >=0) pwm = _pwm;
 
     // Copy _intervals to intervals
     //for (int n = 0; n < INTERVALS_LENGTH && _intervals[n] > 0; n ++) {
@@ -74,7 +74,7 @@
 
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
-  void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const uint8_t _pwm) {
+  void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
     BK_PRINT(F("Led::update _intervals[0]: ")); BK_PRINTLN(_intervals[0]);
     if(S.debugMode()) {
       Serial.print(F("Led::update current, new: ")); Serial.println(led_name);
@@ -84,8 +84,8 @@
 
     if (
          _num_cycles == num_cycles &&
-         _freq       == frequency &&
-         _pwm        == pwm &&
+         (_freq >= 0 ? _freq == frequency : true) &&
+         (_pwm >= 0 ? _pwm == pwm : true) &&
          (
             memcmp(_intervals, intervals, INTERVALS_LENGTH) == 0 ||
             (countIntervals(_intervals) == 0 && countIntervals(intervals) == 0)
@@ -153,11 +153,10 @@
     if (frequency == 0 && pwm == 0U) {
       BK_PRINT(F("LED write: ")); BK_PRINT(led_pin); BK_PRINT(F(", ")); BK_PRINTLN(led_state);
       digitalWrite(led_pin, led_state);
-      noTone(led_pin);
     } else if (frequency > 0) {
       BK_PRINT(F("LED tone: ")); BK_PRINT(led_pin); BK_PRINT(F(", ")); BK_PRINT(led_state); BK_PRINT(F(", ")); BK_PRINTLN(frequency);
       led_state ? tone(led_pin, frequency) : noTone(led_pin);
-    } else if (pwm > 0U) {
+    } else if (pwm > 0) {
       BK_PRINT(F("LED pwm: ")); BK_PRINT(led_pin); BK_PRINT(F(", ")); BK_PRINT(led_state); BK_PRINT(F(", ")); BK_PRINTLN(pwm);
       led_state ? analogWrite(led_pin, pwm) : analogWrite(led_pin, 0U);
     }

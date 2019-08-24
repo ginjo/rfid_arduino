@@ -345,6 +345,12 @@ TODO: Use a higher value resistor for green leg of RGB.
 TODO: Create a io.h file with all pin assignments.
 
 TODO: Make beeper frequency a setting.
+      Allow blinker frequency & pwm to be passed during construction,
+      and also at update() or begin(). Make sure that defaults for update()
+      and begin() don't override values passed during construction.
+      Perhaps defaults for frequency and pwm should be negative?
+
+
 
 
 
