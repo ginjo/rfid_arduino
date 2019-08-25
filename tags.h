@@ -2,7 +2,7 @@
 #define __TAGS__
 
   #define TAG_LIST_SIZE 5
-  #define TAGS_EEPROM_ADDRESS 700
+  //#define TAGS_EEPROM_ADDRESS 700 // see storage.h
 
   #include <Arduino.h>
   #include <string.h>

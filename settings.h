@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre165"
+  #define VERSION "v0.1.0.pre167"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -36,7 +36,7 @@
   #define SETTINGS_SIZE 12 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
-  #define SETTINGS_EEPROM_ADDRESS 800 // see class definition
+  //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
 
   // Instanciates the built-in reset function.
   // WARN: This causes multiple-definition errors if run here. See menu.cpp.
@@ -65,15 +65,14 @@
     uint32_t READER_CYCLE_HIGH_DURATION;
 
     uint32_t admin_timeout;
-    int proximity_state;  //  Put this in a state.h file (and class).
-    
+    int proximity_state_startup;
     int enable_debug;
 
     char DEFAULT_READER[SETTINGS_VALUE_SIZE];
 
     // Temporary EEPROM alternative for dev/testing.
     // NOTE: This is NOT part of Settings.
-    int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
+    //int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
 
     long HW_SERIAL_BAUD;
     long BT_BAUD;
@@ -131,7 +130,7 @@
     const static char str_2[] PROGMEM = "READER_CYCLE_LOW_DURATION";
     const static char str_3[] PROGMEM =  "READER_CYCLE_HIGH_DURATION";
     const static char str_4[] PROGMEM =  "admin_timeout";
-    const static char str_5[] PROGMEM =  "proximity_state";
+    const static char str_5[] PROGMEM =  "proximity_state_startup";
     const static char str_6[] PROGMEM =  "enable_debug";
     const static char str_7[] PROGMEM =  "DEFAULT_READER";
     const static char str_8[] PROGMEM =  "HW_SERIAL_BAUD";

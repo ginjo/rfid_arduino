@@ -7,6 +7,9 @@
   #include "logger.h"
 
   #define STORAGE_NAME_SIZE 16
+  #define STATE_EEPROM_ADDRESS 0
+  #define TAGS_EEPROM_ADDRESS 700
+  #define SETTINGS_EEPROM_ADDRESS 800
 
   /*  Note that all calls to static vars from base class must use templates
    *  to qualify the derived class name. See my subclassing & template

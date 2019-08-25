@@ -11,6 +11,7 @@
   #include <SoftwareSerial.h>
 
   #include "settings.h"
+  #include "storage.h"
   #include "reader.h"
   #include "led_blinker.h"
   #include "menu.h"
@@ -25,13 +26,14 @@
     #define CT_PRINTLN(...)
   #endif
 
+  //#define STATE_EEPROM_ADDRESS 0 // see storage.h
 
   class Controller {
   public:
   
     /***  Variables  ***/
 
-    int proximity_state;
+    int proximity_state; //  Maybe put this in a state.h file (and class) derived from Storage.
     Reader * reader;
     Led **blinker;
     Led *beeper;
@@ -48,7 +50,8 @@
     
     void begin();
     void loop();
-    void setProximityState(int);
+    int  setProximityState(int);
+    //void updateProximityState(int);
     void proximityStateController();
     void initializeOutput();
 
@@ -64,3 +67,5 @@
   };  // Controller
 
 #endif
+
+ 
