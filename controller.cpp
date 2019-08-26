@@ -169,42 +169,6 @@
     
   } // proximityStateController()
 
-
-  //  void Controller::setProximityState(int _state) {
-  //    if (Menu::run_mode == 0) {
-  //      proximity_state = _state;
-  //      
-  //      //  if (proximity_state == 0) {
-  //      //    // TODO: Is there a better place for this?
-  //      //    // Should this be renamed to reader_power_cycle_high_duration_override ?
-  //      //    reader->reader_power_cycle_high_duration = 3UL;
-  //      //  } else {
-  //      //    reader->reader_power_cycle_high_duration = 0UL;
-  //      //  }
-  //      
-  //      //S.updateProximityState(_state);
-  //      updateProximityState(_state);
-  //    }
-  //  }
-  //
-  //
-  //  // Moved here from Settings.
-  //  int Settings::updateProximityState(int _state) {
-  //    int previous_proximity_state = proximity_state;
-  //    proximity_state = _state;
-  //    //  Serial.print(F("Storing proximity_state: "));
-  //    //  Serial.println(proximity_state);
-  //    if (proximity_state != previous_proximity_state) {
-  //      Serial.print(F("Calling EEPROM.update with proximity_state: "));
-  //      Serial.println(proximity_state);
-  //      // Disable this for debugging,
-  //      EEPROM.update(STATE_EEPROM_ADDRESS, proximity_state);
-  //      // and enable this for debugging.
-  //      //state_dev_tmp = proximity_state;
-  //    }
-  //    return proximity_state;
-  //  }
-
   int Controller::setProximityState(int _state) {
     if (Menu::run_mode == 0) {
       int previous_proximity_state = proximity_state;
@@ -214,11 +178,9 @@
         Serial.print(F("Calling EEPROM.update with proximity_state: "));
         Serial.println(proximity_state);
         EEPROM.update(STATE_EEPROM_ADDRESS, proximity_state);
-        // and enable this for debugging.
-        //state_dev_tmp = proximity_state;
       }
-      return proximity_state;
     }
+    return proximity_state;
   }
 
 

@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre167"
+  #define VERSION "v0.1.0.pre168"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -70,10 +70,6 @@
 
     char DEFAULT_READER[SETTINGS_VALUE_SIZE];
 
-    // Temporary EEPROM alternative for dev/testing.
-    // NOTE: This is NOT part of Settings.
-    //int state_dev_tmp; // Temporary alternative to setting physical EEPROM, for dev & testing.
-
     long HW_SERIAL_BAUD;
     long BT_BAUD;
     long RFID_BAUD;
@@ -88,7 +84,6 @@
 
     /*  Functions  */
     
-    int  updateProximityState(int);
     bool updateSetting(int, char[]);
     void getSettingByIndex(int, char*, char*);
     void displaySetting(int, char*);

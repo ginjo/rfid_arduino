@@ -20,7 +20,7 @@
 
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
-    READER_CYCLE_HIGH_DURATION(5), // seconds
+    READER_CYCLE_HIGH_DURATION(15), // seconds
 
     // idle time before admin mode switches to run mode
     // should be greater than READER_CYCLE_HIGH_DURATION
@@ -28,15 +28,10 @@
 
     // Sets whether output switches off or on at startup.
     proximity_state_startup(1), // 0 = off, 1 = on, 2 = auto (uses last saved state)
-    
-    // saved proximity state (TODO: should be separate setting)
-    //proximity_state(EEPROM.read(0)), // 0 = false, 1 = true
-    //proximity_state(proximity_state_startup == 2 ? EEPROM.read(0) : proximity_state_startup), // 0 = false, 1 = true
 
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
-    //state_dev_tmp(1),
     HW_SERIAL_BAUD(57600),
     BT_BAUD(9600),
     RFID_BAUD(9600),
@@ -44,29 +39,9 @@
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
     strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));
-    
-    // ONLY use this for debugging.
-    // Always comment this out for production.
-    //proximity_state = 1;
   }
 
-
-  // TODO: I think this ultimately needs to be integrated into Storage class EEPROM handling.
-  //  int Settings::updateProximityState(int _state) {
-  //    int previous_proximity_state = proximity_state;
-  //    proximity_state = _state;
-  //    //  Serial.print(F("Storing proximity_state: "));
-  //    //  Serial.println(proximity_state);
-  //    if (proximity_state != previous_proximity_state) {
-  //      Serial.print(F("Calling EEPROM.update with proximity_state: "));
-  //      Serial.println(proximity_state);
-  //      // Disable this for debugging,
-  //      //EEPROM.update(0, proximity_state);
-  //      // and enable this for debugging.
-  //      state_dev_tmp = proximity_state;
-  //    }
-  //    return proximity_state;
-  //  }
+  
 
   // Updates a setting given setting index and data.
   bool Settings::updateSetting(int _index, char _data[]) {
