@@ -1,6 +1,7 @@
 
 
 TODO: Change all 'previous_ms' to 'last_<whatever>'.
+      Do we still want this?
 
 TODO: √ Close fuel switch at startup, so we don't have to wait for software load.
       But track if there was a 'fatal' missing-tag timeout, using EEPROM.
@@ -10,7 +11,7 @@ TODO: √ Close fuel switch at startup, so we don't have to wait for software lo
 TODO: √ LED blinker needs a refactor: 1. Simplify, 2. Allow cycle count passed to begin();
       Done except for cycle count.
 
-TODO: Implement blinker cycle limit setting.
+TODO: √ Implement blinker cycle limit setting.
 
 TODO: √ I think macros need to be coordinated between each file, since they can clobber each other.
       Most macros can be turned into settings (S.<setting>).
@@ -28,7 +29,7 @@ TODO: Better code documentation. User documentation.
 
 TODO: √ Don't allow admin mode to extend the startup grace period.
 
-TODO: Implement a beeper/buzzer.
+TODO: √ Implement a beeper/buzzer.
 
 TODO: I think SerialMenu.run_mode should be a global, since it's needed in multiple classes.
       But where should it live? Then logging can have its own file/class,
@@ -48,7 +49,8 @@ TODO: √ Startup grace period needs to END immediately after startup,
       if NO tags are found after the FIRST reader power cycle.
       √ At this point, proximity_state and S.proximity_state need to be fully timed-out.
 
-TODO: Consider renaming S.proximity_state to S.last_proximity_state.
+TODO: - Consider renaming S.proximity_state to S.last_proximity_state.
+      Update: proximity_state has been moved to Controller class.
 
 TODO: √ Fix bug in addTagString (I think it's input_mode issue).
 
@@ -57,7 +59,7 @@ TODO: √ Consider a function setProximityState(on-or-off, hight-or-low, whateve
 TODO: Add status_text and updateStatusText() to efficiently display status change in logs.
       This should display proximity_state status as text-label, whenever it changes.
       Use enum StatusText {recent, aging, expired}.
-      Update: do we still want this?
+      Update: do we still want this? Is it possible?
 
 TODO: √ Reduce active logging lines in SerialMenu serial port reading.
 
@@ -196,7 +198,7 @@ TODO: √ Smooth out UI functionality in SerialMenu - it's still a little confus
       mode/state/options we're in at each prompt. Maybe there should be no generic prompts,
       always give a textual hint.
 
-TODO: √Rearrange main .ino file load order, so initial proximity_state gets written out
+TODO: √ Rearrange main .ino file load order, so initial proximity_state gets written out
       to master-switch-pin as early as possible.
 
 TODO: √ Something is wrong with Tags checksum: it's the same for two different lists!
@@ -205,8 +207,8 @@ TODO: - Make tags checksum at least 32-bit. Actually, the 16-bit checksum works 
 
 TODO: √ Don't load all readers, only load the one we're using.
 
-TODO: Create an initial_state (for the grace period) setting: 0=off, 1=on, 2=last-known (S.proximity_state).
-      This may also require an initialState() function to compile the various settings/options at runtime.
+TODO: √ Create an initial_state (for the grace period) setting: 0=off, 1=on, 2=last-known (S.proximity_state).
+      - This may also require an initialState() function to compile the various settings/options at runtime.
 
 
 FOR REFACTOR:
@@ -250,6 +252,7 @@ NEXT: √ Storage refactor compiles. Now need to decouple it from the other clas
 TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
 
 TODO: Need validation routine in Tags or Reader to handle bad tag-id.
+	  Make sure that checksum is used to validate tags.
 
 TODO: √ Handle reader looping for add-tag entirely within serial-menu class.
       √ Reader class should be unaware of SerialMenu instances.
@@ -292,6 +295,7 @@ TODO: √ Longer delays may actually hinder serial ports. Consider shorter delay
 
 TODO: Add settings for rfid-reader-add-tag-delay and menu-add-tag-delay,
       so they can be adjusted without re-flashing device.
+      Update: add-tag seems to be working well... is this todo necessary?
 
 TODO: - Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
 	  So far, having an "Esc" key abort seems to suffice.
@@ -310,7 +314,7 @@ TODO: √ Rename SerialMenu to just Menu.
 
 TODO: √ Rename RFID to Controller or Switch.
 
-TODO: Re-enable proximity_state EEPROM retrieve/save (see above for initial_state suggestion).
+TODO: √ Re-enable proximity_state EEPROM retrieve/save (see above for initial_state suggestion).
 
 TODO: Review organization and labels in main .ino file.
 
@@ -327,6 +331,7 @@ TODO: Document RGB LED color and pattern meanings for end-user.
 
 TODO: Handle saving of blinker interval-set, so previous set can be
       revived after cycle-count goes over num-cycles.
+      An led-pattern-stack?
       See note in Led::startPhase(int).
       
 TODO: √ Consider reducing reader cycle interval to 3 sec whenever state goes to aging.
@@ -346,7 +351,7 @@ TODO: √ Create an off() and on() function that simply sets LED pin accordingly
 
 TODO: √ Create a io.h file with all pin assignments.
 
-TODO: Make beeper frequency a setting.
+TODO: √ Make beeper frequency a setting.
       
 TODO: √ Allow blinker frequency & pwm to be passed during construction,
       and also at update() or begin().
@@ -360,7 +365,7 @@ TODO: Since hardcoding pin assignments, find where you had to compromise
       Was it in logging? In LED stuff? In BT admin menu?
       
       Hard-coded pin assignments may allow some startup routines to
-      start logging earlier, or even begin themselves earlier.
+      start logging earlier, or to begin themselves earlier.
 
 
 

@@ -23,13 +23,10 @@
 
   /***  Declarations  ***/
 
-  // Declares blinker LED.
-  //Led *led_red, *led_green, *led_blue;
-
-  // Declares RGB LED.
+  // Declares RGB LED -- an array of 3 Led instances.
   Led *RGB[3];
 
-  // Declares beeper.
+  // Declares beeper, also handled by  Led class.
   Led *Beeper;
 
   // Declares a software-serial port for admin console.

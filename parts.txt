@@ -13,6 +13,8 @@ HC-06 bluetooth serial module
 2K/1K or 20K/10K resistors to form 3.3v voltage divider
   for Ard tx output to BT rx pin.
   
+Piezo buzzer
+  
 RGB LED
 
 Resistors for LED
