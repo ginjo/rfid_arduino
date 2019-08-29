@@ -35,7 +35,8 @@
     HW_SERIAL_BAUD(57600),
     BT_BAUD(9600),
     RFID_BAUD(9600),
-    tone_frequency(2800)
+    tone_frequency(2800),
+    admin_startup_timeout(7)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
     strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));
@@ -96,7 +97,10 @@
       case 12:
         tone_frequency = (int)strtol(_data, NULL, 10);
         break;
-        
+      case 13:
+        admin_startup_timeout = (int)strtol(_data, NULL, 10);
+        break;
+                
       default :
         return false;
     }
@@ -149,7 +153,10 @@
       case 12 :
         sprintf(setting_value, "%i", tone_frequency);
         break;   
-                
+      case 13 :
+        sprintf(setting_value, "%i", admin_startup_timeout);
+        break;  
+                        
       default:
         break;
     } // switch

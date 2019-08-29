@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre170"
+  #define VERSION "v0.1.0.pre171"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -33,7 +33,7 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 12 // quantity of settings vars
+  #define SETTINGS_SIZE 13 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
@@ -60,8 +60,8 @@
     char settings_name[SETTINGS_NAME_SIZE];
     
     uint32_t TAG_LAST_READ_TIMEOUT;
-    uint32_t TAG_READ_SLEEP_INTERVAL;
-    uint32_t READER_CYCLE_LOW_DURATION;
+    uint32_t TAG_READ_SLEEP_INTERVAL; // ms
+    uint32_t READER_CYCLE_LOW_DURATION; // ms
     uint32_t READER_CYCLE_HIGH_DURATION;
 
     uint32_t admin_timeout;
@@ -75,6 +75,7 @@
     long RFID_BAUD;
 
     int tone_frequency;
+    int admin_startup_timeout;
 
 
     /*  Constructors  */
@@ -132,6 +133,7 @@
     const static char str_9[] PROGMEM =  "BT_BAUD";
     const static char str_10[] PROGMEM =  "RFID_BAUD";
     const static char str_11[] PROGMEM =  "tone_frequency";
+    const static char str_12[] PROGMEM =  "admin_startup_timeout";
     extern const char *const SETTING_NAMES[] PROGMEM = {
       str_0,
       str_1,
@@ -144,7 +146,8 @@
       str_8,
       str_9,
       str_10,
-      str_11
+      str_11,
+      str_12
     };
   } // end nameless namespace
     

@@ -87,7 +87,7 @@
 	}
 	
   void Menu::begin() {    
-    updateAdminTimeout(2);
+    updateAdminTimeout(S.admin_startup_timeout);
     resetInputBuffer();
     //resetStack(&Menu::menuMain);
     
