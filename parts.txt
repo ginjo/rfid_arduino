@@ -10,6 +10,8 @@ HC-06 bluetooth serial module
 
 5v power supply module
 
+7812 12v regulator
+
 2K/1K or 20K/10K resistors to form 3.3v voltage divider
   for Ard tx output to BT rx pin.
   
@@ -17,15 +19,20 @@ Piezo buzzer
   
 RGB LED
 
-Resistors for LED
-  20k for green leg
-  none for red & blue leg
-  
-10k mini/micro PCB pot for RGB LED common
+NPN Transistor for LED dimmer
 
-Mosfet N-channel
+Resistors for LED/transistor
+  2K pot
+  10k for pot supply
+  10k for wiper-to-npn-base
+  220ohm for emitter-to-ground
+  20k for blue leg
+  47k for green leg
+  none for red leg (still protected by 220ohm from transistor-to-ground).
 
-Resistor (pullup/down?) for mosfet
+Mosfet N-channel for reader power control
+
+1M resistor pull-down for reader-power mosfet
 
 Button for momentary debug mode
 

@@ -110,7 +110,7 @@
     RGB[1]  = new Led(LED_GREEN_PIN, "Gr");
     RGB[2]  = new Led(LED_BLUE_PIN, "Bl");
 
-    Beeper  = new Led(BEEPER_PIN, "au", 1000);
+    Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
     
     BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 

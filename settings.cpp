@@ -35,7 +35,7 @@
     HW_SERIAL_BAUD(57600),
     BT_BAUD(9600),
     RFID_BAUD(9600),
-    tone_frequency(1024)
+    tone_frequency(2800)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
     strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));

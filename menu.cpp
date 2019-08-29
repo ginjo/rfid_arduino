@@ -664,7 +664,7 @@
     MU_PRINTLN(selected_menu_item);
 
     // If user selected valid settings item.
-    if (selected_menu_item > 0 && selected_menu_item < SETTINGS_SIZE) {
+    if (selected_menu_item > 0 && selected_menu_item <= SETTINGS_SIZE) {
       char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
