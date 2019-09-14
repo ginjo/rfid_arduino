@@ -20,6 +20,7 @@
 
   // This is for aliasing Controller::Tags to the new Tags class (Tags::TagSet.tags).
   // It can also be used as a type for any array that holds 32-bit tag ids.
+  // TODO: Where is this used?
   typedef uint32_t TagArray[TAG_LIST_SIZE];
   
  

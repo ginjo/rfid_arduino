@@ -76,7 +76,7 @@
     Serial.print(F("' of size "));
     Serial.println(sizeof(S));
 
-    Serial.print(F("Booting Controller Immobilizer, "));
+    Serial.print(F("Booting RFID Immobilizer, "));
     Serial.print(VERSION);
     Serial.print(F(", "));
     Serial.println(TIMESTAMP);

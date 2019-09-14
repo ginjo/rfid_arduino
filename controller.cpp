@@ -94,7 +94,7 @@
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
       
-      CT_PRINTLN(F("proximityStateController() startup GRACE period timeout, no tag found"));
+      CT_PRINTLN(F("Controller startup grace period timeout, no tag found"));
       blinker[0]->slowBlink();
       blinker[1]->off();
       //beeper->off();

@@ -1,38 +1,47 @@
 ELECTRONIC COMPONENTS
 
-Arduino Nano
+Arduino Nano with straight headers
 
-WL-125 RFID reader
-  1000 uf capacitor
+WL-125 RFID reader (or other supported modules)
+  with angle headers
+  1000 uf capacitor (if it comes with WL-125)
   antenna
+  
+Mosfet N-channel for reader power control
 
-HC-06 bluetooth serial module
+1M resistor pull-down for reader power mosfet
 
-5v power supply module
+Bluetooth serial module (HC-06, HC-05, HM-10, BT-12)
 
-7812 12v regulator
+5v power supply module with angle headers
+
+7812 12v regulator 
 
 2K/1K or 20K/10K resistors to form 3.3v voltage divider
-  for Ard tx output to BT rx pin.
+  for Arduino TX output to BT RX pin.
   
-Piezo buzzer
+Piezo speaker (sans beeper circuitry)
+
+NPN transistor to drive beeper
+
+Resistors for beeper
+  ...
+  
+Capacitors for beeper
+  ...
   
 RGB LED
 
-NPN Transistor for LED dimmer
-
-Resistors for LED/transistor
-  2K pot
-  10k for pot supply
-  10k for wiper-to-npn-base
-  220ohm for emitter-to-ground
+Resistors for LED
   20k for blue leg
   47k for green leg
   none for red leg (still protected by 220ohm from transistor-to-ground).
+  220ohm for NPN emitter-to-ground
 
-Mosfet N-channel for reader power control
-
-1M resistor pull-down for reader-power mosfet
+NPN transistor for LED dimmer
+  10K pot (Check current build)
+  10k for pot supply (Check current build)
+  10k for wiper-to-npn-base(Check current build)
 
 Button for momentary debug mode
 
@@ -40,11 +49,11 @@ Button for momentary failsafe mode
 
 SSR output relay (~5v => ~12v)
 
-PCB board
-
 
 
 ENCLOSURE, CONNECTORS, HARDWARE
+
+PCB board (2.54mm pitch, number of holes in x/y directions?
 
 Case
 
