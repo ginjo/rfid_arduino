@@ -33,7 +33,7 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 13 // quantity of settings vars
+  #define SETTINGS_SIZE 14 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
@@ -48,6 +48,8 @@
 
 
     /***  Static  ***/
+
+    static int log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
 
     static Settings Current;
 
@@ -134,6 +136,7 @@
     const static char str_10[] PROGMEM =  "RFID_BAUD";
     const static char str_11[] PROGMEM =  "tone_frequency";
     const static char str_12[] PROGMEM =  "admin_startup_timeout";
+    const static char str_13[] PROGMEM =  "log_to_bt";
     extern const char *const SETTING_NAMES[] PROGMEM = {
       str_0,
       str_1,
@@ -147,7 +150,8 @@
       str_9,
       str_10,
       str_11,
-      str_12
+      str_12,
+      str_13
     };
   } // end nameless namespace
     

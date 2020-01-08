@@ -381,5 +381,17 @@ TODO: Create a setting 'log_mode'. If true, send all logs to BT-serial port if B
       This can only be activated during admin mode, however once set, it can be left alone.
       While log_mode is set, any connection to BT-serial port will receive logs, until log_mode is disabled.
 
-
-
+	  1. Find out which arguments Serial.print() takes.
+	  
+	  2. Then create a wrapper function, ex: "LogToBT()", that takes those args.
+	  	 If conditions are met to write to BTserial,
+	  	 pass the args to BTserial.print(), noting that parameter mismatches
+	     between Serial.print() and the new function may occur and need to be handled.
+	  
+	  3. Optionally, create LPRINT and LPRINTLN macros to wrap the above function.
+	  
+	  4. Finally, replace all occurrences of Serial.print() with
+	     the new function (or macro), and you should be good to go.
+	  
+	  5. Handle DPRINT and the passing of its args (to BTserial)
+	     after all of the above is working.

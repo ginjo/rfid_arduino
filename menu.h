@@ -88,7 +88,7 @@
 
     /*  Static Vars & Functions  */
 
-    static int run_mode; // 0=run, 1=admin 
+    static int run_mode; // 0=run, 1=admin
 
     static Menu * Current;
     static Menu * HW;

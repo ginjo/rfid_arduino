@@ -57,7 +57,7 @@
     ST_PRINT(setting_name); ST_PRINT(", ");
     ST_PRINTLN(_data);
 
-    // Note that this is a 1-based list (not 0-based).
+    // Note that this is a 1-based list, not 0-based.
     switch (_index) {
       case 1:
         TAG_LAST_READ_TIMEOUT = (uint32_t)strtol(_data, NULL, 10);
@@ -100,7 +100,10 @@
       case 13:
         admin_startup_timeout = (int)strtol(_data, NULL, 10);
         break;
-                
+      case 14:
+        log_to_bt = (int)strtol(_data, NULL, 10);
+        break;
+                        
       default :
         return false;
     }
@@ -156,7 +159,10 @@
       case 13 :
         sprintf(setting_value, "%i", admin_startup_timeout);
         break;  
-                        
+      case 14 :
+        sprintf(setting_value, "%i", log_to_bt);
+        break;
+                                
       default:
         break;
     } // switch
@@ -268,9 +274,12 @@
 
     return settings_obj;
   } // Settings::Load()
-  
-  
-  // It's necessary to initialize static member vars before using them.
+
+
+  // It is necessary to initialize static member vars before using them.
+
+  int Settings::log_to_bt = 0;
+ 
   Settings Settings::Current = Settings();
 
   // a reference (alias?) from S to CurrentSettings

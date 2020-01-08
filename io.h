@@ -23,5 +23,6 @@
 
   #define BT_RX_PIN 2
   #define BT_TX_PIN 3 // remember to reduce arduino output (BT input) to 3.3v with voltage divider
+  #define BT_STATUS_PIN 10 // low == connected
 
 #endif

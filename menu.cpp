@@ -283,7 +283,7 @@
         break;
       }
     }
-    MU_PRINTLN();
+    MU_PRINTLN("");
 
     if (bool_result) { MU_PRINT(F("Menu::bufferReady(): ")); MU_PRINTLN(buff); }
     
