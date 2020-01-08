@@ -1,6 +1,9 @@
 #ifndef __IO_H__
 #define __IO_H__
 
+  /* Arduino Pin Assignments */
+  
+
   #include <Arduino.h>
   
   #define DEBUG_PIN 11
@@ -19,6 +22,6 @@
   #define READER_POWER_CONTROL_PIN 5
 
   #define BT_RX_PIN 2
-  #define BT_TX_PIN 3
+  #define BT_TX_PIN 3 // remember to reduce arduino output (BT input) to 3.3v with voltage divider
 
 #endif

@@ -138,10 +138,10 @@ TODO: √ Try swapping the RFID::loop() functions back to the way they were... S
 TODO: √ Try converting other RFID uses of tag_last_read_timeout_x_1000 to tagLastReadTimeoutX1000().
 
 TODO: - Consider instance vars in Reader for last_tag_read_id and current_tag_code (hex, I think).
-      This is trickier that it seems because it would create a curcular requirement between classes.
+      This is trickier than it seems because it would create a circular requirement between classes.
       Turning the logging features into their own class might help.
       Update: With latest structure, this might be easy now.
-      We have a Reader::last_tag_read_id now, so this issue might be moot now.
+      We have a Reader::last_tag_read_id, so this issue might be moot now.
 
 TODO: - I got debug logging to work with BTmenu, but it breaks the RFID cycle.
       It prevents the Reader instance for processing the tag. Is this also a UB whack-a-mole thing?
@@ -373,5 +373,13 @@ TODO: setting tone_frequency from BTLE terminal gives weird results.
 
 TODO: Activating menu session with BTLE is almost impossible with 2-second window.
       Allow increasing admin-startup window with a setting.
+
+TODO: Use BT12 connection status indicator (pin 10, low = connected) to 
+      tell ARD there is an active connection, or that the connection has dropped.
+      
+TODO: Create a setting 'log_mode'. If true, send all logs to BT-serial port if BT-serial is active.
+      This can only be activated during admin mode, however once set, it can be left alone.
+      While log_mode is set, any connection to BT-serial port will receive logs, until log_mode is disabled.
+
 
 

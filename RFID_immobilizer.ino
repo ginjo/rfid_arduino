@@ -1,6 +1,6 @@
 /* 
  * Passive RFID-activated switch with bluetooth serial admin console.
- * For use in generic engine kill modules.
+ * For use in generic engine kill modules where RFID tag proximity is required for operation.
  * 
  */
  
@@ -26,7 +26,7 @@
   // Declares RGB LED -- an array of 3 Led instances.
   Led *RGB[3];
 
-  // Declares beeper, also handled by  Led class.
+  // Declares beeper, which is also handled by Led class.
   Led *Beeper;
 
   // Declares a software-serial port for admin console.
