@@ -371,28 +371,37 @@ TODO: Should the piezo buzzer be located with the RGB LED?
 
 TODO: setting tone_frequency from BTLE terminal gives weird results.
 
-TODO: Activating menu session with BTLE is almost impossible with 2-second window.
-      Allow increasing admin-startup window with a setting.
+TODO: - Activating menu session with BTLE is almost impossible with 2-second window.
+      √ Allow increasing admin-startup window with a setting.
 
-TODO: Use BT12 connection status indicator (pin 10, low = connected) to 
+TODO: √ Use BT12 connection status indicator (pin 10, low = connected) to 
       tell ARD there is an active connection, or that the connection has dropped.
       
 TODO: Create a setting 'log_mode'. If true, send all logs to BT-serial port if BT-serial is active.
       This can only be activated during admin mode, however once set, it can be left alone.
       While log_mode is set, any connection to BT-serial port will receive logs, until log_mode is disabled.
 
-	  1. Find out which arguments Serial.print() takes.
+	    √ 1. Find out which arguments Serial.print() takes.
 	  
-	  2. Then create a wrapper function, ex: "LogToBT()", that takes those args.
-	  	 If conditions are met to write to BTserial,
-	  	 pass the args to BTserial.print(), noting that parameter mismatches
-	     between Serial.print() and the new function may occur and need to be handled.
+  	  √ 2. Then create a wrapper function, ex: "LogToBT()", that takes those args.
+  	  	 If conditions are met to write to BTserial,
+  	  	 pass the args to BTserial.print(), noting that parameter mismatches
+  	     between Serial.print() and the new function may occur and need to be handled.
 	  
-	  3. Optionally, create LPRINT and LPRINTLN macros to wrap the above function.
+	    3. Optionally, create LPRINT and LPRINTLN macros to wrap the above function.
 	  
-	  4. Finally, replace all occurrences of Serial.print() with
-	     the new function (or macro), and you should be good to go.
+  	  4. Finally, replace all occurrences of Serial.print() with
+  	     the new function (or macro), and you should be good to go.
 	  
-	  5. Handle DPRINT and the passing of its args (to BTserial)
-	     after all of the above is working.
+  	  5. Handle DPRINT and the passing of its args (to BTserial)
+  	     after all of the above is working.
+  	     
+  	  6. Consider a 'Log to BT' command at main menu level, that sets log_to_bt then exits admin.
+
+TODO: Create 'Reboot' command.
+
+TODO: Change log_to_bt setting to bool (currently integer).
+
+TODO: Debug scratching sound during timeout beeping, when log_to_bt is set.
+
 

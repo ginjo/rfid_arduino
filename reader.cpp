@@ -27,8 +27,11 @@
     //strncpy(reader_name, _name, sizeof(reader_name));
     //strcpy(reader_name, _name);
     strlcpy(reader_name, _name, sizeof(reader_name));
-    Serial.print(F("Constructing Reader: "));
-    Serial.println(_name);
+    
+    //Serial.print(F("Constructing Reader: "));
+    //Serial.println(_name);
+    LOG(F("Constructing Reader: "));
+    LOG(_name, true);
   }
 
   //  int Reader::echo(int _dat) {
@@ -230,17 +233,17 @@
       //setProximityState(1);
       last_tag_read_ms = current_ms;
 
-      Serial.print(F("Authorized tag: "));
-      LogToBT(F("Authorized tag: "));
+      //Serial.print(F("Authorized tag: "));
+      LOG(F("Authorized tag: "));
 
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
-      Serial.print(F("Unauthorized or invalid tag: "));
-      LogToBT(F("Unauthorized or invalid tag: "));
+      //Serial.print(F("Unauthorized or invalid tag: "));
+      LOG(F("Unauthorized or invalid tag: "));
     }
 
-    Serial.println(tag_id);
-    LogToBT(tag_id, true);
+    //Serial.println(tag_id);
+    LOG(tag_id, true);
     
     last_tag_read_id = tag_id;
     
@@ -258,33 +261,33 @@
   void Reader::cycleReaderPower() {
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0UL) {
       
-      LogToBT(F("cycleReaderPower() tag read: "));
+      LOG(F("cycleReaderPower() tag read: "));
       if (last_tag_read_ms > 0UL) {
         //Serial.print((ms_since_last_tag_read)/1000UL);
-        LogToBT(msSinceLastTagRead()/1000UL);
-        LogToBT(F(" seconds ago"));
+        LOG(msSinceLastTagRead()/1000UL);
+        LOG(F(" seconds ago"));
       } else {
-        LogToBT(F("never"));
+        LOG(F("never"));
       }
 
-      LogToBT(F(", reader cycled: "));
+      LOG(F(", reader cycled: "));
       if (last_reader_power_cycle_ms > 0UL) {
         //Serial.print((ms_since_last_reader_power_cycle)/1000UL);
-        LogToBT(msSinceLastReaderPowerCycle()/1000UL);
-        LogToBT(F(" seconds ago"));
+        LOG(msSinceLastReaderPowerCycle()/1000UL);
+        LOG(F(" seconds ago"));
       } else {
-        LogToBT(F("never"));
+        LOG(F("never"));
       }
 
       // See https://stackoverflow.com/questions/2988791/converting-float-to-char
       // This roundabout conversion is to save prog mem. Converting the float
       // directly to String eats a lot of prog mem:
-      //   This EATS prog mem:  //LogToBT(0, F(", uptime: ")); LogToBT(1, ((float)millis()/(float)1000/(float)60));
+      //   This EATS prog mem:  //LOG(0, F(", uptime: ")); LOG(1, ((float)millis()/(float)1000/(float)60));
       // Do this instead:
       //char buff[64];
       //snprintf(buff, sizeof buff, "%.2f", (double)millis()/(double)1000/(double)60);
-      //LogToBT(F(", uptime: ")); LogToBT(buff, true);
-      LogToBT(F(", uptime: ")); LogToBT((float)millis()/(float)1000/(float)60, true);
+      //LOG(F(", uptime: ")); LOG(buff, true);
+      LOG(F(", uptime: ")); LOG((float)millis()/(float)1000/(float)60, true);
 
       RD_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
             

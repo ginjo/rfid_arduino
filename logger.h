@@ -1,6 +1,7 @@
 #ifndef __LOGGER_H__
 #define __LOGGER_H__
 
+  #include <Arduino.h>
   #include <SoftwareSerial.h>
   #include <stdarg.h>
 
@@ -25,8 +26,8 @@
 
   
   #ifdef DEBUG    // Macros are usually in all capital letters.
-    #define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);}    // LogToBT(false, __VA_ARGS__);}   // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
-    #define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);}  // LogToBT(true, __VA_ARGS__);}  // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
+    #define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);}    // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
+    #define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);}  // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
     #define FREERAM(...)   if(S.debugMode()){FreeRam(__VA_ARGS__);}
   #else
     #define DPRINT(...)     //now defines a blank line
@@ -40,42 +41,46 @@
   // There is probably a better place for this.
   extern SoftwareSerial *BTserial;
 
-  // Handle printing to BTserial.
-  //extern void LogToBT(bool line, ...);
-  //extern void LogToBT(String, int = -1, bool = false);
-  //extern void LogToBT(char*, bool = false, int = -1);
-  //extern void LogToBT(const __FlashStringHelper*, bool = false);
-
+  
+  // Checks if conditions are right to log to BTserial.
   bool can_log_to_bt();
 
+  // Handles printing to BTserial, with numbers and base.
+  //
   template<typename T>
-  extern void LogToBT (T dat, const int base, bool line = false) {
+  extern void LOG(T dat, const int base, bool line = false) {
     if (can_log_to_bt()) {
-      
-      if (base >=0) {
-        BTserial->print(dat, base);
-      } else {
-        BTserial->print(dat);
-      }
 
+      BTserial->print(dat, base);
+      
       if (line == true) {
         BTserial->println("");
       }
-        
+    }
+
+    Serial.print(dat, base);
+    if (line == true) {
+      Serial.println("");
     }
   }
 
+  // Handles printing to BTserial, with strings and char arrays
+  //.
   template<typename T>
-  extern void LogToBT (T dat, bool line = false) {
+  extern void LOG(T dat, bool line = false) {
     if (can_log_to_bt()) {
       BTserial->print(dat);
       if (line == true) {
         BTserial->println("");
       }
     }
+
+    Serial.print(dat);
+    if (line == true) {
+      Serial.println("");
+    }
   }
-
-  //extern void LogToBT(const String&, bool = false);
-  //extern void LogToBT(const __FlashStringHelper*, bool = false);
-
+  
 #endif
+
+  
