@@ -231,16 +231,16 @@
       last_tag_read_ms = current_ms;
 
       Serial.print(F("Authorized tag: "));
-      LogToBT(0, F("Authorized tag: "));
+      LogToBT(F("Authorized tag: "));
 
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
       Serial.print(F("Unauthorized or invalid tag: "));
-      LogToBT(0, F("Unauthorized or invalid tag: "));
+      LogToBT(F("Unauthorized or invalid tag: "));
     }
 
     Serial.println(tag_id);
-    LogToBT(1, (String)tag_id);
+    LogToBT(tag_id, true);
     
     last_tag_read_id = tag_id;
     
@@ -258,33 +258,33 @@
   void Reader::cycleReaderPower() {
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0UL) {
       
-      LogToBT(0, F("cycleReaderPower() tag read: "));
+      LogToBT(F("cycleReaderPower() tag read: "));
       if (last_tag_read_ms > 0UL) {
         //Serial.print((ms_since_last_tag_read)/1000UL);
-        LogToBT(0, (String)(msSinceLastTagRead()/1000UL));
-        LogToBT(0, F(" seconds ago"));
+        LogToBT(msSinceLastTagRead()/1000UL);
+        LogToBT(F(" seconds ago"));
       } else {
-        LogToBT(0, F("never"));
+        LogToBT(F("never"));
       }
 
-      LogToBT(0, F(", reader cycled: "));
+      LogToBT(F(", reader cycled: "));
       if (last_reader_power_cycle_ms > 0UL) {
         //Serial.print((ms_since_last_reader_power_cycle)/1000UL);
-        LogToBT(0, (String)(msSinceLastReaderPowerCycle()/1000UL));
-        LogToBT(0, F(" seconds ago"));
+        LogToBT(msSinceLastReaderPowerCycle()/1000UL);
+        LogToBT(F(" seconds ago"));
       } else {
-        LogToBT(0, F("never"));
+        LogToBT(F("never"));
       }
 
       // See https://stackoverflow.com/questions/2988791/converting-float-to-char
       // This roundabout conversion is to save prog mem. Converting the float
-      // directly to String eats a lot of prog mem.
-      char buff[16];
-      //double uptime = (double)((float)millis()/(float)1000/(float)60);
-      snprintf(buff, sizeof buff, "%f", (double)((float)millis()/(float)1000/(float)60));
-      // This EATS prog mem!:  //LogToBT(0, F(", uptime: ")); LogToBT(1, ((float)millis()/(float)1000/(float)60));
-      LogToBT(0, F(", uptime: ")); LogToBT(1, (String)buff);
-      //LogToBT(0, F(", uptime: ")); LogToBT(1, uptime);
+      // directly to String eats a lot of prog mem:
+      //   This EATS prog mem:  //LogToBT(0, F(", uptime: ")); LogToBT(1, ((float)millis()/(float)1000/(float)60));
+      // Do this instead:
+      //char buff[64];
+      //snprintf(buff, sizeof buff, "%.2f", (double)millis()/(double)1000/(double)60);
+      //LogToBT(F(", uptime: ")); LogToBT(buff, true);
+      LogToBT(F(", uptime: ")); LogToBT((float)millis()/(float)1000/(float)60, true);
 
       RD_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
             

@@ -11,30 +11,60 @@
     return rslt;
   }
 
-  // Handle logging to BTserial
-  //extern void LogToBT (bool line, ...) {
-  extern void LogToBT (bool line, String args) {
-    if (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW) { 
-
-      //Serial.println("LogToBT sending output to BTserial");
-      //BTserial->println("LogToBT sending output to BTserial");
-      
-      //va_list args;
-      //va_start(args, line);
-      //char * arg = va_arg(args, char*);
-      
-      if (line == true) {
-        //BTserial->println(arg);
-        BTserial->println((String)args);
-      } else {
-        //BTserial->print(arg);
-        BTserial->print((String)args);
-      }
-      
-      //va_end(args);
-    }
-    
+  bool can_log_to_bt() {
+    return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
   }
 
-  
+  // Handle logging to BTserial
+  //  extern void LogToBT (String string, int base, bool line) {
+  //    if (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW) { 
+  //      if (line == true) {
+  //        if (base <0) {
+  //          BTserial->println((String)string);
+  ////        } else {
+  ////          BTserial->println("Hello", (char)HEX);
+  //        }
+  //      } else {
+  //        if (base <0) {
+  //          BTserial->println((String)string);
+  //        } else {
+  //          //BTserial->println((String)string, (int)base);
+  //          BTserial->println(123, (int)HEX);
+  //        }
+  //      }
+  //    }
+  //  }
+
+  //  extern void LogToBT (char * string, bool line, int base) {
+  //    if (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW) { 
+  //      
+  //      if (base >=0) {
+  //        BTserial->print(strtol(string, NULL, base));
+  //      } else {
+  //        BTserial->print(string);
+  //      }
+  //
+  //      if (line == true) {
+  //        BTserial->println("");
+  //      }
+  //        
+  //    }
+  //  }
+
+  //  extern void LogToBT(const __FlashStringHelper * string, bool line) {
+  //    BTserial->print(string);
+  //    
+  //    if (line == true) {
+  //      BTserial->println("");
+  //    }
+  //  }
+
+  //  extern void LogToBT(const String& string, bool line) {
+  //    BTserial->print(string);
+  //    
+  //    if (line == true) {
+  //      BTserial->println("");
+  //    }
+  //  }
+
   

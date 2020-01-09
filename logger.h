@@ -42,6 +42,40 @@
 
   // Handle printing to BTserial.
   //extern void LogToBT(bool line, ...);
-  extern void LogToBT(bool line, String);
+  //extern void LogToBT(String, int = -1, bool = false);
+  //extern void LogToBT(char*, bool = false, int = -1);
+  //extern void LogToBT(const __FlashStringHelper*, bool = false);
+
+  bool can_log_to_bt();
+
+  template<typename T>
+  extern void LogToBT (T dat, const int base, bool line = false) {
+    if (can_log_to_bt()) {
+      
+      if (base >=0) {
+        BTserial->print(dat, base);
+      } else {
+        BTserial->print(dat);
+      }
+
+      if (line == true) {
+        BTserial->println("");
+      }
+        
+    }
+  }
+
+  template<typename T>
+  extern void LogToBT (T dat, bool line = false) {
+    if (can_log_to_bt()) {
+      BTserial->print(dat);
+      if (line == true) {
+        BTserial->println("");
+      }
+    }
+  }
+
+  //extern void LogToBT(const String&, bool = false);
+  //extern void LogToBT(const __FlashStringHelper*, bool = false);
 
 #endif

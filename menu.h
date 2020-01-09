@@ -67,6 +67,7 @@
     void getTagFromScanner();
 
     /* Data */
+    /* Note that some of these will complain at compile time about unused args... it's OK */
     int  byteToAsciiChrNum(char);
     void addTagString(void*);
     void deleteTag(void*);
