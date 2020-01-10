@@ -17,7 +17,7 @@
     // Make sure to run this somewhere, if not here.
     //initializeOutput();
     
-    pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
+    // pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
 
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into Controller::Controller().
@@ -47,7 +47,7 @@
 
   // Initializes output switch.
   void Controller::initializeOutput() {
-    pinMode(OUTPUT_SWITCH_PIN, OUTPUT);    
+    //pinMode(OUTPUT_SWITCH_PIN, OUTPUT);    
     
     // Starts up with whatever state we left off in.
     // Protects against thief using 'admin' to move

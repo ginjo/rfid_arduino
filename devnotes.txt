@@ -404,7 +404,7 @@ TODO: Create 'Reboot' command.
 
 TODO: Change log_to_bt setting to bool (currently integer).
 
-TODO: Debug scratching sound during timeout beeping, when log_to_bt is set.
+TODO: - Debug scratching sound during timeout beeping, when log_to_bt is set.
       I think it's because log output to BTserial interferes with ARD PWM.
       Probably nothing we can do about it.
 
@@ -425,17 +425,17 @@ TODO: √ There is garbage printing on BTserial at startup, even when log_to_bt 
       
 TODO: Check to see if any class constructors are using LOG or BTserial in their construction methods.
 
-TODO: Change io.h to globals.h, and put externs (like BTserial) in there.
+TODO: √ Change io.h to global.h, and put externs (like BTserial) in there.
 
-TODO: Create a io-setup or globals-setup extern function,
+TODO: √ Create a io-setup or globals-setup extern function,
       and put all pin setups in there,
       then call it at beginning of main setup().
       
 TODO: √ Debug mode (with debug-pin) now crashes ARD.
       Maybe some kind of interference between io ports or pins?
       
-      There was UB occuring due to multiple declarations of BTserial.
-      No BTserial is declared & defined in io.h and io.cpp.
+      √ There was UB occuring due to multiple declarations of BTserial.
+      Now BTserial is declared & defined in io.h and io.cpp... and it works!
       
       
       

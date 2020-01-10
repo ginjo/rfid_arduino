@@ -4,7 +4,7 @@
   #include <Arduino.h>
   //#include <SoftwareSerial.h>
   #include <stdarg.h>
-  #include "io.h"
+  #include "global.h"
 
   /*
     DEBUG controls compilation of debug code, it DOES NOT control runtime debug behavior.

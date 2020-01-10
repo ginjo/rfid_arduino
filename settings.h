@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre175"
+  #define VERSION "v0.1.0.pre176"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -19,7 +19,7 @@
   // I don't think we're using it yet.
   //#include <stdarg.h>
 
-  #include "io.h"
+  #include "global.h"
   #include "logger.h"
 
   // See logger.h for master debug controls.

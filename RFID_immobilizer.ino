@@ -7,7 +7,7 @@
   #include <Arduino.h>
   #include <SoftwareSerial.h>
 
-  #include "io.h"
+  #include "global.h"
   #include "logger.h"
   #include "settings.h"
   #include "led_blinker.h"
@@ -33,8 +33,8 @@
   Led *Beeper;
 
   // Declares a software-serial port for admin console.
+  // See global.h and global.cpp
   //SoftwareSerial *BTserial;
-  // See io.h
 
   // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;
@@ -52,9 +52,10 @@
   void setup() {
     // Is this the best place for this?
     // TODO: Put these in an io-settup function (or globals-setup).
-    pinMode(FAILSAFE_PIN, INPUT_PULLUP);
-    pinMode(BT_STATUS_PIN, INPUT_PULLUP);
-    pinMode(DEBUG_PIN, INPUT_PULLUP);
+    //  pinMode(FAILSAFE_PIN, INPUT_PULLUP);
+    //  pinMode(BT_STATUS_PIN, INPUT_PULLUP);
+    //  pinMode(DEBUG_PIN, INPUT_PULLUP);
+    globalSetup();
     
     // Opens default hardware serial port.
     // Requirement for Settings operations logging.
@@ -78,7 +79,6 @@
     Settings::Load(); // (*settings_instance, eeprom_address)
 
     
-
     /* For normal mode, when debugging not needed */
 
     //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
@@ -101,11 +101,6 @@
     LOG(S.calculateChecksum(), 16);
     LOG(F("' of size "));
     LOG(sizeof(S), true);
-
-    //  LOG(F("Booting RFID Immobilizer, "));
-    //  LOG(VERSION);
-    //  LOG(F(", "));
-    //  LOG(TIMESTAMP, true);
 
 
     /* For manual debug/log mode */
@@ -142,7 +137,8 @@
     RGB[2]  = new Led(LED_BLUE_PIN, "Bl");
 
     Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
-    
+
+    // See global.h and global.cpp
     //BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
@@ -163,8 +159,9 @@
     // Initializes output controller, including switch relay and LEDs.
     OutputControl->initializeOutput();
 
-    //  // Activates the software-serial port for admin console.
-    //  BTserial->begin(S.BT_BAUD);
+    // Activates the software-serial port for admin console.
+    // See global.h and global.cpp
+    //BTserial->begin(S.BT_BAUD);
 
     // Loads tags to default location (Tags::TagSet).
     Tags::Load();
@@ -196,7 +193,7 @@
     if (Menu::run_mode > 0) {
       Menu::Loop();
     } else if (Menu::run_mode == 0) {
-      //RfidReader->loop();
+      //RfidReader->loop(); // Is this for debugging, or is it just old code?
       OutputControl->loop();      
     }
     
