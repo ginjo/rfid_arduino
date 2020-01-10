@@ -28,7 +28,7 @@
     //strcpy(reader_name, _name);
     strlcpy(reader_name, _name, sizeof(reader_name));
     
-    //Serial.print(F("Constructing Reader: "));
+    //LOG(F("Constructing Reader: "));
     //Serial.println(_name);
     LOG(F("Constructing Reader: "));
     LOG(_name, true);
@@ -233,12 +233,12 @@
       //setProximityState(1);
       last_tag_read_ms = current_ms;
 
-      //Serial.print(F("Authorized tag: "));
+      //LOG(F("Authorized tag: "));
       LOG(F("Authorized tag: "));
 
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
-      //Serial.print(F("Unauthorized or invalid tag: "));
+      //LOG(F("Unauthorized or invalid tag: "));
       LOG(F("Unauthorized or invalid tag: "));
     }
 
@@ -263,16 +263,16 @@
       
       LOG(F("cycleReaderPower() tag read: "));
       if (last_tag_read_ms > 0UL) {
-        //Serial.print((ms_since_last_tag_read)/1000UL);
+        //LOG((ms_since_last_tag_read)/1000UL);
         LOG(msSinceLastTagRead()/1000UL);
         LOG(F(" seconds ago"));
       } else {
         LOG(F("never"));
       }
 
-      LOG(F(", reader cycled: "));
+      LOG(F(", cycled: "));
       if (last_reader_power_cycle_ms > 0UL) {
-        //Serial.print((ms_since_last_reader_power_cycle)/1000UL);
+        //LOG((ms_since_last_reader_power_cycle)/1000UL);
         LOG(msSinceLastReaderPowerCycle()/1000UL);
         LOG(F(" seconds ago"));
       } else {

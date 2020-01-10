@@ -51,25 +51,25 @@
     /***  Static / Class Vars & Functions  ***/
         
     static T* Load (T * object_ref, int eeprom_address) {
-      Serial.println(F("Storage::Load() BEGIN"));
+      LOG(F("Storage::Load() BEGIN"), true);
       
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
 
       object_ref->eeprom_address = eeprom_address;
       
       if (! object_ref->checksumMatch()) {
-        Serial.println(F("Storage::Load() checksum mismatch"));
+        LOG(F("Storage::Load() checksum mismatch"), true);
         //object_ref->checksum = (uint16_t)0;
       }
 
       #ifdef DEBUG
-        Serial.print(F("eeprom_address ")); Serial.println(eeprom_address);
-        Serial.print(F("object_ref->storage_name '")); Serial.print(object_ref->storage_name); Serial.println("'");
-        Serial.print(F("sizeof(*object_ref) ")); Serial.println(sizeof(*object_ref));
-        Serial.print(F("sizeof(T) ")); Serial.println(sizeof(T));
+        LOG(F("eeprom_address ")); LOG(eeprom_address, true);
+        LOG(F("object_ref->storage_name '")); LOG(object_ref->storage_name); LOG("'", true);
+        LOG(F("sizeof(*object_ref) ")); LOG(sizeof(*object_ref), true);
+        LOG(F("sizeof(T) ")); LOG(sizeof(T), true);
       #endif
   
-      Serial.println(F("Storage::Load() END"));
+      LOG(F("Storage::Load() END"), true);
       return object_ref;
     }
 
@@ -90,18 +90,18 @@
     // Sub-classes, like Settings, should carry the info about
     // what address to use.
     int save(int _eeprom_address = -1) {
-      Serial.println(F("Storage::save() BEGIN"));
+      LOG(F("Storage::save() BEGIN"), true);
 
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
 
       #ifdef DEBUG
-        Serial.print(F("Storage::save() '")); Serial.print(storage_name);
-        Serial.print(F("' to address ")); Serial.print(eeprom_address);
-        Serial.print(F(" sizeof(T) ")); Serial.println(sizeof(T));
+        LOG(F("Storage::save() '")); LOG(storage_name);
+        LOG(F("' to address ")); LOG(eeprom_address);
+        LOG(F(" sizeof(T) ")); LOG(sizeof(T), true);
       #endif
       
       if (! checksumMatch()) {
-        Serial.println(F("Storage::save() chksm mismatch, calling EEPROM.put()"));
+        LOG(F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
 
         checksum = calculateChecksum();
         
@@ -110,11 +110,11 @@
         // functions don't seem to get it when called from a subclass.
         EEPROM.put(eeprom_address, *(T*)this);
   
-        Serial.println(F("Storage::save() END"));
+        LOG(F("Storage::save() END"), true);
         return 0;
       } else {
-        Serial.println(F("Storage::save() EEPROM update not necessary"));
-        Serial.println(F("Storage::save() END"));
+        LOG(F("Storage::save() EEPROM update not necessary"), true);
+        LOG(F("Storage::save() END"), true);
         return 1;
       }
     }
@@ -136,9 +136,9 @@
       }
 
       //  #ifdef DEBUG
-      //    Serial.print(F("Storage::claculateChecksum() 0x")); Serial.print(xxor, 16);
-      //    Serial.print(F(" for storage_name '")); Serial.print(storage_name);
-      //    Serial.print(F("' of size ")); Serial.println(len);
+      //    LOG(F("Storage::claculateChecksum() 0x")); LOG(xxor, 16);
+      //    LOG(F(" for storage_name '")); LOG(storage_name);
+      //    LOG(F("' of size ")); LOG(len, true);
       //  #endif
 
       checksum = stored_checksum;
@@ -156,9 +156,9 @@
         checksum != 0xFFFF
       );
       
-      Serial.print("Storage::checksumMatch() 0x"); Serial.print(checksum, 16);
-      Serial.print(" 0x"); Serial.print(calculated_checksum, 16);
-      Serial.print(", bool-result: "); Serial.println(result);
+      LOG("Storage::checksumMatch() 0x"); LOG(checksum, 16);
+      LOG(" 0x"); LOG(calculated_checksum, 16);
+      LOG(", bool-result: "); LOG(result, true);
       
       //  checksum = stored_checksum;
       return result;

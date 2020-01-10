@@ -38,7 +38,7 @@
         stack_index += 1;
         stack[stack_index] = func;
       } else {
-        Serial.println("Tried to push nullptr to stack.");
+        LOG("Tried to push nullptr to stack.", true);
       }
     }
 

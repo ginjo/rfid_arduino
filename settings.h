@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre174"
+  #define VERSION "v0.1.0.pre175"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -49,8 +49,9 @@
 
     /***  Static  ***/
 
-    static int log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
-
+    /* not using static, see below */
+    //static int log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
+    
     static Settings Current;
 
     static Settings* Load(Settings* settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
@@ -78,7 +79,7 @@
 
     int tone_frequency;
     int admin_startup_timeout;
-
+    int log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
 
     /*  Constructors  */
 

@@ -21,14 +21,14 @@
   void Tags::save() {
     compactTags();
 
-    Serial.print(F("Saving tags with checksum 0x"));
-    Serial.print(calculateChecksum(), 16);
-    Serial.print(F(" to address "));
-    Serial.println(eeprom_address);
+    LOG(F("Saving tags with checksum 0x"));
+    LOG(calculateChecksum(), 16);
+    LOG(F(" to address "));
+    LOG(eeprom_address, true);
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      Serial.print(tag_array[i]); Serial.print(",");
+      LOG(tag_array[i]); LOG(",");
     }
-    Serial.println();
+    LOG("", true);
 
     Storage::save(eeprom_address);
   }
@@ -70,45 +70,45 @@
 
   // Adds tag to this set, and saves the set in EEPROM.
   int Tags::addTag(uint32_t new_tag) {
-    Serial.print(F("addTag() "));
-    Serial.println(new_tag);
+    LOG(F("addTag() "));
+    LOG(new_tag, true);
     compactTags();
     int tag_count = countTags();
     
     if(new_tag < 1) {
-      Serial.println(F("addTag() aborted: Invalid code"));
+      LOG(F("addTag() aborted: Invalid code"), true);
       return 1;
     } else if (tag_count >= TAG_LIST_SIZE) {
-      Serial.println(F("addTag() failed: Full"));
+      LOG(F("addTag() failed: Full"), true);
       return 2;
     } else if (getTagIndex(new_tag) >=0) {
-      Serial.println(F("addTag() failed: Dupe"));
+      LOG(F("addTag() failed: Dupe"), true);
       return 3;
     }
 
     tag_array[tag_count] = new_tag;
     if (tag_array[tag_count] == new_tag) {
       save();
-      Serial.println(F("addTag() success"));
+      LOG(F("addTag() success"), true);
       return 0;
     } else {
-      Serial.println(F("addTag() failed: Unknown error"));
+      LOG(F("addTag() failed: Unknown error"), true);
       return -1;
     }
   } // addTag()
 
   // Deletes a tag from this set.
   int Tags::deleteTag(uint32_t deleteable_tag) {
-    Serial.print(F("deleteTag(): "));
-    Serial.println(deleteable_tag);
+    LOG(F("deleteTag(): "));
+    LOG(deleteable_tag, true);
     int tag_index = getTagIndex(deleteable_tag);
     return deleteTagIndex(tag_index);
   }
 
   // Deletes a tag, by index, from this set.
   int Tags::deleteTagIndex(int index) {
-    Serial.print(F("deleteTagIndex(): "));
-    Serial.println(index);
+    LOG(F("deleteTagIndex(): "));
+    LOG(index, true);
     if (index >= 0) {
       tag_array[index] = 0;
       save();
@@ -120,7 +120,7 @@
 
   // Deletes all tags from this set.
   int Tags::deleteAllTags() {
-    Serial.println(F("deleteAllTags()"));
+    LOG(F("deleteAllTags()"), true);
     memset(tag_array, 0, TAG_LIST_SIZE*4);
     //Tags = new uint32_t[TAG_LIST_SIZE];
     save();
@@ -151,24 +151,24 @@
   // TODO: Is this decoupled option appropriate for the Settings class too?
   //
   Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
-    Serial.println(F("Tags::Load() BEGIN"));
+    LOG(F("Tags::Load() BEGIN"), true);
     
     Storage::Load(tag_set, _eeprom_address);
 
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      Serial.print(tag_set->tag_array[i]); Serial.print(",");
+      LOG(tag_set->tag_array[i]); LOG(",");
     }
-    Serial.println();
+    LOG("", true);
 
     if (! tag_set->checksumMatch()) {
-      Serial.println(F("Tags::Load() checksum mismatch, creating new tag-set"));
+      LOG(F("Tags::Load() checksum mismatch, creating new tag-set"), true);
       tag_set = new Tags();
       tag_set->save();
     }
 
     tag_set->compactTags();
 
-    Serial.println(F("Tags::Load() END"));
+    LOG(F("Tags::Load() END"), true);
     return tag_set;
   } // Load()
 

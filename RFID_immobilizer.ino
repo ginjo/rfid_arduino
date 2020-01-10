@@ -6,6 +6,9 @@
  
   #include <Arduino.h>
   #include <SoftwareSerial.h>
+
+  #include "io.h"
+  #include "logger.h"
   #include "settings.h"
   #include "led_blinker.h"
   #include "menu.h"
@@ -30,7 +33,8 @@
   Led *Beeper;
 
   // Declares a software-serial port for admin console.
-  SoftwareSerial *BTserial;
+  //SoftwareSerial *BTserial;
+  // See io.h
 
   // Declares serial port for RFID reader.
   SoftwareSerial *RfidSerial;
@@ -46,60 +50,87 @@
   /*** Setup  ***/
 
   void setup() {
+    // Is this the best place for this?
+    // TODO: Put these in an io-settup function (or globals-setup).
     pinMode(FAILSAFE_PIN, INPUT_PULLUP);
+    pinMode(BT_STATUS_PIN, INPUT_PULLUP);
+    pinMode(DEBUG_PIN, INPUT_PULLUP);
     
     // Opens default hardware serial port.
     // Requirement for Settings operations logging.
     Serial.begin(57600);
     while (! Serial) delay(10);
-    delay(15);
-    Serial.println(F("Initialized default serial port @ 57600 baud"));
 
-    FreeRam("setup() pre load-setngs");
+    BTserial->flush();
+    BTserial->begin(S.BT_BAUD);
+    
+    delay(15);
+
+    LOG(F("Booting RFID Immobilizer, "));
+    LOG(VERSION);
+    LOG(F(", "));
+    LOG(TIMESTAMP, true);
+    
+    LOG(F("Initialized default serial port @ 57600 baud"), true);
+
+    FreeRam("setup() before Settings::Load()");
     
     Settings::Load(); // (*settings_instance, eeprom_address)
 
+    
 
     /* For normal mode, when debugging not needed */
+
+    //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+    //BTserial->flush();
+    //BTserial->end();
+    BTserial->begin(S.BT_BAUD);
     
     Serial.flush(); // I think flushes only outbound data. See Serial class docs.
     Serial.begin(S.HW_SERIAL_BAUD);
     while (! Serial) delay(10);
+    
     delay(15);
-    Serial.print(F("Re-initialized serial port with loaded settings: "));
-    Serial.println(S.HW_SERIAL_BAUD);
+    
+    LOG(F("Re-initialized serial port with loaded settings: "));
+    LOG(S.HW_SERIAL_BAUD, true);
 
-    Serial.print(F("Loaded Settings '"));
-    Serial.print((char *)S.settings_name);
-    //Serial.print(F("' with checksum 0x"));
-    //Serial.print(S.calculateChecksum(), 16);
-    Serial.print(F("' of size "));
-    Serial.println(sizeof(S));
+    LOG(F("Loaded Settings '"));
+    LOG(S.settings_name);
+    LOG(F("' with checksum '0x"));
+    LOG(S.calculateChecksum(), 16);
+    LOG(F("' of size "));
+    LOG(sizeof(S), true);
 
-    Serial.print(F("Booting RFID Immobilizer, "));
-    Serial.print(VERSION);
-    Serial.print(F(", "));
-    Serial.println(TIMESTAMP);
+    //  LOG(F("Booting RFID Immobilizer, "));
+    //  LOG(VERSION);
+    //  LOG(F(", "));
+    //  LOG(TIMESTAMP, true);
 
 
     /* For manual debug/log mode */
     
-    pinMode(DEBUG_PIN, INPUT_PULLUP);
+    //pinMode(DEBUG_PIN, INPUT_PULLUP);
 
     int debug_pin_status = digitalRead(DEBUG_PIN);
 
-    Serial.print(F("Debug pin status: "));
-    Serial.println(debug_pin_status);
+    LOG(F("Debug pin status: "));
+    LOG(debug_pin_status, true);
 
     if (debug_pin_status == LOW) {
-      Serial.println(F("Debug pin LOW ... enabling debug"));
+      LOG(F("Debug pin LOW ... enabling debug"), true);
       S.enable_debug = 1;
     }
 
     // Displays current settings.
-    Serial.println();
+    LOG("", true);
     S.printSettings(&Serial);
-    Serial.println();
+    Serial.println("");
+    //
+    if (canLogToBT()) {
+      S.printSettings(BTserial);
+      BTserial->println("");
+    }
 
     FREERAM("setup() pre obj new");
 
@@ -112,7 +143,7 @@
 
     Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
     
-    BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+    //BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
@@ -132,8 +163,8 @@
     // Initializes output controller, including switch relay and LEDs.
     OutputControl->initializeOutput();
 
-    // Activates the software-serial port for admin console.
-    BTserial->begin(S.BT_BAUD);
+    //  // Activates the software-serial port for admin console.
+    //  BTserial->begin(S.BT_BAUD);
 
     // Loads tags to default location (Tags::TagSet).
     Tags::Load();
@@ -150,7 +181,7 @@
     FreeRam("end setup()");
 
     // Add empty line before beginning loop.
-    Serial.println();
+    LOG("", true);
 
   } // setup()
 

@@ -369,7 +369,9 @@ TODO: Since hardcoding pin assignments, find where you had to compromise
 
 TODO: Should the piezo buzzer be located with the RGB LED?
 
-TODO: setting tone_frequency from BTLE terminal gives weird results.
+TODO: √ Setting tone_frequency from BTLE terminal gives weird results.
+      I think it depends on the terminal client, cuz it works fine with
+      "AirTerminal" on iPhone.
 
 TODO: - Activating menu session with BTLE is almost impossible with 2-second window.
       √ Allow increasing admin-startup window with a setting.
@@ -388,9 +390,9 @@ TODO: Create a setting 'log_mode'. If true, send all logs to BT-serial port if B
   	  	 pass the args to BTserial.print(), noting that parameter mismatches
   	     between Serial.print() and the new function may occur and need to be handled.
 	  
-	    3. Optionally, create LPRINT and LPRINTLN macros to wrap the above function.
+	    - 3. Optionally, create LPRINT and LPRINTLN macros to wrap the above function.
 	  
-  	  4. Finally, replace all occurrences of Serial.print() with
+  	  √ 4. Finally, replace all occurrences of Serial.print() with
   	     the new function (or macro), and you should be good to go.
 	  
   	  5. Handle DPRINT and the passing of its args (to BTserial)
@@ -403,5 +405,37 @@ TODO: Create 'Reboot' command.
 TODO: Change log_to_bt setting to bool (currently integer).
 
 TODO: Debug scratching sound during timeout beeping, when log_to_bt is set.
+      I think it's because log output to BTserial interferes with ARD PWM.
+      Probably nothing we can do about it.
 
+TODO: √ Move admin console splash line to after LOG items finish printing
+	    (only relavent when BTserial is printing startup logs).
+	    Ok, mostly done.
+	  
+TODO: √ Get settings display to print to BTserial at startup.
 
+TODO: √ Use debug-mode function, instead of raw pin read, in can_print_to_bt logic.
+
+TODO: √ When debug pin is held during run mode, it makes a mess of the reader/controller/blinker/beeper.
+
+TODO: √ There is garbage printing on BTserial at startup, even when log_to_bt is 0 and debug-pin is 1 (off).
+      Maybe UB caused by the multiple BTserial declarations.
+      
+      Update: I think it's due to floating pins, cuz is never happens when soft-rebooted from IDE.
+      
+TODO: Check to see if any class constructors are using LOG or BTserial in their construction methods.
+
+TODO: Change io.h to globals.h, and put externs (like BTserial) in there.
+
+TODO: Create a io-setup or globals-setup extern function,
+      and put all pin setups in there,
+      then call it at beginning of main setup().
+      
+TODO: √ Debug mode (with debug-pin) now crashes ARD.
+      Maybe some kind of interference between io ports or pins?
+      
+      There was UB occuring due to multiple declarations of BTserial.
+      No BTserial is declared & defined in io.h and io.cpp.
+      
+      
+      

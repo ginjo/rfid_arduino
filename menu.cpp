@@ -11,10 +11,10 @@
   
   * Two more statics hold SW and HW serial-menu instances.
   
-  * One static, Current, holds the ''chosen-one'', or defaults to HW.
+  * One static, Current, holds the 'chosen-one', or defaults to HW.
   
   * Menu::Begin() and Menu::Loop() make sub-calls to
-  SW and HW instances (both) until once is ''chosen'' (when user
+  SW and HW instances (both) until once is 'chosen' (when user
   input triggers admin-mode 'run_mode == 1').
   
   * At that point, the static for Current is filled with the chosen instance.
@@ -47,7 +47,7 @@
   Menu * Menu::SW;
 
   void Menu::Begin() {
-    Serial.println(F("Menu::Begin()"));
+    LOG(F("Menu::Begin()"), true);
     HW->begin();
     SW->begin();
 
@@ -134,10 +134,10 @@
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
-    //  Serial.print(F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
-    //  Serial.print(run_mode); Serial.print(" ");
-    //  Serial.print(admin_timeout); Serial.print(" ");
-    //  Serial.print(current_ms); Serial.print(" ");
+    //  LOG(F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
+    //  LOG(run_mode); LOG(" ");
+    //  LOG(admin_timeout); LOG(" ");
+    //  LOG(current_ms); LOG(" ");
     //  Serial.println(previous_ms);
 
     if ( elapsed_ms/1000 > admin_timeout || run_mode == 0 ) {
@@ -148,8 +148,8 @@
   // Starts, restarts, resets admin with timeout.
   void Menu::updateAdminTimeout(unsigned long seconds) {
     if (admin_timeout != seconds) {
-      Serial.print(F("updateAdminTimeout(): "));
-      Serial.println(seconds);
+      LOG(F("updateAdminTimeout(): "));
+      LOG(seconds, true);
     }
     
     admin_timeout = seconds;
@@ -163,9 +163,9 @@
     resetInputBuffer();
     resetStack();
     if (run_mode != 0) {
-      Serial.print(instance_name);
-      Serial.println(F(" setting run_mode => 0"));
-      Serial.println();
+      LOG(instance_name);
+      LOG(F(" setting run_mode => 0"), true);
+      LOG("", true);
       serial_port->println(F("Entering run mode"));
       serial_port->println();
       //blinker->off();
@@ -475,13 +475,13 @@
     MU_PRINTLN(str);
 
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
-      Serial.println(F("updateSetting() aborted"));
+      LOG(F("updateSetting() aborted"), true);
     } else if (S.updateSetting(selected_menu_item, str)) {
       // Because we need this after updating any Menu settings
       // and there isn't a better place for this (yet?).
       updateAdminTimeout();          
     } else {
-      Serial.println(F("updateSetting() call to S.updateSetting() failed"));
+      LOG(F("updateSetting() call to S.updateSetting() failed"), true);
     }
 
     selected_menu_item = -1;

@@ -18,11 +18,13 @@
   }
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
-    if(S.debugMode()) {
-      Serial.print(F("Led::begin current, new:")); Serial.println(led_name);
-      printIntervals(intervals);
-      printIntervals(_intervals);
-    }
+    #ifdef BK_DEBUG
+      if(S.debugMode()) {
+        LOG(F("Led::begin current, new:")); LOG(led_name, true);
+        printIntervals(intervals);
+        printIntervals(_intervals);
+      }
+    #endif
 
     // Moved to constructor.
     //	pinMode(led_pin, OUTPUT);
@@ -63,24 +65,27 @@
   }
 
   void Led::printIntervals(const int _intervals[INTERVALS_LENGTH]) {
-    Serial.print(countIntervals(_intervals));
-    Serial.print(",");
+    LOG(countIntervals(_intervals));
+    LOG(",");
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {
-      Serial.print(" ");
-      Serial.print(_intervals[n]);
+      LOG(" ");
+      LOG(_intervals[n]);
     }
-    Serial.println("");
+    LOG("", true);
   }
 
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
     BK_PRINT(F("Led::update _intervals[0]: ")); BK_PRINTLN(_intervals[0]);
-    if(S.debugMode()) {
-      Serial.print(F("Led::update current, new: ")); Serial.println(led_name);
-      printIntervals(intervals);
-      printIntervals(_intervals);
-    }
+    
+    #ifdef BK_DEBUG
+      if(S.debugMode()) {
+        LOG(F("Led::update current, new: ")); LOG(led_name, true);
+        printIntervals(intervals);
+        printIntervals(_intervals);
+      }
+    #endif
 
     if (
          _num_cycles == num_cycles &&

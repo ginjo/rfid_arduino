@@ -22,11 +22,11 @@
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into Controller::Controller().
 
-    Serial.print(F("Starting Controller with reader "));
-    Serial.print(reader->reader_name);
-    Serial.print(F(", with EEPROM proximity state "));
-    Serial.println(proximity_state);
-    //  Serial.print(F(", and output switch pin: "));
+    LOG(F("Starting Controller with reader "));
+    LOG(reader->reader_name);
+    LOG(F(", with EEPROM proximity state "));
+    LOG(proximity_state, true);
+    //  LOG(F(", and output switch pin: "));
     //  Serial.println(OUTPUT_SWITCH_PIN);
         
     // Initializes the reader power/reset control.
@@ -57,8 +57,8 @@
     // where we left off at power-down (or reset).
     //proximity_state = S.proximity_state;
 
-    Serial.print(F("Setting output switch per proximity_state: "));
-    Serial.println(proximity_state);
+    LOG(F("Setting output switch per proximity_state: "));
+    LOG(proximity_state, true);
     // Switches the main load according to current proximity_state.
     // This turns on the load if saved prox-state was "on".
     // This begins the courtesey grace period until the system can
@@ -175,8 +175,8 @@
       proximity_state = _state;
 
       if (proximity_state != previous_proximity_state && S.proximity_state_startup == 2) {
-        Serial.print(F("Calling EEPROM.update with proximity_state: "));
-        Serial.println(proximity_state);
+        LOG(F("Calling EEPROM.update with proximity_state: "));
+        LOG(proximity_state, true);
         EEPROM.update(STATE_EEPROM_ADDRESS, proximity_state);
       }
     }

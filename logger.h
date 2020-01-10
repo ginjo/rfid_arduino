@@ -2,8 +2,9 @@
 #define __LOGGER_H__
 
   #include <Arduino.h>
-  #include <SoftwareSerial.h>
+  //#include <SoftwareSerial.h>
   #include <stdarg.h>
+  #include "io.h"
 
   /*
     DEBUG controls compilation of debug code, it DOES NOT control runtime debug behavior.
@@ -38,24 +39,29 @@
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   extern int FreeRam(const char[] = "");
 
-  // There is probably a better place for this.
-  extern SoftwareSerial *BTserial;
+  // There is probably a better place for this, but it seems to be necessary here (and in main .ino file!?!?).
+  // WARN: I think this might be causing undefined behavior when used with "SoftwareSerial *BTserial;" in main .ino file.
+  //       I don't think there can be two declarations for a single extern, especially if one def is not extern.
+  //extern SoftwareSerial *BTserial;  // = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 
   
   // Checks if conditions are right to log to BTserial.
-  bool can_log_to_bt();
+  extern bool canLogToBT();
 
   // Handles printing to BTserial, with numbers and base.
   //
   template<typename T>
   extern void LOG(T dat, const int base, bool line = false) {
-    if (can_log_to_bt()) {
+    if (canLogToBT()) {
 
       BTserial->print(dat, base);
       
       if (line == true) {
         BTserial->println("");
       }
+      // Experimental delay trying to fix startup weirdness on BTserial,
+      // but I don't think this is the issue.
+      //delay(2);
     }
 
     Serial.print(dat, base);
@@ -68,11 +74,14 @@
   //.
   template<typename T>
   extern void LOG(T dat, bool line = false) {
-    if (can_log_to_bt()) {
+    if (canLogToBT()) {
       BTserial->print(dat);
       if (line == true) {
         BTserial->println("");
       }
+      // Experimental delay trying to fix startup weirdness on BTserial,
+      // but I don't think this is the issue.      
+      delay(2);
     }
 
     Serial.print(dat);

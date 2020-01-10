@@ -35,8 +35,9 @@
     HW_SERIAL_BAUD(57600),
     BT_BAUD(9600),
     RFID_BAUD(9600),
-    tone_frequency(2800),
-    admin_startup_timeout(7)
+    tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
+    admin_startup_timeout(7),
+    log_to_bt(0)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
     strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));
@@ -205,7 +206,7 @@
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
     int result = Storage::save();
-    Serial.print(F("Settings::save() result: ")); Serial.println(result);
+    LOG(F("Settings::save() result: ")); LOG(result, true);
     //Serial.println(F("Settings::save() END"))
     return result;
   }
@@ -232,12 +233,12 @@
   //   void Settings::Load() {
   //
   Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
-    Serial.println(F("Settings::Load() BEGIN"));
+    LOG(F("Settings::Load() BEGIN"), true);
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
     //Storage::Load(&Current, _eeprom_address);
     if (Failsafe()) {
-      Serial.println(F("Failsafe loading default settings"));
+      LOG(F("Failsafe loading default settings"), true);
     } else {
       Storage::Load(settings_obj, _eeprom_address);
     }
@@ -247,38 +248,39 @@
     // verified can result in UB !!!
     //
     #ifdef DEBUG
-      Serial.print(F("Settings::Load() storage_name '"));
-      Serial.print(settings_obj->storage_name);
-      Serial.print(F("' settings_name '"));
-      Serial.print(settings_obj->settings_name);
-      Serial.print(F("' chksm 0x"));
-      Serial.println(settings_obj->checksum, 16);
+      LOG(F("Settings::Load() storage_name '"));
+      LOG(settings_obj->storage_name);
+      LOG(F("' settings_name '"));
+      LOG(settings_obj->settings_name);
+      LOG(F("' chksm 0x"));
+      LOG(settings_obj->checksum, 16, true);
     #endif
 
     // Handles checksum mismatch by saving default settings.
     //if (GetStoredChecksum() != calculated_checksum) {
     if (!settings_obj->checksumMatch() || Failsafe()) {
-      Serial.println(F("Settings::Load() chksm mismatch so creating default Settings()"));
+      LOG(F("Settings::Load() chksm mismatch so creating default Settings()"), true);
       settings_obj = new Settings();
       strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
       settings_obj->eeprom_address = _eeprom_address;
       if (! Failsafe()) settings_obj->save();
-      Serial.print(F("Settings::Load() using default settings '"));
+      LOG(F("Settings::Load() using default settings '"));
       
     } else {
-      Serial.print(F("Settings::Load() using loaded settings '"));
+      LOG(F("Settings::Load() using loaded settings '"));
     }
     
-    Serial.print(settings_obj->settings_name); Serial.println("'");
-    Serial.println(F("Settings::Load() END"));
+    LOG(settings_obj->settings_name); LOG("'", true);
+    LOG(F("Settings::Load() END"), true);
 
     return settings_obj;
   } // Settings::Load()
 
 
   // It is necessary to initialize static member vars before using them.
-
-  int Settings::log_to_bt = 0;
+  // Disable when not using static version of log_to_bt,
+  // and use regular Settings initializer.
+  //int Settings::log_to_bt = 0;
  
   Settings Settings::Current = Settings();
 
