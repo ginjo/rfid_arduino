@@ -8,8 +8,8 @@
     extern int __heap_start, *__brkval; 
     int v; 
     int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-    //Serial.print(F("FREE RAM (")); Serial.print(rslt); Serial.print(F(") ")); Serial.println(txt);
-    LOG(F("FREE RAM (")); LOG(rslt); LOG(F(") ")); LOG(txt, true);
+    Serial.print(F("FREE RAM (")); Serial.print(rslt); Serial.print(F(") ")); Serial.println(txt);
+    //LOG(F("FREE RAM (")); LOG(rslt); LOG(F(") ")); LOG(txt, true);
     return rslt;
   }
 
@@ -19,6 +19,7 @@
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
       digitalRead(BT_STATUS_PIN) == LOW) &&
+      //((int)S.log_to_bt > 0 || S.debugMode()) &&
       ((int)S.log_to_bt > 0 || S.debugMode()) &&
       (Menu::run_mode == 0 || !Menu::Current)
     ;

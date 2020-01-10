@@ -62,24 +62,24 @@
 
     char settings_name[SETTINGS_NAME_SIZE];
     
-    uint32_t TAG_LAST_READ_TIMEOUT;
-    uint32_t TAG_READ_SLEEP_INTERVAL; // ms
-    uint32_t READER_CYCLE_LOW_DURATION; // ms
-    uint32_t READER_CYCLE_HIGH_DURATION;
+    uint32_t tag_last_read_timeout;
+    uint32_t tag_read_sleep_interval; // ms
+    uint32_t reader_cycle_low_duration; // ms
+    uint32_t reader_cycle_high_duration;
 
     uint32_t admin_timeout;
     int proximity_state_startup;
     int enable_debug;
 
-    char DEFAULT_READER[SETTINGS_VALUE_SIZE];
+    char default_reader[SETTINGS_VALUE_SIZE];
 
-    long HW_SERIAL_BAUD;
-    long BT_BAUD;
-    long RFID_BAUD;
+    long hw_serial_baud;
+    long bt_baud;
+    long rfid_baud;
 
     int tone_frequency;
     int admin_startup_timeout;
-    int log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
+    bool log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
 
     /*  Constructors  */
 
@@ -124,17 +124,17 @@
   namespace {  // a nameless namespace helps build a 2D array of char strings in PROGMEM.
     // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.
     // https://stackoverflow.com/questions/2727582/multiple-definition-in-header-file
-    const static char str_0[] PROGMEM = "TAG_LAST_READ_TIMEOUT"; // "String 0" etc are strings to store - change to suit.
-    const static char str_1[] PROGMEM = "TAG_READ_SLEEP_INTERVAL";
-    const static char str_2[] PROGMEM = "READER_CYCLE_LOW_DURATION";
-    const static char str_3[] PROGMEM =  "READER_CYCLE_HIGH_DURATION";
+    const static char str_0[] PROGMEM = "tag_last_read_timeout"; // "String 0" etc are strings to store - change to suit.
+    const static char str_1[] PROGMEM = "tag_read_sleep_interval";
+    const static char str_2[] PROGMEM = "reader_cycle_low_duration";
+    const static char str_3[] PROGMEM =  "reader_cycle_high_duration";
     const static char str_4[] PROGMEM =  "admin_timeout";
     const static char str_5[] PROGMEM =  "proximity_state_startup";
     const static char str_6[] PROGMEM =  "enable_debug";
-    const static char str_7[] PROGMEM =  "DEFAULT_READER";
-    const static char str_8[] PROGMEM =  "HW_SERIAL_BAUD";
-    const static char str_9[] PROGMEM =  "BT_BAUD";
-    const static char str_10[] PROGMEM =  "RFID_BAUD";
+    const static char str_7[] PROGMEM =  "default_reader";
+    const static char str_8[] PROGMEM =  "hw_serial_baud";
+    const static char str_9[] PROGMEM =  "bt_baud";
+    const static char str_10[] PROGMEM =  "rfid_baud";
     const static char str_11[] PROGMEM =  "tone_frequency";
     const static char str_12[] PROGMEM =  "admin_startup_timeout";
     const static char str_13[] PROGMEM =  "log_to_bt";

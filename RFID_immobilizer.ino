@@ -63,7 +63,7 @@
     while (! Serial) delay(10);
 
     BTserial->flush();
-    BTserial->begin(S.BT_BAUD);
+    BTserial->begin(S.bt_baud);
     
     delay(15);
 
@@ -84,16 +84,16 @@
     //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
     //BTserial->flush();
     //BTserial->end();
-    BTserial->begin(S.BT_BAUD);
+    BTserial->begin(S.bt_baud);
     
     Serial.flush(); // I think flushes only outbound data. See Serial class docs.
-    Serial.begin(S.HW_SERIAL_BAUD);
+    Serial.begin(S.hw_serial_baud);
     while (! Serial) delay(10);
     
     delay(15);
     
     LOG(F("Re-initialized serial port with loaded settings: "));
-    LOG(S.HW_SERIAL_BAUD, true);
+    LOG(S.hw_serial_baud, true);
 
     LOG(F("Loaded Settings '"));
     LOG(S.settings_name);
@@ -143,7 +143,7 @@
 
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
-    RfidReader = Reader::GetReader(S.DEFAULT_READER);
+    RfidReader = Reader::GetReader(S.default_reader);
     RfidReader->serial_port = RfidSerial;
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
@@ -161,7 +161,7 @@
 
     // Activates the software-serial port for admin console.
     // See global.h and global.cpp
-    //BTserial->begin(S.BT_BAUD);
+    //BTserial->begin(S.bt_baud);
 
     // Loads tags to default location (Tags::TagSet).
     Tags::Load();
@@ -170,7 +170,7 @@
     Menu::Begin();
 
     // Activates the serial port for the Controller handler.
-    RfidSerial->begin(S.RFID_BAUD);
+    RfidSerial->begin(S.rfid_baud);
 
     // Activates the Controller handler.
     OutputControl->begin();

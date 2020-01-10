@@ -500,9 +500,10 @@
     serial_port->println(F("1. List tags"));
     serial_port->println(F("2. Add tag"));
     serial_port->println(F("3. Delete tag"));
-    serial_port->println(F("4. Show free memory"));
+    serial_port->println(F("4. Delete all tags"));
     serial_port->println(F("5. Settings"));
-    serial_port->println(F("6. Delete all tags"));
+    serial_port->println(F("6. Show free memory"));
+    serial_port->println(F("7. Restart"));
     
     serial_port->println("");
 
@@ -554,13 +555,16 @@
         menuDeleteTag();
         break;
       case 4:
-        menuShowFreeMemory();
+        menuDeleteAllTags();
         break;
       case 5:
         menuSettings();
         break;
       case 6:
-        menuDeleteAllTags();
+        menuShowFreeMemory();
+        break;
+      case 7:
+        menuReboot();
         break;
       default:
         menuMain();
@@ -624,6 +628,11 @@
     serial_port->println(ram);
     serial_port->println();
     menuMainPrompt(); 
+  }
+
+  void Menu::menuReboot() {
+    MU_PRINTLN(F("Menu::menuReboot()"));
+    resetFunc();
   }
 
   void Menu::menuSettings(void *dat) {

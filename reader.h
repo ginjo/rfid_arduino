@@ -30,7 +30,7 @@
     // Vars
 
     // Name or model of the reader.
-    char reader_name[16]; // also see S.DEFAULT_READER.
+    char reader_name[16]; // also see S.default_reader.
 
     // Absolute length in 8-bit bytes of the Controller data
     // received from reader for each tag.

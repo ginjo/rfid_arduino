@@ -324,7 +324,7 @@ TODO: √ Test changes to RGB implementation.
 
 TODO: √ Store pin assignments in code, not in settings.
       
-TODO: Store settings in code for all actual physical hardware settings.
+TODO: ? Store settings in code for all actual physical hardware settings.
 
 TODO: Document RGB LED color and pattern meanings for end-user.
       Document RGB usage for developers.
@@ -379,7 +379,7 @@ TODO: - Activating menu session with BTLE is almost impossible with 2-second win
 TODO: √ Use BT12 connection status indicator (pin 10, low = connected) to 
       tell ARD there is an active connection, or that the connection has dropped.
       
-TODO: Create a setting 'log_mode'. If true, send all logs to BT-serial port if BT-serial is active.
+TODO: √ Create a setting 'log_mode'. If true, send all logs to BT-serial port if BT-serial is active.
       This can only be activated during admin mode, however once set, it can be left alone.
       While log_mode is set, any connection to BT-serial port will receive logs, until log_mode is disabled.
 
@@ -402,7 +402,7 @@ TODO: Create a setting 'log_mode'. If true, send all logs to BT-serial port if B
 
 TODO: Create 'Reboot' command.
 
-TODO: Change log_to_bt setting to bool (currently integer).
+TODO: √ Change log_to_bt setting to bool (currently integer). Mostly to reduce storage space.
 
 TODO: - Debug scratching sound during timeout beeping, when log_to_bt is set.
       I think it's because log output to BTserial interferes with ARD PWM.

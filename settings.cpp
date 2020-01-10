@@ -10,20 +10,20 @@
     //settings_name("default-settings"),
   
     // ultimate valid-tag timeout
-    TAG_LAST_READ_TIMEOUT(30), // seconds
+    tag_last_read_timeout(30), // seconds
 
     // time between attempts to listen to reader
-    TAG_READ_SLEEP_INTERVAL(1000), // millis
+    tag_read_sleep_interval(1000), // millis
 
     // off duration during reader power cycle
-    READER_CYCLE_LOW_DURATION(150), // millis
+    reader_cycle_low_duration(150), // millis
 
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
-    READER_CYCLE_HIGH_DURATION(15), // seconds
+    reader_cycle_high_duration(15), // seconds
 
     // idle time before admin mode switches to run mode
-    // should be greater than READER_CYCLE_HIGH_DURATION
+    // should be greater than reader_cycle_high_duration
     admin_timeout(60), // seconds
 
     // Sets whether output switches off or on at startup.
@@ -32,15 +32,15 @@
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
-    HW_SERIAL_BAUD(57600),
-    BT_BAUD(9600),
-    RFID_BAUD(9600),
+    hw_serial_baud(57600),
+    bt_baud(9600),
+    rfid_baud(9600),
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
-    log_to_bt(0)
+    log_to_bt(false)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
-    strlcpy(DEFAULT_READER, "WL-125", sizeof(DEFAULT_READER));
+    strlcpy(default_reader, "WL-125", sizeof(default_reader));
   }
 
   
@@ -61,16 +61,16 @@
     // Note that this is a 1-based list, not 0-based.
     switch (_index) {
       case 1:
-        TAG_LAST_READ_TIMEOUT = (uint32_t)strtol(_data, NULL, 10);
+        tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);
         break;
       case 2:
-        TAG_READ_SLEEP_INTERVAL = (uint32_t)strtol(_data, NULL, 10);
+        tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);
         break;
       case 3:
-        READER_CYCLE_LOW_DURATION = (uint32_t)strtol(_data, NULL, 10);
+        reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);
         break;
       case 4:
-        READER_CYCLE_HIGH_DURATION = (uint32_t)strtol(_data, NULL, 10);
+        reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);
         break;
       case 5:
         admin_timeout = (uint32_t)strtol(_data, NULL, 10);
@@ -84,16 +84,16 @@
         enable_debug = (int)strtol(_data, NULL, 10);
         break;
       case 8:
-        strlcpy(DEFAULT_READER, (char *)_data, sizeof(DEFAULT_READER));
+        strlcpy(default_reader, (char *)_data, sizeof(default_reader));
         break;
       case 9:
-        HW_SERIAL_BAUD = (long)strtol(_data, NULL, 10);
+        hw_serial_baud = (long)strtol(_data, NULL, 10);
         break;
       case 10:
-        BT_BAUD = (long)strtol(_data, NULL, 10);
+        bt_baud = (long)strtol(_data, NULL, 10);
         break;
       case 11:
-        RFID_BAUD = (long)strtol(_data, NULL, 10);
+        rfid_baud = (long)strtol(_data, NULL, 10);
         break;
       case 12:
         tone_frequency = (int)strtol(_data, NULL, 10);
@@ -102,7 +102,7 @@
         admin_startup_timeout = (int)strtol(_data, NULL, 10);
         break;
       case 14:
-        log_to_bt = (int)strtol(_data, NULL, 10);
+        log_to_bt = (bool)strtol(_data, NULL, 10);
         break;
                         
       default :
@@ -122,16 +122,16 @@
     
     switch(index) {
       case 1 :
-        sprintf(setting_value, "%lu", TAG_LAST_READ_TIMEOUT);
+        sprintf(setting_value, "%lu", tag_last_read_timeout);
         break;
       case 2 :
-        sprintf(setting_value, "%lu", TAG_READ_SLEEP_INTERVAL);
+        sprintf(setting_value, "%lu", tag_read_sleep_interval);
         break;
       case 3 :
-        sprintf(setting_value, "%lu", READER_CYCLE_LOW_DURATION);
+        sprintf(setting_value, "%lu", reader_cycle_low_duration);
         break;
       case 4 :
-        sprintf(setting_value, "%lu", READER_CYCLE_HIGH_DURATION);
+        sprintf(setting_value, "%lu", reader_cycle_high_duration);
         break;
       case 5 :
         sprintf(setting_value, "%lu", admin_timeout);
@@ -143,16 +143,16 @@
         sprintf(setting_value, "%i", enable_debug);
         break;
       case 8 :
-        sprintf(setting_value, "%s", DEFAULT_READER);
+        sprintf(setting_value, "%s", default_reader);
         break;
       case 9 :
-        sprintf(setting_value, "%li", HW_SERIAL_BAUD);
+        sprintf(setting_value, "%li", hw_serial_baud);
         break;
       case 10 :
-        sprintf(setting_value, "%li", BT_BAUD);
+        sprintf(setting_value, "%li", bt_baud);
         break;
       case 11 :
-        sprintf(setting_value, "%li", RFID_BAUD);
+        sprintf(setting_value, "%li", rfid_baud);
         break;
       case 12 :
         sprintf(setting_value, "%i", tone_frequency);
@@ -162,6 +162,7 @@
         break;  
       case 14 :
         sprintf(setting_value, "%i", log_to_bt);
+        //sprintf(setting_value, log_to_bt ? "true" : "false");
         break;
                                 
       default:

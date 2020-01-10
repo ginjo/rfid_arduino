@@ -57,14 +57,14 @@
     current_ms = millis();
     RD_PRINTLN(current_ms);
     
-    cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION);
+    cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.reader_cycle_low_duration);
     cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
     
     //RD_PRINT(F("cycle_low_finish_ms: ")); RD_PRINTLN(cycle_low_finish_ms);
     //RD_PRINT(F("cycle_high_finish_ms: ")); RD_PRINTLN(cycle_high_finish_ms);
     
-    ms_reader_cycle_total = (uint32_t)(S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000UL);
-    //tag_last_read_timeout_x_1000 = (uint32_t)(S.TAG_LAST_READ_TIMEOUT*1000UL);
+    ms_reader_cycle_total = (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
+    //tag_last_read_timeout_x_1000 = (uint32_t)(S.tag_last_read_timeout*1000UL);
 
     
     /***  Displays most if not all local vars.       ***/
@@ -87,7 +87,7 @@
     //RD_PRINT(F("RPCHD*1000: "));
     //  RD_PRINTLN(readerPowerCycleHighDuration()*1000UL);
           
-    if (msSinceLastTagRead() > S.TAG_READ_SLEEP_INTERVAL) {
+    if (msSinceLastTagRead() > S.tag_read_sleep_interval) {
       // Checks the rfid reader for new data.
       pollReader();
     }
@@ -108,23 +108,23 @@
   }
 
   uint32_t Reader::msReaderCycleTotal() {
-    return (uint32_t)(S.TAG_READ_SLEEP_INTERVAL + S.READER_CYCLE_LOW_DURATION + S.READER_CYCLE_HIGH_DURATION*1000UL);
+    return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
   }
 
   uint32_t Reader::readerPowerCycleHighDuration() {
     if (reader_power_cycle_high_duration > 0UL) {
       return reader_power_cycle_high_duration;
     } else {
-      return S.READER_CYCLE_HIGH_DURATION;
+      return S.reader_cycle_high_duration;
     }
   }
 
   uint32_t Reader::tagLastReadTimeoutX1000() {
-    return (uint32_t)(S.TAG_LAST_READ_TIMEOUT*1000UL);
+    return (uint32_t)(S.tag_last_read_timeout*1000UL);
   }
 
   //  uint32_t Reader::cycleLowFinishMs() {
-  //    return last_reader_power_cycle_ms + S.READER_CYCLE_LOW_DURATION;
+  //    return last_reader_power_cycle_ms + S.reader_cycle_low_duration;
   //  }
   //
   //  uint32_t Reader::cycleHighFinishMs() {

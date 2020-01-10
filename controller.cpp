@@ -20,7 +20,7 @@
     // pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
 
     // Sets local 'reader' to instance of Reader.
-    //reader = GetReader(S.DEFAULT_READER); // Moving to main .ino, to be passed into Controller::Controller().
+    //reader = GetReader(S.default_reader); // Moving to main .ino, to be passed into Controller::Controller().
 
     LOG(F("Starting Controller with reader "));
     LOG(reader->reader_name);

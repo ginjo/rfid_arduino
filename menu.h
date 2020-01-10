@@ -83,6 +83,7 @@
     void menuDeleteTag(void* = nullptr);
     void menuDeleteAllTags(void* = nullptr);
     void menuShowFreeMemory();
+    void menuReboot();
     void menuSettings(void* = nullptr);
     void menuSelectedSetting(void* = nullptr); // (char[]);    
 
