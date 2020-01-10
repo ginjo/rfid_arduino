@@ -67,7 +67,7 @@
     
     delay(15);
 
-    LOG(F("Booting RFID Immobilizer, "));
+    LOG(F("Booting RFID proximity sensor, "));
     LOG(VERSION);
     LOG(F(", "));
     LOG(TIMESTAMP, true);
