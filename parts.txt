@@ -11,7 +11,7 @@ Mosfet N-channel for reader power control
 
 1M resistor pull-down for reader power mosfet
 
-Bluetooth serial module (HC-06, HC-05, HM-10, BT-12)
+Bluetooth serial module (HC-06, HC-05, HM-10, BT-12, BT-05)
 
 5v power supply module with angle headers
 

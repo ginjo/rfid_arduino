@@ -1,3 +1,5 @@
+/*  RFID PRoximity Sensor Dev Notes  */
+
 
 
 TODO: Change all 'previous_ms' to 'last_<whatever>'.
@@ -31,7 +33,7 @@ TODO: √ Don't allow admin mode to extend the startup grace period.
 
 TODO: √ Implement a beeper/buzzer.
 
-TODO: I think SerialMenu.run_mode should be a global, since it's needed in multiple classes.
+TODO: √ I think SerialMenu.run_mode should be a global, since it's needed in multiple classes.
       But where should it live? Then logging can have its own file/class,
       and it can access multiple serial outputs, maybe?
       Update: Maybe run_mode should be a member of the RFID class (Controller class?).
@@ -76,9 +78,10 @@ TODO: √ Create version & date-time handling.
 TODO: √ Reorganize functions so that "rfid" tag functions are in RFID class,
       "menu" functions in SerialMenu class, and "settings" functions in Settings class.
 
-TODO: Consider using variadic macros to create a LOGGER that can print to variable outputs.
+TODO: √ Consider using variadic macros to create a LOGGER that can print to variable outputs.
       See http://gcc.gnu.org/onlinedocs/cpp/Variadic-Macros.html
       You might need to include stdarg.h.
+      Update: Now have LOG() function, but it isn't a macro.
 
 TODO: √ Tag output to serial console is always the same tag, regardless of what was scanned.
       This holds true even after cold restart of entire board.
@@ -114,7 +117,7 @@ TODO: √ In normal operation, after admin session timeout (or '0' quit),
 
 TODO: √ Finish converting reader_power_cycle_high_duration to readerPowerCycleHighDuration()
 
-TODO: Create protection/failsafe against user-input of bad/empty/out-of-bounds settings.
+TODO: ! Create protection/failsafe against user-input of bad/empty/out-of-bounds settings.
       For example admin_timeout should NEVER go below 5s,
       And the initial admin_timeout of 2s should not be modifiable by user.
       Generally make sure the Arduino cannot be bricked (requiring a re-flash).
@@ -251,8 +254,8 @@ NEXT: √ Storage refactor compiles. Now need to decouple it from the other clas
 
 TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
 
-TODO: Need validation routine in Tags or Reader to handle bad tag-id.
-	  Make sure that checksum is used to validate tags.
+TODO: ! Need validation routine in Tags or Reader to handle bad tag-id.
+	    Make sure that checksum is used to validate tags.
 
 TODO: √ Handle reader looping for add-tag entirely within serial-menu class.
       √ Reader class should be unaware of SerialMenu instances.
@@ -360,11 +363,11 @@ TODO: √ Make sure that defaults for update() and begin() don't override
       values passed during construction (this is handled with negative
       argument-defaults).
       
-TODO: Since hardcoding pin assignments, find where you had to compromise
+TODO: √ Since hardcoding pin assignments, find where you had to compromise
       functionality due to waiting for settings to load pin assignments.
       Was it in logging? In LED stuff? In BT admin menu?
       
-      Hard-coded pin assignments may allow some startup routines to
+      √ Hard-coded pin assignments may allow some startup routines to
       start logging earlier, or to begin themselves earlier.
 
 TODO: Should the piezo buzzer be located with the RGB LED?
@@ -400,7 +403,7 @@ TODO: √ Create a setting 'log_mode'. If true, send all logs to BT-serial port 
   	     
   	  6. Consider a 'Log to BT' command at main menu level, that sets log_to_bt then exits admin.
 
-TODO: Create 'Reboot' command.
+TODO: √ Create 'Reboot' command.
 
 TODO: √ Change log_to_bt setting to bool (currently integer). Mostly to reduce storage space.
 
