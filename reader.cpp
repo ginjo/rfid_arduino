@@ -28,8 +28,7 @@
     //strcpy(reader_name, _name);
     strlcpy(reader_name, _name, sizeof(reader_name));
     
-    //LOG(F("Constructing Reader: "));
-    //Serial.println(_name);
+
     LOG(F("Constructing Reader: "));
     LOG(_name, true);
   }
@@ -39,7 +38,7 @@
   //  }
 
   uint32_t Reader::processTagData(uint8_t[]) {
-    RD_PRINTLN(F("Error: Called processTagData() on base Reader clss"));
+    RD_PRINTLN(F("Error: Called processTagData() on base Reader class"));
     return 0UL;
   }
 

@@ -440,5 +440,11 @@ TODO: √ Debug mode (with debug-pin) now crashes ARD.
       √ There was UB occuring due to multiple declarations of BTserial.
       Now BTserial is declared & defined in io.h and io.cpp... and it works!
       
-      
+TODO: Why is WL-125 constructor running twice (see log output)?
+      Hmm... it's by design. See GetReader() and TestReader().
+      There must be a better way to do this.
+
+TODO: Users need to see what readers are available, when selecting in settings.
+
+
       
