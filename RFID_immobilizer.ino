@@ -50,11 +50,6 @@
   /*** Setup  ***/
 
   void setup() {
-    // Is this the best place for this?
-    // TODO: Put these in an io-settup function (or globals-setup).
-    //  pinMode(FAILSAFE_PIN, INPUT_PULLUP);
-    //  pinMode(BT_STATUS_PIN, INPUT_PULLUP);
-    //  pinMode(DEBUG_PIN, INPUT_PULLUP);
     globalSetup();
     
     // Opens default hardware serial port.

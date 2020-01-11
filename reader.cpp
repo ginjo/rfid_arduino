@@ -261,33 +261,26 @@
   void Reader::cycleReaderPower() {
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0UL) {
       
-      LOG(F("cycleReaderPower() tag read: "));
+      LOG(F("cycleReaderPower() tag read "));
       if (last_tag_read_ms > 0UL) {
         //LOG((ms_since_last_tag_read)/1000UL);
         LOG(msSinceLastTagRead()/1000UL);
-        LOG(F(" seconds ago"));
+        LOG(F("s ago"));
       } else {
         LOG(F("never"));
       }
 
-      LOG(F(", cycled: "));
+      LOG(F(", cycled "));
       if (last_reader_power_cycle_ms > 0UL) {
         //LOG((ms_since_last_reader_power_cycle)/1000UL);
         LOG(msSinceLastReaderPowerCycle()/1000UL);
-        LOG(F(" seconds ago"));
+        LOG(F("s ago"));
       } else {
         LOG(F("never"));
       }
 
-      // See https://stackoverflow.com/questions/2988791/converting-float-to-char
-      // This roundabout conversion is to save prog mem. Converting the float
-      // directly to String eats a lot of prog mem:
-      //   This EATS prog mem:  //LOG(0, F(", uptime: ")); LOG(1, ((float)millis()/(float)1000/(float)60));
-      // Do this instead:
-      //char buff[64];
-      //snprintf(buff, sizeof buff, "%.2f", (double)millis()/(double)1000/(double)60);
-      //LOG(F(", uptime: ")); LOG(buff, true);
-      LOG(F(", uptime: ")); LOG((float)millis()/(float)1000/(float)60, true);
+      LOG(F(", uptime "));
+      printUptime(true);
 
       RD_PRINTLN(F("cycleReaderPower() setting reader power LOW"));
             

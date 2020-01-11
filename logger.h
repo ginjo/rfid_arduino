@@ -2,8 +2,8 @@
 #define __LOGGER_H__
 
   #include <Arduino.h>
-  //#include <SoftwareSerial.h>
   #include <stdarg.h>
+  #include <string.h>
   #include "global.h"
 
   /*
@@ -44,6 +44,7 @@
   //       I don't think there can be two declarations for a single extern, especially if one def is not extern.
   //extern SoftwareSerial *BTserial;  // = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 
+  extern void printUptime(bool = false);
   
   // Checks if conditions are right to log to BTserial.
   extern bool canLogToBT();

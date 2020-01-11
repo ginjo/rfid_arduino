@@ -24,4 +24,18 @@
       (Menu::run_mode == 0 || !Menu::Current)
     ;
   }
+
+  extern void printUptime(bool line) {
+    unsigned long milliseconds = millis();
+    unsigned long seconds = milliseconds/1000;
+    unsigned long minutes = seconds/60;
+    unsigned long hours   = minutes/60;
+    unsigned long rseconds = seconds % 60;
+    unsigned long rminutes = minutes % 60;
+
+    char out[] = "";
+    sprintf(out, "%lih %lim %lis", hours, rminutes, rseconds);
+    
+    LOG(out, line);
+  }
   
