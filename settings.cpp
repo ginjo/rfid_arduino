@@ -1,6 +1,8 @@
   #include "settings.h"
+  #include "reader.h"
   // This is moved here by suggestion to stop EEPROM warnings.
   #include <EEPROM.h>
+  
   
   Settings::Settings() :
     Storage("settings", SETTINGS_EEPROM_ADDRESS),
@@ -32,6 +34,9 @@
     // enables debug (if #define DEBUG was active at compile time).
     enable_debug(0),
 
+    // sets default reader index
+    default_reader(0),
+
     hw_serial_baud(57600),
     bt_baud(9600),
     rfid_baud(9600),
@@ -40,7 +45,7 @@
     log_to_bt(false)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
-    strlcpy(default_reader, "WL-125", sizeof(default_reader));
+    //strlcpy(default_reader, "WL-125", sizeof(default_reader));
   }
 
   
@@ -84,7 +89,8 @@
         enable_debug = (int)strtol(_data, NULL, 10);
         break;
       case 8:
-        strlcpy(default_reader, (char *)_data, sizeof(default_reader));
+        //strlcpy(default_reader, (char *)_data, sizeof(default_reader));
+        default_reader = (uint8_t)strtol(_data, NULL, 10);
         break;
       case 9:
         hw_serial_baud = (long)strtol(_data, NULL, 10);
@@ -115,6 +121,9 @@
     return true;
   }
 
+  // Populates the passed-in *setting_name and *setting_value with data, per the given index.
+  // Note that this does not return any values.
+  //
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
@@ -143,7 +152,8 @@
         sprintf(setting_value, "%i", enable_debug);
         break;
       case 8 :
-        sprintf(setting_value, "%s", default_reader);
+        //sprintf(setting_value, "%s", default_reader);
+        sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex(default_reader));
         break;
       case 9 :
         sprintf(setting_value, "%li", hw_serial_baud);

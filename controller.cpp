@@ -23,7 +23,7 @@
     //reader = GetReader(S.default_reader); // Moving to main .ino, to be passed into Controller::Controller().
 
     LOG(F("Starting Controller with reader "));
-    LOG(reader->reader_name);
+    LOG(reader->reader_name());
     LOG(F(", with EEPROM proximity state "));
     LOG(proximity_state, true);
     //  LOG(F(", and output switch pin: "));

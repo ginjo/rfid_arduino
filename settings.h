@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre177"
+  #define VERSION "v0.1.0.pre178"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -71,7 +71,8 @@
     int proximity_state_startup;
     int enable_debug;
 
-    char default_reader[SETTINGS_VALUE_SIZE];
+    //char default_reader[SETTINGS_VALUE_SIZE];
+    uint8_t default_reader;
 
     long hw_serial_baud;
     long bt_baud;

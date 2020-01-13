@@ -85,7 +85,8 @@
     void menuShowFreeMemory();
     void menuReboot();
     void menuSettings(void* = nullptr);
-    void menuSelectedSetting(void* = nullptr); // (char[]);    
+    void menuSelectedSetting(void* = nullptr); // (char[]);
+    void menuListReaders(void* = nullptr);
 
 
     /*  Static Vars & Functions  */

@@ -33,7 +33,7 @@
   Led *Beeper;
 
   // Declares a software-serial port for admin console.
-  // See global.h and global.cpp
+  // Was moved to global.h and global.cpp, since it needed to be an extern.
   //SoftwareSerial *BTserial;
 
   // Declares serial port for RFID reader.
@@ -133,9 +133,6 @@
 
     Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
-    // See global.h and global.cpp
-    //BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
-
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
     RfidReader = Reader::GetReader(S.default_reader);
@@ -153,10 +150,6 @@
 
     // Initializes output controller, including switch relay and LEDs.
     OutputControl->initializeOutput();
-
-    // Activates the software-serial port for admin console.
-    // See global.h and global.cpp
-    //BTserial->begin(S.bt_baud);
 
     // Loads tags to default location (Tags::TagSet).
     Tags::Load();

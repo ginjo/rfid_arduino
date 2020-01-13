@@ -1,7 +1,7 @@
   #include "reader.h"
   
   // Defines Reader Constructor
-  Reader::Reader(const char _name[], uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
+  Reader::Reader(uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
     raw_tag_length(_raw_tag_length),
     id_begin(_id_begin),
     id_end(_id_end),
@@ -26,16 +26,12 @@
   {
     //strncpy(reader_name, _name, sizeof(reader_name));
     //strcpy(reader_name, _name);
-    strlcpy(reader_name, _name, sizeof(reader_name));
-    
+    //strlcpy(reader_name, _name, sizeof(reader_name));
+    //strlcpy(reader_names[index], _name, sizeof(reader_name));
 
-    LOG(F("Constructing Reader: "));
-    LOG(_name, true);
+    //LOG(F("Constructing Reader: "));
+    //LOG(reader_name(), true);
   }
-
-  //  int Reader::echo(int _dat) {
-  //    return _dat;
-  //  }
 
   uint32_t Reader::processTagData(uint8_t[]) {
     RD_PRINTLN(F("Error: Called processTagData() on base Reader class"));
@@ -134,8 +130,8 @@
   // Polls reader serial port and processes incoming tag data.
   void Reader::pollReader() {
     // If data available on Controller serial port, do something.
-    RD_PRINT(F("Reader::pollReader() reader_name, raw_tag_length: "));
-    RD_PRINT(reader_name);    
+    RD_PRINT(F("Reader::pollReader() reader_name(), raw_tag_length: "));
+    RD_PRINT(reader_name());    
     RD_PRINT(F(", "));
     RD_PRINTLN(raw_tag_length);
 
@@ -203,7 +199,7 @@
   // TODO (from Controller): create macro definition for max-tag-length that can be used in func definition array args.
   void Reader::processTag(uint8_t _tag[]) {
     RD_PRINT(F("Reader::processTag() received buffer w/reader: "));
-    RD_PRINTLN(reader_name);
+    RD_PRINTLN(reader_name());
 
     // DEV (from Controller): Use this to ensure that virtual functions are working in derived classes.
     //  RD_PRINT(F("Reader::processTag() calling echo(): "));
@@ -294,4 +290,14 @@
     }
   }
 
+
+  /* Static vars & functions */
+
+  void Reader::PrintReaders(Stream *sp) {
+    for (int n=0; n < READER_COUNT; n++) {
+      char output[12] = "";
+      sprintf(output, "%i (%s)", n, NameFromIndex(n));
+      sp->println(output);
+    }
+  }
   

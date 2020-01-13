@@ -6,6 +6,8 @@
 
   #include <Arduino.h>
   #include <SoftwareSerial.h>
+
+  // Don't load any custom classes here, as global.h should load before anything custom.
   
   #define DEBUG_PIN 11
   #define FAILSAFE_PIN 12

@@ -9,9 +9,14 @@
 
   struct RDM6300 : public Reader {
   public:
+    static constexpr char *name = (char *)"RDM-6300";
+  
     RDM6300() :
-      Reader("RDM-6300", 14, 3, 10, 1)
-    { ; }
+      Reader(14, 3, 10, 1)
+    {
+      LOG(F("Constructing Reader: "));
+      LOG(reader_name(), true);  
+    }
   
     uint32_t processTagData(uint8_t _tag[24]) {
   
@@ -34,13 +39,20 @@
       
       return tag_id;
     }
+
+    char *reader_name() {return name;} 
   };
 
   struct R7941E : public Reader {
   public:
+    static constexpr char *name = (char *)"7941E";
+    
     R7941E() :
-      Reader("7941E", 10, 4, 7, 1)
-    { ; }
+      Reader(10, 4, 7, 1)
+    {
+      LOG(F("Constructing Reader: "));
+      LOG(reader_name(), true);  
+    }
       
     uint32_t processTagData(uint8_t _tag[]) {
       RD_PRINT(F("R7941E prcs tag inpt: "));
@@ -72,6 +84,8 @@
             
       return tag_id;
     }
+
+    char *reader_name() {return name;}
   };
 
   struct WL125 : public Reader {
@@ -81,9 +95,14 @@
     // and those characters are THEN used to build the ID
     // of the tag.
     //
+    static constexpr char *name = (char *)"WL-125";
+    
     WL125() :
-      Reader("WL-125", 13, 3, 10, 0)
-    { ; }
+      Reader(13, 3, 10, 0)
+    {
+      LOG(F("Constructing Reader: "));
+      LOG(reader_name(), true);  
+    }
   
     uint32_t processTagData(uint8_t _tag[]) {
   
@@ -118,18 +137,48 @@
       
       return tag_id;
     }
+
+    char *reader_name() {return name;}
   };
 
   
   /***  Static Vars & Functions  ***/
-  
-  Reader* Reader::GetReader(const char *_name) {
-    if (TestReader<RDM6300>(_name)) return (new RDM6300);
-    if (TestReader<R7941E>(_name)) return (new R7941E);
-    if (TestReader<WL125>(_name)) return (new WL125);
 
-    // otherwise default...
-    return (new RDM6300);
+  // See the following for how to create an array of classes, though we might not be using it.
+  //   https://stackoverflow.com/questions/10722858/how-to-create-an-array-of-classes-types
+
+  Reader* Reader::GetReader(uint8_t index) {
+    switch (index) {
+      case(0):
+        return (new RDM6300);
+        break;
+      case(1):
+        return (new R7941E);
+        break;
+      case(2):
+        return (new WL125);
+        break;
+        
+      default:
+        return (new RDM6300);
+    }
+  }
+
+  char *Reader::NameFromIndex(uint8_t index) {
+    switch (index) {
+      case(0):
+        return RDM6300::name;
+        break;
+      case(1):
+        return R7941E::name;
+        break;
+      case(2):
+        return WL125::name;
+        break;
+        
+      default:
+        return (char *)"error";
+    }
   }
 
   

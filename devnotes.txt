@@ -440,11 +440,23 @@ TODO: √ Debug mode (with debug-pin) now crashes ARD.
       √ There was UB occuring due to multiple declarations of BTserial.
       Now BTserial is declared & defined in io.h and io.cpp... and it works!
       
-TODO: Why is WL-125 constructor running twice (see log output)?
+TODO: √ Why is WL-125 constructor running twice (see log output)?
       Hmm... it's by design. See GetReader() and TestReader().
       There must be a better way to do this.
 
 TODO: Users need to see what readers are available, when selecting in settings.
 
+TODO: - Consider changing Reader::GetReader() to Reader::Setup()
 
+TODO: Consider if making Reader or Reader::Reader() a template
+      will help reduce redundant/duplicate code in subclass reader defs (in readers.cpp)
+      See the old TestReader() function (readers.cpp) for ideas.
+      
+TODO: Make reader index/name mapping 1-based (not zero-based).
+
+WARN: Use of 'char *var' declarations at static and class level,
+      may cause out-of-bound strings and UB.
+      This may be an issue for the reader-name refactor.
+      
+      
       

@@ -503,7 +503,8 @@
     serial_port->println(F("4. Delete all tags"));
     serial_port->println(F("5. Settings"));
     serial_port->println(F("6. Show free memory"));
-    serial_port->println(F("7. Restart"));
+    serial_port->println(F("7. List readers"));
+    serial_port->println(F("8. Restart"));
     
     serial_port->println("");
 
@@ -564,6 +565,9 @@
         menuShowFreeMemory();
         break;
       case 7:
+        menuListReaders();
+        break;
+      case 8:
         menuReboot();
         break;
       default:
@@ -688,4 +692,15 @@
     }
   } // menuSelectedSetting()
 
-  
+  // Lists readers for menu.
+  void Menu::menuListReaders(void *dat) {
+    MU_PRINTLN(F("Menu::menuListReaders()"));
+    serial_port->print(F("Readers ("));
+    serial_port->print(READER_COUNT);
+    serial_port->println(F(")"));
+    
+    Reader::PrintReaders(serial_port);
+    serial_port->println("");
+
+    menuMainPrompt();
+  }

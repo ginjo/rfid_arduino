@@ -5,6 +5,7 @@
   // Not sure why this was needed, but seems to work without.
   //#include <stdlib.h>
   #include <string.h>
+  
   #include "settings.h"
   #include "tags.h"
   #include "led_blinker.h"
@@ -19,9 +20,11 @@
   #endif
 
   #define MAX_TAG_LENGTH 16
+  #define READER_COUNT 3
 
   // TODO: Consider passing in RGB object in Reader constructor,
   //       instead of making RGB an extern global.
+  //       Or, move this declaration (and definition?) to global.h/global.cpp. (tried that, didn't work).
   extern Led *RGB[];
 
 
@@ -30,7 +33,7 @@
     // Vars
 
     // Name or model of the reader.
-    char reader_name[16]; // also see S.default_reader.
+    //char reader_name[16]; // also see S.default_reader.
 
     // Absolute length in 8-bit bytes of the Controller data
     // received from reader for each tag.
@@ -51,7 +54,7 @@
 
     /***  Constructors  ***/
     
-    Reader(const char[], uint8_t, uint8_t, uint8_t, bool);
+    Reader(uint8_t, uint8_t, uint8_t, bool);
 
 
 
@@ -86,26 +89,37 @@
     //uint32_t cycleHighFinishMs();
     
     virtual uint32_t processTagData(uint8_t[]);
-    //int echo(int);
+    virtual char *reader_name() {return name;}
+
     void loop();
 
 
 
     /***  Static Vars & Functions  ***/
 
-    static Reader* GetReader(const char*);
+    // See https://stackoverflow.com/questions/5451676/how-to-add-strings-to-a-2d-array-of-char-elements
+    //static char *reader_names[3];
     
-    template <class T>
-    static bool TestReader(const char* _name) {
-      T obj = T();
-      FREERAM("after TestReader");
-      //printf("obj.name: %s, _name: %s\n", obj.name, _name);
-      if (strcmp(obj.reader_name, _name) == 0) {
-        return true;
-      } else {
-        return false;
-      }
-    }
+    static constexpr char *name = (char *)"base";
+    
+    //static Reader* GetReader(const char*);
+    static Reader* GetReader(uint8_t index);
+
+    static char *NameFromIndex(uint8_t index);
+
+    static void PrintReaders(Stream *sp);
+    
+    //  template <class T>
+    //  static bool TestReader(const char* _name) {
+    //    T obj = T();
+    //    FREERAM("after TestReader");
+    //    //printf("obj.name: %s, _name: %s\n", obj.name, _name);
+    //    if (strcmp(obj.reader_name(), _name) == 0) {
+    //      return true;
+    //    } else {
+    //      return false;
+    //    }
+    //  }
 
   }; // class Reader
 
