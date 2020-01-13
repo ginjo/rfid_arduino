@@ -9,7 +9,7 @@
 
   struct RDM6300 : public Reader {
   public:
-    static constexpr char *name = (char *)"RDM-6300";
+    static constexpr char *Name = (char *)"RDM-6300";
   
     RDM6300() :
       Reader(14, 3, 10, 1)
@@ -40,12 +40,12 @@
       return tag_id;
     }
 
-    char *reader_name() {return name;} 
+    char *reader_name() {return Name;} 
   };
 
   struct R7941E : public Reader {
   public:
-    static constexpr char *name = (char *)"7941E";
+    static constexpr char *Name = (char *)"7941E";
     
     R7941E() :
       Reader(10, 4, 7, 1)
@@ -85,7 +85,7 @@
       return tag_id;
     }
 
-    char *reader_name() {return name;}
+    char *reader_name() {return Name;}
   };
 
   struct WL125 : public Reader {
@@ -95,7 +95,7 @@
     // and those characters are THEN used to build the ID
     // of the tag.
     //
-    static constexpr char *name = (char *)"WL-125";
+    static constexpr char *Name = (char *)"WL-125";
     
     WL125() :
       Reader(13, 3, 10, 0)
@@ -138,7 +138,7 @@
       return tag_id;
     }
 
-    char *reader_name() {return name;}
+    char *reader_name() {return Name;}
   };
 
   
@@ -147,15 +147,15 @@
   // See the following for how to create an array of classes, though we might not be using it.
   //   https://stackoverflow.com/questions/10722858/how-to-create-an-array-of-classes-types
 
-  Reader* Reader::GetReader(uint8_t index) {
+  Reader *Reader::GetReader(uint8_t index) {
     switch (index) {
-      case(0):
+      case(1):
         return (new RDM6300);
         break;
-      case(1):
+      case(2):
         return (new R7941E);
         break;
-      case(2):
+      case(3):
         return (new WL125);
         break;
         
@@ -166,14 +166,14 @@
 
   char *Reader::NameFromIndex(uint8_t index) {
     switch (index) {
-      case(0):
-        return RDM6300::name;
-        break;
       case(1):
-        return R7941E::name;
+        return RDM6300::Name;
         break;
       case(2):
-        return WL125::name;
+        return R7941E::Name;
+        break;
+      case(3):
+        return WL125::Name;
         break;
         
       default:

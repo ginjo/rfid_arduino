@@ -294,9 +294,12 @@
   /* Static vars & functions */
 
   void Reader::PrintReaders(Stream *sp) {
-    for (int n=0; n < READER_COUNT; n++) {
+    sp->print(F("Readers ("));
+    sp->print(READER_COUNT);
+    sp->println(F(")"));
+    for (int n=1; n <= READER_COUNT; n++) {
       char output[12] = "";
-      sprintf(output, "%i (%s)", n, NameFromIndex(n));
+      sprintf(output, "%i %s (%s)", n, (S.default_reader == int8_t(n) ? "*" : " "), NameFromIndex(n));
       sp->println(output);
     }
   }

@@ -112,13 +112,17 @@
       S.enable_debug = 1;
     }
 
-    // Displays current settings.
+    // Displays current settings and readers.
     LOG("", true);
     S.printSettings(&Serial);
+    Serial.println("");
+    Reader::PrintReaders(&Serial);
     Serial.println("");
     //
     if (canLogToBT()) {
       S.printSettings(BTserial);
+      BTserial->println("");
+      Reader::PrintReaders(BTserial);
       BTserial->println("");
     }
 

@@ -7,6 +7,7 @@
   #include <Arduino.h>
   #include <string.h>
   #include "storage.h"
+  #include "settings.h"
 
   // A tag-id is a 32 bit unsigned integer for a max of 4,294,967,295 unique combinations
   //

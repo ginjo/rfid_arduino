@@ -454,7 +454,7 @@ TODO: Consider if making Reader or Reader::Reader() a template
       
 TODO: Make reader index/name mapping 1-based (not zero-based).
 
-WARN: Use of 'char *var' declarations at static and class level,
+WARN: Use of 'char *var' declarations at static and class level
       may cause out-of-bound strings and UB.
       This may be an issue for the reader-name refactor.
       

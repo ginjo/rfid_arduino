@@ -695,12 +695,31 @@
   // Lists readers for menu.
   void Menu::menuListReaders(void *dat) {
     MU_PRINTLN(F("Menu::menuListReaders()"));
-    serial_port->print(F("Readers ("));
-    serial_port->print(READER_COUNT);
-    serial_port->println(F(")"));
     
     Reader::PrintReaders(serial_port);
     serial_port->println("");
 
-    menuMainPrompt();
+    //menuMainPrompt();
+    prompt("Select a reader by index", &Menu::menuSelectedReader);
+  }
+
+  void Menu::menuSelectedReader(void *input) {
+    //uint8_t selected_reader = (uint8_t)strtol(input, NULL, 10);
+    uint8_t selected_reader = (uint8_t)(int)input;
+
+    serial_port->print(F("input: ")); serial_port->println((int)input);
+    serial_port->print(F("selected_reader: ")); serial_port->println((uint8_t)selected_reader);
+
+    MU_PRINT(F("menuSelectedReader set selected_reader to: "));
+    MU_PRINTLN(selected_reader);
+
+    // If user selected valid settings item.
+    if ((uint8_t)selected_reader > (uint8_t)0 && (uint8_t)selected_reader <= (uint8_t)READER_COUNT) {
+      serial_port->print(F("Selected: "));
+      serial_port->println(Reader::NameFromIndex(selected_reader));
+      serial_port->println("");
+      Reader::PrintReaders(serial_port);
+    }
+
+    menuMain();
   }

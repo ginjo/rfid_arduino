@@ -89,7 +89,7 @@
     //uint32_t cycleHighFinishMs();
     
     virtual uint32_t processTagData(uint8_t[]);
-    virtual char *reader_name() {return name;}
+    virtual char *reader_name() {return Name;}
 
     void loop();
 
@@ -100,7 +100,7 @@
     // See https://stackoverflow.com/questions/5451676/how-to-add-strings-to-a-2d-array-of-char-elements
     //static char *reader_names[3];
     
-    static constexpr char *name = (char *)"base";
+    static constexpr char *Name = (char *)"base";
     
     //static Reader* GetReader(const char*);
     static Reader* GetReader(uint8_t index);

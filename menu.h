@@ -87,6 +87,7 @@
     void menuSettings(void* = nullptr);
     void menuSelectedSetting(void* = nullptr); // (char[]);
     void menuListReaders(void* = nullptr);
+    void menuSelectedReader(void* = nullptr);
 
 
     /*  Static Vars & Functions  */

@@ -155,10 +155,12 @@
     
     Storage::Load(tag_set, _eeprom_address);
 
-    for (int i=0; i < TAG_LIST_SIZE; i++) {
-      LOG(tag_set->tag_array[i]); LOG(",");
+    if (S.debugMode()) {
+      for (int i=0; i < TAG_LIST_SIZE; i++) {
+        LOG(tag_set->tag_array[i]); LOG(",");
+      }
+      LOG("", true);
     }
-    LOG("", true);
 
     if (! tag_set->checksumMatch()) {
       LOG(F("Tags::Load() checksum mismatch, creating new tag-set"), true);
