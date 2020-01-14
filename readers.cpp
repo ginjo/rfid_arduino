@@ -9,13 +9,14 @@
 
   struct RDM6300 : public Reader {
   public:
-    static constexpr char *Name = (char *)"RDM-6300";
+    static constexpr char *Name = {( char *)"RDM-6300"};
+    //static const char Name[READER_NAME_LENGTH] = {"RDM-6300"};
   
     RDM6300() :
       Reader(14, 3, 10, 1)
     {
-      LOG(F("Constructing Reader: "));
-      LOG(reader_name(), true);  
+      LOG(F("Loading reader: "));
+      LOG(name(), true);  
     }
   
     uint32_t processTagData(uint8_t _tag[24]) {
@@ -40,18 +41,20 @@
       return tag_id;
     }
 
-    char *reader_name() {return Name;} 
+    //char *name() {return Name;} 
+    //virtual const char *name() {return Name;}
+    virtual char *name() {return Name;}
   };
 
   struct R7941E : public Reader {
   public:
-    static constexpr char *Name = (char *)"7941E";
+    static constexpr char *Name = {( char *)"7941E"};
     
     R7941E() :
       Reader(10, 4, 7, 1)
     {
-      LOG(F("Constructing Reader: "));
-      LOG(reader_name(), true);  
+      LOG(F("Loading reader: "));
+      LOG(name(), true);  
     }
       
     uint32_t processTagData(uint8_t _tag[]) {
@@ -85,7 +88,9 @@
       return tag_id;
     }
 
-    char *reader_name() {return Name;}
+    //char *name() {return Name;}
+    //virtual const char *name() {return Name;}
+    virtual char *name() {return Name;}
   };
 
   struct WL125 : public Reader {
@@ -95,13 +100,13 @@
     // and those characters are THEN used to build the ID
     // of the tag.
     //
-    static constexpr char *Name = (char *)"WL-125";
+    static constexpr char *Name = {( char *)"WL-125"};
     
     WL125() :
       Reader(13, 3, 10, 0)
     {
-      LOG(F("Constructing Reader: "));
-      LOG(reader_name(), true);  
+      LOG(F("Loading reader: "));
+      LOG(name(), true);  
     }
   
     uint32_t processTagData(uint8_t _tag[]) {
@@ -138,16 +143,18 @@
       return tag_id;
     }
 
-    char *reader_name() {return Name;}
+    //char *name() {return Name;}
+    //virtual const char *name() {return Name;}
+    virtual char *name() {return Name;}
   };
-
+  
   
   /***  Static Vars & Functions  ***/
 
   // See the following for how to create an array of classes, though we might not be using it.
   //   https://stackoverflow.com/questions/10722858/how-to-create-an-array-of-classes-types
 
-  Reader *Reader::GetReader(uint8_t index) {
+  Reader *Reader::GetReader(int index) {
     switch (index) {
       case(1):
         return (new RDM6300);
@@ -164,7 +171,7 @@
     }
   }
 
-  char *Reader::NameFromIndex(uint8_t index) {
+  char *Reader::NameFromIndex(int index) {
     switch (index) {
       case(1):
         return RDM6300::Name;

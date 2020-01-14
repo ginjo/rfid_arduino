@@ -1,5 +1,5 @@
   #include "led_blinker.h"
-  
+
   Led::Led(int pin, const char _name[], const int _freq, const int _pwm) : 
     led_pin(pin),
     led_state(0),

@@ -93,15 +93,17 @@
     
     // If this is hardware instance, don't print info.
     if (strcmp(instance_name, "HW") != 0) {
-      serial_port->print(F("RFID admin console, "));
-      serial_port->print(VERSION);
-      serial_port->print(", ");
-      serial_port->println(TIMESTAMP);
-      serial_port->println();
-      // passing an empty string will hide the default menuMain prompt string,
-      // but will still create the ">" prompt and push the necessary functions
-      // to the stack.
-      menuMainPrompt("");
+      if (digitalRead(BT_STATUS_PIN) == LOW) {
+        serial_port->print(F("RFID admin console, "));
+        serial_port->print(VERSION);
+        serial_port->print(", ");
+        serial_port->println(TIMESTAMP);
+        serial_port->println();
+        // passing an empty string will hide the default menuMain prompt string,
+        // but will still create the ">" prompt and push the necessary functions
+        // to the stack.
+        menuMainPrompt("");
+      }
     } else {
       readLineWithCallback(&Menu::menuSelectedMainItem);
     }
@@ -699,27 +701,32 @@
     Reader::PrintReaders(serial_port);
     serial_port->println("");
 
-    //menuMainPrompt();
-    prompt("Select a reader by index", &Menu::menuSelectedReader);
+    prompt("Select reader index", &Menu::menuSelectedReader);
   }
 
   void Menu::menuSelectedReader(void *input) {
-    //uint8_t selected_reader = (uint8_t)strtol(input, NULL, 10);
-    uint8_t selected_reader = (uint8_t)(int)input;
+    int selected_reader = (int)strtol((char *)input, NULL, 10);
 
-    serial_port->print(F("input: ")); serial_port->println((int)input);
-    serial_port->print(F("selected_reader: ")); serial_port->println((uint8_t)selected_reader);
+    //LOG(F("input: ")); LOG((char *)input, true);
+    //LOG(F("selected_reader: ")); LOG(selected_reader, true);
 
-    MU_PRINT(F("menuSelectedReader set selected_reader to: "));
-    MU_PRINTLN(selected_reader);
+    //MU_PRINT(F("menuSelectedReader set selected_reader to: "));
+    //MU_PRINTLN(selected_reader);
 
-    // If user selected valid settings item.
-    if ((uint8_t)selected_reader > (uint8_t)0 && (uint8_t)selected_reader <= (uint8_t)READER_COUNT) {
+    // If user selected valid reader.
+    if (selected_reader > 0 && selected_reader <= READER_COUNT) {
       serial_port->print(F("Selected: "));
       serial_port->println(Reader::NameFromIndex(selected_reader));
       serial_port->println("");
+
+      // I think we need to use the proper channels here to set the official setting,
+      // like updateSetting() or something.
+      //S.default_reader = selected_reader;
+      S.updateSetting(8, (char *)(int)selected_reader);
+      
       Reader::PrintReaders(serial_port);
     }
 
+    serial_port->println("");
     menuMain();
   }

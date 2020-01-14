@@ -54,7 +54,7 @@
   template<typename T>
   extern void LOG(T dat, const int base, bool line = false) {
     if (canLogToBT()) {
-
+      
       BTserial->print(dat, base);
       
       if (line == true) {
@@ -75,7 +75,7 @@
   //.
   template<typename T>
   extern void LOG(T dat, bool line = false) {
-    if (canLogToBT()) {
+    if (canLogToBT()) {      
       BTserial->print(dat);
       if (line == true) {
         BTserial->println("");

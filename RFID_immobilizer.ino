@@ -26,8 +26,9 @@
 
   /***  Declarations  ***/
 
-  // Declares RGB LED -- an array of 3 Led instances.
-  Led *RGB[3];
+  // Defines RGB LED -- an array of 3 Led instances.
+  // Declaration is in led_blinker.h (extern and static var declaration/definitions are very confusing).
+  Led *RGB[3] = {};
 
   // Declares beeper, which is also handled by Led class.
   Led *Beeper;
@@ -46,7 +47,6 @@
   Controller *OutputControl;
 
 
-
   /*** Setup  ***/
 
   void setup() {
@@ -57,7 +57,7 @@
     Serial.begin(57600);
     while (! Serial) delay(10);
 
-    BTserial->flush();
+    //BTserial->flush();
     BTserial->begin(S.bt_baud);
     
     delay(15);
@@ -116,14 +116,14 @@
     LOG("", true);
     S.printSettings(&Serial);
     Serial.println("");
-    Reader::PrintReaders(&Serial);
-    Serial.println("");
+    //Reader::PrintReaders(&Serial);
+    //Serial.println("");
     //
     if (canLogToBT()) {
       S.printSettings(BTserial);
       BTserial->println("");
-      Reader::PrintReaders(BTserial);
-      BTserial->println("");
+      //Reader::PrintReaders(BTserial);
+      //BTserial->println("");
     }
 
     FREERAM("setup() pre obj new");
@@ -131,15 +131,15 @@
 
     /*  Initialize main objects  */
 
-    RGB[0]  = new Led(LED_RED_PIN, "Rd");
-    RGB[1]  = new Led(LED_GREEN_PIN, "Gr");
-    RGB[2]  = new Led(LED_BLUE_PIN, "Bl");
+    RGB[0] = new Led(LED_RED_PIN, "Rd");
+    RGB[1] = new Led(LED_GREEN_PIN, "Gr");
+    RGB[2] = new Led(LED_BLUE_PIN, "Bl");
 
     Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
-    RfidReader = Reader::GetReader(S.default_reader);
+    RfidReader = Reader::GetReader((int)S.default_reader);
     RfidReader->serial_port = RfidSerial;
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
@@ -188,7 +188,8 @@
       //RfidReader->loop(); // Is this for debugging, or is it just old code?
       OutputControl->loop();      
     }
-    
+
+    //FREERAM(); // Only for memory debugging.
   } // end loop()
 
   

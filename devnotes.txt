@@ -444,7 +444,8 @@ TODO: √ Why is WL-125 constructor running twice (see log output)?
       Hmm... it's by design. See GetReader() and TestReader().
       There must be a better way to do this.
 
-TODO: Users need to see what readers are available, when selecting in settings.
+TODO: √ Users need to see what readers are available, when selecting in settings.
+      This is mostly handled now with PrintReaders (main menu item #7).
 
 TODO: - Consider changing Reader::GetReader() to Reader::Setup()
 
@@ -452,11 +453,29 @@ TODO: Consider if making Reader or Reader::Reader() a template
       will help reduce redundant/duplicate code in subclass reader defs (in readers.cpp)
       See the old TestReader() function (readers.cpp) for ideas.
       
-TODO: Make reader index/name mapping 1-based (not zero-based).
+TODO: √ Make reader index/name mapping 1-based (not zero-based).
 
-WARN: Use of 'char *var' declarations at static and class level
+WARN: - Use of 'char *var' declarations at static and class level
       may cause out-of-bound strings and UB.
       This may be an issue for the reader-name refactor.
       
+      I think we need to give Reader::Name and maybe Reader.reader_name defined length.
+      
+      Setting this warning aside for now, since none of these items fixed the UB.
+      
+TODO: √ Change Reader.reader_name() to Reader.name().
+
+TODO: √ Change all '.debugMode() > 0' back to just '.debugMode()'
+
+TODO: Add dedicated extern or static var to hold hardware debug state from startup.
+      Currently we are using S.enable_debug, which will get set into EEPROM if any
+      other settings are stored.
+      
+TODO: Updating reader list fails.
+
+TODO: Make sure no other Menu code prints to BTserial when it shouldn't.
+
+
+
       
       

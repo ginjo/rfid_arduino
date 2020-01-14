@@ -1,4 +1,8 @@
   #include "reader.h"
+
+  const char Reader::Name[READER_NAME_LENGTH] = {"base"};
+  //const char *Reader::name() {return Name;}
+  char *Reader::name() {return (char *)Name;}
   
   // Defines Reader Constructor
   Reader::Reader(uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
@@ -24,21 +28,16 @@
     //tag_last_read_timeout_x_1000(0UL),
     
   {
-    //strncpy(reader_name, _name, sizeof(reader_name));
-    //strcpy(reader_name, _name);
     //strlcpy(reader_name, _name, sizeof(reader_name));
-    //strlcpy(reader_names[index], _name, sizeof(reader_name));
 
     //LOG(F("Constructing Reader: "));
-    //LOG(reader_name(), true);
+    //LOG(name(), true);
   }
 
   uint32_t Reader::processTagData(uint8_t[]) {
     RD_PRINTLN(F("Error: Called processTagData() on base Reader class"));
     return 0UL;
   }
-
-
 
   /***  From Controller  ***/
 
@@ -130,8 +129,8 @@
   // Polls reader serial port and processes incoming tag data.
   void Reader::pollReader() {
     // If data available on Controller serial port, do something.
-    RD_PRINT(F("Reader::pollReader() reader_name(), raw_tag_length: "));
-    RD_PRINT(reader_name());    
+    RD_PRINT(F("Reader::pollReader() name(), raw_tag_length: "));
+    RD_PRINT(name());    
     RD_PRINT(F(", "));
     RD_PRINTLN(raw_tag_length);
 
@@ -199,7 +198,7 @@
   // TODO (from Controller): create macro definition for max-tag-length that can be used in func definition array args.
   void Reader::processTag(uint8_t _tag[]) {
     RD_PRINT(F("Reader::processTag() received buffer w/reader: "));
-    RD_PRINTLN(reader_name());
+    RD_PRINTLN(name());
 
     // DEV (from Controller): Use this to ensure that virtual functions are working in derived classes.
     //  RD_PRINT(F("Reader::processTag() calling echo(): "));
@@ -299,8 +298,10 @@
     sp->println(F(")"));
     for (int n=1; n <= READER_COUNT; n++) {
       char output[12] = "";
-      sprintf(output, "%i %s (%s)", n, (S.default_reader == int8_t(n) ? "*" : " "), NameFromIndex(n));
+      sprintf(output, "%i %s (%s)", n, (S.default_reader == (int8_t)n ? "*" : " "), NameFromIndex(n));
       sp->println(output);
     }
   }
+
+
   

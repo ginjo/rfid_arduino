@@ -1,12 +1,12 @@
 // LED Blinker Class
 
-
 #ifndef __LED_BLINKER_H__
 #define __LED_BLINKER_H__
 
   #include <Arduino.h>
   #include <string.h>
 
+  #include "global.h"
   #include "settings.h"
 
   // See logger.h for master debug controls.
@@ -86,5 +86,8 @@
     void go_high();
   
   };
+
+  // This must be declared here, since several files use the RGB object.
+  extern Led *RGB[]; // = {new Led(LED_RED_PIN, "Rd"), new Led(LED_GREEN_PIN, "Gr"), new Led(LED_BLUE_PIN, "Bl")};
 
 #endif

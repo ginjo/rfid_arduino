@@ -153,7 +153,7 @@
         break;
       case 8 :
         //sprintf(setting_value, "%s", default_reader);
-        sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex(default_reader));
+        sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
         break;
       case 9 :
         sprintf(setting_value, "%li", hw_serial_baud);
