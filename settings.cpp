@@ -2,7 +2,8 @@
   #include "reader.h"
   // This is moved here by suggestion to stop EEPROM warnings.
   #include <EEPROM.h>
-  
+
+  //bool Settings::TempDebug; // = (bool)digitalRead(DEBUG_PIN); // static
   
   Settings::Settings() :
     Storage("settings", SETTINGS_EEPROM_ADDRESS),
@@ -31,7 +32,7 @@
     // Sets whether output switches off or on at startup.
     proximity_state_startup(1), // 0 = off, 1 = on, 2 = auto (uses last saved state)
 
-    // enables debug (if #define DEBUG was active at compile time).
+    // enables debugging (separate from using DEBUG macro).
     enable_debug(0),
 
     // sets default reader index
@@ -206,7 +207,7 @@
   }
 
   int Settings::debugMode() {
-    if (digitalRead(DEBUG_PIN) == LOW || enable_debug == 1) {
+    if (digitalRead(DEBUG_PIN) == LOW || TempDebug == true || enable_debug == 1) {
       return 1;
     } else {
       return 0;
@@ -244,12 +245,14 @@
   //   void Settings::Load() {
   //
   Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
-    LOG(F("Settings::Load() BEGIN"), true);
+    #ifdef ST_DEBUG
+      LOG(F("Settings::Load() BEGIN"), true);
+    #endif
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
     //Storage::Load(&Current, _eeprom_address);
     if (Failsafe()) {
-      LOG(F("Failsafe loading default settings"), true);
+      LOG(F("Failsafe enabled, skipping stored settings"), true);
     } else {
       Storage::Load(settings_obj, _eeprom_address);
     }
@@ -258,7 +261,7 @@
     // valid Settings instance yet. Printing settings data before it has been
     // verified can result in UB !!!
     //
-    #ifdef DEBUG
+    #ifdef ST_DEBUG
       LOG(F("Settings::Load() storage_name '"));
       LOG(settings_obj->storage_name);
       LOG(F("' settings_name '"));
@@ -267,14 +270,19 @@
       LOG(settings_obj->checksum, 16, true);
     #endif
 
-    // Handles checksum mismatch by saving default settings.
+    // Handles checksum mismatch by loading default settings.
+    // TODO: √ Don't save default settings, let the user do it.
     //if (GetStoredChecksum() != calculated_checksum) {
     if (!settings_obj->checksumMatch() || Failsafe()) {
-      LOG(F("Settings::Load() chksm mismatch so creating default Settings()"), true);
+      LOG(F("Settings::Load() chksm mismatch"), true);
       settings_obj = new Settings();
       strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
       settings_obj->eeprom_address = _eeprom_address;
-      if (! Failsafe()) settings_obj->save();
+      /* Disabled saving of default settings (let the user decide instead).
+         Re-enable this to automatically save default settings to eeprom.
+         Currently the user needs to change/save a default setting
+         to get the entire defaults set to save to eeprom. This is good. */
+      //if (! Failsafe()) settings_obj->save();
       LOG(F("Settings::Load() using default settings '"));
       
     } else {
@@ -282,7 +290,9 @@
     }
     
     LOG(settings_obj->settings_name); LOG("'", true);
-    LOG(F("Settings::Load() END"), true);
+    #ifdef ST_DEBUG
+      LOG(F("Settings::Load() END"), true);
+    #endif
 
     return settings_obj;
   } // Settings::Load()

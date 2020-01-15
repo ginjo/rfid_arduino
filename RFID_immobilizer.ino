@@ -66,6 +66,9 @@
     LOG(VERSION);
     LOG(F(", "));
     LOG(TIMESTAMP, true);
+
+    LOG(F("Debug pin status: "));
+    LOG(TempDebug, true);
     
     LOG(F("Initialized default serial port @ 57600 baud"), true);
 
@@ -102,15 +105,15 @@
     
     //pinMode(DEBUG_PIN, INPUT_PULLUP);
 
-    int debug_pin_status = digitalRead(DEBUG_PIN);
-
-    LOG(F("Debug pin status: "));
-    LOG(debug_pin_status, true);
-
-    if (debug_pin_status == LOW) {
-      LOG(F("Debug pin LOW ... enabling debug"), true);
-      S.enable_debug = 1;
-    }
+    //int debug_pin_status = digitalRead(DEBUG_PIN);
+    //
+    //LOG(F("Debug pin status: "));
+    //LOG(debug_pin_status, true);
+    //
+    //if (debug_pin_status == LOW) {
+    //  LOG(F("Debug pin LOW ... enabling debug"), true);
+    //  S.enable_debug = 1;
+    //}
 
     // Displays current settings and readers.
     LOG("", true);

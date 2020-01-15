@@ -31,6 +31,8 @@
 
   /* Global Vars & Functions */
 
+  extern bool TempDebug;
+
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
   extern SoftwareSerial *BTserial;
 

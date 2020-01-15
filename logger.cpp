@@ -18,10 +18,11 @@
   extern bool canLogToBT() {
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
-      digitalRead(BT_STATUS_PIN) == LOW) &&
-      (S.log_to_bt || S.debugMode()) &&
+      digitalRead(BT_STATUS_PIN) == LOW &&
+      //(S.log_to_bt || S.debugMode()) &&
+      (S.log_to_bt || digitalRead(DEBUG_PIN) == LOW || TempDebug) &&
       (Menu::run_mode == 0 || ! Menu::Current)
-    ;
+    );
   }
 
   extern void printUptime(bool line) {

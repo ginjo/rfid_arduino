@@ -427,6 +427,7 @@ TODO: √ There is garbage printing on BTserial at startup, even when log_to_bt 
       Update: I think it's due to floating pins, cuz is never happens when soft-rebooted from IDE.
       
 TODO: Check to see if any class constructors are using LOG or BTserial in their construction methods.
+      They probably should not.
 
 TODO: √ Change io.h to global.h, and put externs (like BTserial) in there.
 
@@ -467,15 +468,39 @@ TODO: √ Change Reader.reader_name() to Reader.name().
 
 TODO: √ Change all '.debugMode() > 0' back to just '.debugMode()'
 
-TODO: Add dedicated extern or static var to hold hardware debug state from startup.
+TODO: √ Add dedicated extern or static var to hold hardware debug state from startup.
       Currently we are using S.enable_debug, which will get set into EEPROM if any
       other settings are stored.
       
-TODO: Updating reader list fails.
+FIX:  √ Updating deafult_reader setting using reader list (or main menu #7) fails.
+      Turns out you can't just cast an int to char*.
+      Turns out the PrintReaders function was overrunning its output buffer var.
 
-TODO: Make sure no other Menu code prints to BTserial when it shouldn't.
-
-
-
+TODO: √ Make sure no other Menu code prints to BTserial when it shouldn't.
+      Turns out the initial menu prompt was causing BTserial chip to throw "ERROR".
       
+FIX:  √ Storage can't use DPRINT cuz Settings and logger.h haven't been loaded yet.
+      So just use LOG within #ifdef SO_DEBUG blocks.
       
+TODO: √ Don't overwrite existing tag set when loaded tag set has checksum mismatch.
+      Just run with a zeroed tag set, but don't save it to eeprom.
+      Allow the user to make the decision to save.
+      
+TODO: √ Move TempDebug to logger or global files.
+
+TODO: Actually, consider consolidating logger and global files
+      and moving all debug code from settings to logger/global files.
+      
+TODO: Create a proper logger that consolidates all the c++ macros with the
+      existing LOG function.
+      
+TODO: Create empty-prompt function for Menu, that just basically pauses and waits for any key
+      Then continues on to specified callback. This might help the Reader menu & selection
+      prompt that is the first event after the user inputs something.
+      
+TODO: Make reader selection an eternal loop, with only a CR to break out of it.
+      This is just like with settings and maybe tags.
+      
+TODO: Missig some log items in BTserial when only log_to_bt is set (no HW pin).
+
+

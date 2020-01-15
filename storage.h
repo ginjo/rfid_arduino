@@ -51,7 +51,9 @@
     /***  Static / Class Vars & Functions  ***/
         
     static T* Load (T * object_ref, int eeprom_address) {
-      LOG(F("Storage::Load() BEGIN"), true);
+      #ifdef SO_DEBUG
+        LOG(F("Storage::Load() BEGIN"), true);
+      #endif
       
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
 
@@ -62,14 +64,15 @@
         //object_ref->checksum = (uint16_t)0;
       }
 
-      #ifdef DEBUG
+      #ifdef SO_DEBUG
         LOG(F("eeprom_address ")); LOG(eeprom_address, true);
         LOG(F("object_ref->storage_name '")); LOG(object_ref->storage_name); LOG("'", true);
         LOG(F("sizeof(*object_ref) ")); LOG(sizeof(*object_ref), true);
         LOG(F("sizeof(T) ")); LOG(sizeof(T), true);
+
+        LOG(F("Storage::Load() END"), true);
       #endif
-  
-      LOG(F("Storage::Load() END"), true);
+      
       return object_ref;
     }
 
@@ -90,18 +93,22 @@
     // Sub-classes, like Settings, should carry the info about
     // what address to use.
     int save(int _eeprom_address = -1) {
-      LOG(F("Storage::save() BEGIN"), true);
+      #ifdef SO_DEBUG
+        LOG(F("Storage::save() BEGIN"), true);
+      #endif
 
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
 
-      #ifdef DEBUG
-        LOG(F("Storage::save() '")); LOG(storage_name);
-        LOG(F("' to address ")); LOG(eeprom_address);
-        LOG(F(" sizeof(T) ")); LOG(sizeof(T), true);
+      #ifdef SO_DEBUG
+        DPRINT(F("Storage::save() '")); DPRINT(storage_name);
+        DPRINT(F("' to address ")); DPRINT(eeprom_address);
+        DPRINT(F(" sizeof(T) ")); DPRINTLN(sizeof(T), true);
       #endif
       
       if (! checksumMatch()) {
-        LOG(F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
+        #ifdef SO_DEBUG
+          LOG(F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
+        #endif
 
         checksum = calculateChecksum();
         
@@ -109,13 +116,18 @@
         // The use of the class template is very important here, as the eepprom
         // functions don't seem to get it when called from a subclass.
         EEPROM.put(eeprom_address, *(T*)this);
-  
-        LOG(F("Storage::save() END"), true);
-        return 0;
-      } else {
-        LOG(F("Storage::save() EEPROM update not necessary"), true);
-        LOG(F("Storage::save() END"), true);
+
+        #ifdef SO_DEBUG
+          LOG(F("Storage::save() END"), true);
+        #endif
+        
         return 1;
+      } else {
+        #ifdef SO_DEBUG
+          LOG(F("Storage::save() EEPROM update not necessary"), true);
+          LOG(F("Storage::save() END"), true);
+        #endif
+        return 0;
       }
     }
   
@@ -135,7 +147,7 @@
         xxor = xxor ^ ((obj[i]<<8) | (i==len-1 ? 0 : obj[i+1]));
       }
 
-      //  #ifdef DEBUG
+      //  #ifdef SO_DEBUG
       //    LOG(F("Storage::claculateChecksum() 0x")); LOG(xxor, 16);
       //    LOG(F(" for storage_name '")); LOG(storage_name);
       //    LOG(F("' of size ")); LOG(len, true);
@@ -155,10 +167,12 @@
         checksum != (uint16_t)0 &&
         checksum != 0xFFFF
       );
-      
-      LOG("Storage::checksumMatch() 0x"); LOG(checksum, 16);
-      LOG(" 0x"); LOG(calculated_checksum, 16);
-      LOG(", bool-result: "); LOG(result, true);
+
+      #ifdef SO_DEBUG
+        LOG("Storage::checksumMatch() 0x"); LOG(checksum, 16);
+        LOG(" 0x"); LOG(calculated_checksum, 16);
+        LOG(", bool-result: "); LOG(result, true);
+      #endif
       
       //  checksum = stored_checksum;
       return result;

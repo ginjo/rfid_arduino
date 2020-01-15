@@ -4,6 +4,8 @@
   // Compiler might complain the first time it compiles, but it works fine.
   SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
 
+  bool TempDebug = false;
+
   // Called from main .ino setup().
   extern void globalSetup() {
     // from main .ino
@@ -15,9 +17,9 @@
     pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
     pinMode(OUTPUT_SWITCH_PIN, OUTPUT);
 
+    TempDebug = (digitalRead(DEBUG_PIN) == LOW);
+
     //delay(100); // Allows voltages to stabilize... maybe?
   }
-
-  
 
   

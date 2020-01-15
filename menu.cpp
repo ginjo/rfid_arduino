@@ -91,25 +91,35 @@
     resetInputBuffer();
     //resetStack(&Menu::menuMain);
     
-    // If this is hardware instance, don't print info.
-    if (strcmp(instance_name, "HW") != 0) {
+    if (strcmp(instance_name, "HW") == 0) {
+      /* If this is hard-serial instance, just listen for input. */
+      readLineWithCallback(&Menu::menuSelectedMainItem);
+    } else if (strcmp(instance_name, "SW") == 0) {
+      /*
+        If this is soft-serial instance, prints info,
+        but only if soft-serial is connected (via BT).
+      */
+      
       if (digitalRead(BT_STATUS_PIN) == LOW) {
         serial_port->print(F("RFID admin console, "));
         serial_port->print(VERSION);
         serial_port->print(", ");
         serial_port->println(TIMESTAMP);
-        serial_port->println();
-        // passing an empty string will hide the default menuMain prompt string,
-        // but will still create the ">" prompt and push the necessary functions
-        // to the stack.
-        menuMainPrompt("");
+        serial_port->println();        
       }
-    } else {
+      /*
+       Calls menuMainPromp(""), which sets up a listener for input.
+       passing an empty string will hide the default menuMain prompt string,
+       but will still create the ":" or ">" prompt and push the necessary functions
+       to the stack.
+
+       Actually, we don't want a prompt or any output if this is SW menu starting up.
+       But we still need to create the listener/callback, so input will be processed.
+      */      
+      //menuMainPrompt("");
       readLineWithCallback(&Menu::menuSelectedMainItem);
     }
-
  	}
-
 
 
   /***  Control  ***/
@@ -168,8 +178,10 @@
       LOG(instance_name);
       LOG(F(" setting run_mode => 0"), true);
       LOG("", true);
-      serial_port->println(F("Entering run mode"));
-      serial_port->println();
+      //serial_port->println(F("Entering run mode"));
+      //serial_port->println();
+      LOG(F("Entering run mode"), true);
+      LOG("", true);
       //blinker->off();
       run_mode = 0;
       FREERAM("exitAdmin()");
@@ -331,7 +343,7 @@
       
       // Removes readLine() from stack.
       pop();
-
+      
       serial_port->println((char)10);
   
       // Calls callback, passing in buff (true removes callback from stack).
@@ -489,7 +501,6 @@
     selected_menu_item = -1;
     menuSettings();
   }
-
 
 
 
@@ -701,7 +712,7 @@
     Reader::PrintReaders(serial_port);
     serial_port->println("");
 
-    prompt("Select reader index", &Menu::menuSelectedReader);
+    prompt("Select a reader", &Menu::menuSelectedReader);
   }
 
   void Menu::menuSelectedReader(void *input) {
@@ -719,14 +730,22 @@
       serial_port->println(Reader::NameFromIndex(selected_reader));
       serial_port->println("");
 
-      // I think we need to use the proper channels here to set the official setting,
-      // like updateSetting() or something.
-      //S.default_reader = selected_reader;
-      S.updateSetting(8, (char *)(int)selected_reader);
+      S.updateSetting(8, (char*)input);
       
-      Reader::PrintReaders(serial_port);
+      //Reader::PrintReaders(serial_port);
+      //menuMainPrompt();
+    } else {
+      //Reader::PrintReaders(serial_port);
+      //serial_port->println("");
+      //menuMain();
     }
 
+    //serial_port->println("");
+    //menuMain();
+    //menuMainPrompt();
+    
+    //serial_port->println("");
+    Reader::PrintReaders(serial_port);
     serial_port->println("");
     menuMain();
   }

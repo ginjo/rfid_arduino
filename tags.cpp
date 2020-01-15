@@ -151,26 +151,34 @@
   // TODO: Is this decoupled option appropriate for the Settings class too?
   //
   Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
-    LOG(F("Tags::Load() BEGIN"), true);
+    #ifdef TA_DEBUG
+      LOG(F("Tags::Load() BEGIN"), true);
+    #endif
     
     Storage::Load(tag_set, _eeprom_address);
 
+    LOG(F("Tags loaded "));
     if (S.debugMode()) {
       for (int i=0; i < TAG_LIST_SIZE; i++) {
         LOG(tag_set->tag_array[i]); LOG(",");
       }
-      LOG("", true);
     }
+    LOG("", true);
 
     if (! tag_set->checksumMatch()) {
       LOG(F("Tags::Load() checksum mismatch, creating new tag-set"), true);
       tag_set = new Tags();
-      tag_set->save();
+      /* Don't save tag_set automatically. Let the user decide
+         by adding a new tag (which will then save the entire set. */
+      //tag_set->save();
     }
 
     tag_set->compactTags();
 
-    LOG(F("Tags::Load() END"), true);
+    #ifdef TA_DEBUG
+      LOG(F("Tags::Load() END"), true);
+    #endif
+    
     return tag_set;
   } // Load()
 
