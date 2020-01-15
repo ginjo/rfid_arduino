@@ -494,12 +494,12 @@ TODO: Actually, consider consolidating logger and global files
 TODO: Create a proper logger that consolidates all the c++ macros with the
       existing LOG function.
       
-TODO: Create empty-prompt function for Menu, that just basically pauses and waits for any key
+TODO: - Create empty-prompt function for Menu, that just basically pauses and waits for any key
       Then continues on to specified callback. This might help the Reader menu & selection
       prompt that is the first event after the user inputs something.
       
-TODO: Make reader selection an eternal loop, with only a CR to break out of it.
-      This is just like with settings and maybe tags.
+TODO: √ Make reader selection an eternal loop, with only a CR to break out of it.
+      This is just like with settings.
       
 TODO: Missig some log items in BTserial when only log_to_bt is set (no HW pin).
 

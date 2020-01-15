@@ -51,7 +51,7 @@
     HW->begin();
     SW->begin();
 
-    // NOTE: Menu::Current is set in checkSerialPort() or in exitAdmin()
+    // NOTE: Menu::Current is set in checkSerialPort()
   }
   
   void Menu::Loop() {
@@ -274,21 +274,6 @@
   bool Menu::bufferReady() {
     bool bool_result = false;
     
-    // Previous implementation.
-    //
-    //(
-    //buff_index > 0 &&
-    //buff[0] != 0 && (
-    //  buff[buff_index-1] == 13 ||
-    //  buff[buff_index-1] == 10 ||
-    //  //buff[buff_index-1] == 0  ||
-    //  buff[buff_index]   == 13 ||
-    //  buff[buff_index]   == 10 ||
-    //  //buff[buff_index]   == 0
-    //)
-
-    // New implementation.
-    //
     MU_PRINT("bufferReady? bytes: ");
     for (uint8_t i=0; i < sizeof(buff); i++) {
       MU_PRINT((int)buff[i]); MU_PRINT(",");
@@ -731,21 +716,13 @@
       serial_port->println("");
 
       S.updateSetting(8, (char*)input);
-      
-      //Reader::PrintReaders(serial_port);
-      //menuMainPrompt();
-    } else {
-      //Reader::PrintReaders(serial_port);
-      //serial_port->println("");
-      //menuMain();
     }
 
-    //serial_port->println("");
-    //menuMain();
-    //menuMainPrompt();
-    
-    //serial_port->println("");
-    Reader::PrintReaders(serial_port);
     serial_port->println("");
-    menuMain();
+    
+    if (selected_reader == 0 || (int)input == 13 || (int)input == 10) {
+      menuMain();
+    } else {
+      menuListReaders();
+    }
   }

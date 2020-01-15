@@ -52,7 +52,7 @@
   // Checks if conditions are right to log to BTserial.
   extern bool canLogToBT();
 
-  // Handles printing to BTserial, with numbers and base.
+  // Handles printing to BTserial with numbers, considers integer base.
   //
   template<typename T>
   extern void LOG(T dat, const int base, bool line = false) {
@@ -74,7 +74,7 @@
     }
   }
 
-  // Handles printing to BTserial, with strings and char arrays
+  // Handles printing to BTserial with strings and char arrays
   //.
   template<typename T>
   extern void LOG(T dat, bool line = false) {

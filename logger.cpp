@@ -14,17 +14,16 @@
   }
 
   // Checks if conditions are right to log to BTserial.
-  // The scope of this function is lexical (logger.cpp, logger.h?).
   extern bool canLogToBT() {
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
       digitalRead(BT_STATUS_PIN) == LOW &&
-      //(S.log_to_bt || S.debugMode()) &&
       (S.log_to_bt || digitalRead(DEBUG_PIN) == LOW || TempDebug) &&
       (Menu::run_mode == 0 || ! Menu::Current)
     );
   }
 
+  // Converts milliseconds to readable h,m,s.
   extern void printUptime(bool line) {
     unsigned long milliseconds = millis();
     unsigned long seconds = milliseconds/1000;
@@ -34,7 +33,7 @@
     unsigned long rminutes = minutes % 60;
 
     char out[] = "";
-    sprintf(out, "%lih %lim %lis", hours, rminutes, rseconds);
+    sprintf(out, "%li:%li:%li", hours, rminutes, rseconds);
     
     LOG(out, line);
   }
