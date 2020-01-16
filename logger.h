@@ -15,7 +15,15 @@
     
     Each class also has its own controls for managing debug code.
     Comment each class's debug global to disable debug for that class only
+
+    TODO: Create a proper logger with levels:
+      1 fail
+      2 warn
+      3 info
+      4 debug
+      5 trace
   */
+  
   #define DEBUG        // master debug control
   #define INO_DEBUG    // main ino file
   //#define BK_DEBUG     // blinker

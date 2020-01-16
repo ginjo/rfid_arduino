@@ -641,10 +641,11 @@
     MU_PRINTLN(F("Menu::menuSettings()"));
     //selected_menu_item = NULL;
     selected_menu_item = -1;
-    serial_port->print(F("Settings, chksm 0x"));
-    serial_port->print(S.calculateChecksum(), 16);
-    serial_port->print(F(", size "));
-    serial_port->println(sizeof(S));
+    // Moved to Settings::printSettings()
+    //  serial_port->print(F("Settings, chksm 0x"));
+    //  serial_port->print(S.calculateChecksum(), 16);
+    //  serial_port->print(F(", size "));
+    //  serial_port->println(sizeof(S));
 
     // Prints out all settings in tabular format.
     //for (int n=1; n <= SETTINGS_SIZE; n++) {
@@ -654,7 +655,7 @@
     //}
     S.printSettings(serial_port);
 
-    serial_port->println();
+    serial_port->println("");
 
     prompt("Select a setting to edit", &Menu::menuSelectedSetting);
   }

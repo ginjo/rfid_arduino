@@ -502,5 +502,28 @@ TODO: √ Make reader selection an eternal loop, with only a CR to break out of 
       This is just like with settings.
       
 TODO: Missig some log items in BTserial when only log_to_bt is set (no HW pin).
+      Yep, because stored Settings have not been loaded yet, causing canLogToBt()
+      to return false.
+
+TODO: Debug-logging clobbers HW menu interface when debug-pin is used.
+      Logging to HW interface should be minimal when HW serial menu is active.
+      
+TODO: Standard log output should always show what is about to happen, not just what happened.
+      This will give you more info in case of a failure/crash/error.
+      Debug log output should add the "what just happened" info.
+      
+      Example (good):
+        Loading settings
+        Loading tags
+        Starting controller
+        Starting reader
+        
+      Example (bad):
+        Loaded settings
+        Loaded reader
+        Loaded tags
+        Loaded controller
+        
+TODO: Remove unnecessary delay()s.
 
 

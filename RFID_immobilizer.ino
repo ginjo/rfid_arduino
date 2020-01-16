@@ -70,14 +70,11 @@
     LOG(F("Debug pin status: "));
     LOG(TempDebug, true);
     
-    LOG(F("Initialized default serial port @ 57600 baud"), true);
+    INO_PRINTLN(F("Initialized default serial port @ 57600 baud"));
 
-    FreeRam("setup() before Settings::Load()");
+    FREERAM("setup() before Settings::Load()");
     
     Settings::Load(); // (*settings_instance, eeprom_address)
-
-    
-    /* For normal mode, when debugging not needed */
 
     //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
     //BTserial->flush();
@@ -89,31 +86,18 @@
     while (! Serial) delay(10);
     
     delay(15);
+
+    #ifdef INO_DEBUG
+      LOG(F("Loaded Settings '"));
+      LOG(S.settings_name);
+      LOG(F("' with checksum '0x"));
+      LOG(S.calculateChecksum(), 16);
+      LOG(F("' of size "));
+      LOG(sizeof(S), true);
+    #endif
     
-    LOG(F("Re-initialized serial port with loaded settings: "));
+    LOG(F("Initialized serial port with loaded setting: "));
     LOG(S.hw_serial_baud, true);
-
-    LOG(F("Loaded Settings '"));
-    LOG(S.settings_name);
-    LOG(F("' with checksum '0x"));
-    LOG(S.calculateChecksum(), 16);
-    LOG(F("' of size "));
-    LOG(sizeof(S), true);
-
-
-    /* For manual debug/log mode */
-    
-    //pinMode(DEBUG_PIN, INPUT_PULLUP);
-
-    //int debug_pin_status = digitalRead(DEBUG_PIN);
-    //
-    //LOG(F("Debug pin status: "));
-    //LOG(debug_pin_status, true);
-    //
-    //if (debug_pin_status == LOW) {
-    //  LOG(F("Debug pin LOW ... enabling debug"), true);
-    //  S.enable_debug = 1;
-    //}
 
     // Displays current settings and readers.
     LOG("", true);
@@ -144,19 +128,29 @@
 
     RfidReader = Reader::GetReader((int)S.default_reader);
     RfidReader->serial_port = RfidSerial;
+
+    // moved here from below
+    OutputControl = new Controller(RfidReader, RGB, Beeper);
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
     Menu::SW = new Menu(BTserial, RfidReader, "SW");
 
-    OutputControl = new Controller(RfidReader, RGB, Beeper);
+    //OutputControl = new Controller(RfidReader, RGB, Beeper);
 
     FREERAM("setup() pre obj stp");
     
     
     /*  Run setup/begin/init functions  */
 
+    // Activates the Controller handler.
+    OutputControl->begin();
+
     // Initializes output controller, including switch relay and LEDs.
-    OutputControl->initializeOutput();
+    // Disabled, experimenting with original call in Controller::begin().
+    //OutputControl->initializeOutput();
+
+    // Activates the serial port for the Controller handler.
+    RfidSerial->begin(S.rfid_baud);
 
     // Loads tags to default location (Tags::TagSet).
     Tags::Load();
@@ -164,13 +158,13 @@
     // Activates the admin console.
     Menu::Begin();
 
-    // Activates the serial port for the Controller handler.
-    RfidSerial->begin(S.rfid_baud);
+    //// Activates the serial port for the Controller handler.
+    //RfidSerial->begin(S.rfid_baud);
+    //
+    //// Activates the Controller handler.
+    //OutputControl->begin();
 
-    // Activates the Controller handler.
-    OutputControl->begin();
-
-    FreeRam("end setup()");
+    FREERAM("end setup()");
 
     // Add empty line before beginning loop.
     LOG("", true);

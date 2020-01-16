@@ -15,17 +15,15 @@
   // TODO: Some (all?) of this needs to be moved to Reader setup().
   void Controller::begin() {
     // Make sure to run this somewhere, if not here.
-    //initializeOutput();
+    initializeOutput();
     
-    // pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
-
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.default_reader); // Moving to main .ino, to be passed into Controller::Controller().
 
     LOG(F("Starting Controller with reader "));
-    LOG(reader->name());
-    LOG(F(", with EEPROM proximity state "));
-    LOG(proximity_state, true);
+    LOG(reader->name(), true);
+    //LOG(F(", with EEPROM proximity state "));
+    //LOG(proximity_state, true);
     //  LOG(F(", and output switch pin: "));
     //  Serial.println(OUTPUT_SWITCH_PIN);
         

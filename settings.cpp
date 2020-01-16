@@ -199,6 +199,11 @@
   }
 
   void Settings::printSettings(Stream *sp) {
+    sp->print(F("Settings, chksm 0x"));
+    sp->print(S.calculateChecksum(), 16);
+    sp->print(F(", size "));
+    sp->println(sizeof(S));
+    
     for (int n=1; n <= SETTINGS_SIZE; n++) {
       char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = "";
       S.displaySetting(n, output);
