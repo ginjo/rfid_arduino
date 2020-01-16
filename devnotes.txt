@@ -501,9 +501,10 @@ TODO: - Create empty-prompt function for Menu, that just basically pauses and wa
 TODO: √ Make reader selection an eternal loop, with only a CR to break out of it.
       This is just like with settings.
       
-TODO: Missig some log items in BTserial when only log_to_bt is set (no HW pin).
+TODO: √ Missig some log items in BTserial when only log_to_bt is set (no HW pin).
       Yep, because stored Settings have not been loaded yet, causing canLogToBt()
-      to return false.
+      to return false. Nothing we can do about this. Just use the debug pin, if you
+      want to see the earlier log output in the BTserial monitor.
 
 TODO: Debug-logging clobbers HW menu interface when debug-pin is used.
       Logging to HW interface should be minimal when HW serial menu is active.

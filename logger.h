@@ -93,7 +93,7 @@
       }
       // Experimental delay trying to fix startup weirdness on BTserial,
       // but I don't think this is the issue.      
-      delay(2);
+      //delay(2);
     }
 
     Serial.print(dat);
