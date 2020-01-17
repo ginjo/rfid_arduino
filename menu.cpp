@@ -164,8 +164,8 @@
   // Starts, restarts, resets admin with timeout.
   void Menu::updateAdminTimeout(unsigned long seconds) {
     if (admin_timeout != seconds) {
-      MU_DEBUG(F("updateAdminTimeout(): "));
-      MU_DEBUG(seconds, true);
+      MU_PRINT(F("updateAdminTimeout(): "));
+      MU_PRINTLN(seconds);
     }
     
     admin_timeout = seconds;
@@ -182,11 +182,9 @@
       LOG(instance_name);
       LOG(F(" setting run_mode => 0"), true);
       LOG("", true);
-      //serial_port->println(F("Entering run mode"));
-      //serial_port->println();
       LOG(F("Entering run mode"), true);
       LOG("", true);
-      //blinker->off();
+
       run_mode = 0;
       FREERAM("exitAdmin()");
     }
@@ -576,7 +574,7 @@
         menuReboot();
         break;
       case 9:
-        menuBtCommand();
+        menuManageBT();
         break;
       default:
         menuMain();
@@ -740,20 +738,55 @@
 
 
 
-
-    /* Experimental read/write AT commands to BT module. */
-    
-    void Menu::menuBtCommand(void*) {
-      SW->serial_port->println("AT+VERSION");
-      SW->readLineWithCallback(&Menu::menuPrintSerialInput);
+  
+  /* Experimental read/write AT commands to BT module. */
+  
+  void Menu::menuManageBT(void*) {
+    if (digitalRead(BT_STATUS_PIN) == HIGH) {
+      HW->prompt("Enter AT+ command", &Menu::menuSendAtCommand);
+      //SW->serial_port->println("AT+VERSION");
+      //SW->readLineWithCallback(&Menu::menuPrintSerialInput);
     }
+  }
 
-    void Menu::menuPrintSerialInput(void *input) {
-      HW->serial_port->println((char *) input);
+  void Menu::menuSendAtCommand(void *_input) {
+    /* Remember that when you pass a char array to a function,
+       you convert it to a pointer. Fortunately, strlen() knows
+       how to get the length of the c-string that's pointed to.
+    */
+
+    int len = strlen((char *)_input);
+    char output[32] = {""};
+    strncpy(output, (char *)_input, len-1);
+
+    #ifdef MU_DEBUG
+      HW->serial_port->print(F("Cmd: "));
+      HW->serial_port->println(output);
+      HW->serial_port->println("");
+    #endif
+
+    //SW->serial_port->println("AT+VERSION"); // this works.
+    if (output[0] == 'A') {
+      SW->serial_port->println(output);
+      SW->readLineWithCallback(&Menu::menuPrintATResponse);
       
+    } else {
+      // TODO: Is there an existing function that does all of this boilerplate cleanup?
       SW->resetStack();
       SW->clearSerialPort();
       SW->resetInputBuffer();
-      
       HW->menuMain();
     }
+  }
+  
+  void Menu::menuPrintATResponse(void *_input) {
+    char *input = (char *)_input;
+    HW->serial_port->println((char *)input);
+    HW->serial_port->println("");
+    
+    SW->resetStack();
+    SW->clearSerialPort();
+    SW->resetInputBuffer();
+    HW->menuManageBT();
+  }
+  

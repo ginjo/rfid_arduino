@@ -541,7 +541,9 @@ TODO: Create functions for reading/writing to BT12 module.
 	  
 TODO: Should run_mode and adminTimeout() be stored & handled from Controller (instead of Menu)?
 	  
-TODO: Review nameing of static/extern/global vars and functions.
+TODO: Review naming of static/extern/global vars and functions.
 
+TODO: Only run AT commands to SW serial if module is not connected.
 
+TODO: Prevent lockout if SW admin invokes command 9 (send AT commands).
 

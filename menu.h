@@ -88,8 +88,9 @@
     void menuSelectedSetting(void* = nullptr); // (char[]);
     void menuListReaders(void* = nullptr);
     void menuSelectedReader(void* = nullptr);
-    void menuBtCommand(void* = nullptr);
-    void menuPrintSerialInput(void* = nullptr);
+    void menuManageBT(void* = nullptr);
+    void menuSendAtCommand(void* = nullptr);
+    void menuPrintATResponse(void* = nullptr);
 
 
     /*  Static Vars & Functions  */
