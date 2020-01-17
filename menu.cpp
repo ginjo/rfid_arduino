@@ -739,13 +739,28 @@
 
 
   
-  /* Experimental read/write AT commands to BT module. */
+  /*
+   Experimental read/write AT commands for BT module.
+   These look like they could be genericised, but I think
+   it would not work, or would at least be very messy...
+
+   These functions are specific to the convoluted back-and-forth
+   between the two serial interfaces (HW, SW), and the logic
+   is specific to the process of managing the BT (SW) port
+   via the HW serial interface menu. 
+  */
   
   void Menu::menuManageBT(void*) {
     if (digitalRead(BT_STATUS_PIN) == HIGH) {
+      // Cleanup, just to be safe.
+      SW->resetStack();
+      SW->clearSerialPort();
+      SW->resetInputBuffer();
+      
       HW->prompt("Enter AT+ command", &Menu::menuSendAtCommand);
-      //SW->serial_port->println("AT+VERSION");
-      //SW->readLineWithCallback(&Menu::menuPrintSerialInput);
+    } else {
+      serial_port->println(F("N/A"));
+      menuMain();
     }
   }
 
@@ -771,22 +786,19 @@
       SW->readLineWithCallback(&Menu::menuPrintATResponse);
       
     } else {
-      // TODO: Is there an existing function that does all of this boilerplate cleanup?
       SW->resetStack();
       SW->clearSerialPort();
       SW->resetInputBuffer();
+
       HW->menuMain();
     }
   }
-  
+
   void Menu::menuPrintATResponse(void *_input) {
     char *input = (char *)_input;
     HW->serial_port->println((char *)input);
     HW->serial_port->println("");
-    
-    SW->resetStack();
-    SW->clearSerialPort();
-    SW->resetInputBuffer();
+
     HW->menuManageBT();
   }
   
