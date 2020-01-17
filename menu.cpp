@@ -61,7 +61,11 @@
     }
 
     // Runs software-serial loop().
-    if (!Current || Current == SW) {
+    //if (!Current || Current == SW) {
+    
+    // FIX: This was to allow AT commands to the BT module, but it currently breaks the menus.
+    //      Find a better way to poll input from SW while admining with HW.
+    if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && run_mode != 0)) {
       SW->loop();
     } 
   }
@@ -131,7 +135,7 @@
     // TODO: This should probably call something like Controller::outputoff().
     if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(OUTPUT_SWITCH_PIN, 0); }
     
-    adminTimeout();
+    if (! Current || Current == this) adminTimeout();
 
     // TODO: Re-enable this after decoupling from readLine (which should only care about completed buff).
     //       Really? Is this todo still relevant?
@@ -160,8 +164,8 @@
   // Starts, restarts, resets admin with timeout.
   void Menu::updateAdminTimeout(unsigned long seconds) {
     if (admin_timeout != seconds) {
-      LOG(F("updateAdminTimeout(): "));
-      LOG(seconds, true);
+      MU_DEBUG(F("updateAdminTimeout(): "));
+      MU_DEBUG(seconds, true);
     }
     
     admin_timeout = seconds;
@@ -217,13 +221,14 @@
     if (serial_port->available()) {
 
       // If someone typed anything into this serial port,
+      // and Current isn't already set,
       // make this instance the Current one.
-      Current = this;
+      if (! Current) Current = this;
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout();
 
-      // As soon as user types something, disable get-tag-from-scanner.
+      // As soon as user types something (anything), disable get-tag-from-scanner.
       get_tag_from_scanner = 0;
       
       while (serial_port->available() && !bufferReady()) {
@@ -240,7 +245,7 @@
           return;
         }
         
-        serial_port->write(byt);
+        if (Current == this) serial_port->write(byt);
         buff[buff_index] = byt;
         buff_index += 1;
 
@@ -303,6 +308,7 @@
     serial_port->print(F(": "));
   }
 
+  // TODO: Consider renaming this... maybe getInput()?
   void Menu::readLineWithCallback(CB cback, bool _read_tag) {
     MU_PRINTLN(F("Menu::readLineWithCallback()"));
     push(cback);
@@ -503,6 +509,7 @@
     serial_port->println(F("6. Show free memory"));
     serial_port->println(F("7. List readers"));
     serial_port->println(F("8. Restart"));
+    serial_port->println(F("9. BT command"));
     
     serial_port->println("");
 
@@ -567,6 +574,9 @@
         break;
       case 8:
         menuReboot();
+        break;
+      case 9:
+        menuBtCommand();
         break;
       default:
         menuMain();
@@ -727,3 +737,23 @@
       menuListReaders();
     }
   }
+
+
+
+
+    /* Experimental read/write AT commands to BT module. */
+    
+    void Menu::menuBtCommand(void*) {
+      SW->serial_port->println("AT+VERSION");
+      SW->readLineWithCallback(&Menu::menuPrintSerialInput);
+    }
+
+    void Menu::menuPrintSerialInput(void *input) {
+      HW->serial_port->println((char *) input);
+      
+      SW->resetStack();
+      SW->clearSerialPort();
+      SW->resetInputBuffer();
+      
+      HW->menuMain();
+    }

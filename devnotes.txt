@@ -327,7 +327,10 @@ TODO: √ Test changes to RGB implementation.
 
 TODO: √ Store pin assignments in code, not in settings.
       
-TODO: ? Store settings in code for all actual physical hardware settings.
+TODO: √ Store settings in code for all actual physical hardware settings.
+	  Pin assignments have now been stored as macro vars (global).
+	  Anything that is set through software or digital commands should be
+	  adjustable by the user or developer.
 
 TODO: Document RGB LED color and pattern meanings for end-user.
       Document RGB usage for developers.
@@ -370,7 +373,8 @@ TODO: √ Since hardcoding pin assignments, find where you had to compromise
       √ Hard-coded pin assignments may allow some startup routines to
       start logging earlier, or to begin themselves earlier.
 
-TODO: Should the piezo buzzer be located with the RGB LED?
+TODO: ? Should the piezo buzzer be located with the RGB LED?
+	  What does this mean?
 
 TODO: √ Setting tone_frequency from BTLE terminal gives weird results.
       I think it depends on the terminal client, cuz it works fine with
@@ -450,9 +454,12 @@ TODO: √ Users need to see what readers are available, when selecting in settin
 
 TODO: - Consider changing Reader::GetReader() to Reader::Setup()
 
-TODO: Consider if making Reader or Reader::Reader() a template
+TODO: - Consider if making Reader or Reader::Reader() a template
       will help reduce redundant/duplicate code in subclass reader defs (in readers.cpp)
       See the old TestReader() function (readers.cpp) for ideas.
+      
+      Update: I don't think this would help, plus it would require putting the entire
+      contents of reader.cpp into reader.h.
       
 TODO: √ Make reader index/name mapping 1-based (not zero-based).
 
@@ -525,6 +532,16 @@ TODO: Standard log output should always show what is about to happen, not just w
         Loaded tags
         Loaded controller
         
-TODO: Remove unnecessary delay()s.
+TODO: √ Remove unnecessary delay()s.
+
+TODO: Create functions for reading/writing to BT12 module.
+	  
+	    Then add a menu option to change the BT12's advertised name.
+	    This could only be done from the HW serial admin menu (obviously).
+	  
+TODO: Should run_mode and adminTimeout() be stored & handled from Controller (instead of Menu)?
+	  
+TODO: Review nameing of static/extern/global vars and functions.
+
 
 

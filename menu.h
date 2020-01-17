@@ -66,8 +66,8 @@
     void readLine(void* = nullptr);
     void getTagFromScanner();
 
-    /* Data */
-    /* Note that some of these will complain at compile time about unused parameter... it's OK */
+    /* Data
+       Note that some of these will complain at compile time about unused parameter... it's OK */
     int  byteToAsciiChrNum(char);
     void addTagString(void*);
     void deleteTag(void*);
@@ -88,6 +88,8 @@
     void menuSelectedSetting(void* = nullptr); // (char[]);
     void menuListReaders(void* = nullptr);
     void menuSelectedReader(void* = nullptr);
+    void menuBtCommand(void* = nullptr);
+    void menuPrintSerialInput(void* = nullptr);
 
 
     /*  Static Vars & Functions  */
