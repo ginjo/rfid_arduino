@@ -20,7 +20,7 @@
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
     #ifdef BK_DEBUG
       if(S.debugMode()) {
-        LOG(F("Led::begin current, new:")); LOG(led_name, true);
+        LOG(4, F("Led::begin current, new:")); LOG(4, led_name, true);
         printIntervals(intervals);
         printIntervals(_intervals);
       }
@@ -65,13 +65,13 @@
   }
 
   void Led::printIntervals(const int _intervals[INTERVALS_LENGTH]) {
-    LOG(countIntervals(_intervals));
-    LOG(",");
+    LOG(4, countIntervals(_intervals));
+    LOG(4, ",");
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {
-      LOG(" ");
-      LOG(_intervals[n]);
+      LOG(4, " ");
+      LOG(4, _intervals[n]);
     }
-    LOG("", true);
+    LOG(4, "", true);
   }
 
   // Calls begin() only if params have changed.
@@ -81,7 +81,7 @@
     
     #ifdef BK_DEBUG
       if(S.debugMode()) {
-        LOG(F("Led::update current, new: ")); LOG(led_name, true);
+        LOG(4, F("Led::update current, new: ")); LOG(4, led_name, true);
         printIntervals(intervals);
         printIntervals(_intervals);
       }

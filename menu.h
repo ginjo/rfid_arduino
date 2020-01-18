@@ -19,11 +19,12 @@
 
   // See logger.h for master debug controls.
   #ifdef MU_DEBUG
-    #define MU_PRINT(...) DPRINT(__VA_ARGS__)
-    #define MU_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    //#define MU_PRINT(...) DPRINT(__VA_ARGS__)
+    //#define MU_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    #define MU_PRINT(level, dat, line) LOG(level, dat, line)
   #else
     #define MU_PRINT(...)
-    #define MU_PRINTLN(...)
+    //#define MU_PRINTLN(...)
   #endif
   
   #define INPUT_BUFFER_LENGTH 24

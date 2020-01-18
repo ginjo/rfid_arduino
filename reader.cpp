@@ -30,8 +30,8 @@
   {
     //strlcpy(reader_name, _name, sizeof(reader_name));
 
-    //LOG(F("Constructing Reader: "));
-    //LOG(name(), true);
+    //LOG(4, F("Constructing Reader: "));
+    //LOG(4, name(), true);
   }
 
   uint32_t Reader::processTagData(uint8_t[]) {
@@ -227,17 +227,17 @@
       //setProximityState(1);
       last_tag_read_ms = current_ms;
 
-      //LOG(F("Authorized tag: "));
-      LOG(F("Authorized tag: "));
+      //LOG(4, F("Authorized tag: "));
+      LOG(4, F("Authorized tag: "));
 
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
-      //LOG(F("Unauthorized or invalid tag: "));
-      LOG(F("Unauthorized or invalid tag: "));
+      //LOG(4, F("Unauthorized or invalid tag: "));
+      LOG(4, F("Unauthorized or invalid tag: "));
     }
 
     //Serial.println(tag_id);
-    LOG(tag_id, true);
+    LOG(4, tag_id, true);
     
     last_tag_read_id = tag_id;
     
@@ -255,25 +255,25 @@
   void Reader::cycleReaderPower() {
     if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0UL) {
       
-      LOG(F("cycleReaderPower() tag read "));
+      LOG(4, F("cycleReaderPower() tag read "));
       if (last_tag_read_ms > 0UL) {
-        //LOG((ms_since_last_tag_read)/1000UL);
-        LOG(msSinceLastTagRead()/1000UL);
-        LOG(F("s ago"));
+        //LOG(4, (ms_since_last_tag_read)/1000UL);
+        LOG(4, msSinceLastTagRead()/1000UL);
+        LOG(4, F("s ago"));
       } else {
-        LOG(F("never"));
+        LOG(4, F("never"));
       }
 
-      LOG(F(", cycled "));
+      LOG(4, F(", cycled "));
       if (last_reader_power_cycle_ms > 0UL) {
-        //LOG((ms_since_last_reader_power_cycle)/1000UL);
-        LOG(msSinceLastReaderPowerCycle()/1000UL);
-        LOG(F("s ago"));
+        //LOG(4, (ms_since_last_reader_power_cycle)/1000UL);
+        LOG(4, msSinceLastReaderPowerCycle()/1000UL);
+        LOG(4, F("s ago"));
       } else {
-        LOG(F("never"));
+        LOG(4, F("never"));
       }
 
-      LOG(F(", uptime "));
+      LOG(4, F(", uptime "));
       printUptime(true);
 
       RD_PRINTLN(F("cycleReaderPower() setting reader power LOW"));

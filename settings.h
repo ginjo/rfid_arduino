@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre183"
+  #define VERSION "v0.1.0.pre184"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -82,6 +82,7 @@
     int tone_frequency;
     int admin_startup_timeout;
     bool log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
+    uint8_t log_level;
 
     /*  Constructors  */
 
@@ -140,6 +141,7 @@
     const static char str_11[] PROGMEM =  "tone_frequency";
     const static char str_12[] PROGMEM =  "admin_startup_timeout";
     const static char str_13[] PROGMEM =  "log_to_bt";
+    const static char str_14[] PROGMEM =  "log_level";
     extern const char *const SETTING_NAMES[] PROGMEM = {
       str_0,
       str_1,
@@ -154,7 +156,8 @@
       str_10,
       str_11,
       str_12,
-      str_13
+      str_13,
+      str_14
     };
   } // end nameless namespace
     

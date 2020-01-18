@@ -38,7 +38,7 @@
         stack_index += 1;
         stack[stack_index] = func;
       } else {
-        LOG("Tried to push nullptr to stack.", true);
+        LOG(4, "Tried to push nullptr to stack.", true);
       }
     }
 

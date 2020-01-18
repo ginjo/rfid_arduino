@@ -14,14 +14,19 @@
     Disabling debug code can save program memory and ram.
     
     Each class also has its own controls for managing debug code.
-    Comment each class's debug global to disable debug for that class only
+    Comment each class's debug global to disable debug for that class only.
+
+    See this for log levels:
+    https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+
 
     TODO: Create a proper logger with levels:
-      1 fail
-      2 warn
-      3 info
-      4 debug
-      5 trace
+      1 fatal
+      2 error
+      3 warn
+      4 info
+      5 debug
+      6 trace
   */
   
   #define DEBUG        // master debug control
@@ -46,6 +51,7 @@
     #define FREERAM(...)
   #endif
 
+  extern int LogLevel();
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   extern int FreeRam(const char[] = "");
@@ -60,10 +66,17 @@
   // Checks if conditions are right to log to BTserial.
   extern bool canLogToBT();
 
+  //extern void LOG(int level, void *dat, const int base, bool line = false);
+  //extern void LOG(int level, void *dat, bool line = false);
+  
+
   // Handles printing to BTserial with numbers, considers integer base.
-  //
+  // 
+  // The templating here allows to receive any type of parameter!!!
   template<typename T>
-  extern void LOG(T dat, const int base, bool line = false) {
+  extern void LOG(int level, T dat, const int base, bool line = false) {
+    if (level > LogLevel()) return;
+
     if (canLogToBT()) {
       
       BTserial->print(dat, base);
@@ -75,17 +88,20 @@
       // but I don't think this is the issue.
       //delay(2);
     }
-
+  
     Serial.print(dat, base);
     if (line == true) {
       Serial.println("");
     }
   }
-
+  
   // Handles printing to BTserial with strings and char arrays
   //.
+  // The templating here allows to receive any type of parameter!!!
   template<typename T>
-  extern void LOG(T dat, bool line = false) {
+  extern void LOG(int level, T dat, bool line = false) {
+    if (level > LogLevel()) return;
+    
     if (canLogToBT()) {      
       BTserial->print(dat);
       if (line == true) {
@@ -95,7 +111,7 @@
       // but I don't think this is the issue.      
       //delay(2);
     }
-
+  
     Serial.print(dat);
     if (line == true) {
       Serial.println("");

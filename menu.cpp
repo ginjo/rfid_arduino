@@ -47,7 +47,7 @@
   Menu * Menu::SW;
 
   void Menu::Begin() {
-    LOG(F("Menu::Begin()"), true);
+    LOG(4, F("Menu::Begin()"), true);
     HW->begin();
     SW->begin();
 
@@ -129,7 +129,7 @@
   /***  Control  ***/
 
   void Menu::loop() {
-    MU_PRINT(F("MENU LOOP BEGIN: ")); MU_PRINTLN(instance_name);
+    MU_PRINT(5, F("MENU LOOP BEGIN: "), false); MU_PRINT(5, instance_name, true);
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: This should probably call something like Controller::outputoff().
@@ -142,7 +142,7 @@
     //checkSerialPort();
     
     call();
-    MU_PRINTLN(F("MENU LOOP END"));
+    MU_PRINT(5, F("MENU LOOP END"), true);
   }
 
   // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
@@ -150,10 +150,10 @@
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
-    //  LOG(F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
-    //  LOG(run_mode); LOG(" ");
-    //  LOG(admin_timeout); LOG(" ");
-    //  LOG(current_ms); LOG(" ");
+    //  LOG(4, F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "));
+    //  LOG(4, run_mode); LOG(4, " ");
+    //  LOG(4, admin_timeout); LOG(4, " ");
+    //  LOG(4, current_ms); LOG(4, " ");
     //  Serial.println(previous_ms);
 
     if ( elapsed_ms/1000 > admin_timeout || run_mode == 0 ) {
@@ -164,8 +164,8 @@
   // Starts, restarts, resets admin with timeout.
   void Menu::updateAdminTimeout(unsigned long seconds) {
     if (admin_timeout != seconds) {
-      MU_PRINT(F("updateAdminTimeout(): "));
-      MU_PRINTLN(seconds);
+      MU_PRINT(5, F("updateAdminTimeout(): "), false);
+      MU_PRINT(5, seconds, true);
     }
     
     admin_timeout = seconds;
@@ -175,15 +175,14 @@
 
   // Exits admin (and allows main Controller loop to run).
   void Menu::exitAdmin() {
-    MU_PRINTLN(F("Menu::exitAdmin()"));
+    MU_PRINT(5, F("Menu::exitAdmin()"), true);
     resetInputBuffer();
     resetStack();
     if (run_mode != 0) {
-      LOG(instance_name);
-      LOG(F(" setting run_mode => 0"), true);
-      LOG("", true);
-      LOG(F("Entering run mode"), true);
-      LOG("", true);
+      LOG(5, instance_name);
+      LOG(5, F(" setting run_mode => 0"), true);
+      LOG(5, F("Entering run mode"), true);
+      LOG(5, "", true);
 
       run_mode = 0;
       FREERAM("exitAdmin()");
@@ -232,8 +231,8 @@
       while (serial_port->available() && !bufferReady()) {
         char byt = serial_port->read();
         
-        MU_PRINT(F("checkSerialPort() rcvd byte: "));
-        MU_PRINTLN((int)byt);
+        MU_PRINT(6, F("checkSerialPort() rcvd byte: "), false);
+        MU_PRINT(6, (int)byt, true);
 
         // Escape key resets buffer and mimics Enter key, for data-entry abort.
         if ((int)byt == 27) {
@@ -248,7 +247,7 @@
         buff_index += 1;
 
         if ((int)byt == 13 || (int)byt == 10) {   // || (int)byt == 0) {
-          MU_PRINT(F("checkSerialPort EOL indx: ")); MU_PRINTLN(buff_index-1);
+          MU_PRINT(6, F("checkSerialPort EOL indx: "), false); MU_PRINT(6, buff_index-1, true);
           //serial_port->println(F("\r\n"));
           //serial_port->println((char)10);
     
@@ -263,12 +262,12 @@
 
   // Clears any data waiting on serial port, if any.
   void Menu::clearSerialPort() {
-    MU_PRINTLN(F("Menu::clearSerialPort()"));
+    MU_PRINT(6, F("Menu::clearSerialPort()"), true);
     while (serial_port->available()) serial_port->read();    
   }
 
   void Menu::resetInputBuffer() {
-    MU_PRINTLN(F("Menu::resetInputBuffer()"));
+    MU_PRINT(6, F("Menu::resetInputBuffer()"), true);
     memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
     get_tag_from_scanner = 0;
@@ -277,17 +276,17 @@
   bool Menu::bufferReady() {
     bool bool_result = false;
     
-    MU_PRINT("bufferReady? bytes: ");
+    MU_PRINT(6, "bufferReady? bytes: ", false);
     for (uint8_t i=0; i < sizeof(buff); i++) {
-      MU_PRINT((int)buff[i]); MU_PRINT(",");
+      MU_PRINT(6, (int)buff[i], false); MU_PRINT(6, ",", false);
       if (buff[i] == 10 || buff[i] == 13) {
         bool_result = true;
         break;
       }
     }
-    MU_PRINTLN("");
+    MU_PRINT(6, "", true);
 
-    if (bool_result) { MU_PRINT(F("Menu::bufferReady(): ")); MU_PRINTLN(buff); }
+    if (bool_result) { MU_PRINT(6, F("Menu::bufferReady(): "), false); MU_PRINT(6, buff, true); }
     
     return bool_result;
   }
@@ -308,7 +307,7 @@
 
   // TODO: Consider renaming this... maybe getInput()?
   void Menu::readLineWithCallback(CB cback, bool _read_tag) {
-    MU_PRINTLN(F("Menu::readLineWithCallback()"));
+    MU_PRINT(6, F("Menu::readLineWithCallback()"), true);
     push(cback);
     push(&Menu::readLine);
     clearSerialPort();
@@ -352,7 +351,7 @@
     if (get_tag_from_scanner) {
       reader->loop();
       if (reader->last_tag_read_id) {
-        MU_PRINT(F("Menu::getTagFromScanner() found tag ")); MU_PRINTLN(reader->last_tag_read_id);
+        MU_PRINT(6, F("Menu::getTagFromScanner() found tag "), false); MU_PRINT(6, reader->last_tag_read_id, true);
         char str[9];
         sprintf(str, "%lu", reader->last_tag_read_id);
         strlcpy(buff, str, sizeof(buff));
@@ -378,8 +377,8 @@
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
   int Menu::byteToAsciiChrNum(const char byt) {
-    MU_PRINT(F("Menu::byteToAsciiChrNum rcvd byte: "));
-    MU_PRINTLN((int)byt);
+    MU_PRINT(6, F("Menu::byteToAsciiChrNum rcvd byte: "), false);
+    MU_PRINT(6, (int)byt, true);
     //  MU_PRINT(" (");
     //  MU_PRINT(byt);
     //  MU_PRINTLN(")");
@@ -440,7 +439,7 @@
   }
 
   void Menu::deleteTag(void *dat) {
-    MU_PRINTLN(F("Menu::deleteTag()"));
+    MU_PRINT(6, F("Menu::deleteTag()"), true);
     
     char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
@@ -471,20 +470,20 @@
   void Menu::updateSetting(void *dat) {
     char *str = (char*)dat;
     
-    MU_PRINT(F("Menu::updateSetting(): "));
-    MU_PRINT(selected_menu_item);
-    MU_PRINT(", ");
+    MU_PRINT(6, F("Menu::updateSetting(): "), false);
+    MU_PRINT(6, selected_menu_item, false);
+    MU_PRINT(6, ", ", false);
     //MU_PRINTLN((char *)buff);
-    MU_PRINTLN(str);
+    MU_PRINT(6, str, true);
 
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
-      LOG(F("updateSetting() aborted"), true);
+      LOG(4, F("updateSetting() aborted"), true);
     } else if (S.updateSetting(selected_menu_item, str)) {
       // Because we need this after updating any Menu settings
       // and there isn't a better place for this (yet?).
       updateAdminTimeout();          
     } else {
-      LOG(F("updateSetting() call to S.updateSetting() failed"), true);
+      LOG(4, F("updateSetting() call to S.updateSetting() failed"), true);
     }
 
     selected_menu_item = -1;
@@ -496,7 +495,7 @@
   /***  Menu  ***/
   
   void Menu::menuMain(void *dat) {
-    MU_PRINTLN(F("Menu::menuMain()"));
+    MU_PRINT(6, F("Menu::menuMain()"), true);
     serial_port->println(F("Menu"));
     serial_port->println(F("0. Exit"));
     serial_port->println(F("1. List tags"));
@@ -523,8 +522,8 @@
   // Activates an incoming menu selection.
   // TODO: Figure out when we pop() the stack ?!? This methods should always pop() itself out of the stack.
   void Menu::menuSelectedMainItem(void *bytes) {
-    MU_PRINT(F("menuSelectedMainItem rcvd data: "));
-    MU_PRINTLN((char*)bytes);
+    MU_PRINT(6, F("menuSelectedMainItem rcvd data: "), false);
+    MU_PRINT(6, (char*)bytes, true);
 
     // pop(); // I think the prompt() that set up this callback
     // will automatically pop() it, so we shouldn't need this.
@@ -539,8 +538,8 @@
       selected_menu_item = strtol((char*)bytes, NULL, 10);
     }
 
-    MU_PRINT(F("menuSelectedMainItem bytes to num: "));
-    MU_PRINTLN(selected_menu_item);
+    MU_PRINT(6, F("menuSelectedMainItem bytes to num: "), false);
+    MU_PRINT(6, selected_menu_item, true);
     
     switch (selected_menu_item) {
       // warn: a missing 'break' will allow
@@ -584,7 +583,7 @@
 
   // Lists tags for menu.
   void Menu::menuListTags(void *dat, CB cback) {
-    MU_PRINTLN(F("Menu::menuListTags()"));
+    MU_PRINT(6, F("Menu::menuListTags()"), true);
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
     serial_port->print(F(", size "));
@@ -611,14 +610,14 @@
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
   void Menu::menuAddTag(void *dat) {
-    MU_PRINTLN(F("Menu::menuAddTag()"));
+    MU_PRINT(6, F("Menu::menuAddTag()"), true);
     //get_tag_from_scanner = 1; // now handled by promt(,,true). See promt().
     prompt("Enter (or scan) a tag number (unsigned long) to store", &Menu::addTagString, true);
   }
 
   // Asks user for index of tag to delete from EEPROM.
   void Menu::menuDeleteTag(void *dat) {
-    MU_PRINTLN(F("Menu::menuDeleteTag()"));
+    MU_PRINT(6, F("Menu::menuDeleteTag()"), true);
     //menuListTags();
     //prompt("Enter tag index to delete", &Menu::deleteTag);
     menuListTags((void*)"Enter tag index to delete", &Menu::deleteTag);
@@ -626,13 +625,13 @@
 
   // Deletes all tags from EEPROM.
   void Menu::menuDeleteAllTags(void *dat) {
-    MU_PRINTLN(F("Menu::menuDeleteAllTags()"));
+    MU_PRINT(6, F("Menu::menuDeleteAllTags()"), true);
     //prompt("Delete all tags [y/N]?", &Menu::deleteAllTags);
     menuListTags((void*)"Delete all tags [y/N]?", &Menu::deleteAllTags);
   }
 
   void Menu::menuShowFreeMemory() {
-    MU_PRINTLN(F("Menu::menuShowFreeMemory()"));
+    MU_PRINT(6, F("Menu::menuShowFreeMemory()"), true);
     int ram = FreeRam();
     serial_port->print(F("Free Memory: "));
     serial_port->println(ram);
@@ -641,26 +640,15 @@
   }
 
   void Menu::menuReboot() {
-    MU_PRINTLN(F("Menu::menuReboot()"));
+    MU_PRINT(6, F("Menu::menuReboot()"), true);
     resetFunc();
   }
 
   void Menu::menuSettings(void *dat) {
-    MU_PRINTLN(F("Menu::menuSettings()"));
+    MU_PRINT(6, F("Menu::menuSettings()"), true);
     //selected_menu_item = NULL;
     selected_menu_item = -1;
-    // Moved to Settings::printSettings()
-    //  serial_port->print(F("Settings, chksm 0x"));
-    //  serial_port->print(S.calculateChecksum(), 16);
-    //  serial_port->print(F(", size "));
-    //  serial_port->println(sizeof(S));
 
-    // Prints out all settings in tabular format.
-    //for (int n=1; n <= SETTINGS_SIZE; n++) {
-    //  char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
-    //  S.displaySetting(n, output);
-    //  serial_port->println(output);
-    //}
     S.printSettings(serial_port);
 
     serial_port->println("");
@@ -671,7 +659,7 @@
   // Handle selected setting.
   //void Menu::menuSelectedSetting(char bytes[]) {
   void Menu::menuSelectedSetting(void *input) {
-    MU_PRINTLN(F("Menu::menuSelectedSetting()"));
+    MU_PRINT(6, F("Menu::menuSelectedSetting()"), true);
     
     char *bytes = (char*)input;
     
@@ -680,8 +668,8 @@
 
     selected_menu_item = strtol(bytes, NULL, 10);
     
-    MU_PRINT(F("menuSelectedSetting set selected_menu_item to: "));
-    MU_PRINTLN(selected_menu_item);
+    MU_PRINT(6, F("menuSelectedSetting set selected_menu_item to: "), false);
+    MU_PRINT(6, selected_menu_item, true);
 
     // If user selected valid settings item.
     if (selected_menu_item > 0 && selected_menu_item <= SETTINGS_SIZE) {
@@ -701,7 +689,7 @@
 
   // Lists readers for menu.
   void Menu::menuListReaders(void *dat) {
-    MU_PRINTLN(F("Menu::menuListReaders()"));
+    MU_PRINT(6, F("Menu::menuListReaders()"), true);
     
     Reader::PrintReaders(serial_port);
     serial_port->println("");
@@ -712,8 +700,8 @@
   void Menu::menuSelectedReader(void *input) {
     int selected_reader = (int)strtol((char *)input, NULL, 10);
 
-    //LOG(F("input: ")); LOG((char *)input, true);
-    //LOG(F("selected_reader: ")); LOG(selected_reader, true);
+    //LOG(4, F("input: ")); LOG(4, (char *)input, true);
+    //LOG(4, F("selected_reader: ")); LOG(4, selected_reader, true);
 
     //MU_PRINT(F("menuSelectedReader set selected_reader to: "));
     //MU_PRINTLN(selected_reader);

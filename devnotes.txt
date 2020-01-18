@@ -548,3 +548,8 @@ TODO: √ Only run AT commands to SW serial if module is not connected.
 
 TODO: √ Prevent lockout if SW admin invokes command 9 (send AT commands).
 
+TODO: Created basic logging framework and converted Menu class.
+      Now upload and try it.
+      Then convert other classes.
+      
+      

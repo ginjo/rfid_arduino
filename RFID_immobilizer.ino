@@ -62,7 +62,7 @@
     
     delay(15);
 
-    LOG(F("RFID proximity sensor pre-boot"), true);
+    LOG(4, F("RFID proximity sensor pre-boot"), true);
 
     INO_PRINTLN(F("Initialized default serial port @ 57600 baud"));
 
@@ -81,28 +81,28 @@
     
     delay(15);
 
-    LOG(F("Booting RFID proximity sensor, "));
-    LOG(VERSION);
-    LOG(F(", "));
-    LOG(TIMESTAMP, true);
+    LOG(4, F("Booting RFID proximity sensor, "));
+    LOG(4, VERSION);
+    LOG(4, F(", "));
+    LOG(4, TIMESTAMP, true);
 
-    LOG(F("Debug pin status: "));
-    LOG(TempDebug, true);
+    LOG(4, F("Debug pin status: "));
+    LOG(4, TempDebug, true);
 
     #ifdef INO_DEBUG
-      LOG(F("Loaded Settings '"));
-      LOG(S.settings_name);
-      LOG(F("' with checksum '0x"));
-      LOG(S.calculateChecksum(), 16);
-      LOG(F("' of size "));
-      LOG(sizeof(S), true);
+      LOG(4, F("Loaded Settings '"));
+      LOG(4, S.settings_name);
+      LOG(4, F("' with checksum '0x"));
+      LOG(4, S.calculateChecksum(), 16);
+      LOG(4, F("' of size "));
+      LOG(4, sizeof(S), true);
     #endif
     
-    LOG(F("Initialized serial port with loaded setting: "));
-    LOG(S.hw_serial_baud, true);
+    LOG(4, F("Initialized serial port with loaded setting: "));
+    LOG(4, S.hw_serial_baud, true);
 
     // Displays current settings and readers.
-    LOG("", true);
+    LOG(4, "", true);
     S.printSettings(&Serial);
     Serial.println("");
     //Reader::PrintReaders(&Serial);
@@ -169,7 +169,7 @@
     FREERAM("end setup()");
 
     // Add empty line before beginning loop.
-    LOG("", true);
+    LOG(4, "", true);
 
   } // setup()
 

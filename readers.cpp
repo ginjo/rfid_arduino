@@ -15,8 +15,8 @@
     RDM6300() :
       Reader(14, 3, 10, 1)
     {
-      LOG(F("Loading reader: "));
-      LOG(name(), true);  
+      LOG(4, F("Loading reader: "));
+      LOG(4, name(), true);  
     }
   
     uint32_t processTagData(uint8_t _tag[24]) {
@@ -53,8 +53,8 @@
     R7941E() :
       Reader(10, 4, 7, 1)
     {
-      LOG(F("Loading reader: "));
-      LOG(name(), true);  
+      LOG(4, F("Loading reader: "));
+      LOG(4, name(), true);  
     }
       
     uint32_t processTagData(uint8_t _tag[]) {
@@ -105,8 +105,8 @@
     WL125() :
       Reader(13, 3, 10, 0)
     {
-      LOG(F("Loading reader: "));
-      LOG(name(), true);  
+      LOG(4, F("Loading reader: "));
+      LOG(4, name(), true);  
     }
   
     uint32_t processTagData(uint8_t _tag[]) {

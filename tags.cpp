@@ -21,14 +21,14 @@
   void Tags::save() {
     compactTags();
 
-    LOG(F("Saving tags with checksum 0x"));
-    LOG(calculateChecksum(), 16);
-    LOG(F(" to address "));
-    LOG(eeprom_address, true);
+    LOG(4, F("Saving tags with checksum 0x"));
+    LOG(4, calculateChecksum(), 16);
+    LOG(4, F(" to address "));
+    LOG(4, eeprom_address, true);
     for (int i=0; i < TAG_LIST_SIZE; i++) {
-      LOG(tag_array[i]); LOG(",");
+      LOG(4, tag_array[i]); LOG(4, ",");
     }
-    LOG("", true);
+    LOG(4, "", true);
 
     Storage::save(eeprom_address);
   }
@@ -70,45 +70,45 @@
 
   // Adds tag to this set, and saves the set in EEPROM.
   int Tags::addTag(uint32_t new_tag) {
-    LOG(F("addTag() "));
-    LOG(new_tag, true);
+    LOG(4, F("addTag() "));
+    LOG(4, new_tag, true);
     compactTags();
     int tag_count = countTags();
     
     if(new_tag < 1) {
-      LOG(F("addTag() aborted: Invalid code"), true);
+      LOG(4, F("addTag() aborted: Invalid code"), true);
       return 1;
     } else if (tag_count >= TAG_LIST_SIZE) {
-      LOG(F("addTag() failed: Full"), true);
+      LOG(4, F("addTag() failed: Full"), true);
       return 2;
     } else if (getTagIndex(new_tag) >=0) {
-      LOG(F("addTag() failed: Dupe"), true);
+      LOG(4, F("addTag() failed: Dupe"), true);
       return 3;
     }
 
     tag_array[tag_count] = new_tag;
     if (tag_array[tag_count] == new_tag) {
       save();
-      LOG(F("addTag() success"), true);
+      LOG(4, F("addTag() success"), true);
       return 0;
     } else {
-      LOG(F("addTag() failed: Unknown error"), true);
+      LOG(4, F("addTag() failed: Unknown error"), true);
       return -1;
     }
   } // addTag()
 
   // Deletes a tag from this set.
   int Tags::deleteTag(uint32_t deleteable_tag) {
-    LOG(F("deleteTag(): "));
-    LOG(deleteable_tag, true);
+    LOG(4, F("deleteTag(): "));
+    LOG(4, deleteable_tag, true);
     int tag_index = getTagIndex(deleteable_tag);
     return deleteTagIndex(tag_index);
   }
 
   // Deletes a tag, by index, from this set.
   int Tags::deleteTagIndex(int index) {
-    LOG(F("deleteTagIndex(): "));
-    LOG(index, true);
+    LOG(4, F("deleteTagIndex(): "));
+    LOG(4, index, true);
     if (index >= 0) {
       tag_array[index] = 0;
       save();
@@ -120,7 +120,7 @@
 
   // Deletes all tags from this set.
   int Tags::deleteAllTags() {
-    LOG(F("deleteAllTags()"), true);
+    LOG(4, F("deleteAllTags()"), true);
     memset(tag_array, 0, TAG_LIST_SIZE*4);
     //Tags = new uint32_t[TAG_LIST_SIZE];
     save();
@@ -152,21 +152,21 @@
   //
   Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
     #ifdef TA_DEBUG
-      LOG(F("Tags::Load() BEGIN"), true);
+      LOG(4, F("Tags::Load() BEGIN"), true);
     #endif
     
     Storage::Load(tag_set, _eeprom_address);
 
-    LOG(F("Tags loaded "));
+    LOG(4, F("Tags loaded "));
     if (S.debugMode()) {
       for (int i=0; i < TAG_LIST_SIZE; i++) {
-        LOG(tag_set->tag_array[i]); LOG(",");
+        LOG(4, tag_set->tag_array[i]); LOG(4, ",");
       }
     }
-    LOG("", true);
+    LOG(4, "", true);
 
     if (! tag_set->checksumMatch()) {
-      LOG(F("Tags::Load() checksum mismatch, creating new tag-set"), true);
+      LOG(4, F("Tags::Load() checksum mismatch, creating new tag-set"), true);
       tag_set = new Tags();
       /* Don't save tag_set automatically. Let the user decide
          by adding a new tag (which will then save the entire set. */
@@ -176,7 +176,7 @@
     tag_set->compactTags();
 
     #ifdef TA_DEBUG
-      LOG(F("Tags::Load() END"), true);
+      LOG(4, F("Tags::Load() END"), true);
     #endif
     
     return tag_set;

@@ -2,6 +2,13 @@
   #include "settings.h"
   #include "menu.h"
 
+  extern int LogLevel() {
+    if (S.debugMode() && S.log_level < 5) {
+      return 5;
+    } else {
+      return (int)S.log_level;
+    }
+  }
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   extern int FreeRam (const char txt[]) {
@@ -9,7 +16,7 @@
     int v; 
     int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
     Serial.print(F("FREE RAM (")); Serial.print(rslt); Serial.print(F(") ")); Serial.println(txt);
-    //LOG(F("FREE RAM (")); LOG(rslt); LOG(F(") ")); LOG(txt, true);
+    //LOG(4, F("FREE RAM (")); LOG(4, rslt); LOG(4, F(") ")); LOG(4, txt, true);
     return rslt;
   }
 
@@ -35,6 +42,7 @@
     char out[] = "";
     sprintf(out, "%li:%li:%li", hours, rminutes, rseconds);
     
-    LOG(out, line);
+    LOG(4, out, line);
   }
+  
   

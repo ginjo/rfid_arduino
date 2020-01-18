@@ -43,7 +43,8 @@
     rfid_baud(9600),
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
-    log_to_bt(false)
+    log_to_bt(false),
+    log_level(3)
   {     
     strlcpy(settings_name, "default-settings", sizeof(settings_name));
     //strlcpy(default_reader, "WL-125", sizeof(default_reader));
@@ -111,7 +112,10 @@
       case 14:
         log_to_bt = (bool)strtol(_data, NULL, 10);
         break;
-                        
+      case 15:
+        log_level = (uint8_t)strtol(_data, NULL, 10);
+        break;
+      
       default :
         return false;
     }
@@ -175,7 +179,10 @@
         sprintf(setting_value, "%i", log_to_bt);
         //sprintf(setting_value, log_to_bt ? "true" : "false");
         break;
-                                
+      case 15 :
+        sprintf(setting_value, "%i", log_level);
+        break;
+      
       default:
         break;
     } // switch
@@ -223,7 +230,7 @@
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
     int result = Storage::save();
-    LOG(F("Settings::save() result: ")); LOG(result, true);
+    LOG(4, F("Settings::save() result: ")); LOG(4, result, true);
     //Serial.println(F("Settings::save() END"))
     return result;
   }
@@ -251,13 +258,13 @@
   //
   Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
     #ifdef ST_DEBUG
-      LOG(F("Settings::Load() BEGIN"), true);
+      LOG(4, F("Settings::Load() BEGIN"), true);
     #endif
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
     //Storage::Load(&Current, _eeprom_address);
     if (Failsafe()) {
-      LOG(F("Failsafe enabled, skipping stored settings"), true);
+      LOG(4, F("Failsafe enabled, skipping stored settings"), true);
     } else {
       Storage::Load(settings_obj, _eeprom_address);
     }
@@ -267,19 +274,19 @@
     // verified can result in UB !!!
     //
     #ifdef ST_DEBUG
-      LOG(F("Settings::Load() storage_name '"));
-      LOG(settings_obj->storage_name);
-      LOG(F("' settings_name '"));
-      LOG(settings_obj->settings_name);
-      LOG(F("' chksm 0x"));
-      LOG(settings_obj->checksum, 16, true);
+      LOG(4, F("Settings::Load() storage_name '"));
+      LOG(4, settings_obj->storage_name);
+      LOG(4, F("' settings_name '"));
+      LOG(4, settings_obj->settings_name);
+      LOG(4, F("' chksm 0x"));
+      LOG(4, settings_obj->checksum, 16, true);
     #endif
 
     // Handles checksum mismatch by loading default settings.
     // TODO: √ Don't save default settings, let the user do it.
     //if (GetStoredChecksum() != calculated_checksum) {
     if (!settings_obj->checksumMatch() || Failsafe()) {
-      LOG(F("Settings::Load() chksm mismatch"), true);
+      LOG(4, F("Settings::Load() chksm mismatch"), true);
       settings_obj = new Settings();
       strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
       settings_obj->eeprom_address = _eeprom_address;
@@ -288,15 +295,15 @@
          Currently the user needs to change/save a default setting
          to get the entire defaults set to save to eeprom. This is good. */
       //if (! Failsafe()) settings_obj->save();
-      LOG(F("Settings::Load() using default settings '"));
+      LOG(4, F("Settings::Load() using default settings '"));
       
     } else {
-      LOG(F("Settings::Load() using loaded settings '"));
+      LOG(4, F("Settings::Load() using loaded settings '"));
     }
     
-    LOG(settings_obj->settings_name); LOG("'", true);
+    LOG(4, settings_obj->settings_name); LOG(4, "'", true);
     #ifdef ST_DEBUG
-      LOG(F("Settings::Load() END"), true);
+      LOG(4, F("Settings::Load() END"), true);
     #endif
 
     return settings_obj;

@@ -52,7 +52,7 @@
         
     static T* Load (T * object_ref, int eeprom_address) {
       #ifdef SO_DEBUG
-        LOG(F("Storage::Load() BEGIN"), true);
+        LOG(4, F("Storage::Load() BEGIN"), true);
       #endif
       
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
@@ -60,17 +60,17 @@
       object_ref->eeprom_address = eeprom_address;
       
       if (! object_ref->checksumMatch()) {
-        LOG(F("Storage::Load() checksum mismatch"), true);
+        LOG(4, F("Storage::Load() checksum mismatch"), true);
         //object_ref->checksum = (uint16_t)0;
       }
 
       #ifdef SO_DEBUG
-        LOG(F("eeprom_address ")); LOG(eeprom_address, true);
-        LOG(F("object_ref->storage_name '")); LOG(object_ref->storage_name); LOG("'", true);
-        LOG(F("sizeof(*object_ref) ")); LOG(sizeof(*object_ref), true);
-        LOG(F("sizeof(T) ")); LOG(sizeof(T), true);
+        LOG(4, F("eeprom_address ")); LOG(4, eeprom_address, true);
+        LOG(4, F("object_ref->storage_name '")); LOG(4, object_ref->storage_name); LOG(4, "'", true);
+        LOG(4, F("sizeof(*object_ref) ")); LOG(4, sizeof(*object_ref), true);
+        LOG(4, F("sizeof(T) ")); LOG(4, sizeof(T), true);
 
-        LOG(F("Storage::Load() END"), true);
+        LOG(4, F("Storage::Load() END"), true);
       #endif
       
       return object_ref;
@@ -94,7 +94,7 @@
     // what address to use.
     int save(int _eeprom_address = -1) {
       #ifdef SO_DEBUG
-        LOG(F("Storage::save() BEGIN"), true);
+        LOG(4, F("Storage::save() BEGIN"), true);
       #endif
 
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
@@ -107,7 +107,7 @@
       
       if (! checksumMatch()) {
         #ifdef SO_DEBUG
-          LOG(F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
+          LOG(4, F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
         #endif
 
         checksum = calculateChecksum();
@@ -118,14 +118,14 @@
         EEPROM.put(eeprom_address, *(T*)this);
 
         #ifdef SO_DEBUG
-          LOG(F("Storage::save() END"), true);
+          LOG(4, F("Storage::save() END"), true);
         #endif
         
         return 1;
       } else {
         #ifdef SO_DEBUG
-          LOG(F("Storage::save() EEPROM update not necessary"), true);
-          LOG(F("Storage::save() END"), true);
+          LOG(4, F("Storage::save() EEPROM update not necessary"), true);
+          LOG(4, F("Storage::save() END"), true);
         #endif
         return 0;
       }
@@ -148,9 +148,9 @@
       }
 
       //  #ifdef SO_DEBUG
-      //    LOG(F("Storage::claculateChecksum() 0x")); LOG(xxor, 16);
-      //    LOG(F(" for storage_name '")); LOG(storage_name);
-      //    LOG(F("' of size ")); LOG(len, true);
+      //    LOG(4, F("Storage::claculateChecksum() 0x")); LOG(4, xxor, 16);
+      //    LOG(4, F(" for storage_name '")); LOG(4, storage_name);
+      //    LOG(4, F("' of size ")); LOG(4, len, true);
       //  #endif
 
       checksum = stored_checksum;
@@ -169,9 +169,9 @@
       );
 
       #ifdef SO_DEBUG
-        LOG("Storage::checksumMatch() 0x"); LOG(checksum, 16);
-        LOG(" 0x"); LOG(calculated_checksum, 16);
-        LOG(", bool-result: "); LOG(result, true);
+        LOG(4, "Storage::checksumMatch() 0x"); LOG(4, checksum, 16);
+        LOG(4, " 0x"); LOG(4, calculated_checksum, 16);
+        LOG(4, ", bool-result: "); LOG(4, result, true);
       #endif
       
       //  checksum = stored_checksum;
