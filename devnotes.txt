@@ -516,9 +516,10 @@ TODO: √ Missig some log items in BTserial when only log_to_bt is set (no HW pi
 TODO: Debug-logging clobbers HW menu interface when debug-pin is used.
       Logging to HW interface should be minimal when HW serial menu is active.
       
-TODO: Standard log output should always show what is about to happen, not just what happened.
+TODO: Standard log output should always show what is about to happen, not what just happened.
       This will give you more info in case of a failure/crash/error.
       Debug log output should add the "what just happened" info.
+      Or do I have this backwards with regards to standard vs debug output.
       
       Example (good):
         Loading settings
@@ -543,7 +544,7 @@ TODO: Should run_mode and adminTimeout() be stored & handled from Controller (in
 	  
 TODO: Review naming of static/extern/global vars and functions.
 
-TODO: Only run AT commands to SW serial if module is not connected.
+TODO: √ Only run AT commands to SW serial if module is not connected.
 
-TODO: Prevent lockout if SW admin invokes command 9 (send AT commands).
+TODO: √ Prevent lockout if SW admin invokes command 9 (send AT commands).
 
