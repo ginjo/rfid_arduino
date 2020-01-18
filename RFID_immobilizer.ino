@@ -62,14 +62,8 @@
     
     delay(15);
 
-    LOG(F("Booting RFID proximity sensor, "));
-    LOG(VERSION);
-    LOG(F(", "));
-    LOG(TIMESTAMP, true);
+    LOG(F("RFID proximity sensor pre-boot"), true);
 
-    LOG(F("Debug pin status: "));
-    LOG(TempDebug, true);
-    
     INO_PRINTLN(F("Initialized default serial port @ 57600 baud"));
 
     FREERAM("setup() before Settings::Load()");
@@ -86,6 +80,14 @@
     while (! Serial) delay(10);
     
     delay(15);
+
+    LOG(F("Booting RFID proximity sensor, "));
+    LOG(VERSION);
+    LOG(F(", "));
+    LOG(TIMESTAMP, true);
+
+    LOG(F("Debug pin status: "));
+    LOG(TempDebug, true);
 
     #ifdef INO_DEBUG
       LOG(F("Loaded Settings '"));

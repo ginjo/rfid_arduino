@@ -760,6 +760,7 @@
       HW->prompt("Enter AT+ command", &Menu::menuSendAtCommand);
     } else {
       serial_port->println(F("N/A"));
+      serial_port->println("");
       menuMain();
     }
   }
@@ -767,7 +768,7 @@
   void Menu::menuSendAtCommand(void *_input) {
     /* Remember that when you pass a char array to a function,
        you convert it to a pointer. Fortunately, strlen() knows
-       how to get the length of the c-string that's pointed to.
+       how to get the length of the c-string that's pointed to (looks for NULL).
     */
 
     int len = strlen((char *)_input);

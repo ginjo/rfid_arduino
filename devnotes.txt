@@ -534,9 +534,9 @@ TODO: Standard log output should always show what is about to happen, not just w
         
 TODO: √ Remove unnecessary delay()s.
 
-TODO: Create functions for reading/writing to BT12 module.
+TODO: √ Create functions for reading/writing to BT12 module.
 	  
-	    Then add a menu option to change the BT12's advertised name.
+TODO:	Then add a menu option to change the BT12's advertised name.
 	    This could only be done from the HW serial admin menu (obviously).
 	  
 TODO: Should run_mode and adminTimeout() be stored & handled from Controller (instead of Menu)?
