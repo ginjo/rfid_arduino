@@ -60,9 +60,9 @@
     //BTserial->flush();
     BTserial->begin(S.bt_baud);
     
-    delay(15);
+    delay(25);
 
-    LOG(4, F("RFID proximity sensor pre-boot"), true);
+    LOG(1, F("RFID proximity sensor pre-boot"), true);
 
     INO_PRINTLN(F("Initialized default serial port @ 57600 baud"));
 
@@ -79,15 +79,12 @@
     Serial.begin(S.hw_serial_baud);
     while (! Serial) delay(10);
     
-    delay(15);
+    delay(25);
 
     LOG(4, F("Booting RFID proximity sensor, "));
     LOG(4, VERSION);
     LOG(4, F(", "));
     LOG(4, TIMESTAMP, true);
-
-    LOG(4, F("Debug pin status: "));
-    LOG(4, TempDebug, true);
 
     #ifdef INO_DEBUG
       LOG(4, F("Loaded Settings '"));
@@ -97,6 +94,16 @@
       LOG(4, F("' of size "));
       LOG(4, sizeof(S), true);
     #endif
+
+    LOG(4, F("Debug pin status: "));
+    LOG(4, TempDebug, true);
+
+    LOG(4, F("Log level: "));
+    LOG(4, S.log_level, false);
+    //Serial.println(S.log_level);
+
+    LOG(4, F("LogLevel(): "));
+    LOG(4, LogLevel(), true);
     
     LOG(4, F("Initialized serial port with loaded setting: "));
     LOG(4, S.hw_serial_baud, true);

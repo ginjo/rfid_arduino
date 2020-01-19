@@ -33,7 +33,7 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 14 // quantity of settings vars
+  #define SETTINGS_SIZE 15 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
@@ -55,7 +55,7 @@
     static Settings Current;
     //static bool TempDebug;
 
-    static Settings* Load(Settings* settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
+    static Settings* Load(Settings *settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
     static bool Failsafe();
     
 
@@ -104,7 +104,7 @@
   /***  Global / External Vars & Funcs  ***/
 
   // This declares an extern 'S' of type Settings.
-  // This will be a ref (pointer?) to Settings::Current
+  // This will be a ref to Settings::Current
   // and is intended as a convenience shortcut, since
   // Settings::Current is referred to so many times in the project.
   extern Settings& S;

@@ -76,13 +76,13 @@
     int tag_count = countTags();
     
     if(new_tag < 1) {
-      LOG(4, F("addTag() aborted: Invalid code"), true);
+      LOG(3, F("addTag() aborted: Invalid code"), true);
       return 1;
     } else if (tag_count >= TAG_LIST_SIZE) {
-      LOG(4, F("addTag() failed: Full"), true);
+      LOG(3, F("addTag() failed: Full"), true);
       return 2;
     } else if (getTagIndex(new_tag) >=0) {
-      LOG(4, F("addTag() failed: Dupe"), true);
+      LOG(3, F("addTag() failed: Dupe"), true);
       return 3;
     }
 
@@ -92,7 +92,7 @@
       LOG(4, F("addTag() success"), true);
       return 0;
     } else {
-      LOG(4, F("addTag() failed: Unknown error"), true);
+      LOG(2, F("addTag() failed: Unknown error"), true);
       return -1;
     }
   } // addTag()
@@ -151,33 +151,33 @@
   // TODO: Is this decoupled option appropriate for the Settings class too?
   //
   Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
-    #ifdef TA_DEBUG
-      LOG(4, F("Tags::Load() BEGIN"), true);
-    #endif
+    TA_LOG(6, F("Tags::Load() BEGIN"), true);
     
     Storage::Load(tag_set, _eeprom_address);
 
-    LOG(4, F("Tags loaded "));
-    if (S.debugMode()) {
-      for (int i=0; i < TAG_LIST_SIZE; i++) {
-        LOG(4, tag_set->tag_array[i]); LOG(4, ",");
+    LOG(4, F("Tags loaded"), true);
+    //if (S.debugMode()) {
+    #ifdef TA_DEBUG
+      if (LogLevel() >= 5) {
+        for (int i=0; i < TAG_LIST_SIZE; i++) {
+          LOG(5, tag_set->tag_array[i]); LOG(4, ",");
+        }
       }
-    }
-    LOG(4, "", true);
+      LOG(4, "", true);
+    #endif
 
     if (! tag_set->checksumMatch()) {
-      LOG(4, F("Tags::Load() checksum mismatch, creating new tag-set"), true);
+      LOG(2, F("Tags::Load() checksum mismatch, creating new tag-set"), true);
       tag_set = new Tags();
-      /* Don't save tag_set automatically. Let the user decide
-         by adding a new tag (which will then save the entire set. */
+      /* Don't save tag_set automatically, cuz it overwrites all saved tags.
+         Let the user decide whether to overwrite all saved tags by adding a new tag
+      */
       //tag_set->save();
     }
 
     tag_set->compactTags();
 
-    #ifdef TA_DEBUG
-      LOG(4, F("Tags::Load() END"), true);
-    #endif
+    TA_LOG(4, F("Tags::Load() END"), true);
     
     return tag_set;
   } // Load()

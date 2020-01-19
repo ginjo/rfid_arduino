@@ -6,6 +6,13 @@
   #include <EEPROM.h>
   #include "logger.h"
 
+  // See logger.h for master debug controls.
+  #ifdef SO_DEBUG
+    #define SO_LOG(level, dat, line) LOG(level, dat, line)
+  #else
+    #define SO_LOG(...)
+  #endif
+
   #define STORAGE_NAME_SIZE 16
   #define STATE_EEPROM_ADDRESS 0
   #define TAGS_EEPROM_ADDRESS 700
@@ -51,27 +58,22 @@
     /***  Static / Class Vars & Functions  ***/
         
     static T* Load (T * object_ref, int eeprom_address) {
-      #ifdef SO_DEBUG
-        LOG(4, F("Storage::Load() BEGIN"), true);
-      #endif
+      SO_LOG(6, F("Storage::Load() BEGIN"), true);
       
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
 
       object_ref->eeprom_address = eeprom_address;
       
       if (! object_ref->checksumMatch()) {
-        LOG(4, F("Storage::Load() checksum mismatch"), true);
-        //object_ref->checksum = (uint16_t)0;
+        LOG(3, F("Storage::Load() checksum mismatch"), true);
       }
+      
+      SO_LOG(5, F("Storage eeprom_address "), false); SO_LOG(4, eeprom_address, true);
+      SO_LOG(5, F("Storage object_ref->storage_name '"), false); SO_LOG(4, object_ref->storage_name, false); LOG(4, "'", true);
+      SO_LOG(5, F("Storage sizeof(*object_ref) "), false); SO_LOG(4, sizeof(*object_ref), true);
+      SO_LOG(5, F("Storage sizeof(T) "), false); SO_LOG(4, sizeof(T), true);
 
-      #ifdef SO_DEBUG
-        LOG(4, F("eeprom_address ")); LOG(4, eeprom_address, true);
-        LOG(4, F("object_ref->storage_name '")); LOG(4, object_ref->storage_name); LOG(4, "'", true);
-        LOG(4, F("sizeof(*object_ref) ")); LOG(4, sizeof(*object_ref), true);
-        LOG(4, F("sizeof(T) ")); LOG(4, sizeof(T), true);
-
-        LOG(4, F("Storage::Load() END"), true);
-      #endif
+      SO_LOG(6, F("Storage::Load() END"), true);
       
       return object_ref;
     }
@@ -93,22 +95,25 @@
     // Sub-classes, like Settings, should carry the info about
     // what address to use.
     int save(int _eeprom_address = -1) {
-      #ifdef SO_DEBUG
-        LOG(4, F("Storage::save() BEGIN"), true);
-      #endif
+      SO_LOG(6, F("Storage::save() BEGIN"), true);
 
+      // TODO: Gracefully fail is address < 0.
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
 
-      #ifdef SO_DEBUG
-        DPRINT(F("Storage::save() '")); DPRINT(storage_name);
-        DPRINT(F("' to address ")); DPRINT(eeprom_address);
-        DPRINT(F(" sizeof(T) ")); DPRINTLN(sizeof(T), true);
-      #endif
-      
-      if (! checksumMatch()) {
-        #ifdef SO_DEBUG
-          LOG(4, F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
-        #endif
+      SO_LOG(5, F("Storage::save() '"), false); SO_LOG(5, storage_name, false);
+      SO_LOG(5, F("' to address "), false); SO_LOG(5, eeprom_address, false);
+      SO_LOG(5, F(" sizeof(T) "), false); SO_LOG(5, sizeof(T), true);
+
+      // TODO: Reverse the logic here, just cuz it will read better.
+      if (checksumMatch()) {
+
+        SO_LOG(5, F("Storage::save() EEPROM update not necessary"), true);
+        SO_LOG(6, F("Storage::save() END"), true);
+        return 0;
+
+      } else {
+
+        SO_LOG(5, F("Storage::save() chksm mismatch, calling EEPROM.put()"), true);
 
         checksum = calculateChecksum();
         
@@ -117,17 +122,9 @@
         // functions don't seem to get it when called from a subclass.
         EEPROM.put(eeprom_address, *(T*)this);
 
-        #ifdef SO_DEBUG
-          LOG(4, F("Storage::save() END"), true);
-        #endif
+        SO_LOG(6, F("Storage::save() END"), true);
         
         return 1;
-      } else {
-        #ifdef SO_DEBUG
-          LOG(4, F("Storage::save() EEPROM update not necessary"), true);
-          LOG(4, F("Storage::save() END"), true);
-        #endif
-        return 0;
       }
     }
   
@@ -168,12 +165,13 @@
         checksum != 0xFFFF
       );
 
-      #ifdef SO_DEBUG
-        LOG(4, "Storage::checksumMatch() 0x"); LOG(4, checksum, 16);
-        LOG(4, " 0x"); LOG(4, calculated_checksum, 16);
-        LOG(4, ", bool-result: "); LOG(4, result, true);
-      #endif
-      
+      //#ifdef SO_DEBUG
+        // This might need to use LOG cuz it needs to pass integer base.
+        SO_LOG(6, "Storage::checksumMatch() stor 0x", false); SO_LOG(4, checksum, 16);
+        SO_LOG(6, " calc 0x", false); SO_LOG(4, calculated_checksum, 16);
+        SO_LOG(6, ", bool-result: ", false); LOG(4, (char *)result, true);
+      //#endif
+          
       //  checksum = stored_checksum;
       return result;
     }
@@ -181,3 +179,6 @@
   };
 
 #endif // __STORAGE_H__
+
+
+  

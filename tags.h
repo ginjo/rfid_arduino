@@ -1,6 +1,13 @@
 #ifndef __TAGS__
 #define __TAGS__
 
+  // See logger.h for master debug controls.
+  #ifdef TA_DEBUG
+    #define TA_LOG(level, dat, line) LOG(level, dat, line)
+  #else
+    #define TA_LOG(...)
+  #endif
+
   #define TAG_LIST_SIZE 5
   //#define TAGS_EEPROM_ADDRESS 700 // see storage.h
 

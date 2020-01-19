@@ -129,7 +129,7 @@
   /***  Control  ***/
 
   void Menu::loop() {
-    MU_PRINT(5, F("MENU LOOP BEGIN: "), false); MU_PRINT(5, instance_name, true);
+    MU_PRINT(6, F("MENU LOOP BEGIN: "), false); MU_PRINT(6, instance_name, true);
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: This should probably call something like Controller::outputoff().
@@ -142,7 +142,7 @@
     //checkSerialPort();
     
     call();
-    MU_PRINT(5, F("MENU LOOP END"), true);
+    MU_PRINT(6, F("MENU LOOP END"), true);
   }
 
   // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
@@ -277,14 +277,16 @@
     bool bool_result = false;
     
     MU_PRINT(6, "bufferReady? bytes: ", false);
-    for (uint8_t i=0; i < sizeof(buff); i++) {
-      MU_PRINT(6, (int)buff[i], false); MU_PRINT(6, ",", false);
-      if (buff[i] == 10 || buff[i] == 13) {
-        bool_result = true;
-        break;
+    #ifdef MU_DEBUG
+      for (uint8_t i=0; i < sizeof(buff); i++) {
+        MU_PRINT(6, (int)buff[i], false); MU_PRINT(6, ",", false);
+        if (buff[i] == 10 || buff[i] == 13) {
+          bool_result = true;
+          break;
+        }
       }
-    }
-    MU_PRINT(6, "", true);
+      MU_PRINT(6, "", true);
+    #endif
 
     if (bool_result) { MU_PRINT(6, F("Menu::bufferReady(): "), false); MU_PRINT(6, buff, true); }
     
@@ -470,11 +472,11 @@
   void Menu::updateSetting(void *dat) {
     char *str = (char*)dat;
     
-    MU_PRINT(6, F("Menu::updateSetting(): "), false);
-    MU_PRINT(6, selected_menu_item, false);
-    MU_PRINT(6, ", ", false);
+    MU_PRINT(5, F("Menu::updateSetting(): "), false);
+    MU_PRINT(5, selected_menu_item, false);
+    MU_PRINT(5, ", ", false);
     //MU_PRINTLN((char *)buff);
-    MU_PRINT(6, str, true);
+    MU_PRINT(5, str, true);
 
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
       LOG(4, F("updateSetting() aborted"), true);
@@ -483,7 +485,7 @@
       // and there isn't a better place for this (yet?).
       updateAdminTimeout();          
     } else {
-      LOG(4, F("updateSetting() call to S.updateSetting() failed"), true);
+      LOG(2, F("updateSetting() call to S.updateSetting() failed"), true);
     }
 
     selected_menu_item = -1;

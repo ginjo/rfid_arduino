@@ -3,7 +3,7 @@
   #include "menu.h"
 
   extern int LogLevel() {
-    if (S.debugMode() && S.log_level < 5) {
+    if (S.debugMode() && S.log_level < 5U) {
       return 5;
     } else {
       return (int)S.log_level;
@@ -31,6 +31,7 @@
   }
 
   // Converts milliseconds to readable h,m,s.
+  // TODO: Make Uptime() a global function that returns c-string.
   extern void printUptime(bool line) {
     unsigned long milliseconds = millis();
     unsigned long seconds = milliseconds/1000;

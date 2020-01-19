@@ -36,7 +36,7 @@
     enable_debug(0),
 
     // sets default reader index
-    default_reader(0),
+    default_reader(3),
 
     hw_serial_baud(57600),
     bt_baud(9600),
@@ -46,7 +46,8 @@
     log_to_bt(false),
     log_level(3)
   {     
-    strlcpy(settings_name, "default-settings", sizeof(settings_name));
+    //strlcpy(settings_name, "default-settings", sizeof(settings_name));
+    strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
     //strlcpy(default_reader, "WL-125", sizeof(default_reader));
   }
 
@@ -180,7 +181,7 @@
         //sprintf(setting_value, log_to_bt ? "true" : "false");
         break;
       case 15 :
-        sprintf(setting_value, "%i", log_level);
+        sprintf(setting_value, "%hhu", log_level);
         break;
       
       default:
@@ -258,7 +259,7 @@
   //
   Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
     #ifdef ST_DEBUG
-      LOG(4, F("Settings::Load() BEGIN"), true);
+      LOG(5, F("Settings::Load() BEGIN"), true);
     #endif
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
@@ -267,27 +268,42 @@
       LOG(4, F("Failsafe enabled, skipping stored settings"), true);
     } else {
       Storage::Load(settings_obj, _eeprom_address);
+
+      #ifdef ST_DEBUG
+        LOG(5, F("Settings::Load() storage_name '"));
+        LOG(5, settings_obj->storage_name);
+        LOG(5, F("' settings_name '"));
+        LOG(5, settings_obj->settings_name);
+        LOG(5, F("' chksm 0x"));
+        LOG(5, settings_obj->checksum, 16, true);
+      #endif
+  
+      if (!settings_obj->checksumMatch()) {LOG(3, F("Settings::Load() chksm mismatch"), true);}
     }
 
     // WARN: Can't reliably do ST_PRINT from here, since we don't have a confirmed
     // valid Settings instance yet. Printing settings data before it has been
     // verified can result in UB !!!
     //
-    #ifdef ST_DEBUG
-      LOG(4, F("Settings::Load() storage_name '"));
-      LOG(4, settings_obj->storage_name);
-      LOG(4, F("' settings_name '"));
-      LOG(4, settings_obj->settings_name);
-      LOG(4, F("' chksm 0x"));
-      LOG(4, settings_obj->checksum, 16, true);
-    #endif
+
 
     // Handles checksum mismatch by loading default settings.
     // TODO: √ Don't save default settings, let the user do it.
     //if (GetStoredChecksum() != calculated_checksum) {
     if (!settings_obj->checksumMatch() || Failsafe()) {
-      LOG(4, F("Settings::Load() chksm mismatch"), true);
-      settings_obj = new Settings();
+      LOG(3, F("Settings::Load() chksm mismatch or failsafe"), true);
+      /* Two problems here, I think.
+       * 1. The new Settings objected pointed to here will go out of scope after this function ends.
+       * 2. The settings_obj points to an address of value in Current,
+       *    but the address pointed to by settings_obj gets changed to the new Settings value.
+       *    
+       * So to get the new Settings to stick in the static var Current, what do we do?
+       * I think we have to either make Current a pointer, or take settings_obj arg as a reference type var.
+       * 
+       * Or even better, we just de-reference the pointers and set the original Current var with new value.
+       * Old: settings_obj = new Settings();  // doesn't work, repoints settings_obj to new address.
+       */
+      *settings_obj = *(new Settings()); // works, sets settings_object address (same as Current) with new value.
       strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
       settings_obj->eeprom_address = _eeprom_address;
       /* Disabled saving of default settings (let the user decide instead).
@@ -298,12 +314,12 @@
       LOG(4, F("Settings::Load() using default settings '"));
       
     } else {
-      LOG(4, F("Settings::Load() using loaded settings '"));
+      LOG(4, F("Settings::Load() using stored settings '"));
     }
     
     LOG(4, settings_obj->settings_name); LOG(4, "'", true);
     #ifdef ST_DEBUG
-      LOG(4, F("Settings::Load() END"), true);
+      LOG(5, F("Settings::Load() END"), true);
     #endif
 
     return settings_obj;
@@ -314,7 +330,8 @@
   // Disable when not using static version of log_to_bt,
   // and use regular Settings initializer.
   //int Settings::log_to_bt = 0;
- 
+
+  // Initializes a default settings object as soon as this file loads.
   Settings Settings::Current = Settings();
 
   // a reference (alias?) from S to CurrentSettings
