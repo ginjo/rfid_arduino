@@ -58,7 +58,7 @@
     /***  Static / Class Vars & Functions  ***/
         
     static T* Load (T * object_ref, int eeprom_address) {
-      SO_LOG(6, F("Storage::Load() BEGIN"), true);
+      LOG(5, F("Storage::Load() BEGIN"), true);
       
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
 
@@ -68,12 +68,12 @@
         LOG(3, F("Storage::Load() checksum mismatch"), true);
       }
       
-      SO_LOG(5, F("Storage eeprom_address "), false); SO_LOG(4, eeprom_address, true);
-      SO_LOG(5, F("Storage object_ref->storage_name '"), false); SO_LOG(4, object_ref->storage_name, false); LOG(4, "'", true);
-      SO_LOG(5, F("Storage sizeof(*object_ref) "), false); SO_LOG(4, sizeof(*object_ref), true);
-      SO_LOG(5, F("Storage sizeof(T) "), false); SO_LOG(4, sizeof(T), true);
+      SO_LOG(6, F("Storage eeprom_address "), false); LOG(6, eeprom_address, true);
+      SO_LOG(6, F("Storage object_ref->storage_name '"), false); LOG(6, object_ref->storage_name, false); LOG(6, "'", true);
+      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); LOG(6, sizeof(*object_ref), true);
+      SO_LOG(6, F("Storage sizeof(T) "), false); LOG(6, sizeof(T), true);
 
-      SO_LOG(6, F("Storage::Load() END"), true);
+      LOG(6, F("Storage::Load() END"), true);
       
       return object_ref;
     }
@@ -165,12 +165,12 @@
         checksum != 0xFFFF
       );
 
-      //#ifdef SO_DEBUG
+      #ifdef SO_DEBUG
         // This might need to use LOG cuz it needs to pass integer base.
-        SO_LOG(6, "Storage::checksumMatch() stor 0x", false); SO_LOG(4, checksum, 16);
-        SO_LOG(6, " calc 0x", false); SO_LOG(4, calculated_checksum, 16);
-        SO_LOG(6, ", bool-result: ", false); LOG(4, (char *)result, true);
-      //#endif
+        SO_LOG(6, "Storage::checksumMatch() stor 0x", false); LOG(6, checksum, 16);
+        SO_LOG(6, " calc 0x", false); LOG(6, calculated_checksum, 16);
+        SO_LOG(6, ", bool-result: ", false); SO_LOG(6, (char *)result, true);
+      #endif
           
       //  checksum = stored_checksum;
       return result;

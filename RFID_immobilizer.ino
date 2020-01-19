@@ -64,15 +64,12 @@
 
     LOG(1, F("RFID proximity sensor pre-boot"), true);
 
-    INO_PRINTLN(F("Initialized default serial port @ 57600 baud"));
+    INO_PRINTLN(F("Initialized HW serial port @ 57600"));
 
-    FREERAM("setup() before Settings::Load()");
+    FREERAM("Main setup() before Settings::Load()");
     
-    Settings::Load(); // (*settings_instance, eeprom_address)
+    Settings::Load();
 
-    //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
-    //BTserial->flush();
-    //BTserial->end();
     BTserial->begin(S.bt_baud);
     
     Serial.flush(); // I think flushes only outbound data. See Serial class docs.
@@ -87,26 +84,24 @@
     LOG(4, TIMESTAMP, true);
 
     #ifdef INO_DEBUG
-      LOG(4, F("Loaded Settings '"));
-      LOG(4, S.settings_name);
-      LOG(4, F("' with checksum '0x"));
-      LOG(4, S.calculateChecksum(), 16);
-      LOG(4, F("' of size "));
-      LOG(4, sizeof(S), true);
+      LOG(5, F("Loaded Settings '"));
+      LOG(5, S.settings_name);
+      LOG(5, F("' with checksum '0x"));
+      LOG(5, S.calculateChecksum(), 16);
+      LOG(5, F("' of size "));
+      LOG(5, sizeof(S), true);
     #endif
+
+    LOG(4, F("Initialized HW serial port @ "));
+    LOG(4, S.hw_serial_baud, true);
 
     LOG(4, F("Debug pin status: "));
     LOG(4, TempDebug, true);
 
-    LOG(4, F("Log level: "));
-    LOG(4, S.log_level, false);
-    //Serial.println(S.log_level);
-
     LOG(4, F("LogLevel(): "));
     LOG(4, LogLevel(), true);
     
-    LOG(4, F("Initialized serial port with loaded setting: "));
-    LOG(4, S.hw_serial_baud, true);
+
 
     // Displays current settings and readers.
     LOG(4, "", true);

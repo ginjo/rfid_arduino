@@ -258,9 +258,7 @@
   //   void Settings::Load() {
   //
   Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
-    #ifdef ST_DEBUG
-      LOG(5, F("Settings::Load() BEGIN"), true);
-    #endif
+    LOG(5, F("Settings::Load() BEGIN"), true);
 
     //uint16_t calculated_checksum = Current.calculateChecksum();
     //Storage::Load(&Current, _eeprom_address);
@@ -319,7 +317,7 @@
     
     LOG(4, settings_obj->settings_name); LOG(4, "'", true);
     #ifdef ST_DEBUG
-      LOG(5, F("Settings::Load() END"), true);
+      LOG(6, F("Settings::Load() END"), true);
     #endif
 
     return settings_obj;

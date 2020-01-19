@@ -181,8 +181,8 @@
     if (run_mode != 0) {
       LOG(5, instance_name);
       LOG(5, F(" setting run_mode => 0"), true);
-      LOG(5, F("Entering run mode"), true);
-      LOG(5, "", true);
+      LOG(4, F("Entering run mode"), true);
+      LOG(4, "", true);
 
       run_mode = 0;
       FREERAM("exitAdmin()");
