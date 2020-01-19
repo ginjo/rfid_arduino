@@ -44,7 +44,7 @@
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
     log_to_bt(false),
-    log_level(3)
+    log_level(4)
   {     
     //strlcpy(settings_name, "default-settings", sizeof(settings_name));
     strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);

@@ -21,14 +21,16 @@
   void Tags::save() {
     compactTags();
 
-    LOG(4, F("Saving tags with checksum 0x"));
-    LOG(4, calculateChecksum(), 16);
-    LOG(4, F(" to address "));
-    LOG(4, eeprom_address, true);
-    for (int i=0; i < TAG_LIST_SIZE; i++) {
-      LOG(4, tag_array[i]); LOG(4, ",");
-    }
-    LOG(4, "", true);
+    TA_LOG(5, F("Saving tags with checksum 0x"), false);
+    TA_LOG(5, calculateChecksum(), 16, false);
+    TA_LOG(5, F(" to address "), false);
+    TA_LOG(5, eeprom_address, true);
+    #ifdef TA_DEBUG
+      for (int i=0; i < TAG_LIST_SIZE; i++) {
+        TA_LOG(5, tag_array[i]); LOG(4, ",", false);
+      }
+      TA_LOG(5, "", true);
+    #endif
 
     Storage::save(eeprom_address);
   }

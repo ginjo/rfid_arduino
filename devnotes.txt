@@ -552,4 +552,6 @@ TODO: Created basic logging framework and converted Menu class.
       Now upload and try it.
       Then convert other classes.
       
-      
+TODO: FIX: Tags list at startup shows a single string of letters.
+  
+  
