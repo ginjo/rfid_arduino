@@ -24,11 +24,13 @@
 
   // See logger.h for master debug controls.
   #ifdef ST_DEBUG
-    #define ST_PRINT(...) DPRINT(__VA_ARGS__)
-    #define ST_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    //#define ST_PRINT(...) DPRINT(__VA_ARGS__)
+    //#define ST_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    #define ST_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    #define ST_PRINT(...)
-    #define ST_PRINTLN(...)
+    //#define ST_PRINT(...)
+    //#define ST_PRINTLN(...)
+    #define ST_LOG(...)
   #endif
   
   #include "storage.h"

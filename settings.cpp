@@ -56,15 +56,15 @@
   // Updates a setting given setting index and data.
   bool Settings::updateSetting(int _index, char _data[]) {
 
-    ST_PRINT(F("S.updateSetting() "));
-    ST_PRINT(_index); ST_PRINT(", ");
+    ST_LOG(5, F("S.updateSetting() "), false);
+    ST_LOG(5, _index, false); ST_LOG(5, ", ", false);
 
     char setting_name[SETTINGS_NAME_SIZE];
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
 
-    ST_PRINT(setting_name); ST_PRINT(", ");
-    ST_PRINTLN(_data);
+    ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
+    ST_LOG(5, _data, true);
 
     // Note that this is a 1-based list, not 0-based.
     switch (_index) {
@@ -133,7 +133,7 @@
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
-    ST_PRINT(F("Settings::getSettingByIndex: ")); ST_PRINT(index); ST_PRINT(", "); ST_PRINT(setting_name);
+    ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
     
     switch(index) {
       case 1 :
@@ -188,7 +188,7 @@
         break;
     } // switch
     
-    ST_PRINT(", "); ST_PRINTLN(setting_value);
+    ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
   } // function
 
   // Prints out one line of settings. Can use variable int '*' in format string here,
@@ -200,10 +200,12 @@
     char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
     getSettingByIndex(index, setting_name, setting_value);
     sprintf(output, "%2i. %-32s %s", index, setting_name, setting_value);
-    ST_PRINT(F("Settings::displaySetting() gathered: "));
-    ST_PRINT(setting_name); ST_PRINT(", "); ST_PRINTLN(setting_value);
-    ST_PRINT(F("Settings::displaySetting() returning: "));
-    ST_PRINTLN(output);
+    
+    ST_LOG(5, F("Settings::displaySetting() gathered: "), false);
+    ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
+    
+    ST_LOG(5, F("Settings::displaySetting() returning: "), false);
+    ST_LOG(5, output, true);
   }
 
   void Settings::printSettings(Stream *sp) {
