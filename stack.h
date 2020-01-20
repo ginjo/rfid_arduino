@@ -11,11 +11,13 @@
 
   // See logger.h for master debug controls.
   #ifdef SK_DEBUG
-    #define SK_PRINT(...) DPRINT(__VA_ARGS__)
-    #define SK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    //#define SK_PRINT(...) DPRINT(__VA_ARGS__)
+    //#define SK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    #define SK_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    #define SK_PRINT(...)
-    #define SK_PRINTLN(...)
+    //#define SK_PRINT(...)
+    //#define SK_PRINTLN(...)
+    #define SK_LOG(...)
   #endif
 
   #include <Arduino.h>
@@ -32,18 +34,18 @@
     int stack_index = -1;
     
     virtual void push(CB func) {
-      SK_PRINT("Stack::push() to index "); SK_PRINTLN(stack_index+1); // SK_PRINT(T::instance_name); SK_PRINT(", ");
+      SK_LOG(5, "Stack::push() to index ", false); SK_LOG(5, stack_index+1, true); // SK_PRINT(T::instance_name); SK_PRINT(", ");
       //((T*)this->*func)((char*)"push() called with this func");
       if (func) {
         stack_index += 1;
         stack[stack_index] = func;
       } else {
-        LOG(4, "Tried to push nullptr to stack.", true);
+        LOG(3, "Tried to push nullptr to stack.", true);
       }
     }
 
     virtual CB pop() {
-        SK_PRINT("Stack::pop() from index "); SK_PRINTLN(stack_index);
+        SK_LOG(5, "Stack::pop() from index ", false); SK_LOG(5, stack_index, true);
         if (stack_index < 0) return nullptr;
         CB func = top();
         stack_index -= 1;
@@ -52,13 +54,13 @@
     }
     
     virtual CB top() {
-        SK_PRINT("Stack::top() index "); SK_PRINTLN(stack_index);
+        SK_LOG(5, "Stack::top() index ", false); SK_LOG(5, stack_index, true);
         if (stack_index < 0) return nullptr;
         return stack[stack_index];
     }
 
     virtual void call(void *dat = nullptr, bool _pop = false) {
-        SK_PRINT("Stack::call() index "); SK_PRINTLN(stack_index);
+        SK_LOG(5, "Stack::call() index ", false); SK_LOG(5, stack_index, true);
         CB cback = top();
         if (stack_index < 0 || !cback) return;
         // Need to pop before calling, otherwise pop will happen
@@ -70,7 +72,7 @@
 
     // Optionally receives function pointer of type CB.
     virtual void resetStack(CB func = nullptr) {
-      SK_PRINT("Stack::resetStack() with index "); SK_PRINTLN(stack_index);
+      SK_LOG(5, "Stack::resetStack() with index ", false); SK_LOG(5, stack_index, true);
       stack_index = -1;
       
       for (int i=0; i < FUNCTION_STACK_SIZE; i++) {
@@ -85,3 +87,6 @@
   }; // end Stack
 
 #endif
+
+
+  
