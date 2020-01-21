@@ -13,7 +13,7 @@
   #ifdef BK_DEBUG
     #define BK_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    #define BK_LOG(level, dat, line) LOG(level, dat, line)
+    #define BK_LOG(...)
   #endif
   
   // Max allowed size of intervals array.

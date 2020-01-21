@@ -58,7 +58,7 @@
     /***  Static / Class Vars & Functions  ***/
         
     static T* Load (T * object_ref, int eeprom_address) {
-      LOG(5, F("Storage::Load() BEGIN"), true);
+      SO_LOG(5, F("Storage::Load() Begin"), true);
       
       EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
 
@@ -68,12 +68,12 @@
         LOG(3, F("Storage::Load() checksum mismatch"), true);
       }
       
-      SO_LOG(6, F("Storage eeprom_address "), false); LOG(6, eeprom_address, true);
-      SO_LOG(6, F("Storage object_ref->storage_name '"), false); LOG(6, object_ref->storage_name, false); LOG(6, "'", true);
-      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); LOG(6, sizeof(*object_ref), true);
-      SO_LOG(6, F("Storage sizeof(T) "), false); LOG(6, sizeof(T), true);
+      SO_LOG(6, F("Storage eeprom_address "), false); SO_LOG(6, eeprom_address, true);
+      SO_LOG(6, F("Storage object_ref->storage_name '"), false); SO_LOG(6, object_ref->storage_name, false); SO_LOG(6, "'", true);
+      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); SO_LOG(6, sizeof(*object_ref), true);
+      SO_LOG(6, F("Storage sizeof(T) "), false); SO_LOG(6, sizeof(T), true);
 
-      LOG(6, F("Storage::Load() END"), true);
+      SO_LOG(6, F("Storage::Load() End"), true);
       
       return object_ref;
     }

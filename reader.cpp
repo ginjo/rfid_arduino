@@ -146,9 +146,10 @@
         buff[buff_index] = serial_port->read();
 
         // Logs details of each byte of tag received.
-        int lv = 6;
         
         #ifdef RD_DEBUG
+          int lv = 6; // this is also used below...
+          
           LOG(lv, F("(")); LOG(lv, buff_index); LOG(lv, F(")"));
           if (
             (buff[buff_index] >= 48U && buff[buff_index] <= 57U) ||
@@ -247,7 +248,7 @@
   } // processTag()
 
   void Reader::resetBuffer() {
-    RD_LOG(6, "Reader::resetBuffer", true);
+    // RD_LOG(6, "Reader::resetBuffer", true); // This makes a mess of other log items.
     buff_index = 0U;
     //strncpy(buff, NULL, reader->raw_tag_length);
     //strncpy(buff, NULL, MAX_TAG_LENGTH);

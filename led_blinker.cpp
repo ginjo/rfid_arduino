@@ -59,13 +59,13 @@
   }
 
   void Led::printIntervals(const int _intervals[INTERVALS_LENGTH]) {
-    LOG(4, countIntervals(_intervals));
-    LOG(4, ",");
+    BK_LOG(5, countIntervals(_intervals), false);
+    BK_LOG(5, ",", false);
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {
-      LOG(4, " ");
-      LOG(4, _intervals[n]);
+      BK_LOG(5, " ", false);
+      BK_LOG(5, _intervals[n], false);
     }
-    LOG(4, "", true);
+    BK_LOG(5, "", true);
   }
 
   // Calls begin() only if params have changed.
@@ -74,10 +74,12 @@
     BK_LOG(6, F("Led::update _intervals[0]: "), false); BK_LOG(6, _intervals[0], true);
     
     BK_LOG(6, F("Led::update current, new: "), false); BK_LOG(6, led_name, true);
-    if (LogLevel() >= 6) {
-      printIntervals(intervals);
-      printIntervals(_intervals);
-    }
+    #ifdef BK_DEBUG
+      if (LogLevel() >= 6) {
+        printIntervals(intervals);
+        printIntervals(_intervals);
+      }
+    #endif
 
     if (
          _num_cycles == num_cycles &&

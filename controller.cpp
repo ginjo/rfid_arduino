@@ -145,13 +145,13 @@
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 3UL;
 
-    // If we're STILL YOUNG.
+    // If we're FRESH.
     } else if (
       reader->last_tag_read_ms > 0UL &&
       reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
       ){
         
-      CT_LOG(6, F("proximityStateController() still YOUNG"), true);
+      CT_LOG(6, F("proximityStateController() FRESH"), true);
       blinker[1]->steady();
       blinker[0]->off();
       beeper->off();
