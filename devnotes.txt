@@ -607,7 +607,8 @@ TODO: Preface each log line with level name.
       
 TODO: Add log line in .ino for initialization of BTserial port.
 
-
+TODO: Add option to control volume of beeper, and to disable it entirely.
+      Is that safe? There should be a warning that it could be dangerous
+      to not know when a tag read is growing stale (aging).
       
-
       
