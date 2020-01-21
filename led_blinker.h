@@ -11,19 +11,10 @@
 
   // See logger.h for master debug controls.
   #ifdef BK_DEBUG
-    //#define BK_PRINT(...) DPRINT(__VA_ARGS__)
-    //#define BK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
     #define BK_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    //#define BK_PRINT(...)
-    //#define BK_PRINTLN(...)
     #define BK_LOG(level, dat, line) LOG(level, dat, line)
   #endif
-
-  //  #define LED_RED_PIN 8
-  //  #define LED_GREEN_PIN 7
-  //  #define LED_BLUE_PIN 6
-  //  #define BEEPER_PIN 9
   
   // Max allowed size of intervals array.
   #define INTERVALS_LENGTH 10 // for a max of 5 on/off cycles

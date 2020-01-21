@@ -11,18 +11,15 @@
 
   // See logger.h for master debug controls.
   #ifdef SK_DEBUG
-    //#define SK_PRINT(...) DPRINT(__VA_ARGS__)
-    //#define SK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
     #define SK_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    //#define SK_PRINT(...)
-    //#define SK_PRINTLN(...)
     #define SK_LOG(...)
   #endif
 
   #include <Arduino.h>
   #include "settings.h"
   #define FUNCTION_STACK_SIZE 5
+
 
   template <class T>
   class Stack {
@@ -34,7 +31,8 @@
     int stack_index = -1;
     
     virtual void push(CB func) {
-      SK_LOG(5, "Stack::push() to index ", false); SK_LOG(5, stack_index+1, true); // SK_PRINT(T::instance_name); SK_PRINT(", ");
+      SK_LOG(5, "Stack::push() to index ", false); SK_LOG(5, stack_index+1, true);
+      // SK_PRINT(T::instance_name); SK_PRINT(", ");
       //((T*)this->*func)((char*)"push() called with this func");
       if (func) {
         stack_index += 1;

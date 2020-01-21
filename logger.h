@@ -7,20 +7,24 @@
   #include "global.h"
 
   /*
-    DEBUG controls compilation of debug code, it DOES NOT control runtime debug behavior.
-    If you comment-out DEBUG, the DPRINT & DPRINTLN lines are defined as blank,
-    and any lines between '#ifdef DEBUG' and '#endif' will be ommitted from compilation.
+    DEBUG and XX_DEBUG controls compilation of debug code, it DOES NOT control runtime debug behavior.
+    If you comment-out DEBUG, the XX_LOG lines are defined as blank,
+    and any lines between '#ifdef XX_DEBUG' and '#endif' will be ommitted from compilation.
 
     Disabling debug code can save program memory and ram.
     
     Each class also has its own controls for managing debug code.
     Comment each class's debug global to disable debug for that class only.
 
+    For actual logging use LOG(level, string/char, newline <true/false> optional), LOG(level, number, num-base optional, newline <true/false> optional)
+    or the class-specific XX_LOG(level, string/char, newline<true/false>).
+
+    Grounding the debug pin pushes log level to 5 (and enables log to BT serial).
+
     See this for log levels:
     https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
 
-
-    TODO: Create a proper logger with levels:
+    Log Levels:
       1 fatal
       2 error
       3 warn
@@ -42,12 +46,8 @@
 
   
   #ifdef DEBUG    // Macros are usually in all capital letters.
-    //#define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);}    // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
-    //#define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);}  // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
     #define FREERAM(...)   if(S.debugMode()){FreeRam(__VA_ARGS__);}
   #else
-    //#define DPRINT(...)     //now defines a blank line
-    //#define DPRINTLN(...)   //now defines a blank line
     #define FREERAM(...)
   #endif
 

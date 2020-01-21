@@ -2,8 +2,6 @@
 #define __READER_H__
 
   #include <Arduino.h>
-  // Not sure why this was needed, but seems to work without.
-  //#include <stdlib.h>
   #include <string.h>
   
   #include "settings.h"
@@ -12,25 +10,14 @@
 
   // See logger.h for master debug controls.
   #ifdef RD_DEBUG
-    //#define RD_PRINT(...) DPRINT(__VA_ARGS__)
-    //#define RD_PRINTLN(...) DPRINTLN(__VA_ARGS__)
     #define RD_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    //#define RD_PRINT(...)
-    //#define RD_PRINTLN(...)
     #define RD_LOG(...)
   #endif
 
   #define MAX_TAG_LENGTH 16
   #define READER_NAME_LENGTH 16
   #define READER_COUNT 3
-
-
-  // TODO: Consider passing in RGB object in Reader constructor,
-  //       instead of making RGB an extern global.
-  //       Or, move this declaration (and definition?) to global.h/global.cpp. (tried that, didn't work).
-  // Ok now moved to led_blinker.h
-  //extern Led *RGB[];
 
 
   struct Reader {

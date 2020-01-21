@@ -19,16 +19,11 @@
 
   // See logger.h for master debug controls.
   #ifdef CT_DEBUG
-    //#define CT_PRINT(...) DPRINT(__VA_ARGS__)
-    //#define CT_PRINTLN(...) DPRINTLN(__VA_ARGS__)
     #define CT_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    //#define CT_PRINT(...)
-    //#define CT_PRINTLN(...)
     #define CT_LOG(...)
   #endif
 
-  //#define STATE_EEPROM_ADDRESS 0 // see storage.h
 
   class Controller {
   public:
