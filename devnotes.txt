@@ -556,4 +556,13 @@ TODO: √ FIX: Tags list at startup shows a single string of letters.
       This was due to several LOG calls with the wrong level.
       I don't think there was any UB happening.
   
+TODO: Test all the new logging calls at level 6 with each class _DEBUG enabled.
+
+TODO: Need some way to recover from sending AT command with no response. Timeout?
+
+TODO: Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4, 5, or 6).
+      Or would that create a software-serial mess?
+      Maybe only when debug button is LOW (or was LOW at startup)... ?
+      
+      
   

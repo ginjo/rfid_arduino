@@ -12,11 +12,13 @@
 
   // See logger.h for master debug controls.
   #ifdef RD_DEBUG
-    #define RD_PRINT(...) DPRINT(__VA_ARGS__)
-    #define RD_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    //#define RD_PRINT(...) DPRINT(__VA_ARGS__)
+    //#define RD_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    #define RD_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    #define RD_PRINT(...)
-    #define RD_PRINTLN(...)
+    //#define RD_PRINT(...)
+    //#define RD_PRINTLN(...)
+    #define RD_LOG(...)
   #endif
 
   #define MAX_TAG_LENGTH 16

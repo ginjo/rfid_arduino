@@ -277,16 +277,14 @@
     bool bool_result = false;
     
     MU_PRINT(6, "bufferReady? bytes: ", false);
-    #ifdef MU_DEBUG
-      for (uint8_t i=0; i < sizeof(buff); i++) {
-        MU_PRINT(6, (int)buff[i], false); MU_PRINT(6, ",", false);
-        if (buff[i] == 10 || buff[i] == 13) {
-          bool_result = true;
-          break;
-        }
+    for (uint8_t i=0; i < sizeof(buff); i++) {
+      MU_PRINT(6, (int)buff[i], false); MU_PRINT(6, ",", false);
+      if (buff[i] == 10 || buff[i] == 13) {
+        bool_result = true;
+        break;
       }
-      MU_PRINT(6, "", true);
-    #endif
+    }
+    MU_PRINT(6, "", true);
 
     if (bool_result) { MU_PRINT(6, F("Menu::bufferReady(): "), false); MU_PRINT(6, buff, true); }
     
