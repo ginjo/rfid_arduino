@@ -18,11 +18,11 @@
   }
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
-    #ifdef BK_DEBUG
-      BK_LOG(6, F("Led::begin current, new:"), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led::begin current, new:"), false); BK_LOG(6, led_name, true);
+    if (LogLevel() >= 6) {
       printIntervals(intervals);
       printIntervals(_intervals);
-    #endif
+    }
 
     // Initialize state
     led_state = LOW;
@@ -73,11 +73,11 @@
   void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
     BK_LOG(6, F("Led::update _intervals[0]: "), false); BK_LOG(6, _intervals[0], true);
     
-    #ifdef BK_DEBUG
-      BK_LOG(6, F("Led::update current, new: "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led::update current, new: "), false); BK_LOG(6, led_name, true);
+    if (LogLevel() >= 6) {
       printIntervals(intervals);
       printIntervals(_intervals);
-    #endif
+    }
 
     if (
          _num_cycles == num_cycles &&
@@ -148,7 +148,7 @@
     //digitalWrite(led_pin, led_state);
 
     // Sets local debug level for the next chunk of code.
-    int lv = 5;
+    int lv = 6;
     
     if (frequency == 0 && pwm == 0U) {
       BK_LOG(lv, F("LED write: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, true);

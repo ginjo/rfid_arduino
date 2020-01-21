@@ -14,15 +14,6 @@
   #include "menu.h"
   #include "controller.h"
 
-  // See logger.h for master debug controls.
-  #ifdef INO_DEBUG
-    #define INO_PRINT(...) DPRINT(__VA_ARGS__)
-    #define INO_PRINTLN(...) DPRINTLN(__VA_ARGS__)
-  #else
-    #define INO_PRINT(...)
-    #define INO_PRINTLN(...)
-  #endif
-
 
   /***  Declarations  ***/
 
@@ -64,7 +55,7 @@
 
     LOG(1, F("RFID proximity sensor pre-boot"), true);
 
-    INO_PRINTLN(F("Initialized HW serial port @ 57600"));
+    LOG(1, F("Initialized HW serial port @ 57600"), true);
 
     FREERAM("Main setup() before Settings::Load()");
     

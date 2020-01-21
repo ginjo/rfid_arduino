@@ -20,12 +20,13 @@
     // Sets local 'reader' to instance of Reader.
     //reader = GetReader(S.default_reader); // Moving to main .ino, to be passed into Controller::Controller().
 
-    LOG(4, F("Starting Controller with reader "));
-    LOG(4, reader->name(), true);
-    //LOG(4, F(", with EEPROM proximity state "));
-    //LOG(4, proximity_state, true);
-    //  LOG(4, F(", and output switch pin: "));
-    //  Serial.println(OUTPUT_SWITCH_PIN);
+    LOG(4, F("Starting Controller with "), false);
+    LOG(4, reader->name(), false);
+    LOG(5, F(", proximity state "), false);
+    LOG(5, proximity_state, false);
+    LOG(5, F(", output pin "), false);
+    LOG(5, OUTPUT_SWITCH_PIN, false);
+    LOG(4, "", true);
         
     // Initializes the reader power/reset control.
     //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
@@ -75,14 +76,14 @@
   // while this function is actively looping.
   // 
   void Controller::proximityStateController() {
-    CT_PRINTLN(F("*** PROXIMITY ***"));
-    CT_PRINT(F("last_tag_read_ms: ")); CT_PRINTLN(reader->last_tag_read_ms);
-    CT_PRINT(F("last_reader_power_cycle_ms: ")); CT_PRINTLN(reader->last_reader_power_cycle_ms);
-    CT_PRINT(F("msSinceLastTagRead(): ")); CT_PRINTLN(reader->msSinceLastTagRead());
-    CT_PRINT(F("msSinceLastReaderPowerCycle(): ")); CT_PRINTLN(reader->msSinceLastReaderPowerCycle());
-    CT_PRINT(F("ms_reader_cycle_total: ")); CT_PRINTLN(reader->ms_reader_cycle_total);
-    CT_PRINT(F("tagLastReadTimeoutX1000(): ")); CT_PRINTLN(reader->tagLastReadTimeoutX1000());
-    CT_PRINTLN(F("***"));
+    CT_LOG(6, F("*** PROXIMITY"), true);
+    CT_LOG(6, F("last_tag_read_ms: "), false); CT_LOG(6, reader->last_tag_read_ms, true);
+    CT_LOG(6, F("last_reader_power_cycle_ms: "), false); CT_LOG(6, reader->last_reader_power_cycle_ms, true);
+    CT_LOG(6, F("msSinceLastTagRead(): "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
+    CT_LOG(6, F("msSinceLastReaderPowerCycle(): "), false); CT_LOG(6, reader->msSinceLastReaderPowerCycle(), true);
+    CT_LOG(6, F("ms_reader_cycle_total: "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
+    CT_LOG(6, F("tagLastReadTimeoutX1000(): "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
+    CT_LOG(6, F("***"), true);
     
     // If NO TAG READ YET and reader has recently power cycled
     // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
@@ -92,7 +93,7 @@
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
       
-      CT_PRINTLN(F("Controller startup grace period timeout, no tag found"));
+      CT_LOG(5, F("Controller startup grace period timeout, no tag found"), true);
       blinker[0]->slowBlink();
       blinker[1]->off();
       //beeper->off();
@@ -108,7 +109,7 @@
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
       
-      CT_PRINTLN(F("proximityStateController() TIMEOUT"));
+      CT_LOG(6, F("proximityStateController() TIMEOUT"), true);
       blinker[0]->slowBlink();
       blinker[1]->off();
       beeper->slowBeep(3);
@@ -130,7 +131,7 @@
       //CT_PRINT(F("tagLastReadTimeoutX1000(): ")); CT_PRINTLN(tagLastReadTimeoutX1000());
       //CT_PRINTLN(F("###  ###"));
 
-      CT_PRINTLN(F("proximityStateController() AGING"));
+      CT_LOG(6, F("proximityStateController() AGING"), true);
       if (proximity_state) {
         blinker[1]->fastBlink();
         blinker[0]->off();
@@ -150,7 +151,7 @@
       reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
       ){
         
-      CT_PRINTLN(F("proximityStateController() still YOUNG"));
+      CT_LOG(6, F("proximityStateController() still YOUNG"), true);
       blinker[1]->steady();
       blinker[0]->off();
       beeper->off();
@@ -159,7 +160,7 @@
 
     // No expected condition was met (not sure what to do here yet).
     } else {
-      CT_PRINTLN(F("proximityStateController() no condition was met (not necessarily a problem)"));
+      CT_LOG(6, F("proximityStateController() no condition was met (not necessarily a problem)"), true);
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.

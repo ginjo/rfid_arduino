@@ -32,8 +32,8 @@
   #define DEBUG        // master debug control
   #define INO_DEBUG    // main ino file
   #define BK_DEBUG     // blinker
+  #define CT_DEBUG   // controller
   //#define RD_DEBUG   // reader
-  //#define CT_DEBUG   // controller
   //#define MU_DEBUG   // serial menu
   //#define SK_DEBUG   // stack
   //#define ST_DEBUG   // settings
@@ -42,12 +42,12 @@
 
   
   #ifdef DEBUG    // Macros are usually in all capital letters.
-    #define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);}    // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
-    #define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);}  // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
+    //#define DPRINT(...)    if(S.debugMode()){Serial.print(__VA_ARGS__);}    // BTserial.print(__VA_ARGS__);}    //DPRINT is a macro, debug print
+    //#define DPRINTLN(...)  if(S.debugMode()){Serial.println(__VA_ARGS__);}  // BTserial.println(__VA_ARGS__);}  //DPRINTLN is a macro, debug print with new line
     #define FREERAM(...)   if(S.debugMode()){FreeRam(__VA_ARGS__);}
   #else
-    #define DPRINT(...)     //now defines a blank line
-    #define DPRINTLN(...)   //now defines a blank line
+    //#define DPRINT(...)     //now defines a blank line
+    //#define DPRINTLN(...)   //now defines a blank line
     #define FREERAM(...)
   #endif
 

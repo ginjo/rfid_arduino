@@ -572,3 +572,7 @@ TODO: Log level 5 with BTserial connected & with Reader debug enabled causes
       BTserial is disconnected. This is likely a sw-serial competition thing,
       since it doesn't happen at all using HW serial monitor.
       
+TODO: Add Controller.status to track which state controller is in,
+      ONLY for the purpose of logging change-of-state.
+      
+      
