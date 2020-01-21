@@ -22,9 +22,9 @@
 
     LOG(4, F("Starting Controller with "), false);
     LOG(4, reader->name(), false);
-    LOG(5, F(", proximity state "), false);
+    LOG(5, F(", proximity "), false);
     LOG(5, proximity_state, false);
-    LOG(5, F(", output pin "), false);
+    LOG(5, F(", switch pin "), false);
     LOG(5, OUTPUT_SWITCH_PIN, false);
     LOG(4, "", true);
         
@@ -56,7 +56,7 @@
     // where we left off at power-down (or reset).
     //proximity_state = S.proximity_state;
 
-    LOG(4, F("Setting output switch per proximity_state: "));
+    LOG(4, F("Setting outpt switch per prox-state: "));
     LOG(4, proximity_state, true);
     // Switches the main load according to current proximity_state.
     // This turns on the load if saved prox-state was "on".
@@ -160,7 +160,8 @@
 
     // No expected condition was met (not sure what to do here yet).
     } else {
-      CT_LOG(6, F("proximityStateController() no condition was met (not necessarily a problem)"), true);
+      // This condition is not necessarily a problem.
+      CT_LOG(6, F("proximityStateController() no condition met"), true);
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.
@@ -174,7 +175,7 @@
       proximity_state = _state;
 
       if (proximity_state != previous_proximity_state && S.proximity_state_startup == 2) {
-        LOG(4, F("Calling EEPROM.update with proximity_state: "));
+        LOG(4, F("Calling EEPROM.update with prox-state: "));
         LOG(4, proximity_state, true);
         EEPROM.update(STATE_EEPROM_ADDRESS, proximity_state);
       }
