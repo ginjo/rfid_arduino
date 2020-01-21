@@ -53,9 +53,9 @@
     
     delay(25);
 
-    LOG(1, F("RFID proximity sensor pre-boot"), true);
+    LOG(4, F("RFID proximity sensor pre-boot"), true);
 
-    LOG(1, F("Initialized HW serial port @ 57600"), true);
+    LOG(4, F("Initialized HW serial port @ 57600"), true);
 
     FREERAM("Main setup() before Settings::Load()");
     
@@ -95,17 +95,19 @@
 
 
     // Displays current settings and readers.
-    LOG(4, "", true);
-    S.printSettings(&Serial);
-    Serial.println("");
-    //Reader::PrintReaders(&Serial);
-    //Serial.println("");
-    //
-    if (canLogToBT()) {
-      S.printSettings(BTserial);
-      BTserial->println("");
-      //Reader::PrintReaders(BTserial);
-      //BTserial->println("");
+    if (LogLevel() >=4) {
+      LOG(4, "", true);
+      S.printSettings(&Serial);
+      Serial.println("");
+      Reader::PrintReaders(&Serial);
+      Serial.println("");
+      //
+      if (canLogToBT()) {
+        S.printSettings(BTserial);
+        BTserial->println("");
+        Reader::PrintReaders(BTserial);
+        BTserial->println("");
+      }
     }
 
     FREERAM("setup() pre obj new");

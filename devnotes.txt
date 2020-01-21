@@ -565,6 +565,7 @@ TODO: √ FIX: Tags list at startup shows a single string of letters.
 TODO: Test all the new logging calls at level 6 with each class _DEBUG enabled.
 
 TODO: Need some way to recover from sending AT command with no response. Timeout?
+      Create a timeout function for waiting for serial input.
 
 TODO: Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4, 5, or 6).
       Or would that create a software-serial mess?
@@ -574,6 +575,7 @@ TODO: Should debug button take level all the way to max (6)?
 
 TODO: Log level 5 with BTserial connected & with Reader debug enabled causes
       reader/controller confusion when tag is read, leading to false aging mode.
+      (it's the reader byte detail that seems to cause the most trouble).
       The problem goes away immediattely when log level is reverted to 4, or when
       BTserial is disconnected. This is likely a sw-serial competition thing,
       since it doesn't happen at all using HW serial monitor.
@@ -590,4 +592,22 @@ TODO: Add Controller.status to track which state controller is in,
       ONLY for the purpose of logging change-of-state without spitting
       out gobs of identical log lines.
       
+TODO: √ Change log level of reader byte-detail output to 6 (instead of 5).
+      This might prevent controller problems when viewing log level 5 (debug pin)
+      in BT serial.
+      
+TODO: √ Prevent settings list for printing at startup if log level < 4.
+
+TODO: Preface each log line with level name.
+      How to handle log items that are in the midddle of a line?
+      
+      Maybe only do this for levels 1-3.
+      
+      This will require a function prepareDat().
+      
+TODO: Add log line in .ino for initialization of BTserial port.
+
+
+      
+
       

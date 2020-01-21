@@ -78,15 +78,10 @@
     if (level > LogLevel()) return;
 
     if (canLogToBT()) {
-      
       BTserial->print(dat, base);
-      
       if (line == true) {
         BTserial->println("");
       }
-      // Experimental delay trying to fix startup weirdness on BTserial,
-      // but I don't think this is the issue.
-      //delay(2);
     }
   
     Serial.print(dat, base);
@@ -107,9 +102,6 @@
       if (line == true) {
         BTserial->println("");
       }
-      // Experimental delay trying to fix startup weirdness on BTserial,
-      // but I don't think this is the issue.      
-      //delay(2);
     }
   
     Serial.print(dat);

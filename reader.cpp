@@ -35,7 +35,7 @@
   }
 
   uint32_t Reader::processTagData(uint8_t[]) {
-    RD_LOG(2, F("Error: Called processTagData() on base Reader class"), true);
+    RD_LOG(2, F("Called processTagData() on base Reader class"), true);
     return 0UL;
   }
 
@@ -61,9 +61,10 @@
     //tag_last_read_timeout_x_1000 = (uint32_t)(S.tag_last_read_timeout*1000UL);
 
     
-    /***  Displays most if not all local vars.       ***/
-    /***  TODO: Should this be put into a function?  ***/
-    /***                                             ***/
+    /*
+      Displays most if not all local vars.
+      TODO: Should this be put into a function?
+    */
     RD_LOG(6, F("last_tag_read_ms: "), false);
       RD_LOG(6, last_tag_read_ms, true);
     RD_LOG(6, F("last_reader_power_cycle_ms: "), false);
@@ -145,17 +146,19 @@
         buff[buff_index] = serial_port->read();
 
         // Logs details of each byte of tag received.
+        int lv = 6;
+        
         #ifdef RD_DEBUG
-          LOG(5, F("(")); LOG(5, buff_index); LOG(5, F(")"));
+          LOG(lv, F("(")); LOG(lv, buff_index); LOG(lv, F(")"));
           if (
             (buff[buff_index] >= 48U && buff[buff_index] <= 57U) ||
             (buff[buff_index] >= 65U && buff[buff_index] <= 70U) ||
             (buff[buff_index] >= 97U && buff[buff_index] <= 102U)
-          ) { LOG(5, (char)buff[buff_index]); }
+          ) { LOG(lv, (char)buff[buff_index]); }
           
-          LOG(5, ":");
-          LOG(5, buff[buff_index], HEX); LOG(5, ":");
-          LOG(5, buff[buff_index], DEC);
+          LOG(lv, ":");
+          LOG(lv, buff[buff_index], HEX); LOG(lv, ":");
+          LOG(lv, buff[buff_index], DEC);
         #endif
 
         // TODO: Move this to main Controller::loop() function?
@@ -166,15 +169,15 @@
           resetBuffer();
         } else if (buff_index == final_index && buff[final_index] != 3U) { // reset bogus read
           resetBuffer();
-          RD_LOG(5, "", true);
+          RD_LOG(lv, "", true);
         } else if (buff_index > final_index || buff_index >= MAX_TAG_LENGTH) { // reset bogus read
           resetBuffer();
-          RD_LOG(5, "", true);
+          RD_LOG(lv, "", true);
         } else if (buff_index < final_index) { // good read, add comma to log and keep reading
           buff_index++;
-          RD_LOG(5, ",", false);
+          RD_LOG(lv, ",", false);
         } else { // tag complete, now process it
-          RD_LOG(5, "", true);
+          RD_LOG(lv, "", true);
           processTag(buff);
           //last_tag_read_ms = current_ms;
           resetBuffer();
@@ -200,8 +203,8 @@
   // NOTE (from Controller): array args in func definitions can only use absolute constants, not vars.
   // TODO (from Controller): create macro definition for max-tag-length that can be used in func definition array args.
   void Reader::processTag(uint8_t _tag[]) {
-    LOG(5, F("Reader::processTag() received buffer w/reader: "), false);
-    LOG(5, name(), true);
+    LOG(5, name(), false);
+    LOG(5, F(" processTag() received buffer"), true);
 
     // DEV (from Controller): Use this to ensure that virtual functions are working in derived classes.
     //  RD_PRINT(F("Reader::processTag() calling echo(): "));
@@ -212,7 +215,7 @@
     //RD_PRINTLN(F("Reader::processTag() calling processTagData()"));
     uint32_t tag_id = processTagData(_tag);
     
-    RD_LOG(5, F("Tag result from processTagData(): "), false);
+    RD_LOG(5, F("Tag rslt from processTagData(): "), false);
     RD_LOG(5, tag_id, true);
 
     if (tag_id) {
@@ -276,14 +279,14 @@
       LOG(4, F(", uptime "));
       printUptime(true);
 
-      RD_LOG(6, F("cycleReaderPower() setting reader power LOW"), true);
+      RD_LOG(6, F("cycleReaderPower() setting power LOW"), true);
             
       //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
       last_reader_power_cycle_ms = current_ms;
       
     } else if (current_ms >= cycle_low_finish_ms) {
-      RD_LOG(6, F("cycleReaderPower() setting reader power HIGH"), true);
+      RD_LOG(6, F("cycleReaderPower() setting power HIGH"), true);
       //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
     }
