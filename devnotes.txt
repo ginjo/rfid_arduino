@@ -432,6 +432,8 @@ TODO: √ There is garbage printing on BTserial at startup, even when log_to_bt 
       
 TODO: Check to see if any class constructors are using LOG or BTserial in their construction methods.
       They probably should not.
+      
+      Yes, one of the classes has LOG in its constructor.
 
 TODO: √ Change io.h to global.h, and put externs (like BTserial) in there.
 
@@ -498,7 +500,7 @@ TODO: √ Move TempDebug to logger or global files.
 TODO: Actually, consider consolidating logger and global files
       and moving all debug code from settings to logger/global files.
       
-TODO: Create a proper logger that consolidates all the c++ macros with the
+TODO: √ Create a proper logger that consolidates all the c++ macros with the
       existing LOG function.
       
 TODO: - Create empty-prompt function for Menu, that just basically pauses and waits for any key
@@ -515,6 +517,10 @@ TODO: √ Missig some log items in BTserial when only log_to_bt is set (no HW pi
 
 TODO: Debug-logging clobbers HW menu interface when debug-pin is used.
       Logging to HW interface should be minimal when HW serial menu is active.
+      
+      Ok, now all log-trace output is sent only with level 6.
+      Not sure how to handle this issue though, when we need
+      to view trace logging for classes with lots of looping log output.
       
 TODO: Standard log output should always show what is about to happen, not what just happened.
       This will give you more info in case of a failure/crash/error.
@@ -548,7 +554,7 @@ TODO: √ Only run AT commands to SW serial if module is not connected.
 
 TODO: √ Prevent lockout if SW admin invokes command 9 (send AT commands).
 
-TODO: Created basic logging framework and converted Menu class.
+TODO: √ Created basic logging framework and converted Menu class.
       Now upload and try it.
       Then convert other classes.
       
@@ -572,7 +578,16 @@ TODO: Log level 5 with BTserial connected & with Reader debug enabled causes
       BTserial is disconnected. This is likely a sw-serial competition thing,
       since it doesn't happen at all using HW serial monitor.
       
+      The only solution may be to always use HW serial to view log output,
+      while using BT serial to view deeper levels of output is at-your-own-risk...
+      
+TODO: OR, try preventing switching of SW serial listener, whenever the RFID reader
+      is in the middle of reading a tag. Maybe allow only ONE loop section to operate
+      at a time: Either the RFID reader loop, or the BT serial loop.
+      But would this break Menu tag functions?
+      
 TODO: Add Controller.status to track which state controller is in,
-      ONLY for the purpose of logging change-of-state.
+      ONLY for the purpose of logging change-of-state without spitting
+      out gobs of identical log lines.
       
       
