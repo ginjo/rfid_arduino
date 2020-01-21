@@ -34,6 +34,7 @@
     Reader * reader;
     Led **blinker;
     Led *beeper;
+    int ctrl_status; // For logging ctrl state change only once per loop.
 
     
     /***  Constructors  ***/

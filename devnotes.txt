@@ -588,7 +588,7 @@ TODO: OR, try preventing switching of SW serial listener, whenever the RFID read
       at a time: Either the RFID reader loop, or the BT serial loop.
       But would this break Menu tag functions?
       
-TODO: Add Controller.status to track which state controller is in,
+TODO: √ Add Controller.status to track which state controller is in,
       ONLY for the purpose of logging change-of-state without spitting
       out gobs of identical log lines.
       

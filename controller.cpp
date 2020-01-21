@@ -8,7 +8,8 @@
     proximity_state(S.proximity_state_startup == 2 ? EEPROM.read(0) : S.proximity_state_startup),
     reader(_reader),
     blinker(_blinker),
-    beeper(_beeper)
+    beeper(_beeper),
+    ctrl_status(0)
   { ; }
 
 
@@ -46,8 +47,7 @@
 
   // Initializes output switch.
   void Controller::initializeOutput() {
-    //pinMode(OUTPUT_SWITCH_PIN, OUTPUT);    
-    
+        
     // Starts up with whatever state we left off in.
     // Protects against thief using 'admin' to move
     // in fits and starts, since a failed proximity
@@ -76,7 +76,7 @@
   // while this function is actively looping.
   // 
   void Controller::proximityStateController() {
-    CT_LOG(6, F("*** PROXIMITY"), true);
+    CT_LOG(6, F("*** proximityStateController()"), true);
     CT_LOG(6, F("last_tag_read_ms: "), false); CT_LOG(6, reader->last_tag_read_ms, true);
     CT_LOG(6, F("last_reader_power_cycle_ms: "), false); CT_LOG(6, reader->last_reader_power_cycle_ms, true);
     CT_LOG(6, F("msSinceLastTagRead(): "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
@@ -92,14 +92,18 @@
       reader->last_reader_power_cycle_ms > 0UL &&
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
+
+      if (ctrl_status != 1) LOG(3, F("TIMEOUT"), true); // only prints once.
       
-      CT_LOG(5, F("Controller startup grace period timeout, no tag found"), true);
+      CT_LOG(6, F("Controller startup grace period timeout, no tag found"), true);
       blinker[0]->slowBlink();
       blinker[1]->off();
       //beeper->off();
       beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
+
+      ctrl_status = 1;
     
     // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
     } else if (
@@ -108,6 +112,8 @@
       reader->msSinceLastTagRead() > reader->msSinceLastReaderPowerCycle() &&
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
+
+      if (ctrl_status != 2) LOG(3, F("TIMEOUT"), true); // only prints once.
       
       CT_LOG(6, F("proximityStateController() TIMEOUT"), true);
       blinker[0]->slowBlink();
@@ -115,6 +121,8 @@
       beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
+
+      ctrl_status = 2;
 
     // If last read is greater than reader-power-cycle-total AND
     // less than final timeout total, we're in the AGING zone.
@@ -124,12 +132,7 @@
       reader->msSinceLastTagRead() <= reader->tagLastReadTimeoutX1000()
       ){
 
-      //CT_PRINTLN(F("### AGING ###"));
-      //CT_PRINT(F("last_tag_read_ms: ")); CT_PRINTLN(last_tag_read_ms);
-      //CT_PRINT(F("msSinceLastTagRead(): ")); CT_PRINTLN(msSinceLastTagRead());
-      //CT_PRINT(F("ms_reader_cycle_total: ")); CT_PRINTLN(ms_reader_cycle_total);
-      //CT_PRINT(F("tagLastReadTimeoutX1000(): ")); CT_PRINTLN(tagLastReadTimeoutX1000());
-      //CT_PRINTLN(F("###  ###"));
+      if (ctrl_status != 3) LOG(3, F("AGING"), true); // only prints once.
 
       CT_LOG(6, F("proximityStateController() AGING"), true);
       if (proximity_state) {
@@ -145,11 +148,15 @@
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 3UL;
 
+      ctrl_status = 3;
+
     // If we're FRESH.
     } else if (
       reader->last_tag_read_ms > 0UL &&
       reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
       ){
+
+      if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
         
       CT_LOG(6, F("proximityStateController() FRESH"), true);
       blinker[1]->steady();
@@ -158,10 +165,15 @@
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 0UL;
 
+      ctrl_status = 4;
+
     // No expected condition was met (not sure what to do here yet).
     } else {
       // This condition is not necessarily a problem.
+
+      if (ctrl_status != 0) LOG(5, F("PASS"), true); // only prints once.
       CT_LOG(6, F("proximityStateController() no condition met"), true);
+      ctrl_status = 0;
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.
