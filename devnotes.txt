@@ -564,5 +564,11 @@ TODO: Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4
       Or would that create a software-serial mess?
       Maybe only when debug button is LOW (or was LOW at startup)... ?
       
+TODO: Should debug button take level all the way to max (6)?
+
+TODO: Log level 5 with BTserial connected & with Reader debug enabled causes
+      reader/controller confusion when tag is read, leading to false aging mode.
+      The problem goes away immediattely when log level is reverted to 4, or when
+      BTserial is disconnected. This is likely a sw-serial competition thing,
+      since it doesn't happen at all using HW serial monitor.
       
-  

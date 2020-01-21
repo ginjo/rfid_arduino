@@ -59,7 +59,7 @@
       
     uint32_t processTagData(uint8_t _tag[]) {
       LOG(5, F("R7941E prcs tag inpt: "));
-      //RD_PRINT((char *)_tag);
+      //RD_PRINT((char *)_tag); // Looks weird cuz some bytes might not be readable ascii characters.
       LOG(5, F("id_begin: "));
       LOG(5, id_begin);
       LOG(5, F(", id_end: "));
@@ -110,9 +110,7 @@
     }
   
     uint32_t processTagData(uint8_t _tag[]) {
-  
-      //Reader::preProcessTagData();
-  
+    
       LOG(5, F("WL125 prcs tag inpt: "));
       LOG(5, F("id_begin: "));
       LOG(5, id_begin);
@@ -124,8 +122,8 @@
       LOG(5, F(", id_len: "));
       LOG(5, id_len);
       
-      LOG(5, F(", checksum (raw hex bytes): "));
-      LOG(5, _tag[11], 16); LOG(5, ","); LOG(5, _tag[12], 16, true);
+      LOG(5, F(", checksum (hex): "));
+      LOG(5, _tag[11], 16, true);
   
       char id_char[id_len+1] = ""; // need to initialize this to empty.
       
