@@ -11,11 +11,13 @@
 
   // See logger.h for master debug controls.
   #ifdef BK_DEBUG
-    #define BK_PRINT(...) DPRINT(__VA_ARGS__)
-    #define BK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    //#define BK_PRINT(...) DPRINT(__VA_ARGS__)
+    //#define BK_PRINTLN(...) DPRINTLN(__VA_ARGS__)
+    #define BK_LOG(level, dat, line) LOG(level, dat, line)
   #else
-    #define BK_PRINT(...)
-    #define BK_PRINTLN(...)
+    //#define BK_PRINT(...)
+    //#define BK_PRINTLN(...)
+    #define BK_LOG(level, dat, line) LOG(level, dat, line)
   #endif
 
   //  #define LED_RED_PIN 8
