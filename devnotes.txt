@@ -588,6 +588,9 @@ TODO: OR, try preventing switching of SW serial listener, whenever the RFID read
       at a time: Either the RFID reader loop, or the BT serial loop.
       But would this break Menu tag functions?
       
+TODO: Try installing NeoSWSerial (replacement for SoftwareSerial).
+      This is available thru the Ard IDE library manager (very easy).
+      
 TODO: √ Add Controller.status to track which state controller is in,
       ONLY for the purpose of logging change-of-state without spitting
       out gobs of identical log lines.
@@ -611,4 +614,9 @@ TODO: Add option to control volume of beeper, and to disable it entirely.
       Is that safe? There should be a warning that it could be dangerous
       to not know when a tag read is growing stale (aging).
       
+TODO: Make sure output switch is always on as early as possible, even before
+      saved proximity-state is considered. This is so output-controlled devices
+      (motors, pumps, etc) can power up per their original design.
+      
+      Do we need hardware for this?
       

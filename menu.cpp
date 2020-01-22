@@ -210,8 +210,12 @@
   void Menu::checkSerialPort() {
     if (strcmp(instance_name, "SW") == 0) {
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
-      sp->listen();
-      while (! sp->isListening()) delay(2);
+      //  sp->listen();
+      //  while (! sp->isListening()) delay(2);
+      while (! sp->isListening()) {
+        sp->listen();
+        delay(2);
+      }
       delay(get_tag_from_scanner ? 10 : 1);
     }
     

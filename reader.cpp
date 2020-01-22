@@ -43,9 +43,14 @@
 
   void Reader::loop() {
 
-    serial_port->listen();
-    while (! serial_port->isListening()) delay(2);
-    delay(20);
+    //  serial_port->listen();
+    //  while (! serial_port->isListening()) delay(2);
+    //  delay(20);
+
+    while (! serial_port->isListening()) {
+      serial_port->listen();
+      delay(2);
+    }
 
     RD_LOG(6, F("READER LOOP BEGIN "), false);
     current_ms = millis();
