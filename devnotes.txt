@@ -620,3 +620,5 @@ TODO: Make sure output switch is always on as early as possible, even before
       
       Do we need hardware for this?
       
+TODO: LED is behaving weirdly, especially in aging and timeout states.
+

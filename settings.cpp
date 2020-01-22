@@ -39,7 +39,7 @@
     default_reader(3),
 
     hw_serial_baud(57600),
-    bt_baud(9600),
+    bt_baud(57600),
     rfid_baud(9600),
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
