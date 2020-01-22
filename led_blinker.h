@@ -55,6 +55,9 @@
     // The intervals.
     int intervals[INTERVALS_LENGTH];
 
+    // A status signature, to know when state has changed
+    int signature[4];
+
     // constructor
     Led(int, const char[], const int=0, const int=0);
     
@@ -80,7 +83,7 @@
   
   };
 
-  // This must be declared here, since several files use the RGB object.
+  // This must be declared here, since several files use the RGB object, ad Led must have been defined already.
   extern Led *RGB[]; // = {new Led(LED_RED_PIN, "Rd"), new Led(LED_GREEN_PIN, "Gr"), new Led(LED_BLUE_PIN, "Bl")};
 
 #endif

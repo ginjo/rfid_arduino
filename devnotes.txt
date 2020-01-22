@@ -588,8 +588,10 @@ TODO: OR, try preventing switching of SW serial listener, whenever the RFID read
       at a time: Either the RFID reader loop, or the BT serial loop.
       But would this break Menu tag functions?
       
-TODO: Try installing NeoSWSerial (replacement for SoftwareSerial).
+TODO: √ Try installing NeoSWSerial (replacement for SoftwareSerial).
       This is available thru the Ard IDE library manager (very easy).
+      
+      This and AltSoftSerial don't work with this app, as it is now.
       
 TODO: √ Add Controller.status to track which state controller is in,
       ONLY for the purpose of logging change-of-state without spitting
@@ -620,14 +622,27 @@ TODO: Make sure output switch is always on as early as possible, even before
       
       Do we need hardware for this?
       
-TODO: LED is behaving weirdly, especially in aging and timeout states.
+TODO: √ LED is behaving weirdly, especially in aging and timeout states.
+      The errors don't happen with Led debug enabled!
+      
+      Create log level 5 code for Led loop, like you did for Controller loop.
+      
+      This happens only after tag has had a successful read (triggering blue)
+      and then has a timeout. That's when blue comes on mysteriously.
+      
+      Fixed: I added some housekeeping blinker[2]->off() statements in
+      some key Controller places.
 
-TODO: Take initial HW/SW serial baud rates from default Settings object (instead of hard-coded).
+TODO: Take initial HW/SW serial baud rates from default Settings object,
+      if possible, instead of being hard-coded.
 
-TODO: With most delay() calls removed, Aging beeper is a little fast. Slow it down?
+TODO: √ With most delay() calls removed, Aging beeper is a little fast. Slow it down?
 
-TODO: Change WL-125 reader baud to 57600 if possile.
+TODO: - Change WL-125 reader baud to 57600 if possile. Ooo, apparently NOT possible.
 
 TODO: Reduce hardware buttons to only 1, which will handle failsafe AND debug mode.
 
-
+TODO: Change S.debug_mode to mean: What log level do we bump to during debug-pin or TempDebug?
+      Will this work?
+      
+      

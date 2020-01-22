@@ -56,6 +56,11 @@
     // where we left off at power-down (or reset).
     //proximity_state = S.proximity_state;
 
+    blinker[0]->off();
+    blinker[1]->off();
+    blinker[2]->off();
+    beeper->off();
+
     LOG(4, F("Setting outpt switch per prox-state: "));
     LOG(4, proximity_state, true);
     // Switches the main load according to current proximity_state.
@@ -85,48 +90,54 @@
     CT_LOG(6, F("tagLastReadTimeoutX1000(): "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
     CT_LOG(6, F("***"), true);
     
-    // If NO TAG READ YET and reader has recently power cycled
-    // This should probably calculate or use global setting for appropriate time-to-wait since last power cycle.
+
     if (
+    // If NO TAG READ AT STARTUP and reader has recently power cycled.
+    // This should probably calculate or use global setting for
+    // appropriate time-to-wait since last power cycle.
+
       reader->last_tag_read_ms == 0UL &&
       reader->last_reader_power_cycle_ms > 0UL &&
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
 
-      if (ctrl_status != 1) LOG(3, F("TIMEOUT"), true); // only prints once.
+      if (ctrl_status != 1) LOG(3, F("TIMEOUT: grace period"), true); // only prints once.
       
-      CT_LOG(6, F("Controller startup grace period timeout, no tag found"), true);
+      CT_LOG(6, F("Timeout: grace"), true);
       blinker[0]->slowBlink();
       blinker[1]->off();
-      //beeper->off();
+      //blinker[2]->off();
       beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
       ctrl_status = 1;
     
-    // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
     } else if (
+    // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
+      
       reader->msSinceLastTagRead() > reader->tagLastReadTimeoutX1000() &&
       reader->last_reader_power_cycle_ms > 0UL &&
       reader->msSinceLastTagRead() > reader->msSinceLastReaderPowerCycle() &&
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
 
-      if (ctrl_status != 2) LOG(3, F("TIMEOUT"), true); // only prints once.
+      if (ctrl_status != 2) LOG(3, F("TIMEOUT: general"), true); // only prints once.
       
-      CT_LOG(6, F("proximityStateController() TIMEOUT"), true);
+      CT_LOG(6, F("Timeout: general"), true);
       blinker[0]->slowBlink();
       blinker[1]->off();
+      //blinker[2]->off();
       beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
       ctrl_status = 2;
 
+    } else if (
     // If last read is greater than reader-power-cycle-total AND
     // less than final timeout total, we're in the AGING zone.
-    } else if (
+    
       reader->last_tag_read_ms > 0UL &&
       reader->msSinceLastTagRead() > reader->ms_reader_cycle_total &&
       reader->msSinceLastTagRead() <= reader->tagLastReadTimeoutX1000()
@@ -134,15 +145,16 @@
 
       if (ctrl_status != 3) LOG(3, F("AGING"), true); // only prints once.
 
-      CT_LOG(6, F("proximityStateController() AGING"), true);
+      CT_LOG(6, F("Aging"), true);
       if (proximity_state) {
-        blinker[1]->fastBlink();
         blinker[0]->off();
+        blinker[1]->fastBlink();
       } else {
         blinker[0]->fastBlink();
         blinker[1]->off();        
       }
-
+      
+      //blinker[2]->off();
       beeper->fastBeep();
       
       setProximityState(1);
@@ -150,30 +162,35 @@
 
       ctrl_status = 3;
 
-    // If we're FRESH.
     } else if (
+    // If we're FRESH and still young.
+    
       reader->last_tag_read_ms > 0UL &&
       reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
       ){
 
       if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
         
-      CT_LOG(6, F("proximityStateController() FRESH"), true);
-      blinker[1]->steady();
+      CT_LOG(6, F("Fresh"), true);
       blinker[0]->off();
+      blinker[1]->steady();
+      //blinker[2]->off();
       beeper->off();
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 0UL;
 
       ctrl_status = 4;
 
-    // No expected condition was met (not sure what to do here yet).
+    
     } else {
-      // This condition is not necessarily a problem.
+    // No expected condition was met (not sure what to do here, if anything).
+    // This condition is not necessarily a problem.
+
+      blinker[2]->off();
 
       if (ctrl_status != 0) LOG(5, F("PASS"), true); // only prints once.
       
-      CT_LOG(6, F("proximityStateController() no condition met"), true); // always prints
+      CT_LOG(6, F("Pass"), true); // always prints
 
       // Only changes status if debugging, otherwise info-level debug will show
       // some statuses (like TIMEOUT) at every loop.

@@ -10,7 +10,8 @@
     previous_ms(0),
     frequency(_freq),
     pwm(_pwm),
-    intervals {}
+    intervals {},
+    signature {}
   {
     strlcpy(led_name, _name, 3);
     pinMode(led_pin, OUTPUT);
@@ -18,8 +19,8 @@
   }
   
   void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
-    BK_LOG(6, F("Led::begin current, new:"), false); BK_LOG(6, led_name, true);
-    if (LogLevel() >= 6) {
+    BK_LOG(5, F("Led::begin current, new:"), false); BK_LOG(5, led_name, true);
+    if (LogLevel() >= 5) {
       printIntervals(intervals);
       printIntervals(_intervals);
     }
@@ -146,22 +147,29 @@
       }
     }
 
-    // Where is this handled now?
-    //digitalWrite(led_pin, led_state);
+
 
     // Sets local debug level for the next chunk of code.
-    int lv = 6;
-    
-    if (frequency == 0 && pwm == 0U) {
-      BK_LOG(lv, F("LED write: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, true);
-      digitalWrite(led_pin, led_state);
-    } else if (frequency > 0) {
-      BK_LOG(lv, F("LED tone: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, frequency, true);
-      led_state ? tone(led_pin, frequency) : noTone(led_pin);
-    } else if (pwm > 0) {
-      BK_LOG(lv, F("LED pwm: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, pwm, true);
-      led_state ? analogWrite(led_pin, pwm) : analogWrite(led_pin, 0U);
+    int lv = 5;
+
+    // Only writes to pins if data has changed, not every loop.
+    if (signature[0] != led_pin || signature[1] != led_state || signature[2] != frequency || signature[3] != pwm) {
+      if (frequency == 0 && pwm == 0U) {
+        BK_LOG(lv, F("LED write: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, true);
+        digitalWrite(led_pin, led_state);
+      } else if (frequency > 0) {
+        BK_LOG(lv, F("LED tone: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, frequency, true);
+        led_state ? tone(led_pin, frequency) : noTone(led_pin);
+      } else if (pwm > 0) {
+        BK_LOG(lv, F("LED pwm: "), false); BK_LOG(lv, led_pin, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, led_state, false); BK_LOG(lv, F(", "), false); BK_LOG(lv, pwm, true);
+        led_state ? analogWrite(led_pin, pwm) : analogWrite(led_pin, 0U);
+      }
     }
+
+    signature[0] = led_pin;
+    signature[1] = led_state;
+    signature[2] = frequency;
+    signature[3] = pwm;
   } // handleBlinker()
 
   void Led::reset() {
@@ -205,7 +213,7 @@
 
   void Led::fastBlink() {
     BK_LOG(6, F("Led::fastBlink() "), false); BK_LOG(6, led_name, true);
-    const int _intervals[INTERVALS_LENGTH] = {70,70};
+    const int _intervals[INTERVALS_LENGTH] = {80,80};
     update(0, _intervals);
   }
 
@@ -224,12 +232,12 @@
 
   void Led::fastBeep(int _count) {
     BK_LOG(6, F("Led::fastBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
-    const int _intervals[INTERVALS_LENGTH] = {70,70};
+    const int _intervals[INTERVALS_LENGTH] = {80,80};
     update(_count, _intervals);        
   }
 
   void Led::slowBeep(int _count) {
-    BK_LOG(6, F("Led::fastBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+    BK_LOG(6, F("Led::slowBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
     const int _intervals[INTERVALS_LENGTH] = {500,500};
     update(_count, _intervals);        
   }

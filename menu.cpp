@@ -212,11 +212,12 @@
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
       //  sp->listen();
       //  while (! sp->isListening()) delay(2);
+      if (! sp->isListening()) sp->listen();
       while (! sp->isListening()) {
-        sp->listen();
-        delay(2);
+        ; //delay(2);
       }
-      delay(get_tag_from_scanner ? 10 : 1);
+      //delay(get_tag_from_scanner ? 10 : 1);
+      delay(get_tag_from_scanner ? 10 : 0);
     }
     
     if (serial_port->available()) {
