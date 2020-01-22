@@ -217,7 +217,7 @@
         ; //delay(2);
       }
       //delay(get_tag_from_scanner ? 10 : 1);
-      delay(get_tag_from_scanner ? 10 : 0);
+      //delay(get_tag_from_scanner ? 10 : 0);
     }
     
     if (serial_port->available()) {

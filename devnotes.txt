@@ -645,4 +645,10 @@ TODO: Reduce hardware buttons to only 1, which will handle failsafe AND debug mo
 TODO: Change S.debug_mode to mean: What log level do we bump to during debug-pin or TempDebug?
       Will this work?
       
+TODO: FIX: Now admin mode tag scanning is broken.
+      OK, some delay after the RFID reader listen() statement seems to help.
+      
+      But now we have blue led popping up during admin mode after attempting to scan tag,
+      and at the end of admin state the led just goes dark (green is going off)!
+      
       

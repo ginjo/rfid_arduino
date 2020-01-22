@@ -47,9 +47,12 @@
     //  while (! serial_port->isListening()) delay(2);
     //  delay(20);
 
-    if (! serial_port->isListening()) serial_port->listen();
+    if (! serial_port->isListening()) {
+      serial_port->listen();
+      delay(10);
+    }
     while (! serial_port->isListening()) {
-      ; // delay(2);
+      delay(2);
     }
 
     RD_LOG(6, F("READER LOOP BEGIN "), false);
