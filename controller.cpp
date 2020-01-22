@@ -172,8 +172,12 @@
       // This condition is not necessarily a problem.
 
       if (ctrl_status != 0) LOG(5, F("PASS"), true); // only prints once.
-      CT_LOG(6, F("proximityStateController() no condition met"), true);
-      ctrl_status = 0;
+      
+      CT_LOG(6, F("proximityStateController() no condition met"), true); // always prints
+
+      // Only changes status if debugging, otherwise info-level debug will show
+      // some statuses (like TIMEOUT) at every loop.
+      if (LogLevel() >=5) ctrl_status = 0; 
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.

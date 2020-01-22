@@ -622,3 +622,5 @@ TODO: Make sure output switch is always on as early as possible, even before
       
 TODO: LED is behaving weirdly, especially in aging and timeout states.
 
+TODO: Take initial HW/SW serial baud rates from default Settings object (instead of hard-coded).
+
