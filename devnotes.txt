@@ -624,3 +624,10 @@ TODO: LED is behaving weirdly, especially in aging and timeout states.
 
 TODO: Take initial HW/SW serial baud rates from default Settings object (instead of hard-coded).
 
+TODO: With most delay() calls removed, Aging beeper is a little fast. Slow it down?
+
+TODO: Change WL-125 reader baud to 57600 if possile.
+
+TODO: Reduce hardware buttons to only 1, which will handle failsafe AND debug mode.
+
+
