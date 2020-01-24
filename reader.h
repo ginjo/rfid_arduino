@@ -26,7 +26,7 @@
 
     //static constexpr char *Name = {( char *)"base"};
     //static const char *Name;
-    static const char Name[];
+    static const char Name[READER_NAME_LENGTH];
     
     //static Reader *GetReader(const char*);
     static Reader *GetReader(int index);

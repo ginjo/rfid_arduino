@@ -56,10 +56,6 @@
     // where we left off at power-down (or reset).
     //proximity_state = S.proximity_state;
 
-    blinker[0]->off();
-    blinker[1]->off();
-    blinker[2]->off();
-    beeper->off();
 
     LOG(4, F("Setting outpt switch per prox-state: "));
     LOG(4, proximity_state, true);
@@ -69,6 +65,12 @@
     // start processing tags (at which time, it will immediately
     // shut down output until a successful tag read).
     digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
+
+    blinker[0]->off();
+    blinker[1]->off();
+    blinker[2]->off();
+    beeper->off();
+    
     if (proximity_state) {
       blinker[1]->startupBlink();
     } else {
@@ -186,7 +188,7 @@
     // No expected condition was met (not sure what to do here, if anything).
     // This condition is not necessarily a problem.
 
-      blinker[2]->off();
+      //blinker[2]->off();
 
       if (ctrl_status != 0) LOG(5, F("PASS"), true); // only prints once.
       
@@ -201,6 +203,7 @@
     if (Menu::run_mode == 0) digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
     
   } // proximityStateController()
+
 
   int Controller::setProximityState(int _state) {
     if (Menu::run_mode == 0) {

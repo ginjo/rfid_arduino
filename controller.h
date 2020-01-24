@@ -28,7 +28,7 @@
   class Controller {
   public:
   
-    /***  Variables  ***/
+    /***  Instance ariables  ***/
 
     int proximity_state; //  Maybe put this in a state.h file (and class) derived from Storage.
     Reader * reader;

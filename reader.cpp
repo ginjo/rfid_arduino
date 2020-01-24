@@ -1,8 +1,21 @@
   #include "reader.h"
 
+
+  /*  Static vars & functions  */
+
   const char Reader::Name[READER_NAME_LENGTH] = {"base"};
-  //const char *Reader::name() {return Name;}
-  char *Reader::name() {return (char *)Name;}
+
+  void Reader::PrintReaders(Stream *sp) {
+    sp->print(F("Readers ("));
+    sp->print(READER_COUNT);
+    sp->println(F(")"));
+    for (int n=1; n <= READER_COUNT; n++) {
+      int output_length = READER_NAME_LENGTH + 8;
+      char output[output_length] = "";
+      snprintf(output, output_length, "%i %s (%s)", n, (S.default_reader == (int8_t)n ? "*" : " "), NameFromIndex(n));
+      sp->println(output);
+    }
+  }
   
   // Defines Reader Constructor
   Reader::Reader(uint8_t _raw_tag_length, uint8_t _id_begin, uint8_t _id_end, bool _control_logic) :
@@ -33,6 +46,12 @@
     //LOG(4, F("Constructing Reader: "));
     //LOG(4, name(), true);
   }
+
+
+
+  /*  Instance vars & functions  */
+
+  char *Reader::name() {return (char *)Name;}
 
   uint32_t Reader::processTagData(uint8_t[]) {
     RD_LOG(2, F("Called processTagData() on base Reader class"), true);
@@ -301,19 +320,7 @@
     }
   }
 
-
-  /* Static vars & functions */
-
-  void Reader::PrintReaders(Stream *sp) {
-    sp->print(F("Readers ("));
-    sp->print(READER_COUNT);
-    sp->println(F(")"));
-    for (int n=1; n <= READER_COUNT; n++) {
-      char output[24] = "";
-      snprintf(output, 24, "%i %s (%s)", n, (S.default_reader == (int8_t)n ? "*" : " "), NameFromIndex(n));
-      sp->println(output);
-    }
-  }
+  
 
 
   

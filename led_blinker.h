@@ -17,11 +17,23 @@
   #endif
   
   // Max allowed size of intervals array.
-  #define INTERVALS_LENGTH 10 // for a max of 5 on/off cycles
+  #define INTERVALS_LENGTH 2 // for a max of 1 on/off cycles.
   
   
   class Led {
   public:
+
+    /*  Static  */
+    
+    // Static pre-defined 2D interval array.
+    static const int static_intervals[][INTERVALS_LENGTH];
+
+    // Prints all static_intervals.
+    static void PrintStaticIntervals();
+    
+
+    /*  Instance  */
+  
     // Sets the pin number
     int led_pin;  //LED_BUILTIN;
 
@@ -53,10 +65,11 @@
     int pwm;
 
     // The intervals.
-    int intervals[INTERVALS_LENGTH];
+    //int intervals[INTERVALS_LENGTH]; // this is not a pointer, it's a value.
+    const int *intervals; // pointer to const array of ints.
 
     // A status signature, to know when state has changed
-    int signature[4];
+    int signature[4]; // led_pin, led_state, frequency, pin
 
     // constructor
     Led(int, const char[], const int=0, const int=0);
@@ -68,6 +81,7 @@
     void handleBlinker();
     void printIntervals(const int[]);
     int  countIntervals(const int[]);
+    void printData();
     void reset();
 
     void steady();
@@ -83,7 +97,7 @@
   
   };
 
-  // This must be declared here, since several files use the RGB object, ad Led must have been defined already.
-  extern Led *RGB[]; // = {new Led(LED_RED_PIN, "Rd"), new Led(LED_GREEN_PIN, "Gr"), new Led(LED_BLUE_PIN, "Bl")};
+  // This must be declared here, since several files use the RGB object, and Led must have been defined already.
+  extern Led *RGB[3]; // = {new Led(LED_RED_PIN, "Rd"), new Led(LED_GREEN_PIN, "Gr"), new Led(LED_BLUE_PIN, "Bl")};
 
 #endif

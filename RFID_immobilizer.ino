@@ -121,18 +121,17 @@
 
     Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
+    if (LogLevel() >= 5) Led::PrintStaticIntervals();
+
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
     RfidReader = Reader::GetReader((int)S.default_reader);
     RfidReader->serial_port = RfidSerial;
 
-    // moved here from below
     OutputControl = new Controller(RfidReader, RGB, Beeper);
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
     Menu::SW = new Menu(BTserial, RfidReader, "SW");
-
-    //OutputControl = new Controller(RfidReader, RGB, Beeper);
 
     FREERAM("setup() pre obj stp");
     
@@ -161,7 +160,7 @@
     //// Activates the Controller handler.
     //OutputControl->begin();
 
-    FREERAM("end setup()");
+    FREERAM("setup() end");
 
     // Add empty line before beginning loop.
     LOG(4, "", true);
@@ -179,7 +178,6 @@
     if (Menu::run_mode > 0) {
       Menu::Loop();
     } else if (Menu::run_mode == 0) {
-      //RfidReader->loop(); // Is this for debugging, or is it just old code?
       OutputControl->loop();      
     }
 

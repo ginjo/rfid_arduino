@@ -34,15 +34,18 @@
   */
   
   #define DEBUG        // master debug control
-  #define INO_DEBUG    // main ino file
-  #define BK_DEBUG     // blinker
-  //#define CT_DEBUG   // controller
-  #define RD_DEBUG   // reader
-  //#define MU_DEBUG   // serial menu
-  //#define SK_DEBUG   // stack
-  //#define ST_DEBUG   // settings
-  //#define SO_DEBUG   // storage
-  //#define TA_DEBUG   // tags
+  
+  #ifdef DEBUG
+    #define INO_DEBUG    // main ino file
+    #define BK_DEBUG   // blinker
+    #define CT_DEBUG   // controller
+    #define RD_DEBUG   // reader
+    //#define MU_DEBUG   // serial menu
+    //#define SK_DEBUG   // stack
+    //#define ST_DEBUG   // settings
+    //#define SO_DEBUG   // storage
+    //#define TA_DEBUG   // tags
+  #endif
 
   
   #ifdef DEBUG    // Macros are usually in all capital letters.

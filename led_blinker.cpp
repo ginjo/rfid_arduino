@@ -1,5 +1,29 @@
   #include "led_blinker.h"
 
+  // Static pre-defined 2D interval array.
+  const int Led::static_intervals[][INTERVALS_LENGTH] = {
+    {1000},
+    {0},
+    {500,500},
+    {80,80},
+    {470,30},
+    {70},
+    {80,80},
+    {500,500}
+  };
+
+  void Led::PrintStaticIntervals() {
+    Serial.println(F("PrintStaticIntervals()"));
+    for (int n = 0; n < 8; n++) {
+      Serial.print(n); Serial.print(":");
+      for (int m = 0; m < INTERVALS_LENGTH; m++) {
+        Serial.print(static_intervals[n][m]);
+        Serial.print(",");
+      }
+      Serial.println("");
+    }
+  }
+
   Led::Led(int pin, const char _name[], const int _freq, const int _pwm) : 
     led_pin(pin),
     led_state(0),
@@ -10,16 +34,18 @@
     previous_ms(0),
     frequency(_freq),
     pwm(_pwm),
-    intervals {},
+    intervals {static_intervals[1]}, // initializes to the "off()" interval set (all zeros).
     signature {}
   {
-    strlcpy(led_name, _name, 3);
+    //strlcpy(led_name, _name, 3);
+    snprintf(led_name, 3, "%s", _name);
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, LOW);
   }
   
-  void Led::begin(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
-    BK_LOG(5, F("Led::begin current, new:"), false); BK_LOG(5, led_name, true);
+  void Led::begin(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
+    
+    BK_LOG(5, F("Led::begin old, new: "), false); BK_LOG(5, led_name, true);
     if (LogLevel() >= 5) {
       printIntervals(intervals);
       printIntervals(_intervals);
@@ -30,51 +56,23 @@
     current_phase = 0;
     cycle_count = 0;
     num_cycles = _num_cycles;
+    intervals = _intervals;
     if (_freq >=0) frequency = _freq;
     if (_pwm >=0) pwm = _pwm;
-
-    // Copy _intervals to intervals
-    //for (int n = 0; n < INTERVALS_LENGTH && _intervals[n] > 0; n ++) {
-    for (int n = 0; n < INTERVALS_LENGTH; n ++) {
-      intervals[n] = _intervals[n];
-    }
 
     startPhase(0);
   }
   
   void Led::loop() {
-    //BK_PRINTLN(F("*** LED LOOP BEGIN ***"));
     current_ms = millis();
     handleBlinker();
-  }
-  
-  int Led::countIntervals(const int _intervals[INTERVALS_LENGTH]) {
-    int n;
-    for (n = 0; n < INTERVALS_LENGTH; n ++) {
-      //BK_PRINT(F("_intervals: ")); BK_PRINT(n); BK_PRINT(F(" ")); BK_PRINTLN(_intervals[n]);
-      if (_intervals[n] <= 0) {
-        break;
-      }
-    }
-    return n;
-  }
-
-  void Led::printIntervals(const int _intervals[INTERVALS_LENGTH]) {
-    BK_LOG(5, countIntervals(_intervals), false);
-    BK_LOG(5, ",", false);
-    for (int n = 0; n < INTERVALS_LENGTH; n ++) {
-      BK_LOG(5, " ", false);
-      BK_LOG(5, _intervals[n], false);
-    }
-    BK_LOG(5, "", true);
   }
 
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
-  void Led::update(int _num_cycles, const int _intervals[INTERVALS_LENGTH], const int _freq, const int _pwm) {
-    BK_LOG(6, F("Led::update _intervals[0]: "), false); BK_LOG(6, _intervals[0], true);
+  void Led::update(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
     
-    BK_LOG(6, F("Led::update current, new: "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led::update old, new: "), false); BK_LOG(6, led_name, true);
     #ifdef BK_DEBUG
       if (LogLevel() >= 6) {
         printIntervals(intervals);
@@ -83,14 +81,15 @@
     #endif
 
     if (
-         _num_cycles == num_cycles &&
-         (_freq >= 0 ? _freq == frequency : true) &&
-         (_pwm >= 0 ? _pwm == pwm : true) &&
-         (
-            memcmp(_intervals, intervals, INTERVALS_LENGTH) == 0 ||
-            (countIntervals(_intervals) == 0 && countIntervals(intervals) == 0)
-         )
-       )
+        _num_cycles == num_cycles &&
+        (_freq >= 0 ? _freq == frequency : true) &&
+        (_pwm >= 0 ? _pwm == pwm : true) &&
+        (
+          //memcmp(_intervals, intervals, INTERVALS_LENGTH) == 0 ||
+          intervals == _intervals || // Are these the same memory address?
+          (countIntervals(_intervals) == 0 && countIntervals(intervals) == 0)
+        )
+      )
     {
       BK_LOG(6, F("Led::update() skipping begin()"), true);
     } else {
@@ -127,13 +126,6 @@
     
   // Handles start-stop blinker and blinker cycling
   void Led::handleBlinker() {
-    //BK_PRINTLN("Led::handleBlinker() current data:");
-    //BK_PRINTLN(current_phase);
-    //BK_PRINTLN(intervals[current_phase]);
-    //BK_PRINTLN(led_state);
-    //BK_PRINTLN(current_ms);
-    //BK_PRINTLN(previous_ms);
-    //BK_PRINTLN(" ");
 
     // If the current interval has expired
     if (current_ms - previous_ms >= (unsigned long)intervals[current_phase]) {
@@ -146,8 +138,6 @@
         startPhase(current_phase + 1);
       }
     }
-
-
 
     // Sets local debug level for the next chunk of code.
     int lv = 5;
@@ -166,25 +156,63 @@
       }
     }
 
-    signature[0] = led_pin;
-    signature[1] = led_state;
-    signature[2] = frequency;
-    signature[3] = pwm;
+    printData();
+
+    signature[0] = (int)led_pin;
+    signature[1] = (int)led_state;
+    signature[2] = (int)frequency;
+    signature[3] = (int)pwm;
   } // handleBlinker()
 
+
+  int Led::countIntervals(const int _intervals[]) {
+    int n;
+    for (n = 0; n < INTERVALS_LENGTH; n ++) {
+      //BK_PRINT(F("_intervals: ")); BK_PRINT(n); BK_PRINT(F(" ")); BK_PRINTLN(_intervals[n]);
+      if (_intervals[n] <= 0) {
+        break;
+      }
+    }
+    return n;
+  }
+
+  void Led::printIntervals(const int _intervals[]) {
+    if (LogLevel() < 5) return;
+    BK_LOG(5, num_cycles, false);
+    BK_LOG(5, ",", false);
+    for (int n = 0; n < INTERVALS_LENGTH; n ++) {
+      BK_LOG(5, " ", false);
+      BK_LOG(5, _intervals[n], false);
+    }
+    BK_LOG(5, "", true);
+  }
+
+  void Led::printData() {
+    BK_LOG(6, F("Led Current Data "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("current_phase "), false); BK_LOG(6, current_phase, true);
+    BK_LOG(6, F("cycle_count "), false); BK_LOG(6, cycle_count, true);
+    BK_LOG(6, F("interval "), false); BK_LOG(6, intervals[current_phase], true);
+    BK_LOG(6, F("led_state "), false); BK_LOG(6, led_state, true);
+    BK_LOG(6, F("current_ms "), false); BK_LOG(6, current_ms, true);
+    BK_LOG(6, F("previous_ms "), false); BK_LOG(6, previous_ms, true);
+    BK_LOG(6, "", true);
+  }
+  
+
+  // TODO: How deeply does this reset the Led? Should it reset intervals too?
   void Led::reset() {
     led_state = 0;
     current_phase = 0;
     cycle_count = 0;
-    //memset(intervals, 0, INTERVALS_LENGTH);
   }
 
-  // Manually forces led state
+  // Manually forces led state low
   void Led::go_low() {
     led_state = LOW;
     digitalWrite(led_pin, LOW);
   }
 
+  // Manually forces led state high
   void Led::go_high() {
     led_state = HIGH;
     digitalWrite(led_pin, HIGH);
@@ -195,51 +223,47 @@
   
   void Led::steady() {
     BK_LOG(6, F("Led::steady() "), false); BK_LOG(6, led_name, true);
-    const int _intervals[INTERVALS_LENGTH] = {1000};
-    update(0, _intervals);
+    update(0, static_intervals[0]);
   }
 
   void Led::off() {
     BK_LOG(6, F("Led::off() "), false); BK_LOG(6, led_name, true);
-    const int _intervals[INTERVALS_LENGTH] = {0};
-    update(0, _intervals);
+    update(0, static_intervals[1]);
   }
 
   void Led::slowBlink() {
     BK_LOG(6, F("Led::slowBlink() "), false); BK_LOG(6, led_name, true);
-    const int _intervals[INTERVALS_LENGTH] = {500,500};
-    update(0, _intervals);
+    update(0, static_intervals[2]);
   }
 
   void Led::fastBlink() {
     BK_LOG(6, F("Led::fastBlink() "), false); BK_LOG(6, led_name, true);
-    const int _intervals[INTERVALS_LENGTH] = {80,80};
-    update(0, _intervals);
+    update(0, static_intervals[3]);
   }
 
   void Led::startupBlink() {
     BK_LOG(6, F("Led::startupBlink() "), false); BK_LOG(6, led_name, true);
-    const int _intervals[INTERVALS_LENGTH] = {470,30};
-    update(0, _intervals);
+    update(0, static_intervals[4]);
   }
 
   void Led::once() {
     BK_LOG(6, F("Led::once() "), false); BK_LOG(6, led_name, true);
     reset();
-    const int _intervals[INTERVALS_LENGTH] = {70};
-    update(1, _intervals);    
+    update(1, static_intervals[5]);
   }
 
   void Led::fastBeep(int _count) {
     BK_LOG(6, F("Led::fastBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
-    const int _intervals[INTERVALS_LENGTH] = {80,80};
-    update(_count, _intervals);        
+    //const int _intervals[INTERVALS_LENGTH] = {80,80};
+    //update(_count, _intervals);
+    update(_count, static_intervals[6]);
   }
 
   void Led::slowBeep(int _count) {
     BK_LOG(6, F("Led::slowBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
-    const int _intervals[INTERVALS_LENGTH] = {500,500};
-    update(_count, _intervals);        
+    //const int _intervals[INTERVALS_LENGTH] = {500,500};
+    //update(_count, _intervals);
+    update(_count, static_intervals[7]);
   }
 
   

@@ -651,4 +651,10 @@ TODO: FIX: Now admin mode tag scanning is broken.
       But now we have blue led popping up during admin mode after attempting to scan tag,
       and at the end of admin state the led just goes dark (green is going off)!
       
-      
+TODO: Instead of passing around intervals of addresses, try passing around just the static_intervals index.
+
+TODO: Try changing RGB to an array of values rather than an array of pointers.
+        Led RGB[] = {Led(,RED_PIN, "Rd"), ...};
+        
+        
+        
