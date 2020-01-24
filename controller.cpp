@@ -3,7 +3,8 @@
 
   // Constructors
   // Receives a Reader and an array of Led objecs (*RGB[] from .ino file).
-  Controller::Controller(Reader *_reader, Led *_blinker[], Led *_beeper) :
+  //Controller::Controller(Reader *_reader, Led *_blinker[], Led *_beeper) :
+  Controller::Controller(Reader *_reader, Led _blinker[], Led *_beeper) :
     //proximity_state(0),
     proximity_state(S.proximity_state_startup == 2 ? EEPROM.read(0) : S.proximity_state_startup),
     reader(_reader),
@@ -66,15 +67,15 @@
     // shut down output until a successful tag read).
     digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
 
-    blinker[0]->off();
-    blinker[1]->off();
-    blinker[2]->off();
+    blinker[0].off();
+    blinker[1].off();
+    blinker[2].off();
     beeper->off();
     
     if (proximity_state) {
-      blinker[1]->startupBlink();
+      blinker[1].startupBlink();
     } else {
-      blinker[0]->startupBlink();
+      blinker[0].startupBlink();
     }
   }
 
@@ -106,8 +107,8 @@
       if (ctrl_status != 1) LOG(3, F("TIMEOUT: grace period"), true); // only prints once.
       
       CT_LOG(6, F("Timeout: grace"), true);
-      blinker[0]->slowBlink();
-      blinker[1]->off();
+      blinker[0].slowBlink();
+      blinker[1].off();
       //blinker[2]->off();
       beeper->slowBeep(3);
       setProximityState(0);
@@ -127,8 +128,8 @@
       if (ctrl_status != 2) LOG(3, F("TIMEOUT: general"), true); // only prints once.
       
       CT_LOG(6, F("Timeout: general"), true);
-      blinker[0]->slowBlink();
-      blinker[1]->off();
+      blinker[0].slowBlink();
+      blinker[1].off();
       //blinker[2]->off();
       beeper->slowBeep(3);
       setProximityState(0);
@@ -149,11 +150,11 @@
 
       CT_LOG(6, F("Aging"), true);
       if (proximity_state) {
-        blinker[0]->off();
-        blinker[1]->fastBlink();
+        blinker[0].off();
+        blinker[1].fastBlink();
       } else {
-        blinker[0]->fastBlink();
-        blinker[1]->off();        
+        blinker[0].fastBlink();
+        blinker[1].off();        
       }
       
       //blinker[2]->off();
@@ -174,8 +175,8 @@
       if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
         
       CT_LOG(6, F("Fresh"), true);
-      blinker[0]->off();
-      blinker[1]->steady();
+      blinker[0].off();
+      blinker[1].steady();
       //blinker[2]->off();
       beeper->off();
       setProximityState(1);

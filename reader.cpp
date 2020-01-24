@@ -247,8 +247,8 @@
     RD_LOG(5, tag_id, true);
 
     if (tag_id) {
-      RGB[0]->go_low();
-      RGB[2]->once();
+      Led::RGB[0].go_low();
+      Led::RGB[2].once();
     }
 
     // If tag is valid, immediatly update proximity-state.

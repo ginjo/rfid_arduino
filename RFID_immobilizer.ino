@@ -19,10 +19,13 @@
 
   // Defines RGB LED -- an array of 3 Led instances.
   // Declaration is in led_blinker.h (extern and static var declaration/definitions are very confusing).
-  Led *RGB[3] = {};
+  //Led *RGB[3] = {};
+  //Led Led::RGB[] = {};
+  Led Led::RGB[] = {Led(LED_RED_PIN, "Rd"), Led(LED_GREEN_PIN, "Gr"), Led(LED_BLUE_PIN, "Bl")};
 
   // Declares beeper, which is also handled by Led class.
-  Led *Beeper;
+  //Led *Beeper;
+  Led *Led::Beeper;
 
   // Declares a software-serial port for admin console.
   // Was moved to global.h and global.cpp, since it needed to be an extern.
@@ -115,11 +118,14 @@
 
     /*  Initialize main objects  */
 
-    RGB[0] = new Led(LED_RED_PIN, "Rd");
-    RGB[1] = new Led(LED_GREEN_PIN, "Gr");
-    RGB[2] = new Led(LED_BLUE_PIN, "Bl");
+    //  RGB[0] = new Led(LED_RED_PIN, "Rd");
+    //  RGB[1] = new Led(LED_GREEN_PIN, "Gr");
+    //  RGB[2] = new Led(LED_BLUE_PIN, "Bl");
+    
+    //Led::RGB[] = {Led(LED_RED_PIN, "Rd"), Led(LED_GREEN_PIN, "Gr"), Led(LED_BLUE_PIN, "Bl")};
 
-    Beeper  = new Led(BEEPER_PIN, "au", S.tone_frequency);
+    //Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
+    Led::Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
     if (LogLevel() >= 5) Led::PrintStaticIntervals();
 
@@ -128,7 +134,7 @@
     RfidReader = Reader::GetReader((int)S.default_reader);
     RfidReader->serial_port = RfidSerial;
 
-    OutputControl = new Controller(RfidReader, RGB, Beeper);
+    OutputControl = new Controller(RfidReader, Led::RGB, Led::Beeper);
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
     Menu::SW = new Menu(BTserial, RfidReader, "SW");
@@ -170,10 +176,10 @@
 
   void loop() {
 
-    RGB[0]->loop();
-    RGB[1]->loop();
-    RGB[2]->loop();
-    Beeper->loop();
+    Led::RGB[0].loop();
+    Led::RGB[1].loop();
+    Led::RGB[2].loop();
+    Led::Beeper->loop();
 
     if (Menu::run_mode > 0) {
       Menu::Loop();

@@ -32,7 +32,7 @@
 
     int proximity_state; //  Maybe put this in a state.h file (and class) derived from Storage.
     Reader * reader;
-    Led **blinker;
+    Led *blinker;
     Led *beeper;
     int ctrl_status; // For logging ctrl state change only once per loop.
 
@@ -41,7 +41,8 @@
     
     //Controller(Stream*, Led*, Reader*);
     //Controller(Stream*, Led*);
-    Controller(Reader*, Led*[], Led*);
+    //Controller(Reader*, Led*[], Led*); // This accepts a pointer to an array of Led pointers.
+    Controller(Reader*, Led[], Led*);
 
 
     /***  Functions  ***/

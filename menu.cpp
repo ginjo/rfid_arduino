@@ -41,7 +41,8 @@
   /***  Static Vars & Funtions  ***/
 
   int Menu::run_mode = 0;
-  
+
+  // These provide the "definition" of these static vars. See .h file for declarations.
   Menu * Menu::Current;
   Menu * Menu::HW;
   Menu * Menu::SW;

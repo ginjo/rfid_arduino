@@ -30,6 +30,9 @@
 
     // Prints all static_intervals.
     static void PrintStaticIntervals();
+
+    static Led RGB[3];
+    static Led *Beeper;
     
 
     /*  Instance  */
