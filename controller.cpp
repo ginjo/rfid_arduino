@@ -4,12 +4,13 @@
   // Constructors
   // Receives a Reader and an array of Led objecs (*RGB[] from .ino file).
   //Controller::Controller(Reader *_reader, Led *_blinker[], Led *_beeper) :
-  Controller::Controller(Reader *_reader, Led _blinker[], Led *_beeper) :
+  //Controller::Controller(Reader *_reader, Led _blinker[], Led *_beeper) :
+  Controller::Controller(Reader *_reader) :
     //proximity_state(0),
     proximity_state(S.proximity_state_startup == 2 ? EEPROM.read(0) : S.proximity_state_startup),
     reader(_reader),
-    blinker(_blinker),
-    beeper(_beeper),
+    //blinker(_blinker),
+    //beeper(_beeper),
     ctrl_status(0)
   { ; }
 
@@ -67,15 +68,15 @@
     // shut down output until a successful tag read).
     digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
 
-    blinker[0].off();
-    blinker[1].off();
-    blinker[2].off();
-    beeper->off();
+    RGB[0]->off();
+    RGB[1]->off();
+    RGB[2]->off();
+    Beeper->off();
     
     if (proximity_state) {
-      blinker[1].startupBlink();
+      RGB[1]->startupBlink();
     } else {
-      blinker[0].startupBlink();
+      RGB[0]->startupBlink();
     }
   }
 
@@ -107,10 +108,10 @@
       if (ctrl_status != 1) LOG(3, F("TIMEOUT: grace period"), true); // only prints once.
       
       CT_LOG(6, F("Timeout: grace"), true);
-      blinker[0].slowBlink();
-      blinker[1].off();
+      RGB[0]->slowBlink();
+      RGB[1]->off();
       //blinker[2]->off();
-      beeper->slowBeep(3);
+      Beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
@@ -128,10 +129,10 @@
       if (ctrl_status != 2) LOG(3, F("TIMEOUT: general"), true); // only prints once.
       
       CT_LOG(6, F("Timeout: general"), true);
-      blinker[0].slowBlink();
-      blinker[1].off();
+      RGB[0]->slowBlink();
+      RGB[1]->off();
       //blinker[2]->off();
-      beeper->slowBeep(3);
+      Beeper->slowBeep(3);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
@@ -150,15 +151,15 @@
 
       CT_LOG(6, F("Aging"), true);
       if (proximity_state) {
-        blinker[0].off();
-        blinker[1].fastBlink();
+        RGB[0]->off();
+        RGB[1]->fastBlink();
       } else {
-        blinker[0].fastBlink();
-        blinker[1].off();        
+        RGB[0]->fastBlink();
+        RGB[1]->off();        
       }
       
       //blinker[2]->off();
-      beeper->fastBeep();
+      Beeper->fastBeep();
       
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 3UL;
@@ -175,10 +176,10 @@
       if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
         
       CT_LOG(6, F("Fresh"), true);
-      blinker[0].off();
-      blinker[1].steady();
+      RGB[0]->off();
+      RGB[1]->steady();
       //blinker[2]->off();
-      beeper->off();
+      Beeper->off();
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 0UL;
 

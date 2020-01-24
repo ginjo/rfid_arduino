@@ -42,7 +42,8 @@
     //Controller(Stream*, Led*, Reader*);
     //Controller(Stream*, Led*);
     //Controller(Reader*, Led*[], Led*); // This accepts a pointer to an array of Led pointers.
-    Controller(Reader*, Led[], Led*);
+    //Controller(Reader*, Led[], Led*);
+    Controller(Reader*);
 
 
     /***  Functions  ***/

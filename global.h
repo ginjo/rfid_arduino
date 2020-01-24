@@ -7,7 +7,7 @@
   #include <Arduino.h>
   #include <SoftwareSerial.h>
   // Don't load any custom classes here, as global.h should load before anything custom.
-
+  // Use forward declarations instead, if you need to refer to custom classes here.
   
   #define DEBUG_PIN 11
   #define FAILSAFE_PIN 12
@@ -35,6 +35,10 @@
 
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
   extern SoftwareSerial *BTserial;
+
+  class Led; // forward declaration
+  extern Led *RGB[];
+  extern Led *Beeper;
 
   extern void globalSetup();
 
