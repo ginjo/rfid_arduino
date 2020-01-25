@@ -90,7 +90,7 @@
       Reader::PrintReaders(&Serial);
       Serial.println("");
       //
-      if (canLogToBT()) {
+      if (CanLogToBT()) {
         S.printSettings(BTserial);
         BTserial->println("");
         Reader::PrintReaders(BTserial);
@@ -153,9 +153,9 @@
     RGB[2]->loop();
     Beeper->loop();
 
-    if (Menu::run_mode > 0) {
+    if (Menu::RunMode > 0) {
       Menu::Loop();
-    } else if (Menu::run_mode == 0) {
+    } else if (Menu::RunMode == 0) {
       OutputControl->loop();      
     }
 

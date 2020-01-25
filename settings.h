@@ -45,14 +45,11 @@
   public:
 
     /***  Static  ***/
-
-    /* not using static, see below */
-    //static int log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
     
     static Settings Current;
-    //static bool TempDebug;
 
     static Settings* Load(Settings *settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
+    
     static bool Failsafe();
     
 

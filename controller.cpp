@@ -202,13 +202,13 @@
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.
-    if (Menu::run_mode == 0) digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
+    if (Menu::RunMode == 0) digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
     
   } // proximityStateController()
 
 
   int Controller::setProximityState(int _state) {
-    if (Menu::run_mode == 0) {
+    if (Menu::RunMode == 0) {
       int previous_proximity_state = proximity_state;
       proximity_state = _state;
 

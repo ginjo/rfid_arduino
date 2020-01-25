@@ -5,6 +5,7 @@
   #include <string.h>
   
   #include "settings.h"
+  #include "logger.h"
   #include "tags.h"
   #include "led_blinker.h"
 

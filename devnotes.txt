@@ -430,10 +430,12 @@ TODO: √ There is garbage printing on BTserial at startup, even when log_to_bt 
       
       Update: I think it's due to floating pins, cuz is never happens when soft-rebooted from IDE.
       
-TODO: Check to see if any class constructors are using LOG or BTserial in their construction methods.
+TODO: √ Check to see if any class constructors are using LOG or BTserial in their construction methods.
       They probably should not.
       
-      Yes, one of the classes has LOG in its constructor.
+      Yes, Reader (individual readers) has LOG in its constructors.
+      This does not seem to be breaking anything right now.
+      Leave alone.
 
 TODO: √ Change io.h to global.h, and put externs (like BTserial) in there.
 
@@ -497,8 +499,9 @@ TODO: √ Don't overwrite existing tag set when loaded tag set has checksum mism
       
 TODO: √ Move TempDebug to logger or global files.
 
-TODO: Actually, consider consolidating logger and global files
+TODO: √ Actually, consider consolidating logger and global files
       and moving all debug code from settings to logger/global files.
+      Mmm... This won't buy us anything right now, so let's leave alone.
       
 TODO: √ Create a proper logger that consolidates all the c++ macros with the
       existing LOG function.
@@ -546,9 +549,12 @@ TODO: √ Create functions for reading/writing to BT12 module.
 TODO:	Then add a menu option to change the BT12's advertised name.
 	    This could only be done from the HW serial admin menu (obviously).
 	  
-TODO: Should run_mode and adminTimeout() be stored & handled from Controller (instead of Menu)?
+TODO: √ Should run_mode and adminTimeout() be stored & handled from Controller (instead of Menu)?
+      A review showed that this could be done, however Menu is by far the largest
+      consumer of run_mode, AND it is the only place where run_mode is written to.
+      So let's keep this stuff in Menu for now.
 	  
-TODO: Review naming of static/extern/global vars and functions.
+TODO: √ Review naming of static/extern/global vars and functions.
 
 TODO: √ Only run AT commands to SW serial if module is not connected.
 
@@ -572,6 +578,7 @@ TODO: Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4
       Maybe only when debug button is LOW (or was LOW at startup)... ?
       
 TODO: Should debug button take level all the way to max (6)?
+      See below for suggested refactor of Settings.debug_mode.
 
 TODO: Log level 5 with BTserial connected & with Reader debug enabled causes
       reader/controller confusion when tag is read, leading to false aging mode.
@@ -651,9 +658,9 @@ TODO: FIX: Now admin mode tag scanning is broken.
       But now we have blue led popping up during admin mode after attempting to scan tag,
       and at the end of admin state the led just goes dark (green is going off)!
       
-TODO: Instead of passing around intervals of addresses, try passing around just the static_intervals index.
+TODO: √ Instead of passing around intervals of addresses, try passing around just the static_intervals index.
 
-TODO: Try changing RGB to an array of values rather than an array of pointers.
+TODO: - Try changing RGB to an array of values rather than an array of pointers.
         Led RGB[] = {Led(,RED_PIN, "Rd"), ...};
         
         

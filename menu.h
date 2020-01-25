@@ -29,6 +29,18 @@
 
   class Menu : public Stack<Menu> {
   public:
+
+    /*  Static Vars & Functions  */
+    static int RunMode; // 0=run, 1=admin
+
+    static Menu * Current;
+    static Menu * HW;
+    static Menu * SW;
+    
+    static void Begin();
+    static void Loop();
+
+    /* Instance vars */
     Stream *serial_port;
     Reader *reader;
     // NOTE: instance_name is a two-character string with a terminating null.
@@ -42,8 +54,7 @@
     int selected_menu_item;
     int get_tag_from_scanner;
 
-    // Constructor receives a serial port instance
-    // from HardwareSerial or SoftwareSerial.
+    /* Constructor receives a serial port instance from HardwareSerial or SoftwareSerial. */
     Menu(Stream*, Reader*, const char* = "");
 
     /* Control */
@@ -89,19 +100,9 @@
     void menuManageBT(void* = nullptr);
     void menuSendAtCommand(void* = nullptr);
     void menuPrintATResponse(void* = nullptr);
-
-
-    /*  Static Vars & Functions  */
-
-    static int run_mode; // 0=run, 1=admin
-
-    static Menu * Current;
-    static Menu * HW;
-    static Menu * SW;
-    
-    static void Begin();
-    static void Loop();
     
   }; // Menu
 
 #endif
+
+  

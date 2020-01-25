@@ -7,7 +7,7 @@
   
   * Refactored Menu with these features:
   
-  * Menu::run_mode is a shared static now.
+  * Menu::RunMode is a shared static now.
   
   * Two more statics hold SW and HW serial-menu instances.
   
@@ -15,10 +15,10 @@
   
   * Menu::Begin() and Menu::Loop() make sub-calls to
   SW and HW instances (both) until once is 'chosen' (when user
-  input triggers admin-mode 'run_mode == 1').
+  input triggers admin-mode 'RunMode == 1').
   
   * At that point, the static for Current is filled with the chosen instance.
-  Other classes can access the Menu::Current or Menu::run_mode
+  Other classes can access the Menu::Current or Menu::RunMode
   if necessary for admin-mode operations.
   
   */
@@ -40,7 +40,7 @@
 
   /***  Static Vars & Funtions  ***/
 
-  int Menu::run_mode = 0;
+  int Menu::RunMode = 0;
 
   // These provide the "definition" of these static vars. See .h file for declarations.
   Menu * Menu::Current;
@@ -66,7 +66,7 @@
     
     // FIX: This was to allow AT commands to the BT module, but it currently breaks the menus.
     //      Find a better way to poll input from SW while admining with HW.
-    if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && run_mode != 0)) {
+    if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {
       SW->loop();
     } 
   }
@@ -134,7 +134,7 @@
 
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: This should probably call something like Controller::outputoff().
-    if (run_mode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(OUTPUT_SWITCH_PIN, LOW); }
+    if (RunMode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(OUTPUT_SWITCH_PIN, LOW); }
     
     if (! Current || Current == this) adminTimeout();
 
@@ -146,18 +146,18 @@
     MU_LOG(6, F("MENU LOOP END"), true);
   }
 
-  // Checks timer for admin timeout and reboots or enters run_mode 0 if true.
+  // Checks timer for admin timeout and reboots or enters RunMode 0 if true.
   void Menu::adminTimeout() {
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
-    MU_LOG(6, F("adminTimeout() run_mode, admin_timeout, now, previous_ms: "), false);
-    MU_LOG(6, run_mode, false); MU_LOG(6, " ", false);
+    MU_LOG(6, F("adminTimeout() RunMode, admin_timeout, now, previous_ms: "), false);
+    MU_LOG(6, RunMode, false); MU_LOG(6, " ", false);
     MU_LOG(6, admin_timeout, false); MU_LOG(6, " ", false);
     MU_LOG(6, current_ms, false); MU_LOG(6, " ", false);
     MU_LOG(6, previous_ms, true);
 
-    if ( elapsed_ms/1000 > admin_timeout || run_mode == 0 ) {
+    if ( elapsed_ms/1000 > admin_timeout || RunMode == 0 ) {
       exitAdmin();
     }
   }
@@ -170,7 +170,7 @@
     }
     
     admin_timeout = seconds;
-    run_mode = 1;
+    RunMode = 1;
     previous_ms = millis();
   }
 
@@ -179,13 +179,13 @@
     MU_LOG(5, F("Menu::exitAdmin()"), true);
     resetInputBuffer();
     resetStack();
-    if (run_mode != 0) {
+    if (RunMode != 0) {
       LOG(5, instance_name);
-      LOG(5, F(" setting run_mode => 0"), true);
+      LOG(5, F(" setting RunMode => 0"), true);
       LOG(4, F("Entering run mode"), true);
       LOG(4, "", true);
 
-      run_mode = 0;
+      RunMode = 0;
       FREERAM("exitAdmin()");
     }
   }

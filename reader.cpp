@@ -41,8 +41,6 @@
     //tag_last_read_timeout_x_1000(0UL),
     
   {
-    //strlcpy(reader_name, _name, sizeof(reader_name));
-
     //LOG(4, F("Constructing Reader: "));
     //LOG(4, name(), true);
   }
@@ -305,7 +303,7 @@
       }
 
       LOG(4, F(", uptime "));
-      printUptime(true);
+      PrintUptime(true);
 
       RD_LOG(6, F("cycleReaderPower() setting power LOW"), true);
             

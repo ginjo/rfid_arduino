@@ -21,18 +21,18 @@
   }
 
   // Checks if conditions are right to log to BTserial.
-  extern bool canLogToBT() {
+  extern bool CanLogToBT() {
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
       digitalRead(BT_STATUS_PIN) == LOW &&
       (S.log_to_bt || digitalRead(DEBUG_PIN) == LOW || TempDebug) &&
-      (Menu::run_mode == 0 || ! Menu::Current)
+      (Menu::RunMode == 0 || ! Menu::Current)
     );
   }
 
   // Converts milliseconds to readable h,m,s.
   // TODO: Make Uptime() a global function that returns c-string.
-  extern void printUptime(bool line) {
+  extern void PrintUptime(bool line) {
     unsigned long milliseconds = millis();
     unsigned long seconds = milliseconds/1000;
     unsigned long minutes = seconds/60;

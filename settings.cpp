@@ -3,7 +3,6 @@
   // This is moved here by suggestion to stop EEPROM warnings.
   #include <EEPROM.h>
 
-  //bool Settings::TempDebug; // = (bool)digitalRead(DEBUG_PIN); // static
   
   Settings::Settings() :
     Storage("settings", SETTINGS_EEPROM_ADDRESS),
@@ -325,11 +324,6 @@
     return settings_obj;
   } // Settings::Load()
 
-
-  // It is necessary to initialize static member vars before using them.
-  // Disable when not using static version of log_to_bt,
-  // and use regular Settings initializer.
-  //int Settings::log_to_bt = 0;
 
   // Initializes a default settings object as soon as this file loads.
   Settings Settings::Current = Settings();

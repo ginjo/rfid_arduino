@@ -46,7 +46,6 @@
     //#define SO_DEBUG   // storage
     //#define TA_DEBUG   // tags
   #endif
-
   
   #ifdef DEBUG    // Macros are usually in all capital letters.
     #define FREERAM(...)   if(S.debugMode()){FreeRam(__VA_ARGS__);}
@@ -54,25 +53,16 @@
     #define FREERAM(...)
   #endif
 
+
   extern int LogLevel();
 
-  // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   extern int FreeRam(const char[] = "");
 
-  // There is probably a better place for this, but it seems to be necessary here (and in main .ino file!?!?).
-  // WARN: I think this might be causing undefined behavior when used with "SoftwareSerial *BTserial;" in main .ino file.
-  //       I don't think there can be two declarations for a single extern, especially if one def is not extern.
-  //extern SoftwareSerial *BTserial;  // = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
-
-  extern void printUptime(bool = false);
+  extern void PrintUptime(bool = false);
   
-  // Checks if conditions are right to log to BTserial.
-  extern bool canLogToBT();
+  extern bool CanLogToBT();
 
-  //extern void LOG(int level, void *dat, const int base, bool line = false);
-  //extern void LOG(int level, void *dat, bool line = false);
   
-
   // Handles printing to BTserial with numbers, considers integer base.
   // 
   // The templating here allows to receive any type of parameter!!!
@@ -80,7 +70,7 @@
   extern void LOG(int level, T dat, const int base, bool line = false) {
     if (level > LogLevel()) return;
 
-    if (canLogToBT()) {
+    if (CanLogToBT()) {
       BTserial->print(dat, base);
       if (line == true) {
         BTserial->println("");
@@ -92,6 +82,7 @@
       Serial.println("");
     }
   }
+
   
   // Handles printing to BTserial with strings and char arrays
   //.
@@ -100,7 +91,7 @@
   extern void LOG(int level, T dat, bool line = false) {
     if (level > LogLevel()) return;
     
-    if (canLogToBT()) {      
+    if (CanLogToBT()) {      
       BTserial->print(dat);
       if (line == true) {
         BTserial->println("");
@@ -114,5 +105,4 @@
   }
   
 #endif
-
   
