@@ -1,7 +1,8 @@
   #include "led_blinker.h"
 
+
   // Static pre-defined 2D interval array.
-  const int Led::static_intervals[][INTERVALS_LENGTH] = {
+  const int Led::StaticIntervals[][INTERVALS_LENGTH] = {
     {1000},
     {0},
     {500,500},
@@ -17,7 +18,7 @@
     for (int n = 0; n < 8; n++) {
       Serial.print(n); Serial.print(":");
       for (int m = 0; m < INTERVALS_LENGTH; m++) {
-        Serial.print(static_intervals[n][m]);
+        Serial.print(StaticIntervals[n][m]);
         Serial.print(",");
       }
       Serial.println("");
@@ -34,7 +35,7 @@
     previous_ms(0),
     frequency(_freq),
     pwm(_pwm),
-    intervals {static_intervals[1]}, // initializes to the "off()" interval set (all zeros).
+    intervals {StaticIntervals[1]}, // initializes to the "off()" interval set (all zeros).
     signature {}
   {
     //strlcpy(led_name, _name, 3);
@@ -49,7 +50,7 @@
     BK_LOG(5, F("Led::begin old, new: "), false); BK_LOG(5, led_name, true);
     if (LogLevel() >= 5) {
       printIntervals(intervals);
-      printIntervals(static_intervals[intervals_index]);
+      printIntervals(StaticIntervals[intervals_index]);
     }
 
     // Initialize state
@@ -57,7 +58,7 @@
     current_phase = 0;
     cycle_count = 0;
     num_cycles = _num_cycles;
-    intervals = static_intervals[intervals_index];
+    intervals = StaticIntervals[intervals_index];
     if (_freq >=0) frequency = _freq;
     if (_pwm >=0) pwm = _pwm;
 
@@ -78,7 +79,7 @@
     #ifdef BK_DEBUG
       if (LogLevel() >= 6) {
         printIntervals(intervals);
-        printIntervals(static_intervals[intervals_index]);
+        printIntervals(StaticIntervals[intervals_index]);
       }
     #endif
 
@@ -88,8 +89,8 @@
         (_pwm >= 0 ? _pwm == pwm : true) &&
         (
           //memcmp(_intervals, intervals, INTERVALS_LENGTH) == 0 ||
-          intervals == static_intervals[intervals_index] || // Are these the same memory address?
-          (countIntervals(static_intervals[intervals_index]) == 0 && countIntervals(intervals) == 0)
+          intervals == StaticIntervals[intervals_index] || // Are these the same memory address?
+          (countIntervals(StaticIntervals[intervals_index]) == 0 && countIntervals(intervals) == 0)
         )
       )
     {

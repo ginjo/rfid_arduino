@@ -36,11 +36,12 @@
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
   extern SoftwareSerial *BTserial;
 
-  class Led; // forward declaration
+  class Led; // forward declaration, so that we can...
+  
   extern Led *RGB[];
   extern Led *Beeper;
 
-  extern void globalSetup();
+  extern void GlobalSetup();
 
   
 #endif

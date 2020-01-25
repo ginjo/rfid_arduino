@@ -32,8 +32,8 @@
 
     int proximity_state; //  Maybe put this in a state.h file (and class) derived from Storage.
     Reader * reader;
-    Led *blinker;
-    Led *beeper;
+    //Led *blinker;
+    //Led *beeper;
     int ctrl_status; // For logging ctrl state change only once per loop.
 
     

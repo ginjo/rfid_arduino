@@ -26,13 +26,10 @@
     /*  Static  */
     
     // Static pre-defined 2D interval array.
-    static const int static_intervals[][INTERVALS_LENGTH];
+    static const int StaticIntervals[][INTERVALS_LENGTH];
 
-    // Prints all static_intervals.
+    // Prints all StaticIntervals.
     static void PrintStaticIntervals();
-
-//    static Led RGB[3];
-//    static Led *Beeper;
     
 
     /*  Instance  */
@@ -102,7 +99,6 @@
   
   };
 
-  // This must be declared here, since several files use the RGB object, and Led must have been defined already.
-  //extern Led *RGB[3]; // = {new Led(LED_RED_PIN, "Rd"), new Led(LED_GREEN_PIN, "Gr"), new Led(LED_BLUE_PIN, "Bl")};
-
 #endif
+
+  

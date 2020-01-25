@@ -15,62 +15,46 @@
   #include "controller.h"
 
 
-  /***  Declarations  ***/
+  /***  Local Declarations  ***/
 
-  // Defines RGB LED -- an array of 3 Led instances.
-  // Declaration is in led_blinker.h (extern and static var declaration/definitions are very confusing).
-  //Led *RGB[3] = {};
-  //Led Led::RGB[] = {};
-  //Led RGB[] = {Led(LED_RED_PIN, "Rd"), Led(LED_GREEN_PIN, "Gr"), Led(LED_BLUE_PIN, "Bl")};
-  Led *RGB[3];
+  // See global files for extern declarations & definitions used in this file.
 
-  // Declares beeper, which is also handled by Led class.
-  //Led *Beeper;
-  Led *Beeper;
-
-  // Declares a software-serial port for admin console.
-  // Was moved to global.h and global.cpp, since it needed to be an extern.
-  //SoftwareSerial *BTserial;
-
-  // Declares serial port for RFID reader.
+  // Declares local serial port for RFID reader.
   SoftwareSerial *RfidSerial;
 
-  // Declares rfid reader instance.
+  // Declares local rfid reader instance.
   Reader *RfidReader;
   
-  // Declares instance of Controller handler.
+  // Declares local instance of Controller handler.
   Controller *OutputControl;
 
 
   /*** Setup  ***/
 
   void setup() {
-    globalSetup();
+    GlobalSetup();
+
+    // Initialize (static) BTserial first cuz we need it for logging.
+    // See global files for declaration/definition of BTserial.
+    BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
     
     // Opens default hardware serial port.
     // Requirement for Settings operations logging.
     Serial.begin(57600);
     while (! Serial) delay(10);
-
-    //BTserial->flush();
     BTserial->begin(S.bt_baud);
-    
     delay(25);
 
     LOG(4, F("RFID proximity sensor pre-boot"), true);
-
     LOG(4, F("Initialized HW serial port @ 57600"), true);
-
     FREERAM("Main setup() before Settings::Load()");
     
     Settings::Load();
 
     BTserial->begin(S.bt_baud);
-    
     Serial.flush(); // I think flushes only outbound data. See Serial class docs.
     Serial.begin(S.hw_serial_baud);
     while (! Serial) delay(10);
-    
     delay(25);
 
     LOG(4, F("Booting RFID proximity sensor, "));
@@ -117,7 +101,9 @@
     FREERAM("setup() pre obj new");
 
 
-    /*  Initialize main objects  */
+    /*  Initialize main objects. See global files for declarations/definitions.  */
+
+    if (LogLevel() >= 5) Led::PrintStaticIntervals();
 
     RGB[0] = new Led(LED_RED_PIN, "Rd");
     RGB[1] = new Led(LED_GREEN_PIN, "Gr");
@@ -125,14 +111,11 @@
     
     Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
-    if (LogLevel() >= 5) Led::PrintStaticIntervals();
-
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
     RfidReader = Reader::GetReader((int)S.default_reader);
     RfidReader->serial_port = RfidSerial;
 
-    //OutputControl = new Controller(RfidReader, RGB, Beeper);
     OutputControl = new Controller(RfidReader);
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
@@ -146,10 +129,6 @@
     // Activates the Controller handler.
     OutputControl->begin();
 
-    // Initializes output controller, including switch relay and LEDs.
-    // Disabled, experimenting with original call in Controller::begin().
-    //OutputControl->initializeOutput();
-
     // Activates the serial port for the Controller handler.
     RfidSerial->begin(S.rfid_baud);
 
@@ -158,12 +137,6 @@
 
     // Activates the admin console.
     Menu::Begin();
-
-    //// Activates the serial port for the Controller handler.
-    //RfidSerial->begin(S.rfid_baud);
-    //
-    //// Activates the Controller handler.
-    //OutputControl->begin();
 
     FREERAM("setup() end");
 
