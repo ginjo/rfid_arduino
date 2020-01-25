@@ -77,8 +77,10 @@
     // constructor
     Led(int, const char[], const int=0, const int=0);
     
-    void begin(int, const int[], const int=-1, const int=-1);
-    void update(int, const int[], const int=-1, const int=-1);
+    //void begin(int, const int[], const int=-1, const int=-1);
+    void begin(int, const int, const int=-1, const int=-1);
+    //void update(int, const int[], const int=-1, const int=-1);
+    void update(int, const int, const int=-1, const int=-1);
     void loop();
     void startPhase(int = 0);
     void handleBlinker();
