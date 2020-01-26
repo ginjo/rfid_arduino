@@ -28,7 +28,6 @@
 
   // This is for aliasing Controller::Tags to the new Tags class (Tags::TagSet.tags).
   // It can also be used as a type for any array that holds 32-bit tag ids.
-  // TODO: Where is this used?
   typedef uint32_t TagArray[TAG_LIST_SIZE];
   
  
@@ -49,12 +48,16 @@
     // NOTE: The API here may change in future, when the higher-frequency
     //       (UHF?) readers are accomodated in this class.
     // This cannot be of type TagArray, since that is used to alias this variable.
-    uint32_t tag_array[TAG_LIST_SIZE];
+    //uint32_t tag_array[TAG_LIST_SIZE];
+    // Or maybe it's OK, if done like this?
+    TagArray tag_array;
     
     // Creates alias of tag_array.
     // See typdef above.
     // See https://stackoverflow.com/questions/6827610/when-declaring-a-reference-to-an-array-of-ints-why-must-it-be-a-reference-to-a
-    TagArray& tags = tag_array;
+    // Is this used anywhere?
+    //TagArray& tags = tag_array;
+
 
     Tags();
 

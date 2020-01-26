@@ -226,13 +226,4 @@
     return proximity_state;
   }
 
-
-  /*  Static Vars & Functions  */
-
-  // This is for aliasing the original Tags list to the new Tags list.
-  // See beginning of .h file for typedef.
-  // This is not currently used, but leaving here as example
-  // of c++ variable aliasing (referencing).
-  //TagArray& Controller::Tags = Tags::TagSet.tag_array;
-
   

@@ -55,18 +55,9 @@
     //void updateProximityState(int);
     void proximityStateController();
     void initializeOutput();
-
-
-    /***  Static Vars & Functions  ***/
-
-    // This is experimental for the new Tags class
-    // See tags.h for typedef TagArray.
-    //typedef uint32_t TagArray[TAG_LIST_SIZE];
-    // I don't think it's being used. Let's try disabling it.
-    //static TagArray& Tags;
   
   };  // Controller
 
 #endif
-
+  
  
