@@ -13,9 +13,7 @@
 
   #include "settings.h"
   #include "reader.h"
-  //#include "led_blinker.h"
   #include "stack.h"
-  //#include "controller.h" // This would cause circular include. See .cpp file for better solution.
 
   // See logger.h for master debug controls.
   #ifdef MU_DEBUG

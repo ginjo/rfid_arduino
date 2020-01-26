@@ -1,4 +1,9 @@
   #include "controller.h"
+  #include "global.h"
+  #include "settings.h"
+  #include "reader.h"
+  #include "menu.h"
+  
   #include <EEPROM.h>
 
   // Constructors

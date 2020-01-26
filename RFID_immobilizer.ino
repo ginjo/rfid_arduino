@@ -11,6 +11,7 @@
   #include "logger.h"
   #include "settings.h"
   #include "led_blinker.h"
+  #include "reader.h"
   #include "menu.h"
   #include "controller.h"
 
