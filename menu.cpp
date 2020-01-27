@@ -186,6 +186,11 @@
       LOG(4, F("Entering run mode"), true);
       LOG(4, "", true);
 
+      // Experimental, divides debug pin recognition into two sessions: Admin and Run.
+      // If you startup with TempDebug, it will reset to false upon entering run-mode,
+      // unless you are holding the DEBUG_PIN low.
+      TempDebug = (digitalRead(DEBUG_PIN) == LOW);
+
       RunMode = 0;
       FREERAM("exitAdmin()");
     }

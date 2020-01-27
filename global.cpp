@@ -20,7 +20,7 @@
   void GlobalSetup() {
     // from main .ino
     pinMode(BT_STATUS_PIN, INPUT_PULLUP);
-    pinMode(FAILSAFE_PIN, INPUT_PULLUP);
+    //pinMode(FAILSAFE_PIN, INPUT_PULLUP);
     pinMode(DEBUG_PIN, INPUT_PULLUP);
 
     // from controller

@@ -10,7 +10,7 @@
   // Use forward declarations instead, if you need to refer to custom classes here.
   
   #define DEBUG_PIN 11
-  #define FAILSAFE_PIN 12
+  //#define FAILSAFE_PIN 12
 
   #define BEEPER_PIN 9
   

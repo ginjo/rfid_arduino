@@ -243,7 +243,9 @@
 
  
   bool Settings::Failsafe() {
-    return digitalRead(FAILSAFE_PIN) == 0;
+    //return digitalRead(FAILSAFE_PIN) == LOW;
+    //Let's try using just a single user-space troubleshooting pin.
+    return digitalRead(DEBUG_PIN) == LOW;
   }
 
   // This is a settings-specific wrapper for Storage::Load().

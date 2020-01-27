@@ -647,7 +647,11 @@ TODO: √ With most delay() calls removed, Aging beeper is a little fast. Slow i
 
 TODO: - Change WL-125 reader baud to 57600 if possile. Ooo, apparently NOT possible.
 
-TODO: Reduce hardware buttons to only 1, which will handle failsafe AND debug mode.
+TODO: √ Reduce hardware buttons to only 1, will handle failsafe AND debug mode.
+	  Now startup looks like this with debug-button held low:
+	    - debug enabled
+	    - failsafe enabled
+	    - debug re-enabled/disabled upon change from admin to run mode.
 
 TODO: Change S.debug_mode to mean: What log level do we bump to during debug-pin or TempDebug?
       Will this work?
