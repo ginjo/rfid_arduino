@@ -1,4 +1,6 @@
   #include "tags.h"
+  #include "storage.h"
+  #include "logger.h"
 
 
   /***  Instance Vars & Functions  ***/

@@ -10,13 +10,8 @@
   #include <string.h>
   #include <SoftwareSerial.h>
 
-  // TODO: Move any of these that aren't needed here to .cpp file.
-  //  #include "settings.h"
-  //  #include "storage.h"
   #include "reader.h"
   #include "led_blinker.h"
-  //  #include "menu.h"
-  //  #include "tags.h"
 
   // See logger.h for master debug controls.
   #ifdef CT_DEBUG

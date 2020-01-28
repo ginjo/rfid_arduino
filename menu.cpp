@@ -25,6 +25,8 @@
   
   
   #include "menu.h"
+  #include "logger.h"
+  #include "global.h"
   // This is here because it seems to avoid circular include,
   // which would happen if this was in menu.h.
   // This is apparently a legitimate C/C++ technique.

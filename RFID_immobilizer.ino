@@ -41,7 +41,7 @@
     
     // Opens default hardware serial port.
     // Requirement for Settings operations logging.
-    Serial.begin(57600);
+    Serial.begin(S.hw_serial_baud);
     while (! Serial) delay(10);
     BTserial->begin(S.bt_baud);
     delay(25);

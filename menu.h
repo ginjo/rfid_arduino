@@ -7,7 +7,7 @@
   //#include <Stream.h>
   #include <SoftwareSerial.h>
   #include <string.h>
-  // Not sure why we needed this, but seems to work without.
+  // Is this needed here but is being included by another file?
   //#include <stdio.h>
 
 

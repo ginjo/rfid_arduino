@@ -1,4 +1,5 @@
   #include "led_blinker.h"
+  #include "logger.h"
 
 
   // Static pre-defined 2D interval array.

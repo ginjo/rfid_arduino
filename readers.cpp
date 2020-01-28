@@ -5,6 +5,7 @@
 
 
   #include "reader.h"
+  #include "logger.h"
 
 
   struct RDM6300 : public Reader {

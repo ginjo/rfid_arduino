@@ -1,5 +1,7 @@
   #include "settings.h"
+  #include "logger.h"
   #include "reader.h"
+  
   // This is moved here by suggestion to stop EEPROM warnings.
   #include <EEPROM.h>
 

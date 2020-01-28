@@ -1,4 +1,5 @@
   #include "reader.h"
+  #include "logger.h"
 
 
   /*  Static vars & functions  */

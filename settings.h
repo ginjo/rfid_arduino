@@ -15,9 +15,6 @@
   #include <Arduino.h>
   #include <SoftwareSerial.h>
   #include <string.h>
-  // stdarg.h is used to process variadic function args.
-  // I don't think we're using it yet.
-  //#include <stdarg.h>
 
   #include "global.h"
   #include "logger.h"

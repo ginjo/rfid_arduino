@@ -9,6 +9,9 @@
 #ifndef __FUNCTION_STACK_H__
 #define __FUNCTION_STACK_H__
 
+  #include <Arduino.h>
+  #include "logger.h"
+
   // See logger.h for master debug controls.
   #ifdef SK_DEBUG
     #define SK_LOG(level, dat, line) LOG(level, dat, line)
@@ -16,8 +19,6 @@
     #define SK_LOG(...)
   #endif
 
-  #include <Arduino.h>
-  #include "settings.h"
   #define FUNCTION_STACK_SIZE 5
 
 
