@@ -668,5 +668,7 @@ TODO: - Try changing RGB to an array of values rather than an array of pointers.
         Led RGB[] = {Led(,RED_PIN, "Rd"), ...};
         Update: Tried it, didn't help anything, took more ram.
         
-        
+TODO: Tags::load() is complaining of checksum mismatch at every boot.
+
+
         

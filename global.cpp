@@ -7,13 +7,15 @@
   //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
   
   // Just defines BTserial. See global.h for declaration and main .ino for initialization.
-  SoftwareSerial *BTserial;
+  //SoftwareSerial *BTserial
+  // Attempting initialization here to maybe avoid mystery UB.
+  SoftwareSerial *BTserial = nullptr;
 
   // Defines RGB LED -- an array of 3 Led instances.
-  Led *RGB[3];
+  Led *RGB[3] = {};
 
   // Defines pointer to beeper, which is also handled by Led class.
-  Led *Beeper;
+  Led *Beeper = nullptr;
   
 
   // Called from main .ino setup().

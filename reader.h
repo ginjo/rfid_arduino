@@ -49,6 +49,10 @@
     //  }
 
 
+    /***  Constructors  ***/
+    
+    Reader(uint8_t, uint8_t, uint8_t, bool);
+
   
     /*** Instance Vars & Functions ***/
 
@@ -66,16 +70,6 @@
     // 1 == switch is normally closed and opens briefly to cycle power (direct control of reader power).
     // 0 == switch is normally open and closes briefly to cycle power (to pull a reset pin to ground).
     bool power_control_logic;
-
-
-
-    /***  Constructors  ***/
-    
-    Reader(uint8_t, uint8_t, uint8_t, bool);
-
-
-
-    /****  Functions  ***/
     
     uint8_t buff[MAX_TAG_LENGTH];
     uint8_t buff_index;
@@ -83,8 +77,8 @@
     uint32_t last_tag_read_ms;
     uint32_t last_reader_power_cycle_ms;
     uint32_t reader_power_cycle_high_duration; // seconds
-    uint32_t ms_since_last_tag_read;
-    uint32_t ms_since_last_reader_power_cycle;
+    //uint32_t ms_since_last_tag_read;
+    //uint32_t ms_since_last_reader_power_cycle;
     uint32_t ms_reader_cycle_total;
     uint32_t cycle_low_finish_ms;
     uint32_t cycle_high_finish_ms;
@@ -92,6 +86,9 @@
     uint32_t last_tag_read_id;
     SoftwareSerial * serial_port;
 
+
+    /*  Instance Functions  */
+    
     void resetBuffer();
     void pollReader();
     void cycleReaderPower();

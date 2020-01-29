@@ -86,9 +86,13 @@
     char storage_name[STORAGE_NAME_SIZE];
 
     /* Constructor */
-    Storage(const char *_storage_name, int _eeprom_address = -1) {
+    Storage(const char *_storage_name, int _eeprom_address = -1) :
+      eeprom_address(_eeprom_address),
+      checksum(0)
+    {
       strlcpy(storage_name, _storage_name, STORAGE_NAME_SIZE);
-      if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
+      // Change this above so there is always a default of -1 (will this break anything?).
+      //if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
     }
     
     // Saves this Storage instance to the correct storage address.
@@ -97,7 +101,7 @@
     int save(int _eeprom_address = -1) {
       SO_LOG(6, F("Storage::save() BEGIN"), true);
 
-      // TODO: Gracefully fail is address < 0.
+      // TODO: Gracefully fail if address < 0.
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
 
       SO_LOG(5, F("Storage::save() '"), false); SO_LOG(5, storage_name, false);

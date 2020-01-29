@@ -33,7 +33,7 @@
     cycle_count(0),
     num_cycles(0),
     current_ms(millis()),
-    previous_ms(0),
+    previous_ms(0UL),
     frequency(_freq),
     pwm(_pwm),
     intervals {StaticIntervals[1]}, // initializes to the "off()" interval set (all zeros).

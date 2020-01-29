@@ -60,6 +60,8 @@
 
     LOG(4, F("Booting RFID proximity sensor, "));
     LOG(4, VERSION);
+    LOG(4, F(", c++ "));
+    LOG(4, __cplusplus);
     LOG(4, F(", "));
     LOG(4, TIMESTAMP, true);
 

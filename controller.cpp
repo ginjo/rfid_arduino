@@ -91,12 +91,12 @@
   // 
   void Controller::proximityStateController() {
     CT_LOG(6, F("*** proximityStateController()"), true);
-    CT_LOG(6, F("last_tag_read_ms: "), false); CT_LOG(6, reader->last_tag_read_ms, true);
-    CT_LOG(6, F("last_reader_power_cycle_ms: "), false); CT_LOG(6, reader->last_reader_power_cycle_ms, true);
-    CT_LOG(6, F("msSinceLastTagRead(): "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
-    CT_LOG(6, F("msSinceLastReaderPowerCycle(): "), false); CT_LOG(6, reader->msSinceLastReaderPowerCycle(), true);
-    CT_LOG(6, F("ms_reader_cycle_total: "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
-    CT_LOG(6, F("tagLastReadTimeoutX1000(): "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
+    CT_LOG(6, F("last_tag_read_ms "), false); CT_LOG(6, reader->last_tag_read_ms, true);
+    CT_LOG(6, F("last_reader_power_cycle_ms "), false); CT_LOG(6, reader->last_reader_power_cycle_ms, true);
+    CT_LOG(6, F("msSinceLastTagRead() "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
+    CT_LOG(6, F("msSinceLastReaderPowerCycle() "), false); CT_LOG(6, reader->msSinceLastReaderPowerCycle(), true);
+    CT_LOG(6, F("ms_reader_cycle_total "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
+    CT_LOG(6, F("tagLastReadTimeoutX1000() "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
     CT_LOG(6, F("***"), true);
     
 

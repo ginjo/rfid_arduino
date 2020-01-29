@@ -4,7 +4,7 @@
 
   /*  Static vars & functions  */
 
-  const char Reader::Name[READER_NAME_LENGTH] = {"base"};
+  const char Reader::Name[READER_NAME_LENGTH] = "base";
 
   void Reader::PrintReaders(Stream *sp) {
     sp->print(F("Readers ("));
@@ -28,17 +28,17 @@
     /* From Controller */
     buff {},
     buff_index(0UL),
-    //proximity_state(0),
     current_ms(millis()),
     last_tag_read_ms(0UL),
     last_reader_power_cycle_ms(0UL),
     reader_power_cycle_high_duration(0UL),
-    ms_since_last_tag_read(0UL),
-    ms_since_last_reader_power_cycle(0UL),
+    //ms_since_last_tag_read(0UL),
+    //ms_since_last_reader_power_cycle(0UL),
     ms_reader_cycle_total(0UL),
     cycle_low_finish_ms(0UL),
     cycle_high_finish_ms(0UL),
-    last_tag_read_id(0UL)
+    last_tag_read_id(0UL),
+    serial_port(NULL) // experimental, so that serial_port is initialized
     //tag_last_read_timeout_x_1000(0UL),
     
   {
@@ -91,15 +91,15 @@
       Displays most if not all local vars.
       TODO: Should this be put into a function?
     */
-    RD_LOG(6, F("last_tag_read_ms: "), false);
+    RD_LOG(6, F("last_tag_read_ms "), false);
       RD_LOG(6, last_tag_read_ms, true);
-    RD_LOG(6, F("last_reader_power_cycle_ms: "), false);
+    RD_LOG(6, F("last_reader_power_cycle_ms "), false);
       RD_LOG(6, last_reader_power_cycle_ms, true);
-    RD_LOG(6, F("msSinceLastTagRead(): "), false);
+    RD_LOG(6, F("msSinceLastTagRead() "), false);
       RD_LOG(6, msSinceLastTagRead(), true);
-    RD_LOG(6, F("msSinceLastReaderPowerCycle(): "), false);
+    RD_LOG(6, F("msSinceLastReaderPowerCycle() "), false);
       RD_LOG(6, msSinceLastReaderPowerCycle(), true);
-    RD_LOG(6, F("ms_reader_cycle_total: "), false);
+    RD_LOG(6, F("ms_reader_cycle_total "), false);
       RD_LOG(6, ms_reader_cycle_total, true);
     //RD_PRINT(F("tagLastReadTimeoutX1000(): "));
     //  RD_PRINTLN(tagLastReadTimeoutX1000());
@@ -115,7 +115,11 @@
 
     //if (msSinceLastTagRead() > ms_reader_cycle_total) last_tag_read_id = 0;
 
-    RD_LOG(6, "Reader::last_tag_read_id: ", false); RD_LOG(6, last_tag_read_id, true);
+    // Hmm... adding this log line, and the bogus value appears to have vanished.
+    //  RD_LOG(6, F("last_tag_read_ms again "), false);
+    //    RD_LOG(6, last_tag_read_ms, true);
+
+    RD_LOG(6, "last_tag_read_id: ", false); RD_LOG(6, last_tag_read_id, true);
     RD_LOG(6, F("READER LOOP END "), false); RD_LOG(6, millis(), true);
   }
   

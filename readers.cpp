@@ -10,8 +10,10 @@
 
   struct RDM6300 : public Reader {
   public:
-    static constexpr char *Name = {( char *)"RDM-6300"};
+    //static constexpr char *Name = {( char *)"RDM-6300"};
     //static const char Name[READER_NAME_LENGTH] = {"RDM-6300"};
+    //inline static const char Name[READER_NAME_LENGTH] = "RDM-6300";
+    static constexpr char *Name = ( char *)"RDM-6300";
   
     RDM6300() :
       Reader(14, 3, 10, 1)
@@ -47,9 +49,11 @@
     virtual char *name() {return Name;}
   };
 
+
   struct R7941E : public Reader {
   public:
-    static constexpr char *Name = {( char *)"7941E"};
+    //static constexpr char *Name = {( char *)"7941E"};
+    static constexpr char *Name = ( char *)"7941E";
     
     R7941E() :
       Reader(10, 4, 7, 1)
@@ -94,14 +98,18 @@
     virtual char *name() {return Name;}
   };
 
+
   struct WL125 : public Reader {
   public:
-    // NOTE: Consider that this reader (and the rdm6300)
-    // yield a string of ascii characters (0-9, A-F),
-    // and those characters are THEN used to build the ID
-    // of the tag.
-    //
-    static constexpr char *Name = {( char *)"WL-125"};
+    /*
+     NOTE: Consider that this reader (and the rdm6300)
+     yield a string of ascii characters (0-9, A-F),
+     and those characters are THEN used to build the ID
+     of the tag.
+    */
+    
+    //static constexpr char *Name = {( char *)"WL-125"};
+    static constexpr char *Name = ( char *)"WL-125";
     
     WL125() :
       Reader(13, 3, 10, 0)

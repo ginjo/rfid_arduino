@@ -46,9 +46,9 @@
   int Menu::RunMode = 0;
 
   // These provide the "definition" of these static vars. See .h file for declarations.
-  Menu * Menu::Current;
-  Menu * Menu::HW;
-  Menu * Menu::SW;
+  Menu * Menu::Current = nullptr;
+  Menu * Menu::HW = nullptr;
+  Menu * Menu::SW = nullptr;
 
   void Menu::Begin() {
     LOG(4, F("Menu::Begin()"), true);
@@ -80,8 +80,8 @@
   Menu::Menu(Stream *stream_ref, Reader *_reader, const char _instance_name[]) :
     serial_port(stream_ref),
     reader(_reader),    
-    previous_ms(0),
-    admin_timeout(0),
+    previous_ms(0UL),
+    admin_timeout(0UL),
     buff {},
     buff_index(0),
     selected_menu_item(-1),
