@@ -92,8 +92,8 @@
     void fastBlink();
     void startupBlink();
     void once();
-    void fastBeep(uint16_t=0);
-    void slowBeep(uint16_t=0);
+    void fastBeep(uint16_t=0U);
+    void slowBeep(uint16_t=0U);
     void go_low();
     void go_high();
   

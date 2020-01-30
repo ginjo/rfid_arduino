@@ -229,33 +229,33 @@
   
   void Led::steady() {
     BK_LOG(6, F("Led::steady() "), false); BK_LOG(6, led_name, true);
-    update(0U, 0);
+    update(0, 0);
   }
 
   void Led::off() {
     BK_LOG(6, F("Led::off() "), false); BK_LOG(6, led_name, true);
-    update(0U, 1);
+    update(0, 1);
   }
 
   void Led::slowBlink() {
     BK_LOG(6, F("Led::slowBlink() "), false); BK_LOG(6, led_name, true);
-    update(0U, 2);
+    update(0, 2);
   }
 
   void Led::fastBlink() {
     BK_LOG(6, F("Led::fastBlink() "), false); BK_LOG(6, led_name, true);
-    update(0U, 3);
+    update(0, 3);
   }
 
   void Led::startupBlink() {
     BK_LOG(6, F("Led::startupBlink() "), false); BK_LOG(6, led_name, true);
-    update(0U, 4);
+    update(0, 4);
   }
 
   void Led::once() {
     BK_LOG(6, F("Led::once() "), false); BK_LOG(6, led_name, true);
     reset();
-    update(1U, 5);
+    update(1, 5);
   }
 
   void Led::fastBeep(uint16_t _count) {
