@@ -1,11 +1,9 @@
   #include "tags.h"
   #include "storage.h"
   #include "logger.h"
-
-
-  /***  Instance Vars & Functions  ***/
-
-  /* Constructors */
+  
+  
+  /*  Constructors  */
 
   Tags::Tags() :
     Storage("tags", TAGS_EEPROM_ADDRESS),
@@ -15,9 +13,69 @@
       strlcpy(storage_name, "tags-default", sizeof(storage_name));
     }
   }
+  
+  
+	/*  Static Vars & Functions  */
+  
+  // Defines/initializes Tags::TagSet static var.
+  Tags Tags::TagSet = Tags();  
+
+  // TODO: Decouple these functions from the TagSet static var.
+  // We should be able to load any tag set from any address
+  // without affecting Tags::TagSet var.
+  //
+  // Ok, I think this (below) provides decoupled solution as an option.
+  //
+  // Tags::TagSet initializes with Tags() (see above),
+  // and Tags::Load() defaults to filling Tags::TagSet with loaded result (see tags.h).
+  // Then the following is called from the main .ino file.
+  //   Tags::Load();
+  // Note that Tags::Load can be passed any eeprom-address, and any pointer to a Tags var,
+  // and it will happily use those custom vars/values to load a custom tag-set into a custom var.
+  //
+  // TODO: Is this decoupled option appropriate for the Settings class too?
+  //
+  Tags *Tags::Load(Tags* _tag_set, int _eeprom_address) {
+    TA_LOG(5, F("Tags::Load() BEGIN"), true);
+    
+    Storage::Load(_tag_set, _eeprom_address);
+
+		LOG(4, F("Tags loaded"), true);
+		
+		//if (S.debugMode()) {
+		#ifdef TA_DEBUG
+			if ((int)LogLevel() >= 5) {
+				for (int i=0; i < TAG_LIST_SIZE; i++) {
+					TA_LOG(5, (uint32_t)(_tag_set->tag_array[i])); TA_LOG(5, ",", false);
+				}
+			}
+			TA_LOG(5, "", true);
+		#endif
+
+    if (! _tag_set->checksumMatch()) {
+      LOG(2, F("Tags::Load() checksum mismatch, creating new tag-set"), true);
+      //_tag_set = new Tags(); // This only changes the local pointer.
+      //*_tag_set = Tags(); // This changes the actual value, but will it go out of scope when this function ends?
+      //*_tag_set = *(new Tags()); // memory leak.
+      Tags *ts = new Tags(); // somehow uses less memory
+      *_tag_set = *ts;
+      delete ts;
+      
+      /* Don't save _tag_set automatically, cuz it overwrites all saved tags.
+         Let the user decide whether to overwrite all saved tags by adding a new tag
+      */
+      //_tag_set->save();
+    }
+
+    _tag_set->compactTags();
+
+    TA_LOG(6, F("Tags::Load() END"), true);
+    
+    return _tag_set;
+  } // Load()
 
 
-  /* Storage Operations */
+  /*  Instance Functions  */
 
   // Saves this stored tag set in EEPROM.
   void Tags::save() {
@@ -36,9 +94,6 @@
 
     Storage::save(eeprom_address);
   }
-
-
-  /* Tag Operations */
 
   // Counts number of stored tags in this set.
   int Tags::countTags(){
@@ -130,61 +185,5 @@
     save();
     return 0;
   }
-
-
-
-  /***  Static Class Vars & Functions  ***/
-
-  // Defines/initializes Tags::TagSet static var.
-  Tags Tags::TagSet = Tags();  
-
-
-  // TODO: Decouple these functions from the TagSet static var.
-  // We should be able to load any tag set from any address
-  // without affecting Tags::TagSet var.
-  //
-  // Ok, I think this (below) provides decoupled solution as an option.
-  //
-  // Tags::TagSet initializes with Tags() (see above),
-  // and Tags::Load() defaults to filling Tags::TagSet with loaded result (see tags.h).
-  // Then the following is called from the main .ino file.
-  //   Tags::Load();
-  // Note that Tags::Load can be passed any eeprom-address, and any pointer to a Tags var,
-  // and it will happily use those custom vars/values to load a custom tag-set into a custom var.
-  //
-  // TODO: Is this decoupled option appropriate for the Settings class too?
-  //
-  Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
-    TA_LOG(5, F("Tags::Load() BEGIN"), true);
-    
-    Storage::Load(tag_set, _eeprom_address);
-
-      LOG(4, F("Tags loaded"), true);
-      
-      //if (S.debugMode()) {
-      #ifdef TA_DEBUG
-        if ((int)LogLevel() >= 5) {
-          for (int i=0; i < TAG_LIST_SIZE; i++) {
-            TA_LOG(5, (uint32_t)(tag_set->tag_array[i])); TA_LOG(5, ",", false);
-          }
-        }
-        TA_LOG(5, "", true);
-      #endif
-
-    if (! tag_set->checksumMatch()) {
-      LOG(2, F("Tags::Load() checksum mismatch, creating new tag-set"), true);
-      tag_set = new Tags();
-      /* Don't save tag_set automatically, cuz it overwrites all saved tags.
-         Let the user decide whether to overwrite all saved tags by adding a new tag
-      */
-      //tag_set->save();
-    }
-
-    tag_set->compactTags();
-
-    TA_LOG(6, F("Tags::Load() END"), true);
-    
-    return tag_set;
-  } // Load()
-
+  
   

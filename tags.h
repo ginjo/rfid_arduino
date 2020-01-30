@@ -34,12 +34,16 @@
   class Tags : public Storage<Tags> {
   public:
 
+		/*  Constructors  */
+		
+		Tags();
+		
 
-    /***  Static Class Vars & Functions  ***/
+    /*  Static Vars & Functions  */
   
     static Tags TagSet;
 
-    static Tags* Load(Tags* tag_set = &TagSet, int _eeprom_address = TAGS_EEPROM_ADDRESS);
+    static Tags *Load(Tags *_tag_set = &TagSet, int _eeprom_address = TAGS_EEPROM_ADDRESS);
     
 
     /***  Instance Vars & Functions  ***/
@@ -58,8 +62,6 @@
     // Is this used anywhere?
     //TagArray& tags = tag_array;
 
-
-    Tags();
 
     void save();
     int countTags();

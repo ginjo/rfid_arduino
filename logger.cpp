@@ -3,8 +3,9 @@
   #include "menu.h"
 
   extern int LogLevel() {
-    if (S.debugMode() && S.log_level < 5U) {
-      return 5;
+    //if (S.debugMode() && S.log_level < 5U) {
+    if (S.debugMode() && S.enable_debug > S.log_level) {
+      return S.enable_debug;
     } else {
       return (int)S.log_level;
     }

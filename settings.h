@@ -86,7 +86,7 @@
     void getSettingByIndex(int, char*, char*);
     void displaySetting(int, char*);
     void printSettings(Stream*);
-    int  debugMode();
+    bool debugMode();
     int  save();
     
   };  // class Settings

@@ -33,8 +33,9 @@
     // Sets whether output switches off or on at startup.
     proximity_state_startup(1), // 0 = off, 1 = on, 2 = auto (uses last saved state)
 
-    // enables debugging (separate from using DEBUG macro).
-    enable_debug(0),
+    // NOT: enables debugging (separate from using DEBUG macro).
+    // Changed to: Sets the debug level if debug-pin is held low.
+    enable_debug(5),
 
     // sets default reader index
     default_reader(3),
@@ -222,11 +223,14 @@
     }
   }
 
-  int Settings::debugMode() {
-    if (digitalRead(DEBUG_PIN) == LOW || TempDebug == true || enable_debug == 1) {
-      return 1;
+  // enbable_debug is no longer a boolean.
+  // It is the log-level when debug-pin is activated.
+  bool Settings::debugMode() {
+    //if (digitalRead(DEBUG_PIN) == LOW || TempDebug == true || enable_debug == 1) {
+    if (digitalRead(DEBUG_PIN) == LOW || TempDebug == true) {
+      return true;
     } else {
-      return 0;
+      return false;
     }
   }
 
@@ -258,7 +262,7 @@
   // from the static var Settings::Current().
   //
   // Here's the line from Tags:
-  // Tags* Tags::Load(Tags* tag_set, int _eeprom_address) {
+  // Tags* Tags::Load(Tags* _tag_set, int _eeprom_address) {
   //
   //   void Settings::Load() {
   //
@@ -306,7 +310,11 @@
        * Or even better, we just de-reference the pointers and set the original Current var with new value.
        * Old: settings_obj = new Settings();  // doesn't work, repoints settings_obj to new address.
        */
-      *settings_obj = *(new Settings()); // works, sets settings_object address (same as Current) with new value.
+       
+      Settings *ss = new Settings();  // Gets new object pointer.
+      *settings_obj = *ss;            // Copies new object to settings_obj (same as Current).
+      delete ss;                      // Deletes abandoned new object ss.
+      
       strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
       settings_obj->eeprom_address = _eeprom_address;
       /* Disabled saving of default settings (let the user decide instead).
