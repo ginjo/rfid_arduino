@@ -37,7 +37,7 @@
   
   #ifdef DEBUG
     #define INO_DEBUG    // main ino file
-    #define BK_DEBUG   // blinker
+    //#define BK_DEBUG   // blinker
     #define CT_DEBUG   // controller
     #define RD_DEBUG   // reader
     //#define MU_DEBUG   // serial menu
@@ -53,15 +53,22 @@
     #define FREERAM(...)
   #endif
 
+  // Forward declaration
+  class Menu;
 
   extern int LogLevel();
 
   extern int FreeRam(const char[] = "");
 
-  //extern void PrintUptime(bool = false);
+  // NOTE: You must free or delete the dynamic memory pointed to by the result.
   extern char *Uptime();
   
   extern bool CanLogToBT();
+
+  // NOTE: You must free or delete the dynamic memory pointed to by the result.
+  char *PreLog(int);
+
+  void PostLog(bool);
 
   
   // Handles printing to BTserial with numbers, considers integer base.
@@ -71,17 +78,19 @@
   extern void LOG(int level, T dat, const int base, bool line = false) {
     if (level > LogLevel()) return;
 
+    char *prelog = PreLog(level);
+    
     if (CanLogToBT()) {
+      BTserial->print(prelog);
       BTserial->print(dat, base);
-      if (line == true) {
-        BTserial->println("");
-      }
     }
-  
+
+    Serial.print(prelog);
     Serial.print(dat, base);
-    if (line == true) {
-      Serial.println("");
-    }
+
+    PostLog(line);
+
+    delete prelog;
   }
 
   
@@ -91,19 +100,22 @@
   template<typename T>
   extern void LOG(int level, T dat, bool line = false) {
     if (level > LogLevel()) return;
+
+    char *prelog = PreLog(level);
     
     if (CanLogToBT()) {      
+      BTserial->print(prelog);
       BTserial->print(dat);
-      if (line == true) {
-        BTserial->println("");
-      }
     }
-  
+
+    Serial.print(prelog);
     Serial.print(dat);
-    if (line == true) {
-      Serial.println("");
-    }
+
+    PostLog(line);
+
+    delete prelog;
   }
   
 #endif
+
   

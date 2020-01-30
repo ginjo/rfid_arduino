@@ -610,12 +610,14 @@ TODO: √ Change log level of reader byte-detail output to 6 (instead of 5).
       
 TODO: √ Prevent settings list for printing at startup if log level < 4.
 
-TODO: Preface each log line with level name.
+TODO: Preface each log line with level name and Uptime().
       How to handle log items that are in the midddle of a line?
       
       Maybe only do this for levels 1-3.
       
       This will require a function prepareDat().
+      
+      Only do this during run-mode == 0
       
 TODO: Add log line in .ino for initialization of BTserial port.
 
@@ -640,7 +642,7 @@ TODO: √ LED is behaving weirdly, especially in aging and timeout states.
       Fixed: I added some housekeeping blinker[2]->off() statements in
       some key Controller places.
 
-TODO: Take initial HW/SW serial baud rates from default Settings object,
+TODO: √ Take initial HW/SW serial baud rates from default Settings object,
       if possible, instead of being hard-coded.
 
 TODO: √ With most delay() calls removed, Aging beeper is a little fast. Slow it down?
@@ -653,14 +655,16 @@ TODO: √ Reduce hardware buttons to only 1, will handle failsafe AND debug mode
 	    - failsafe enabled
 	    - debug re-enabled/disabled upon change from admin to run mode.
 
-TODO: Change S.debug_mode to mean: What log level do we bump to during debug-pin or TempDebug?
-      Will this work?
+TODO: √ Change S.debug_mode to mean: What log level do we bump to during debug-pin or TempDebug?
+      Will this work? Yes!
       
-TODO: FIX: Now admin mode tag scanning is broken.
+TODO: √ FIX: Now admin mode tag scanning is broken.
       OK, some delay after the RFID reader listen() statement seems to help.
       
       But now we have blue led popping up during admin mode after attempting to scan tag,
       and at the end of admin state the led just goes dark (green is going off)!
+      
+      All of this was UB from PrintUptime() char array overflow.
       
 TODO: √ Instead of passing around intervals of addresses, try passing around just the static_intervals index.
 
@@ -674,5 +678,12 @@ TODO: √ Change PrintUptime() to just Uptime(), which should only return a char
 
 TODO: √ Remove all of the extra (uint32_t) casts in Reader, as they did not fix the UB and are not necessary.
 
-
+TODO: √ Blue led is getting a negative cycle-count during general-timeout state.
+			Was integer overflow in cycle_count.
         
+NOTE: All of the UB appears to have been fixed.
+			1. Was char array overflow in PrintUptime().
+			2. Was integer overflow in Led::cycle_count.
+			
+			
+			

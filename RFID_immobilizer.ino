@@ -106,8 +106,9 @@
 
     /*  Initialize main objects. See global files for declarations/definitions.  */
 
-		// TODO: Put this in Led files, and only run if BK_DEBUG enabled.
-    if (LogLevel() >= 5) Led::PrintStaticIntervals();
+    #ifdef BK_DEBUG
+      if (LogLevel() >= 5 ) Led::PrintStaticIntervals();
+    #endif
 
     RGB[0] = new Led(LED_RED_PIN, "Rd");
     RGB[1] = new Led(LED_GREEN_PIN, "Gr");

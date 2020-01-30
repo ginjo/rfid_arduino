@@ -308,7 +308,10 @@
       }
 
       LOG(5, F(", uptime "));
-      LOG(5, Uptime(), true);
+
+      char *uptime = Uptime();
+      LOG(5, uptime, true);
+      delete uptime;
 
       RD_LOG(6, F("cycleReaderPower() setting power LOW"), true);
             

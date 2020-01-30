@@ -1,6 +1,7 @@
   #include "logger.h"
   #include "settings.h"
   #include "menu.h"
+  #include <stdio.h>
 
   extern int LogLevel() {
     //if (S.debugMode() && S.log_level < 5U) {
@@ -47,8 +48,10 @@
   //    LOG(4, out, line);
   //  }
 
+
   // Converts milliseconds to readable h:m:s.
-  extern char *Uptime() {
+  // NOTE: You must free or delete the dynamic memory pointed to by the result.
+  char *Uptime() {
     unsigned long milliseconds = millis();
     unsigned long seconds = milliseconds/1000;
     unsigned long minutes = seconds/60;
@@ -56,9 +59,51 @@
     unsigned long rseconds = seconds % 60;
     unsigned long rminutes = minutes % 60;
 
-    char out[9] = {};
-    snprintf(out, 9, "%li:%li:%li", hours, rminutes, rseconds);
-    return out;
+    char *_out = new char[9];
+    snprintf(_out, 9, "%li:%li:%li", hours, rminutes, rseconds);
+    return _out;
   }
+
+
+  // Returns pointer to pre-log text.
+  // NOTE: You must free or delete the dynamic memory pointed to by the result.
+  char *PreLog(int level) {
+    char *_out = new char[16];
+    
+    if (Menu::RunMode == 0) {
+      char *uptime = Uptime();
+      sprintf(_out, "%s ", uptime);
+      delete uptime;
+    }
+
+    switch (level) {
+      case (3) :
+        sprintf(_out, "%sWARN ", _out);
+        break;
+      case (2) :
+        sprintf(_out, "%sERROR ", _out);
+        break;
+      case (1) :
+        sprintf(_out, "%sFATAL ", _out);
+        break;
+    }
+
+    return _out;
+  }
+
+
+  // Handles final new-line at end of log entry.
+  void PostLog(bool line) {
+    
+    if (CanLogToBT()) {      
+      if (line == true) {
+        BTserial->println("");
+      }
+    }
   
+    if (line == true) {
+      Serial.println("");
+    }
+  }
+
   
