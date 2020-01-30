@@ -326,7 +326,7 @@
     push(&Menu::readLine);
     clearSerialPort();
     resetInputBuffer();
-    if (_read_tag) get_tag_from_scanner = 1;
+    if (_read_tag) {reader->resetBuffer(); get_tag_from_scanner = 1;} // not sure if reader->resetBuffer() is necessary.
   }
 
   // Checks for bufferReady() and reacts by calling stack-callback.

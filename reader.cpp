@@ -77,13 +77,13 @@
     current_ms = millis();
     RD_LOG(6, current_ms, true);
     
-    cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.reader_cycle_low_duration);
-    cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
+    cycle_low_finish_ms = (uint32_t)((uint32_t)last_reader_power_cycle_ms + (uint32_t)S.reader_cycle_low_duration);
+    cycle_high_finish_ms = (uint32_t)((uint32_t)cycle_low_finish_ms + (uint32_t)readerPowerCycleHighDuration()*1000UL);
     
     //RD_PRINT(F("cycle_low_finish_ms: ")); RD_PRINTLN(cycle_low_finish_ms);
     //RD_PRINT(F("cycle_high_finish_ms: ")); RD_PRINTLN(cycle_high_finish_ms);
     
-    ms_reader_cycle_total = (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
+    ms_reader_cycle_total = (uint32_t)((uint32_t)S.tag_read_sleep_interval + (uint32_t)S.reader_cycle_low_duration + (uint32_t)S.reader_cycle_high_duration*1000UL);
     //tag_last_read_timeout_x_1000 = (uint32_t)(S.tag_last_read_timeout*1000UL);
 
     
@@ -133,7 +133,7 @@
   }
 
   uint32_t Reader::msReaderCycleTotal() {
-    return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
+    return (uint32_t)((uint32_t)S.tag_read_sleep_interval + (uint32_t)S.reader_cycle_low_duration + (uint32_t)S.reader_cycle_high_duration*1000UL);
   }
 
   uint32_t Reader::readerPowerCycleHighDuration() {

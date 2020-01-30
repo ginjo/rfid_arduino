@@ -670,5 +670,9 @@ TODO: - Try changing RGB to an array of values rather than an array of pointers.
         
 TODO: Tags::load() is complaining of checksum mismatch at every boot.
 
+TODO: Change PrintUptime() to just Uptime(), which should only return a char array.
+
+TODO: Remove all of the extra (uint32_t) casts in Reader, as they did not fix the UB and are not necessary.
+
 
         

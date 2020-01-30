@@ -96,7 +96,7 @@
     CT_LOG(6, F("msSinceLastTagRead() "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
     CT_LOG(6, F("msSinceLastReaderPowerCycle() "), false); CT_LOG(6, reader->msSinceLastReaderPowerCycle(), true);
     CT_LOG(6, F("ms_reader_cycle_total "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
-    CT_LOG(6, F("tagLastReadTimeoutX1000() "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
+    //CT_LOG(6, F("tagLastReadTimeoutX1000() "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
     CT_LOG(6, F("***"), true);
     
 

@@ -41,7 +41,7 @@
     unsigned long rseconds = seconds % 60;
     unsigned long rminutes = minutes % 60;
 
-    char out[] = "";
+    char out[8] = {};
     sprintf(out, "%li:%li:%li", hours, rminutes, rseconds);
     
     LOG(4, out, line);
