@@ -3,6 +3,9 @@
   #include "menu.h"
   #include <stdio.h>
 
+
+  bool log_in_progress = false; // Controlls PreLog() output for multi-part log entries.
+
   extern int LogLevel() {
     //if (S.debugMode() && S.log_level < 5U) {
     if (S.debugMode() && S.enable_debug > S.log_level) {
@@ -69,6 +72,8 @@
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
   char *PreLog(int level) {
     char *_out = new char[16];
+
+    if (log_in_progress) return _out; else log_in_progress = true;
     
     if (Menu::RunMode == 0) {
       char *uptime = Uptime();
@@ -104,6 +109,8 @@
     if (line == true) {
       Serial.println("");
     }
+
+    if (line) log_in_progress = false;
   }
 
   
