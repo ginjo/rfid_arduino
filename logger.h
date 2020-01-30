@@ -58,7 +58,8 @@
 
   extern int FreeRam(const char[] = "");
 
-  extern void PrintUptime(bool = false);
+  //extern void PrintUptime(bool = false);
+  extern char *Uptime();
   
   extern bool CanLogToBT();
 

@@ -31,9 +31,24 @@
     );
   }
 
-  // Converts milliseconds to readable h,m,s.
-  // TODO: Make Uptime() a global function that returns c-string.
-  extern void PrintUptime(bool line) {
+  //  // Converts milliseconds to readable h,m,s.
+  //  // TODO: Make Uptime() a global function that returns c-string.
+  //  extern void PrintUptime(bool line) {
+  //    unsigned long milliseconds = millis();
+  //    unsigned long seconds = milliseconds/1000;
+  //    unsigned long minutes = seconds/60;
+  //    unsigned long hours   = minutes/60;
+  //    unsigned long rseconds = seconds % 60;
+  //    unsigned long rminutes = minutes % 60;
+  //
+  //    char out[8] = {};
+  //    sprintf(out, "%li:%li:%li", hours, rminutes, rseconds);
+  //    
+  //    LOG(4, out, line);
+  //  }
+
+  // Converts milliseconds to readable h:m:s.
+  extern char *Uptime() {
     unsigned long milliseconds = millis();
     unsigned long seconds = milliseconds/1000;
     unsigned long minutes = seconds/60;
@@ -41,10 +56,9 @@
     unsigned long rseconds = seconds % 60;
     unsigned long rminutes = minutes % 60;
 
-    char out[8] = {};
-    sprintf(out, "%li:%li:%li", hours, rminutes, rseconds);
-    
-    LOG(4, out, line);
+    char out[9] = {};
+    snprintf(out, 9, "%li:%li:%li", hours, rminutes, rseconds);
+    return out;
   }
   
   
