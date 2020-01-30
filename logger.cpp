@@ -56,14 +56,15 @@
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
   char *Uptime() {
     unsigned long milliseconds = millis();
-    unsigned long seconds = milliseconds/1000;
-    unsigned long minutes = seconds/60;
-    unsigned long hours   = minutes/60;
+    unsigned long seconds  = milliseconds/1000;
+    unsigned long rmillis  = milliseconds % 1000;
+    unsigned long minutes  = seconds/60;
     unsigned long rseconds = seconds % 60;
+    unsigned long hours    = minutes/60;
     unsigned long rminutes = minutes % 60;
 
-    char *_out = new char[9];
-    snprintf(_out, 9, "%li:%li:%li", hours, rminutes, rseconds);
+    char *_out = new char[13];
+    snprintf(_out, 13, "%02li:%02li:%02li.%-3li", hours, rminutes, rseconds, rmillis);
     return _out;
   }
 
@@ -77,7 +78,7 @@
     
     if (Menu::RunMode == 0) {
       char *uptime = Uptime();
-      sprintf(_out, "%s ", uptime);
+      sprintf(_out, "%s  ", uptime);
       delete uptime;
     }
 

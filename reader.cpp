@@ -67,7 +67,7 @@
 
     if (! serial_port->isListening()) {
       serial_port->listen();
-      delay(10);
+      delay(100); // Gives better chances of tag being read when adding tags by scanning.
     }
     while (! serial_port->isListening()) {
       delay(2);

@@ -43,7 +43,7 @@
 
   /***  Static Vars & Funtions  ***/
 
-  int Menu::RunMode = 0;
+  int Menu::RunMode = 1;
 
   // These provide the "definition" of these static vars. See .h file for declarations.
   Menu * Menu::Current = nullptr;
