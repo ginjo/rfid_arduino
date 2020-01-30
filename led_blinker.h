@@ -47,10 +47,10 @@
     int current_phase;
 
     // How many cycles have we run thru
-    int cycle_count;
+    uint16_t cycle_count;
 
     // How many cycles to run for this instance, after begin() is called
-    int num_cycles;
+    uint16_t num_cycles;
     
     // Generally, you should use "unsigned long" for variables that hold time.
     // The value will quickly become too large for an int to store.
@@ -75,9 +75,9 @@
     Led(int, const char[], const int=0, const int=0);
     
     //void begin(int, const int[], const int=-1, const int=-1);
-    void begin(int, const int, const int=-1, const int=-1);
+    void begin(uint16_t, const int, const int=-1, const int=-1);
     //void update(int, const int[], const int=-1, const int=-1);
-    void update(int, const int, const int=-1, const int=-1);
+    void update(uint16_t, const int, const int=-1, const int=-1);
     void loop();
     void startPhase(int = 0);
     void handleBlinker();
@@ -92,8 +92,8 @@
     void fastBlink();
     void startupBlink();
     void once();
-    void fastBeep(int=0);
-    void slowBeep(int=0);
+    void fastBeep(uint16_t=0);
+    void slowBeep(uint16_t=0);
     void go_low();
     void go_high();
   

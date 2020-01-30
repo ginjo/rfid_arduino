@@ -116,7 +116,7 @@
       RGB[0]->slowBlink();
       RGB[1]->off();
       //blinker[2]->off();
-      Beeper->slowBeep(3);
+      Beeper->slowBeep(3U);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 
@@ -137,7 +137,7 @@
       RGB[0]->slowBlink();
       RGB[1]->off();
       //blinker[2]->off();
-      Beeper->slowBeep(3);
+      Beeper->slowBeep(3U);
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
 

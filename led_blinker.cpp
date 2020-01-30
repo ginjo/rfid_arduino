@@ -30,8 +30,8 @@
     led_pin(pin),
     led_state(0),
     current_phase(0),
-    cycle_count(0),
-    num_cycles(0),
+    cycle_count(0U),
+    num_cycles(0U),
     current_ms(millis()),
     previous_ms(0UL),
     frequency(_freq),
@@ -46,7 +46,7 @@
   }
   
   //void Led::begin(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
-  void Led::begin(const int _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
+  void Led::begin(const uint16_t _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
     
     BK_LOG(5, F("Led::begin old, new: "), false); BK_LOG(5, led_name, true);
     if (LogLevel() >= 5) {
@@ -57,7 +57,7 @@
     // Initialize state
     led_state = LOW;
     current_phase = 0;
-    cycle_count = 0;
+    cycle_count = 0U;
     num_cycles = _num_cycles;
     intervals = StaticIntervals[intervals_index];
     if (_freq >=0) frequency = _freq;
@@ -74,7 +74,7 @@
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
   //void Led::update(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
-  void Led::update(const int _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
+  void Led::update(const uint16_t _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
     
     BK_LOG(6, F("Led::update old, new: "), false); BK_LOG(6, led_name, true);
     #ifdef BK_DEBUG
@@ -105,14 +105,16 @@
   void Led::startPhase(int phz) {
     current_phase = phz;
     if (phz == 0) {
-      cycle_count ++;
+      //cycle_count ++;
       
       // TODO: This should be refactored so that it reverts to
       // previous interval-set after cycle_count goes above num_cycles.
-      if (num_cycles > 0 && cycle_count > num_cycles) {
+      if (num_cycles > 0U && cycle_count > num_cycles) {
         //reset();
         led_state = 0;
         return;
+      } else if (num_cycles > 0U) {
+        cycle_count ++;
       }
     }
 
@@ -207,7 +209,7 @@
   void Led::reset() {
     led_state = 0;
     current_phase = 0;
-    cycle_count = 0;
+    cycle_count = 0U;
   }
 
   // Manually forces led state low
@@ -227,43 +229,43 @@
   
   void Led::steady() {
     BK_LOG(6, F("Led::steady() "), false); BK_LOG(6, led_name, true);
-    update(0, 0);
+    update(0U, 0);
   }
 
   void Led::off() {
     BK_LOG(6, F("Led::off() "), false); BK_LOG(6, led_name, true);
-    update(0, 1);
+    update(0U, 1);
   }
 
   void Led::slowBlink() {
     BK_LOG(6, F("Led::slowBlink() "), false); BK_LOG(6, led_name, true);
-    update(0, 2);
+    update(0U, 2);
   }
 
   void Led::fastBlink() {
     BK_LOG(6, F("Led::fastBlink() "), false); BK_LOG(6, led_name, true);
-    update(0, 3);
+    update(0U, 3);
   }
 
   void Led::startupBlink() {
     BK_LOG(6, F("Led::startupBlink() "), false); BK_LOG(6, led_name, true);
-    update(0, 4);
+    update(0U, 4);
   }
 
   void Led::once() {
     BK_LOG(6, F("Led::once() "), false); BK_LOG(6, led_name, true);
     reset();
-    update(1, 5);
+    update(1U, 5);
   }
 
-  void Led::fastBeep(int _count) {
+  void Led::fastBeep(uint16_t _count) {
     BK_LOG(6, F("Led::fastBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
     //const int _intervals[INTERVALS_LENGTH] = {80,80};
     //update(_count, _intervals);
     update(_count, 6);
   }
 
-  void Led::slowBeep(int _count) {
+  void Led::slowBeep(uint16_t _count) {
     BK_LOG(6, F("Led::slowBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
     //const int _intervals[INTERVALS_LENGTH] = {500,500};
     //update(_count, _intervals);
