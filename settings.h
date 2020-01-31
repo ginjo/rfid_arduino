@@ -37,13 +37,24 @@
   // WARN: This causes multiple-definition errors if run here. See menu.cpp.
   //void(* resetFunc) (void) = 0;
 
+  class Settings;
+
+  typedef void(LAM)(Settings*, char*);
 
   class Settings : public Storage<Settings> {
   public:
 
+
     /***  Static  ***/
+
+    static LAM *AA[];
+
+    //    LAM *Settings::AA[] = {
+    //      [this](char *setting_value){sprintf(setting_value, "%i", tone_frequency);}
+    //    };
     
     static Settings Current;
+    
 
     static Settings* Load(Settings *settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
     
@@ -133,22 +144,25 @@
     const static char str_12[] PROGMEM =  "admin_startup_timeout";
     const static char str_13[] PROGMEM =  "log_to_bt";
     const static char str_14[] PROGMEM =  "log_level";
-    extern const char *const SETTING_NAMES[] PROGMEM = {
-      str_0,
-      str_1,
-      str_2,
-      str_3,
-      str_4,
-      str_5,
-      str_6,
-      str_7,
-      str_8,
-      str_9,
-      str_10,
-      str_11,
-      str_12,
-      str_13,
-      str_14
+    
+    extern const char *const SETTING_NAMES[][32] PROGMEM = {
+
+      "tag_last_read_timeout",
+      "tag_read_sleep_interval",
+      "reader_cycle_low_duration",
+      "reader_cycle_high_duration",
+      "admin_timeout",
+      "proximity_state_startup",
+      "enable_debug",
+      "default_reader",
+      "hw_serial_baud",
+      "bt_baud",
+      "rfid_baud",
+      "tone_frequency",
+      "admin_startup_timeout",
+      "log_to_bt",
+      "log_level"
+
     };
   } // end nameless namespace
     

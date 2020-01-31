@@ -31,11 +31,11 @@
     admin_timeout(60), // seconds
 
     // Sets whether output switches off or on at startup.
-    proximity_state_startup(1), // 0 = off, 1 = on, 2 = auto (uses last saved state)
+    proximity_state_startup(2), // 0 = off, 1 = on, 2 = auto (uses last saved state)
 
     // NOT: enables debugging (separate from using DEBUG macro).
     // Changed to: Sets the debug level if debug-pin is held low.
-    enable_debug(5),
+    enable_debug(4),
 
     // sets default reader index
     default_reader(3),
@@ -129,6 +129,10 @@
     return true;
   }
 
+    LAM *Settings::AA[] = {
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);}
+    };
+
   // Populates the passed-in *setting_name and *setting_value with data, per the given index.
   // Note that this does not return any values.
   //
@@ -173,7 +177,8 @@
         sprintf(setting_value, "%li", rfid_baud);
         break;
       case 12 :
-        sprintf(setting_value, "%i", tone_frequency);
+        //sprintf(setting_value, "%i", tone_frequency);
+        AA[0](this, setting_value);
         break;   
       case 13 :
         sprintf(setting_value, "%i", admin_startup_timeout);

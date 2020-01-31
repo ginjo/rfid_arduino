@@ -24,11 +24,31 @@
   
   #define INPUT_BUFFER_LENGTH 24
 
+  
+  //  typedef void (*MenuItemFunction)(void*);
+  //
+  //  const typedef struct MenuItem_t {
+  //    char name[18];
+  //    MenuItemFunction function;
+  //  } MenuItem ;
+
 
   class Menu : public Stack<Menu> {
   public:
 
+    // Function pionter, expecting args void* and CB (which is defined in Stack)
+    typedef void (Menu::*MenuItemFunction)(void*);
+    typedef void (Menu::*MenuItemFunctionWithCB)(void*, CB);
+  
+    const typedef struct MenuItem_t {
+      char name[18];
+      MenuItemFunction function; // takes 1 arg: void* (can be anything, just remember to cast to void*).
+      MenuItemFunctionWithCB function_with_cb; // takes two args: void*, CB (same as above, plus any '&Qualified::functionName'.
+    } MenuItem ;
+
     /*  Static Vars & Functions  */
+    //static MenuItem MenuItems[] PROGMEM;
+    
     static int RunMode; // 0=run, 1=admin
 
     static Menu * Current;
@@ -51,6 +71,8 @@
   	int buff_index;
     int selected_menu_item;
     int get_tag_from_scanner;
+
+    MenuItem MenuItems[] PROGMEM;
 
     /* Constructor receives a serial port instance from HardwareSerial or SoftwareSerial. */
     Menu(Stream*, Reader*, const char* = "");
@@ -89,8 +111,8 @@
     void menuAddTag(void* = nullptr);
     void menuDeleteTag(void* = nullptr);
     void menuDeleteAllTags(void* = nullptr);
-    void menuShowFreeMemory();
-    void menuReboot();
+    void menuShowFreeMemory(void* = nullptr);
+    void menuReboot(void* = nullptr);
     void menuSettings(void* = nullptr);
     void menuSelectedSetting(void* = nullptr); // (char[]);
     void menuListReaders(void* = nullptr);

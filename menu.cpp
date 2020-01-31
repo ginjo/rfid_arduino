@@ -43,12 +43,19 @@
 
   /***  Static Vars & Funtions  ***/
 
-  int Menu::RunMode = 1;
+  int Menu::RunMode = 1; // Starts up in mode 1 'Menu'.
 
   // These provide the "definition" of these static vars. See .h file for declarations.
   Menu * Menu::Current = nullptr;
   Menu * Menu::HW = nullptr;
   Menu * Menu::SW = nullptr;
+
+
+  //MenuItem  Menu::MenuItems[] PROGMEM = { 
+  //  { "Settings", menuSettings       },
+  //  { "List Readers", menuListReaders }
+  //};
+
 
   void Menu::Begin() {
     LOG(4, F("Menu::Begin()"), true);
@@ -85,13 +92,21 @@
     buff {},
     buff_index(0),
     selected_menu_item(-1),
-    get_tag_from_scanner(0)
+    get_tag_from_scanner(0),
+    MenuItems {}
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
     //strlcpy(input_mode, "menu", sizeof(input_mode));
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
+
+    MenuItem MenuItems[] PROGMEM = {
+      { "List Tags", nullptr, &Menu::menuListTags            },
+      { "Settings", &Menu::menuSettings, nullptr             },
+      { "Show Free Mem", &Menu::menuShowFreeMemory, nullptr  },
+      { "List Readers", &Menu::menuListReaders, nullptr      }
+    };
 	}
 	
   void Menu::begin() {    
@@ -578,7 +593,8 @@
         menuSettings();
         break;
       case 6:
-        menuShowFreeMemory();
+        //menuShowFreeMemory();
+        MenuItems[1].function();
         break;
       case 7:
         menuListReaders();
@@ -596,7 +612,7 @@
   } // menuSelectedMainItem
 
   // Lists tags for menu.
-  void Menu::menuListTags(void *dat, CB cback) {
+  void Menu::menuListTags(void *dat, CB cback ) {
     MU_LOG(6, F("Menu::menuListTags()"), true);
     serial_port->print(F("Tags, chksm 0x"));
     serial_port->print(Tags::TagSet.checksum, 16);
@@ -644,7 +660,7 @@
     menuListTags((void*)"Delete all tags [y/N]?", &Menu::deleteAllTags);
   }
 
-  void Menu::menuShowFreeMemory() {
+  void Menu::menuShowFreeMemory(void *dat) {
     MU_LOG(6, F("Menu::menuShowFreeMemory()"), true);
     int ram = FreeRam();
     serial_port->print(F("Free Memory: "));
@@ -653,7 +669,7 @@
     menuMainPrompt(); 
   }
 
-  void Menu::menuReboot() {
+  void Menu::menuReboot(void *dat) {
     MU_LOG(6, F("Menu::menuReboot()"), true);
     resetFunc();
   }
@@ -752,7 +768,7 @@
    via the HW serial interface menu. 
   */
   
-  void Menu::menuManageBT(void*) {
+  void Menu::menuManageBT(void *dat) {
     if (digitalRead(BT_STATUS_PIN) == HIGH) {
       // Cleanup, just to be safe.
       SW->resetStack();
