@@ -63,65 +63,70 @@
 
     char setting_name[SETTINGS_NAME_SIZE];
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
-    strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
+    //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
 
     ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
     ST_LOG(5, _data, true);
 
-    // Note that this is a 1-based list, not 0-based.
-    switch (_index) {
-      case 1:
-        tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);
-        break;
-      case 2:
-        tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);
-        break;
-      case 3:
-        reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);
-        break;
-      case 4:
-        reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);
-        break;
-      case 5:
-        admin_timeout = (uint32_t)strtol(_data, NULL, 10);
-        // This setting should never be so low as to prevent admining at startup.
-        if (admin_timeout < 10) { admin_timeout = 10; }
-        break;
-      case 6:
-        proximity_state_startup = (int)strtol(_data, NULL, 10);
-        break;
-      case 7:
-        enable_debug = (int)strtol(_data, NULL, 10);
-        break;
-      case 8:
-        //strlcpy(default_reader, (char *)_data, sizeof(default_reader));
-        default_reader = (uint8_t)strtol(_data, NULL, 10);
-        break;
-      case 9:
-        hw_serial_baud = (long)strtol(_data, NULL, 10);
-        break;
-      case 10:
-        bt_baud = (long)strtol(_data, NULL, 10);
-        break;
-      case 11:
-        rfid_baud = (long)strtol(_data, NULL, 10);
-        break;
-      case 12:
-        tone_frequency = (int)strtol(_data, NULL, 10);
-        break;
-      case 13:
-        admin_startup_timeout = (int)strtol(_data, NULL, 10);
-        break;
-      case 14:
-        log_to_bt = (bool)strtol(_data, NULL, 10);
-        break;
-      case 15:
-        log_level = (uint8_t)strtol(_data, NULL, 10);
-        break;
-      
-      default :
-        return false;
+    if (_index <= SETTINGS_SIZE) {
+      strcpy_P(setting_name, (char *)pgm_read_word(&SettingsList[_index-1].name));
+      SettingsList[_index-1].setter_func(this, _data);
     }
+
+    //  // Note that this is a 1-based list, not 0-based.
+    //  switch (_index) {
+    //    case 1:
+    //      tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);
+    //      break;
+    //    case 2:
+    //      tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);
+    //      break;
+    //    case 3:
+    //      reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);
+    //      break;
+    //    case 4:
+    //      reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);
+    //      break;
+    //    case 5:
+    //      admin_timeout = (uint32_t)strtol(_data, NULL, 10);
+    //      // This setting should never be so low as to prevent admining at startup.
+    //      if (admin_timeout < 10) { admin_timeout = 10; }
+    //      break;
+    //    case 6:
+    //      proximity_state_startup = (int)strtol(_data, NULL, 10);
+    //      break;
+    //    case 7:
+    //      enable_debug = (int)strtol(_data, NULL, 10);
+    //      break;
+    //    case 8:
+    //      //strlcpy(default_reader, (char *)_data, sizeof(default_reader));
+    //      default_reader = (uint8_t)strtol(_data, NULL, 10);
+    //      break;
+    //    case 9:
+    //      hw_serial_baud = (long)strtol(_data, NULL, 10);
+    //      break;
+    //    case 10:
+    //      bt_baud = (long)strtol(_data, NULL, 10);
+    //      break;
+    //    case 11:
+    //      rfid_baud = (long)strtol(_data, NULL, 10);
+    //      break;
+    //    case 12:
+    //      tone_frequency = (int)strtol(_data, NULL, 10);
+    //      break;
+    //    case 13:
+    //      admin_startup_timeout = (int)strtol(_data, NULL, 10);
+    //      break;
+    //    case 14:
+    //      log_to_bt = (bool)strtol(_data, NULL, 10);
+    //      break;
+    //    case 15:
+    //      log_level = (uint8_t)strtol(_data, NULL, 10);
+    //      break;
+    //    
+    //    default :
+    //      return false;
+    //  }
 
     strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
     save();
@@ -137,8 +142,51 @@
   //  };
 
   const settings_list_t Settings::SettingsList[] PROGMEM = {
-    { "tone_frequency", [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);} },
-    { "default_reader", [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));} } 
+    { "tag_last_read_timeout",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_last_read_timeout);},
+      [](Settings *s, char *_data){s->tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);} },
+    { "tag_read_sleep_interval",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_read_sleep_interval);},
+      [](Settings *s, char *_data){s->tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);} },
+    { "reader_cycle_low_duration",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_low_duration);},
+      [](Settings *s, char *_data){s->reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);} },
+    { "reader_cycle_high_duration",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_high_duration);},
+      [](Settings *s, char *_data){s->reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);} },
+    { "admin_timeout",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->admin_timeout);},
+      [](Settings *s, char *_data){s->admin_timeout = (uint32_t)strtol(_data, NULL, 10); if (s->admin_timeout < 10) s->admin_timeout = 10;} },
+    { "proximity_state_startup",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->proximity_state_startup);},
+      [](Settings *s, char *_data){s->proximity_state_startup = (int)strtol(_data, NULL, 10);} },
+    { "enable_debug",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->enable_debug);},
+      [](Settings *s, char *_data){s->enable_debug = (int)strtol(_data, NULL, 10);} },
+    { "default_reader",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));},
+      [](Settings *s, char *_data){s->default_reader = (uint8_t)strtol(_data, NULL, 10);} },
+    { "hw_serial_baud",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->hw_serial_baud);},
+      [](Settings *s, char *_data){s->hw_serial_baud = (long)strtol(_data, NULL, 10);} },
+    { "bt_baud",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->bt_baud);},
+      [](Settings *s, char *_data){s->bt_baud = (long)strtol(_data, NULL, 10);} },
+    { "rfid_baud",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->rfid_baud);},
+      [](Settings *s, char *_data){s->rfid_baud = (long)strtol(_data, NULL, 10);} },
+    { "tone_frequency",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
+      [](Settings *s, char *_data){s->tone_frequency = (int)strtol(_data, NULL, 10);} },
+    { "admin_startup_timeout",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->admin_startup_timeout);},
+      [](Settings *s, char *_data){s->admin_startup_timeout = (int)strtol(_data, NULL, 10);} },
+    { "log_to_bt",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->log_to_bt);},
+      [](Settings *s, char *_data){s->log_to_bt = (bool)strtol(_data, NULL, 10);} },
+    { "log_level",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%hhu", s->log_level);},
+      [](Settings *s, char *_data){s->log_level = (uint8_t)strtol(_data, NULL, 10);} }
   };
 
   // Populates the passed-in *setting_name and *setting_value with data, per the given index.
@@ -146,65 +194,72 @@
   //
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
-    strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
-    ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
+    //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
     
-    switch(index) {
-      case 1 :
-        sprintf(setting_value, "%lu", tag_last_read_timeout);
-        break;
-      case 2 :
-        sprintf(setting_value, "%lu", tag_read_sleep_interval);
-        break;
-      case 3 :
-        sprintf(setting_value, "%lu", reader_cycle_low_duration);
-        break;
-      case 4 :
-        sprintf(setting_value, "%lu", reader_cycle_high_duration);
-        break;
-      case 5 :
-        sprintf(setting_value, "%lu", admin_timeout);
-        break;
-      case 6 :
-        sprintf(setting_value, "%i", proximity_state_startup);
-        break;
-      case 7 :
-        sprintf(setting_value, "%i", enable_debug);
-        break;
-      case 8 :
-        //sprintf(setting_value, "%s", default_reader);
-        //sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
-        Serial.println((char*)pgm_read_word(&SettingsList[1].name));
-        SettingsList[1].getter_func(this, setting_value);
-        break;
-      case 9 :
-        sprintf(setting_value, "%li", hw_serial_baud);
-        break;
-      case 10 :
-        sprintf(setting_value, "%li", bt_baud);
-        break;
-      case 11 :
-        sprintf(setting_value, "%li", rfid_baud);
-        break;
-      case 12 :
-        //sprintf(setting_value, "%i", tone_frequency);
-        Serial.println((char*)pgm_read_word(&SettingsList[0].name));
-        SettingsList[0].getter_func(this, setting_value);
-        break;   
-      case 13 :
-        sprintf(setting_value, "%i", admin_startup_timeout);
-        break;  
-      case 14 :
-        sprintf(setting_value, "%i", log_to_bt);
-        //sprintf(setting_value, log_to_bt ? "true" : "false");
-        break;
-      case 15 :
-        sprintf(setting_value, "%hhu", log_level);
-        break;
-      
-      default:
-        break;
-    } // switch
+    strcpy_P(setting_name, (char *)pgm_read_word(&SettingsList[index-1].name));
+    ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
+    //Serial.println((char*)pgm_read_word(&SettingsList[1].name));
+    
+    if (index <= SETTINGS_SIZE) {
+      SettingsList[index-1].getter_func(this, setting_value);
+    }
+    
+    //  switch(index) {
+    //    case 1 :
+    //      sprintf(setting_value, "%lu", tag_last_read_timeout);
+    //      break;
+    //    case 2 :
+    //      sprintf(setting_value, "%lu", tag_read_sleep_interval);
+    //      break;
+    //    case 3 :
+    //      sprintf(setting_value, "%lu", reader_cycle_low_duration);
+    //      break;
+    //    case 4 :
+    //      sprintf(setting_value, "%lu", reader_cycle_high_duration);
+    //      break;
+    //    case 5 :
+    //      sprintf(setting_value, "%lu", admin_timeout);
+    //      break;
+    //    case 6 :
+    //      sprintf(setting_value, "%i", proximity_state_startup);
+    //      break;
+    //    case 7 :
+    //      sprintf(setting_value, "%i", enable_debug);
+    //      break;
+    //    case 8 :
+    //      //sprintf(setting_value, "%s", default_reader);
+    //      //sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
+    //      Serial.println((char*)pgm_read_word(&SettingsList[1].name));
+    //      SettingsList[1].getter_func(this, setting_value);
+    //      break;
+    //    case 9 :
+    //      sprintf(setting_value, "%li", hw_serial_baud);
+    //      break;
+    //    case 10 :
+    //      sprintf(setting_value, "%li", bt_baud);
+    //      break;
+    //    case 11 :
+    //      sprintf(setting_value, "%li", rfid_baud);
+    //      break;
+    //    case 12 :
+    //      //sprintf(setting_value, "%i", tone_frequency);
+    //      Serial.println((char*)pgm_read_word(&SettingsList[0].name));
+    //      SettingsList[0].getter_func(this, setting_value);
+    //      break;   
+    //    case 13 :
+    //      sprintf(setting_value, "%i", admin_startup_timeout);
+    //      break;  
+    //    case 14 :
+    //      sprintf(setting_value, "%i", log_to_bt);
+    //      //sprintf(setting_value, log_to_bt ? "true" : "false");
+    //      break;
+    //    case 15 :
+    //      sprintf(setting_value, "%hhu", log_level);
+    //      break;
+    //    
+    //    default:
+    //      break;
+    //  } // switch
     
     ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
   } // function

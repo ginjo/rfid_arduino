@@ -36,11 +36,13 @@
 
   class Settings; // forward declaration
   using getter_func_t = void(*)(Settings*, char*);
+  using setter_func_t = getter_func_t;
 
   using settings_list_t = struct {
     //char name[SETTINGS_NAME_SIZE];
     const char *name;
     getter_func_t getter_func;
+    setter_func_t setter_func;
       
     //  int call(char *_rval, int _index){
     //    char txt[16];
