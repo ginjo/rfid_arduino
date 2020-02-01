@@ -28,30 +28,28 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 15 // quantity of settings vars
+  #define SETTINGS_SIZE 3 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
-  
 
-  class Settings; // forward declaration
+
+  /*  Defines types for settings getters and setters  */
+
+  class Settings; // forward declaration for the following...
+  
   using getter_func_t = void(*)(Settings*, char*);
   using setter_func_t = getter_func_t;
-
   using settings_list_t = struct {
-    //char name[SETTINGS_NAME_SIZE];
-    const char *name;
+    //const char name[SETTINGS_NAME_SIZE]; // you'd think this would work, but no. Even though it uses less ram.
+    const char *name; // Original decl that worked in prototype. Did it?
     getter_func_t getter_func;
     setter_func_t setter_func;
       
-    //  int call(char *_rval, int _index){
-    //    char txt[16];
-    //    int func_rslt = func(txt, _index);
-    //    
-    //    sprintf(_rval, "Hi %s, %s", name, txt);
-    //    return func_rslt;
+    //  int call(char *_retval, int _index){
     //  }
   };
+  
 
   class Settings : public Storage<Settings> {
   public:
@@ -67,8 +65,8 @@
 
     /***  Static  ***/
 
-    // Declares a static member array of type LAM.
-    const static settings_list_t SettingsList[] PROGMEM;
+    // Declares a static member-array of type LAM.
+    const static settings_list_t SettingsList[SETTINGS_SIZE] PROGMEM;
     
     static Settings Current;
 

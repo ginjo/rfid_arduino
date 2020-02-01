@@ -53,9 +53,67 @@
     //strlcpy(default_reader, "WL-125", sizeof(default_reader));
   }
 
+
+  // Defines static array of custom struct objects as setting containers
+  // Anonymous namespace somehow enables the PROGMEM to work correctly.
+  //
+  namespace {
+    
+  const static settings_list_t Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
+    { "tag_last_read_timeout",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_last_read_timeout);},
+      [](Settings *s, char *_data){s->tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);} },
+    //  { "tag_read_sleep_interval",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_read_sleep_interval);},
+    //    [](Settings *s, char *_data){s->tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);} },
+    //  { "reader_cycle_low_duration",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_low_duration);},
+    //    [](Settings *s, char *_data){s->reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);} },
+    //  { "reader_cycle_high_duration",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_high_duration);},
+    //    [](Settings *s, char *_data){s->reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);} },
+    //  { "admin_timeout",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->admin_timeout);},
+    //    [](Settings *s, char *_data){s->admin_timeout = (uint32_t)strtol(_data, NULL, 10); if (s->admin_timeout < 10) s->admin_timeout = 10;} },
+    //  { "proximity_state_startup",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->proximity_state_startup);},
+    //    [](Settings *s, char *_data){s->proximity_state_startup = (int)strtol(_data, NULL, 10);} },
+    { "enable_debug",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->enable_debug);},
+      [](Settings *s, char *_data){s->enable_debug = (int)strtol(_data, NULL, 10);} },
+    //  { "default_reader",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));},
+    //    [](Settings *s, char *_data){s->default_reader = (uint8_t)strtol(_data, NULL, 10);} },
+    //  { "hw_serial_baud",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->hw_serial_baud);},
+    //    [](Settings *s, char *_data){s->hw_serial_baud = (long)strtol(_data, NULL, 10);} },
+    //  { "bt_baud",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->bt_baud);},
+    //    [](Settings *s, char *_data){s->bt_baud = (long)strtol(_data, NULL, 10);} },
+    //  { "rfid_baud",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->rfid_baud);},
+    //    [](Settings *s, char *_data){s->rfid_baud = (long)strtol(_data, NULL, 10);} },
+    //  { "tone_frequency",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
+    //    [](Settings *s, char *_data){s->tone_frequency = (int)strtol(_data, NULL, 10);} },
+    //  { "admin_startup_timeout",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->admin_startup_timeout);},
+    //    [](Settings *s, char *_data){s->admin_startup_timeout = (int)strtol(_data, NULL, 10);} },
+    //  { "log_to_bt",
+    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->log_to_bt);},
+    //    [](Settings *s, char *_data){s->log_to_bt = (bool)strtol(_data, NULL, 10);} },
+    { "log_level",
+      [](Settings *s, char *setting_value){sprintf(setting_value, "%hhu", s->log_level);},
+      [](Settings *s, char *_data){s->log_level = (uint8_t)strtol(_data, NULL, 10);} }
+  };
+  };
+  
   
 
-  // Updates a setting given setting index and data.
+  // Updates a setting given setting index with data.
+  //
+  // The passed-in index is 1-based.
+  //
   bool Settings::updateSetting(int _index, char _data[]) {
 
     ST_LOG(5, F("S.updateSetting() "), false);
@@ -135,63 +193,11 @@
   }
 
 
-  // Defines static array of lambdas (named SettingGetters of custom type LAM).
-  //  const static LAM Settings::SettingGetters[] PROGMEM = {
-  //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
-  //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));}
-  //  };
-
-  const settings_list_t Settings::SettingsList[] PROGMEM = {
-    { "tag_last_read_timeout",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_last_read_timeout);},
-      [](Settings *s, char *_data){s->tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);} },
-    { "tag_read_sleep_interval",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_read_sleep_interval);},
-      [](Settings *s, char *_data){s->tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);} },
-    { "reader_cycle_low_duration",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_low_duration);},
-      [](Settings *s, char *_data){s->reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);} },
-    { "reader_cycle_high_duration",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_high_duration);},
-      [](Settings *s, char *_data){s->reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);} },
-    { "admin_timeout",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->admin_timeout);},
-      [](Settings *s, char *_data){s->admin_timeout = (uint32_t)strtol(_data, NULL, 10); if (s->admin_timeout < 10) s->admin_timeout = 10;} },
-    { "proximity_state_startup",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->proximity_state_startup);},
-      [](Settings *s, char *_data){s->proximity_state_startup = (int)strtol(_data, NULL, 10);} },
-    { "enable_debug",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->enable_debug);},
-      [](Settings *s, char *_data){s->enable_debug = (int)strtol(_data, NULL, 10);} },
-    { "default_reader",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));},
-      [](Settings *s, char *_data){s->default_reader = (uint8_t)strtol(_data, NULL, 10);} },
-    { "hw_serial_baud",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->hw_serial_baud);},
-      [](Settings *s, char *_data){s->hw_serial_baud = (long)strtol(_data, NULL, 10);} },
-    { "bt_baud",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->bt_baud);},
-      [](Settings *s, char *_data){s->bt_baud = (long)strtol(_data, NULL, 10);} },
-    { "rfid_baud",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->rfid_baud);},
-      [](Settings *s, char *_data){s->rfid_baud = (long)strtol(_data, NULL, 10);} },
-    { "tone_frequency",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
-      [](Settings *s, char *_data){s->tone_frequency = (int)strtol(_data, NULL, 10);} },
-    { "admin_startup_timeout",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->admin_startup_timeout);},
-      [](Settings *s, char *_data){s->admin_startup_timeout = (int)strtol(_data, NULL, 10);} },
-    { "log_to_bt",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->log_to_bt);},
-      [](Settings *s, char *_data){s->log_to_bt = (bool)strtol(_data, NULL, 10);} },
-    { "log_level",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%hhu", s->log_level);},
-      [](Settings *s, char *_data){s->log_level = (uint8_t)strtol(_data, NULL, 10);} }
-  };
-
   // Populates the passed-in *setting_name and *setting_value with data, per the given index.
   // Note that this does not return any values.
-  //
+  // 
+  // The passed-in index is 1-based.
+  // 
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
