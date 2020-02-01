@@ -36,17 +36,21 @@
   class Menu : public Stack<Menu> {
   public:
 
+    /*  Type Defs  */
+    
     // Function pionter, expecting args void* and CB (which is defined in Stack)
     typedef void (Menu::*MenuItemFunction)(void*);
     typedef void (Menu::*MenuItemFunctionWithCB)(void*, CB);
   
-    const typedef struct MenuItem_t {
-      char name[18];
-      MenuItemFunction function; // takes 1 arg: void* (can be anything, just remember to cast to void*).
-      MenuItemFunctionWithCB function_with_cb; // takes two args: void*, CB (same as above, plus any '&Qualified::functionName'.
-    } MenuItem ;
+    //const typedef struct MenuItem_t {
+    //  char name[18];
+    //  MenuItemFunction function; // takes 1 arg: void* (can be anything, just remember to cast to void*).
+    //  MenuItemFunctionWithCB function_with_cb; // takes two args: void*, CB (same as above, plus any '&Qualified::functionName'.
+    //} MenuItem ;
+
 
     /*  Static Vars & Functions  */
+    
     //static MenuItem MenuItems[] PROGMEM;
     
     static int RunMode; // 0=run, 1=admin
@@ -58,7 +62,9 @@
     static void Begin();
     static void Loop();
 
+
     /* Instance vars */
+    
     Stream *serial_port;
     Reader *reader;
     // NOTE: instance_name is a two-character string with a terminating null.
@@ -72,19 +78,27 @@
     int selected_menu_item;
     int get_tag_from_scanner;
 
-    MenuItem MenuItems[] PROGMEM;
+    //MenuItem MenuItems[] PROGMEM;
 
-    /* Constructor receives a serial port instance from HardwareSerial or SoftwareSerial. */
+
+    /*  Constructor
+        Receives a serial port instance from HardwareSerial or SoftwareSerial.
+    */
+
     Menu(Stream*, Reader*, const char* = "");
 
+
     /* Control */
+
     void begin();
     void loop();
     void adminTimeout();
     void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void exitAdmin();
 
+
     /* Input */
+
     void checkSerialPort();
     void clearSerialPort();
     void resetInputBuffer();
@@ -95,15 +109,19 @@
     void readLine(void* = nullptr);
     void getTagFromScanner();
 
+
     /* Data
        Note that some of these will complain at compile time about unused parameter... it's OK */
+
     int  byteToAsciiChrNum(char);
     void addTagString(void*);
     void deleteTag(void*);
     void deleteAllTags(void*);
     void updateSetting(void*);
 
+
     /* Commands */
+
     void menuSelectedMainItem(void* = nullptr);
     void menuMain(void* = nullptr);
     void menuMainPrompt(const char[] = "Select a menu item");

@@ -34,8 +34,9 @@
   #include "controller.h"
 
 
-  // Instanciates the built-in reset function.
+  // Instantiates the built-in reset function.
   // WARN: This does not work if placed in settings.h (where you would think it should be).
+  //       It causes multiple-definition errors if run there.
   // NOTE: This is a function pointer.
   void(* resetFunc) (void) = 0;
 
@@ -92,8 +93,8 @@
     buff {},
     buff_index(0),
     selected_menu_item(-1),
-    get_tag_from_scanner(0),
-    MenuItems {}
+    get_tag_from_scanner(0)
+    //MenuItems {}
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
@@ -101,12 +102,12 @@
     //strlcpy(input_mode, "menu", sizeof(input_mode));
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
 
-    MenuItem MenuItems[] PROGMEM = {
-      { "List Tags", nullptr, &Menu::menuListTags            },
-      { "Settings", &Menu::menuSettings, nullptr             },
-      { "Show Free Mem", &Menu::menuShowFreeMemory, nullptr  },
-      { "List Readers", &Menu::menuListReaders, nullptr      }
-    };
+    //MenuItem MenuItems[] PROGMEM = {
+    //  { "List Tags", nullptr, &Menu::menuListTags            },
+    //  { "Settings", &Menu::menuSettings, nullptr             },
+    //  { "Show Free Mem", &Menu::menuShowFreeMemory, nullptr  },
+    //  { "List Readers", &Menu::menuListReaders, nullptr      }
+    //};
 	}
 	
   void Menu::begin() {    
@@ -593,8 +594,8 @@
         menuSettings();
         break;
       case 6:
-        //menuShowFreeMemory();
-        MenuItems[1].function();
+        menuShowFreeMemory();
+        //MenuItems[1].function();
         break;
       case 7:
         menuListReaders();

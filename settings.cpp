@@ -129,9 +129,12 @@
     return true;
   }
 
-    LAM *Settings::AA[] = {
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);}
-    };
+
+  // Defines static array of lambdas (named SettingGetters of custom type LAM).
+  const static LAM Settings::SettingGetters[] PROGMEM = {
+    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
+    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));}
+  };
 
   // Populates the passed-in *setting_name and *setting_value with data, per the given index.
   // Note that this does not return any values.
@@ -165,7 +168,8 @@
         break;
       case 8 :
         //sprintf(setting_value, "%s", default_reader);
-        sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
+        //sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
+        SettingGetters[1](this, setting_value);
         break;
       case 9 :
         sprintf(setting_value, "%li", hw_serial_baud);
@@ -178,7 +182,7 @@
         break;
       case 12 :
         //sprintf(setting_value, "%i", tone_frequency);
-        AA[0](this, setting_value);
+        SettingGetters[0](this, setting_value);
         break;   
       case 13 :
         sprintf(setting_value, "%i", admin_startup_timeout);
