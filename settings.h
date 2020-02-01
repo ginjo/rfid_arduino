@@ -128,58 +128,58 @@
   extern Settings& S;
 
 
-  // Creates an extern constant 2D char array 'SETTING_NAMES' that holds Settings var names.
-  // This is used to get names/values by index and to iterate through Settings
-  // for UI purposes (displaying lists, displaying individual settings).
-  // Note that this array is 0-based, unlike some other Menu lists, which are 1-based.
+  //  // Creates an extern constant 2D char array 'SETTING_NAMES' that holds Settings var names.
+  //  // This is used to get names/values by index and to iterate through Settings
+  //  // for UI purposes (displaying lists, displaying individual settings).
+  //  // Note that this array is 0-based, unlike some other Menu lists, which are 1-based.
+  //  //
+  //  //  There are now 5 places where settings need to be managed:
+  //  //  1. Declaration in settings.h
+  //  //  2. Initialization in settings.cpp
+  //  //  3. Retrieving by index in settings.cpp
+  //  //  4. Setting by index in settings.cpp
+  //  //  5. Names index in settings.h (for storage of strings in PROGMEM).
+  //  //
+  //  // TODO: Should SETTING_NAMES[] be converted to static Settings variable?
+  //  //
+  //  namespace {  // a nameless namespace helps build a 2D array of char strings in PROGMEM.
+  //    // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.
+  //    // https://stackoverflow.com/questions/2727582/multiple-definition-in-header-file
+  //    const static char str_0[] PROGMEM = "tag_last_read_timeout"; // "String 0" etc are strings to store - change to suit.
+  //    const static char str_1[] PROGMEM = "tag_read_sleep_interval";
+  //    const static char str_2[] PROGMEM = "reader_cycle_low_duration";
+  //    const static char str_3[] PROGMEM =  "reader_cycle_high_duration";
+  //    const static char str_4[] PROGMEM =  "admin_timeout";
+  //    const static char str_5[] PROGMEM =  "proximity_state_startup";
+  //    const static char str_6[] PROGMEM =  "enable_debug";
+  //    const static char str_7[] PROGMEM =  "default_reader";
+  //    const static char str_8[] PROGMEM =  "hw_serial_baud";
+  //    const static char str_9[] PROGMEM =  "bt_baud";
+  //    const static char str_10[] PROGMEM =  "rfid_baud";
+  //    const static char str_11[] PROGMEM =  "tone_frequency";
+  //    const static char str_12[] PROGMEM =  "admin_startup_timeout";
+  //    const static char str_13[] PROGMEM =  "log_to_bt";
+  //    const static char str_14[] PROGMEM =  "log_level";
+  //    
+  //    extern const char *const SETTING_NAMES[] PROGMEM = {
+  //      str_0,
+  //      str_1,
+  //      str_2,
+  //      str_3,
+  //      str_4,
+  //      str_5,
+  //      str_6,
+  //      str_7,
+  //      str_8,
+  //      str_9,
+  //      str_10,
+  //      str_11,
+  //      str_12,
+  //      str_13,
+  //      str_14
+  //    };
   //
-  //  There are now 5 places where settings need to be managed:
-  //  1. Declaration in settings.h
-  //  2. Initialization in settings.cpp
-  //  3. Retrieving by index in settings.cpp
-  //  4. Setting by index in settings.cpp
-  //  5. Names index in settings.h (for storage of strings in PROGMEM).
-  //
-  // TODO: Should SETTING_NAMES[] be converted to static Settings variable?
-  //
-  namespace {  // a nameless namespace helps build a 2D array of char strings in PROGMEM.
-    // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.
-    // https://stackoverflow.com/questions/2727582/multiple-definition-in-header-file
-    const static char str_0[] PROGMEM = "tag_last_read_timeout"; // "String 0" etc are strings to store - change to suit.
-    const static char str_1[] PROGMEM = "tag_read_sleep_interval";
-    const static char str_2[] PROGMEM = "reader_cycle_low_duration";
-    const static char str_3[] PROGMEM =  "reader_cycle_high_duration";
-    const static char str_4[] PROGMEM =  "admin_timeout";
-    const static char str_5[] PROGMEM =  "proximity_state_startup";
-    const static char str_6[] PROGMEM =  "enable_debug";
-    const static char str_7[] PROGMEM =  "default_reader";
-    const static char str_8[] PROGMEM =  "hw_serial_baud";
-    const static char str_9[] PROGMEM =  "bt_baud";
-    const static char str_10[] PROGMEM =  "rfid_baud";
-    const static char str_11[] PROGMEM =  "tone_frequency";
-    const static char str_12[] PROGMEM =  "admin_startup_timeout";
-    const static char str_13[] PROGMEM =  "log_to_bt";
-    const static char str_14[] PROGMEM =  "log_level";
-    
-    extern const char *const SETTING_NAMES[] PROGMEM = {
-      str_0,
-      str_1,
-      str_2,
-      str_3,
-      str_4,
-      str_5,
-      str_6,
-      str_7,
-      str_8,
-      str_9,
-      str_10,
-      str_11,
-      str_12,
-      str_13,
-      str_14
-    };
-
-  } // end nameless namespace
+  //  } // end nameless namespace
     
 #endif  // end __SETTINGS_H__
 
