@@ -34,9 +34,22 @@
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
   
 
-  // Moved to within class:
-  class Settings;
-  typedef void(*LAM)(Settings*, char*);
+  class Settings; // forward declaration
+  using getter_func_t = void(*)(Settings*, char*);
+
+  using settings_list_t = struct {
+    //char name[SETTINGS_NAME_SIZE];
+    const char *name;
+    getter_func_t getter_func;
+      
+    //  int call(char *_rval, int _index){
+    //    char txt[16];
+    //    int func_rslt = func(txt, _index);
+    //    
+    //    sprintf(_rval, "Hi %s, %s", name, txt);
+    //    return func_rslt;
+    //  }
+  };
 
   class Settings : public Storage<Settings> {
   public:
@@ -53,19 +66,9 @@
     /***  Static  ***/
 
     // Declares a static member array of type LAM.
-    const static LAM SettingGetters[] PROGMEM;
-    //  static LAM const SettingGetters[] PROGMEM = {
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));}
-    //  };
-
-    //    // This was the instance version of the lambda array. It has been moved to static.
-    //    LAM *Settings::AA[] = {
-    //      [this](char *setting_value){sprintf(setting_value, "%i", tone_frequency);}
-    //    };
+    const static settings_list_t SettingsList[] PROGMEM;
     
     static Settings Current;
-    
 
     static Settings* Load(Settings *settings_obj = &Current, int _eeprom_address = SETTINGS_EEPROM_ADDRESS);
     

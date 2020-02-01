@@ -131,9 +131,14 @@
 
 
   // Defines static array of lambdas (named SettingGetters of custom type LAM).
-  const static LAM Settings::SettingGetters[] PROGMEM = {
-    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
-    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));}
+  //  const static LAM Settings::SettingGetters[] PROGMEM = {
+  //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
+  //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));}
+  //  };
+
+  const settings_list_t Settings::SettingsList[] PROGMEM = {
+    { "tone_frequency", [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);} },
+    { "default_reader", [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));} } 
   };
 
   // Populates the passed-in *setting_name and *setting_value with data, per the given index.
@@ -169,7 +174,8 @@
       case 8 :
         //sprintf(setting_value, "%s", default_reader);
         //sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
-        SettingGetters[1](this, setting_value);
+        Serial.println((char*)pgm_read_word(&SettingsList[1].name));
+        SettingsList[1].getter_func(this, setting_value);
         break;
       case 9 :
         sprintf(setting_value, "%li", hw_serial_baud);
@@ -182,7 +188,8 @@
         break;
       case 12 :
         //sprintf(setting_value, "%i", tone_frequency);
-        SettingGetters[0](this, setting_value);
+        Serial.println((char*)pgm_read_word(&SettingsList[0].name));
+        SettingsList[0].getter_func(this, setting_value);
         break;   
       case 13 :
         sprintf(setting_value, "%i", admin_startup_timeout);
