@@ -690,4 +690,13 @@ TODO: Make short-reader-power-cycle a bona fide setting.
 TODO: Could the entire SettingsList[] code be put into its own pair of files?
 			Would this be any benefit?
 			
+TODO: √ Do the struct array thing with Menu items.
+			√ You can probably use the CB typedef from Stack.
+			√ Had to add menuListTags(void*) CB fp type to work with menuListTags(void*, CB).
 			
+TODO: √ Probably need menu-items-length and menu-item-name-length globals.
+			
+TODO: Set up password protection for admin mode. Do not use Settings structure to store it.
+
+TODO: Disable automatic save for settings. Ask to save on settings exit (if checksum differs).
+

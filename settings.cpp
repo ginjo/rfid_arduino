@@ -102,14 +102,13 @@
       // Loads setting object from PROGMEM into ram, where it can be accessed normally.
       settings_list_T setting = {};
       memcpy_P(&setting, &SettingsList[_index-1], sizeof(setting));
-          
-      // Sets up and calls pointer-to-member-function on 'this',
+
+      // MAGIC: Sets up and calls pointer-to-member-function on 'this',
       // passing in data to store in field.
       getter_setter_T fp = setting.setter_fp;
       (this->*fp)(_data);
       
     }
-
 
     // Stores Settings object to EEPROM.
     strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE); // Name of full Settings object.

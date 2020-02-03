@@ -52,10 +52,22 @@
   Menu * Menu::SW = nullptr;
 
 
-  //MenuItem  Menu::MenuItems[] PROGMEM = { 
-  //  { "Settings", menuSettings       },
-  //  { "List Readers", menuListReaders }
-  //};
+  menu_item_T const Menu::MenuItems[MENU_ITEMS_SIZE] PROGMEM = { 
+    { "Exit", &Menu::updateAdminTimeout, (void*)0, nullptr },
+
+    { "Add tag", &Menu::menuAddTag, nullptr, nullptr },
+    { "Delete tag", &Menu::menuDeleteTag, nullptr, nullptr },
+    { "Delete all tags", &Menu::menuDeleteAllTags, nullptr, nullptr },
+    { "List tags", &Menu::menuListTags, nullptr, nullptr },
+
+    { "List Readers", &Menu::menuListReaders, nullptr, nullptr },
+    { "Show free mem", &Menu::menuShowFreeMemory, nullptr, nullptr },
+
+    { "BT command", &Menu::menuManageBT, nullptr, nullptr },    
+    { "Settings", &Menu::menuSettings, nullptr, nullptr },
+
+    { "Restart", &Menu::menuReboot, nullptr, nullptr },
+  };
 
 
   void Menu::Begin() {
@@ -94,24 +106,16 @@
     buff_index(0),
     selected_menu_item(-1),
     get_tag_from_scanner(0)
-    //MenuItems {}
 	{
 		// Don't call .begin or Serial functions here, since this is too close to hardware init.
 		// The hardware might not be initialized yet, at this point.
     // Call .begin from setup() function instead.
     //strlcpy(input_mode, "menu", sizeof(input_mode));
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
-
-    //MenuItem MenuItems[] PROGMEM = {
-    //  { "List Tags", nullptr, &Menu::menuListTags            },
-    //  { "Settings", &Menu::menuSettings, nullptr             },
-    //  { "Show Free Mem", &Menu::menuShowFreeMemory, nullptr  },
-    //  { "List Readers", &Menu::menuListReaders, nullptr      }
-    //};
 	}
 	
   void Menu::begin() {    
-    updateAdminTimeout(S.admin_startup_timeout);
+    updateAdminTimeout((void*)S.admin_startup_timeout);
     resetInputBuffer();
     //resetStack(&Menu::menuMain);
     
@@ -182,7 +186,9 @@
   }
   
   // Starts, restarts, resets admin with timeout.
-  void Menu::updateAdminTimeout(unsigned long seconds) {
+  //void Menu::updateAdminTimeout(unsigned long seconds) {
+  void Menu::updateAdminTimeout(void *intgr) {
+    unsigned long seconds = (unsigned long)intgr;
     if (admin_timeout != seconds) {
       MU_LOG(5, F("updateAdminTimeout(): "), false);
       MU_LOG(5, seconds, true);
@@ -540,6 +546,17 @@
     
     serial_port->println("");
 
+    for (int n=0; n<MENU_ITEMS_SIZE; n++) {
+      menu_item_T item = {};
+      memcpy_P(&item, &MenuItems[n], sizeof(item));
+      
+      serial_port->print(n);
+      serial_port->print(" ");
+      serial_port->println(item.name);
+    }
+
+    serial_port->println("");
+
     menuMainPrompt();
   }
 
@@ -570,49 +587,64 @@
 
     MU_LOG(6, F("menuSelectedMainItem bytes to num: "), false);
     MU_LOG(6, selected_menu_item, true);
-    
-    switch (selected_menu_item) {
-      // warn: a missing 'break' will allow
-      // drop-thru to the next case.
-      case 0:
-        //serial_port->println(F("Exiting admin console\r\n\r\n"));
-        updateAdminTimeout(0);
-        break;
-      case 1:
-        menuListTags();
-        break;
-      case 2:
-        menuAddTag();
-        break;
-      case 3:
-        menuDeleteTag();
-        break;
-      case 4:
-        menuDeleteAllTags();
-        break;
-      case 5:
-        menuSettings();
-        break;
-      case 6:
-        menuShowFreeMemory();
-        //MenuItems[1].function();
-        break;
-      case 7:
-        menuListReaders();
-        break;
-      case 8:
-        menuReboot();
-        break;
-      case 9:
-        menuManageBT();
-        break;
-      default:
-        menuMain();
-        break;
+
+    if (selected_menu_item >= 0 && selected_menu_item < MENU_ITEMS_SIZE) {
+
+      menu_item_T item = {};
+      memcpy_P(&item, &MenuItems[selected_menu_item], sizeof(item));
+  
+      // MAGIC: Sets up and calls pointer-to-member-function on 'this',
+      // passing in item.data (which is nullptr in most cases).
+      CB fp = item.fp;
+      (this->*fp)(item.data);
+
+    } else {
+      menuMain();
     }
+    
+    //  switch (selected_menu_item) {
+    //    // warn: a missing 'break' will allow
+    //    // drop-thru to the next case.
+    //    case 0:
+    //      //serial_port->println(F("Exiting admin console\r\n\r\n"));
+    //      updateAdminTimeout(0);
+    //      break;
+    //    case 1:
+    //      menuListTags();
+    //      break;
+    //    case 2:
+    //      menuAddTag();
+    //      break;
+    //    case 3:
+    //      menuDeleteTag();
+    //      break;
+    //    case 4:
+    //      menuDeleteAllTags();
+    //      break;
+    //    case 5:
+    //      menuSettings();
+    //      break;
+    //    case 6:
+    //      menuShowFreeMemory();
+    //      //MenuItems[1].function();
+    //      break;
+    //    case 7:
+    //      menuListReaders();
+    //      break;
+    //    case 8:
+    //      menuReboot();
+    //      break;
+    //    case 9:
+    //      menuManageBT();
+    //      break;
+    //    default:
+    //      menuMain();
+    //      break;
+    //  }
   } // menuSelectedMainItem
 
-  // Lists tags for menu.
+  // Lists tags for menu. See .h file for explanation of default args.
+  void Menu::menuListTags(void *dat) {menuListTags(dat, nullptr);}
   void Menu::menuListTags(void *dat, CB cback ) {
     MU_LOG(6, F("Menu::menuListTags()"), true);
     serial_port->print(F("Tags, chksm 0x"));

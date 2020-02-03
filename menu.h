@@ -21,16 +21,18 @@
   #else
     #define MU_LOG(...)
   #endif
-  
-  #define INPUT_BUFFER_LENGTH 24
 
-  
-  //  typedef void (*MenuItemFunction)(void*);
-  //
-  //  const typedef struct MenuItem_t {
-  //    char name[18];
-  //    MenuItemFunction function;
-  //  } MenuItem ;
+  #define INPUT_BUFFER_LENGTH 24
+  #define MENU_ITEMS_SIZE 10
+  #define MENU_ITEM_NAME_SIZE 16
+
+  using CB = Stack<Menu>::CB;
+  using menu_item_T = struct {
+    const char name[MENU_ITEM_NAME_SIZE];
+    CB fp;
+    const void *data;
+    CB callback;
+  };
 
 
   class Menu : public Stack<Menu> {
@@ -38,9 +40,9 @@
 
     /*  Type Defs  */
     
-    // Function pionter, expecting args void* and CB (which is defined in Stack)
-    typedef void (Menu::*MenuItemFunction)(void*);
-    typedef void (Menu::*MenuItemFunctionWithCB)(void*, CB);
+    //  // Function pionter, expecting args void* and CB (which is defined in Stack)
+    //  typedef void (Menu::*MenuItemFunction)(void*);
+    //  typedef void (Menu::*MenuItemFunctionWithCB)(void*, CB);
   
     //const typedef struct MenuItem_t {
     //  char name[18];
@@ -50,14 +52,14 @@
 
 
     /*  Static Vars & Functions  */
-    
-    //static MenuItem MenuItems[] PROGMEM;
-    
+        
     static int RunMode; // 0=run, 1=admin
 
     static Menu * Current;
     static Menu * HW;
     static Menu * SW;
+
+    static menu_item_T const MenuItems[] PROGMEM;
     
     static void Begin();
     static void Loop();
@@ -78,8 +80,6 @@
     int selected_menu_item;
     int get_tag_from_scanner;
 
-    //MenuItem MenuItems[] PROGMEM;
-
 
     /*  Constructor
         Receives a serial port instance from HardwareSerial or SoftwareSerial.
@@ -93,7 +93,8 @@
     void begin();
     void loop();
     void adminTimeout();
-    void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
+    //void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
+    void updateAdminTimeout(void* = (void*)S.admin_timeout); // seconds
     void exitAdmin();
 
 
@@ -125,7 +126,8 @@
     void menuSelectedMainItem(void* = nullptr);
     void menuMain(void* = nullptr);
     void menuMainPrompt(const char[] = "Select a menu item");
-    void menuListTags(void* = nullptr, CB = nullptr);
+    void menuListTags(void* = nullptr); // if you pass 0 or 1 arg
+    void menuListTags(void*, CB);       // if you pass 2 args
     void menuAddTag(void* = nullptr);
     void menuDeleteTag(void* = nullptr);
     void menuDeleteAllTags(void* = nullptr);
