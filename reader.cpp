@@ -11,9 +11,9 @@
     sp->print(READER_COUNT);
     sp->println(F(")"));
     for (int n=1; n <= READER_COUNT; n++) {
-      int output_length = READER_NAME_LENGTH + 8;
+      int output_length = READER_NAME_LENGTH + 9;
       char output[output_length] = "";
-      snprintf(output, output_length, "%i %s (%s)", n, (S.default_reader == (int8_t)n ? "*" : " "), NameFromIndex(n));
+      snprintf(output, output_length, "%i  %s (%s)", n, (S.default_reader == (int8_t)n ? "*" : " "), NameFromIndex(n));
       sp->println(output);
     }
   }

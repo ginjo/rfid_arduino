@@ -540,7 +540,7 @@
       memcpy_P(&item, &MenuItems[n], sizeof(item));
       
       serial_port->print(n);
-      serial_port->print(" ");
+      serial_port->print("  ");
       serial_port->println(item.name);
     }
 
@@ -591,10 +591,10 @@
       menuMain();
     }
     
-
   } // menuSelectedMainItem
 
   // Lists tags for menu. See .h file for explanation of default args.
+  // TODO: Shouldn't most of this be moved to Tags class?
   void Menu::menuListTags(void *dat) {menuListTags(dat, nullptr);}
   void Menu::menuListTags(void *dat, CB cback ) {
     MU_LOG(6, F("Menu::menuListTags()"), true);
@@ -606,7 +606,7 @@
     for (int i = 0; i < TAG_LIST_SIZE; i ++) {
       if (Tags::TagSet.tag_array[i] > 0) {
         serial_port->print(i+1);
-        serial_port->print(F(". "));
+        serial_port->print(F("  "));
         serial_port->print(Tags::TagSet.tag_array[i]);
         serial_port->println("");
       }

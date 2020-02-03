@@ -29,7 +29,7 @@
   #include "storage.h"
     
   #define SETTINGS_SIZE 15 // quantity of settings vars
-  #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
+  #define SETTINGS_NAME_SIZE 28 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
 

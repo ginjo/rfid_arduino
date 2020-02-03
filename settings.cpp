@@ -154,7 +154,8 @@
   void Settings::displaySetting(int index, char *output) {
     char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
     getSettingByIndex(index, setting_name, setting_value);
-    sprintf(output, "%2i. %-32s %s", index, setting_name, setting_value);
+    // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
+    sprintf(output, "%2i  %-28s %s", index, setting_name, setting_value);
     
     ST_LOG(5, F("Settings::displaySetting() gathered: "), false);
     ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
