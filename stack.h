@@ -26,6 +26,7 @@
   class Stack {
   public:
     // TODO: Consider returning int instead of void from this type.
+    // This is a pointer-to-member-function typedef named CB
     typedef void (T::*CB)(void*);
 
     CB stack[FUNCTION_STACK_SIZE] = {};

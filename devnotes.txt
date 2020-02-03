@@ -610,7 +610,7 @@ TODO: √ Change log level of reader byte-detail output to 6 (instead of 5).
       
 TODO: √ Prevent settings list for printing at startup if log level < 4.
 
-TODO: Preface each log line with level name and Uptime().
+TODO: √ Preface each log line with level name and Uptime().
       How to handle log items that are in the midddle of a line?
       
       Maybe only do this for levels 1-3.
@@ -681,9 +681,11 @@ TODO: √ Remove all of the extra (uint32_t) casts in Reader, as they did not fi
 TODO: √ Blue led is getting a negative cycle-count during general-timeout state.
 			Was integer overflow in cycle_count.
         
-NOTE: All of the UB appears to have been fixed.
+NOTE: √ All of the UB appears to have been fixed.
 			1. Was char array overflow in PrintUptime().
 			2. Was integer overflow in Led::cycle_count.
 			
-			
+TODO: Make short-reader-power-cycle a bona fide setting.
+
+
 			

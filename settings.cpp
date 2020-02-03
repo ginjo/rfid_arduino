@@ -54,60 +54,80 @@
   }
 
 
-  // Defines static array of custom struct objects as setting containers
-  // Anonymous namespace somehow enables the PROGMEM to work correctly.
-  //
-  namespace {
-    
-  const static settings_list_t Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
-    { "tag_last_read_timeout",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_last_read_timeout);},
-      [](Settings *s, char *_data){s->tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);} },
-    //  { "tag_read_sleep_interval",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_read_sleep_interval);},
-    //    [](Settings *s, char *_data){s->tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);} },
-    //  { "reader_cycle_low_duration",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_low_duration);},
-    //    [](Settings *s, char *_data){s->reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);} },
-    //  { "reader_cycle_high_duration",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_high_duration);},
-    //    [](Settings *s, char *_data){s->reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);} },
-    //  { "admin_timeout",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->admin_timeout);},
-    //    [](Settings *s, char *_data){s->admin_timeout = (uint32_t)strtol(_data, NULL, 10); if (s->admin_timeout < 10) s->admin_timeout = 10;} },
-    //  { "proximity_state_startup",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->proximity_state_startup);},
-    //    [](Settings *s, char *_data){s->proximity_state_startup = (int)strtol(_data, NULL, 10);} },
-    { "enable_debug",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->enable_debug);},
-      [](Settings *s, char *_data){s->enable_debug = (int)strtol(_data, NULL, 10);} },
-    //  { "default_reader",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));},
-    //    [](Settings *s, char *_data){s->default_reader = (uint8_t)strtol(_data, NULL, 10);} },
-    //  { "hw_serial_baud",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->hw_serial_baud);},
-    //    [](Settings *s, char *_data){s->hw_serial_baud = (long)strtol(_data, NULL, 10);} },
-    //  { "bt_baud",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->bt_baud);},
-    //    [](Settings *s, char *_data){s->bt_baud = (long)strtol(_data, NULL, 10);} },
-    //  { "rfid_baud",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->rfid_baud);},
-    //    [](Settings *s, char *_data){s->rfid_baud = (long)strtol(_data, NULL, 10);} },
-    //  { "tone_frequency",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
-    //    [](Settings *s, char *_data){s->tone_frequency = (int)strtol(_data, NULL, 10);} },
-    //  { "admin_startup_timeout",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->admin_startup_timeout);},
-    //    [](Settings *s, char *_data){s->admin_startup_timeout = (int)strtol(_data, NULL, 10);} },
-    //  { "log_to_bt",
-    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->log_to_bt);},
-    //    [](Settings *s, char *_data){s->log_to_bt = (bool)strtol(_data, NULL, 10);} },
-    { "log_level",
-      [](Settings *s, char *setting_value){sprintf(setting_value, "%hhu", s->log_level);},
-      [](Settings *s, char *_data){s->log_level = (uint8_t)strtol(_data, NULL, 10);} }
-  };
-  };
-  
+//  // Defines static array of custom struct objects as setting containers
+//  // Anonymous namespace somehow enables the PROGMEM to work correctly.
+//      
+//  settings_list_t const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
+//    { "tag_last_read_timeout",
+//      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_last_read_timeout);},
+//      [](Settings *s, char *_data){s->tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);} },
+//    //  { "tag_read_sleep_interval",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_read_sleep_interval);},
+//    //    [](Settings *s, char *_data){s->tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);} },
+//    //  { "reader_cycle_low_duration",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_low_duration);},
+//    //    [](Settings *s, char *_data){s->reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);} },
+//    //  { "reader_cycle_high_duration",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_high_duration);},
+//    //    [](Settings *s, char *_data){s->reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);} },
+//    //  { "admin_timeout",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->admin_timeout);},
+//    //    [](Settings *s, char *_data){s->admin_timeout = (uint32_t)strtol(_data, NULL, 10); if (s->admin_timeout < 10) s->admin_timeout = 10;} },
+//    //  { "proximity_state_startup",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->proximity_state_startup);},
+//    //    [](Settings *s, char *_data){s->proximity_state_startup = (int)strtol(_data, NULL, 10);} },
+//    { "enable_debug",
+//      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->enable_debug);},
+//      [](Settings *s, char *_data){s->enable_debug = (int)strtol(_data, NULL, 10);} },
+//    //  { "default_reader",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));},
+//    //    [](Settings *s, char *_data){s->default_reader = (uint8_t)strtol(_data, NULL, 10);} },
+//    //  { "hw_serial_baud",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->hw_serial_baud);},
+//    //    [](Settings *s, char *_data){s->hw_serial_baud = (long)strtol(_data, NULL, 10);} },
+//    //  { "bt_baud",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->bt_baud);},
+//    //    [](Settings *s, char *_data){s->bt_baud = (long)strtol(_data, NULL, 10);} },
+//    //  { "rfid_baud",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->rfid_baud);},
+//    //    [](Settings *s, char *_data){s->rfid_baud = (long)strtol(_data, NULL, 10);} },
+//    //  { "tone_frequency",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
+//    //    [](Settings *s, char *_data){s->tone_frequency = (int)strtol(_data, NULL, 10);} },
+//    //  { "admin_startup_timeout",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->admin_startup_timeout);},
+//    //    [](Settings *s, char *_data){s->admin_startup_timeout = (int)strtol(_data, NULL, 10);} },
+//    //  { "log_to_bt",
+//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->log_to_bt);},
+//    //    [](Settings *s, char *_data){s->log_to_bt = (bool)strtol(_data, NULL, 10);} },
+//    { "log_level",
+//      [](Settings *s, char *setting_value){sprintf(setting_value, "%hhu", s->log_level);},
+//      [](Settings *s, char *_data){s->log_level = (uint8_t)strtol(_data, NULL, 10);} }
+//  };
+
+
+    // List of all setting names, getters, and setters.
+    /*
+      This list defines the order (and thus the index) that settings are displayed in.
+      See notes in settings.h for further info on Settings structure
+    */
+    settings_list_T const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
+      { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
+      { "tag_read_sleep_interval", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
+      { "reader_cycle_low_duration", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
+      { "reader_cycle_high_duration", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
+      { "admin_timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
+      { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
+      { "enable_debug", &Settings::display_enable_debug, &Settings::set_enable_debug},
+      { "default_reader", &Settings::display_default_reader, &Settings::set_default_reader},
+      { "hw_serial_baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
+      { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
+      { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
+      { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
+      { "admin_startup_timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
+      { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
+      { "log_level", &Settings::display_log_level, &Settings::set_log_level}
+    };  
   
 
   // Updates a setting given setting index with data.
@@ -119,74 +139,29 @@
     ST_LOG(5, F("S.updateSetting() "), false);
     ST_LOG(5, _index, false); ST_LOG(5, ", ", false);
 
-    char setting_name[SETTINGS_NAME_SIZE];
+    char setting_name[SETTINGS_NAME_SIZE]; // A single setting name.
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
 
     ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
     ST_LOG(5, _data, true);
 
-    if (_index <= SETTINGS_SIZE) {
-      strcpy_P(setting_name, (char *)pgm_read_word(&SettingsList[_index-1].name));
-      SettingsList[_index-1].setter_func(this, _data);
+    if (_index <= SETTINGS_SIZE) {  
+          
+      // Loads setting object from PROGMEM into ram, where it can be accessed normally.
+      settings_list_T setting = {};
+      memcpy_P(&setting, &SettingsList[_index-1], sizeof(setting));
+          
+      // Sets up and calls pointer-to-member-function on 'this',
+      // passing in data to store in field.
+      getter_setter_T fp = setting.setter_fp;
+      (this->*fp)(_data);
+      
     }
 
-    //  // Note that this is a 1-based list, not 0-based.
-    //  switch (_index) {
-    //    case 1:
-    //      tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);
-    //      break;
-    //    case 2:
-    //      tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);
-    //      break;
-    //    case 3:
-    //      reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);
-    //      break;
-    //    case 4:
-    //      reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);
-    //      break;
-    //    case 5:
-    //      admin_timeout = (uint32_t)strtol(_data, NULL, 10);
-    //      // This setting should never be so low as to prevent admining at startup.
-    //      if (admin_timeout < 10) { admin_timeout = 10; }
-    //      break;
-    //    case 6:
-    //      proximity_state_startup = (int)strtol(_data, NULL, 10);
-    //      break;
-    //    case 7:
-    //      enable_debug = (int)strtol(_data, NULL, 10);
-    //      break;
-    //    case 8:
-    //      //strlcpy(default_reader, (char *)_data, sizeof(default_reader));
-    //      default_reader = (uint8_t)strtol(_data, NULL, 10);
-    //      break;
-    //    case 9:
-    //      hw_serial_baud = (long)strtol(_data, NULL, 10);
-    //      break;
-    //    case 10:
-    //      bt_baud = (long)strtol(_data, NULL, 10);
-    //      break;
-    //    case 11:
-    //      rfid_baud = (long)strtol(_data, NULL, 10);
-    //      break;
-    //    case 12:
-    //      tone_frequency = (int)strtol(_data, NULL, 10);
-    //      break;
-    //    case 13:
-    //      admin_startup_timeout = (int)strtol(_data, NULL, 10);
-    //      break;
-    //    case 14:
-    //      log_to_bt = (bool)strtol(_data, NULL, 10);
-    //      break;
-    //    case 15:
-    //      log_level = (uint8_t)strtol(_data, NULL, 10);
-    //      break;
-    //    
-    //    default :
-    //      return false;
-    //  }
 
-    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
+    // Stores Settings object to EEPROM.
+    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE); // Name of full Settings object.
     save();
     
     return true;
@@ -201,71 +176,22 @@
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
+
+    settings_list_T setting = {};
+    memcpy_P(&setting, &SettingsList[index-1], sizeof(setting));
     
-    strcpy_P(setting_name, (char *)pgm_read_word(&SettingsList[index-1].name));
+    //  strcpy_P(setting_name, (char*)pgm_read_word(&SettingsList[index-1].name));
+    //  ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
+    //  Serial.println((char*)pgm_read_word(&SettingsList[index-1].name));
+
+    sprintf(setting_name, "%s", (char*)setting.name); //, sizeof(SETTINGS_NAME_SIZE));
     ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
-    //Serial.println((char*)pgm_read_word(&SettingsList[1].name));
     
     if (index <= SETTINGS_SIZE) {
-      SettingsList[index-1].getter_func(this, setting_value);
+      //SettingsList[index-1].getter_func(this, setting_value);
+      getter_setter_T fp = setting.display_fp;
+      (this->*fp)(setting_value);
     }
-    
-    //  switch(index) {
-    //    case 1 :
-    //      sprintf(setting_value, "%lu", tag_last_read_timeout);
-    //      break;
-    //    case 2 :
-    //      sprintf(setting_value, "%lu", tag_read_sleep_interval);
-    //      break;
-    //    case 3 :
-    //      sprintf(setting_value, "%lu", reader_cycle_low_duration);
-    //      break;
-    //    case 4 :
-    //      sprintf(setting_value, "%lu", reader_cycle_high_duration);
-    //      break;
-    //    case 5 :
-    //      sprintf(setting_value, "%lu", admin_timeout);
-    //      break;
-    //    case 6 :
-    //      sprintf(setting_value, "%i", proximity_state_startup);
-    //      break;
-    //    case 7 :
-    //      sprintf(setting_value, "%i", enable_debug);
-    //      break;
-    //    case 8 :
-    //      //sprintf(setting_value, "%s", default_reader);
-    //      //sprintf(setting_value, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));
-    //      Serial.println((char*)pgm_read_word(&SettingsList[1].name));
-    //      SettingsList[1].getter_func(this, setting_value);
-    //      break;
-    //    case 9 :
-    //      sprintf(setting_value, "%li", hw_serial_baud);
-    //      break;
-    //    case 10 :
-    //      sprintf(setting_value, "%li", bt_baud);
-    //      break;
-    //    case 11 :
-    //      sprintf(setting_value, "%li", rfid_baud);
-    //      break;
-    //    case 12 :
-    //      //sprintf(setting_value, "%i", tone_frequency);
-    //      Serial.println((char*)pgm_read_word(&SettingsList[0].name));
-    //      SettingsList[0].getter_func(this, setting_value);
-    //      break;   
-    //    case 13 :
-    //      sprintf(setting_value, "%i", admin_startup_timeout);
-    //      break;  
-    //    case 14 :
-    //      sprintf(setting_value, "%i", log_to_bt);
-    //      //sprintf(setting_value, log_to_bt ? "true" : "false");
-    //      break;
-    //    case 15 :
-    //      sprintf(setting_value, "%hhu", log_level);
-    //      break;
-    //    
-    //    default:
-    //      break;
-    //  } // switch
     
     ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
   } // function
@@ -413,6 +339,57 @@
     return settings_obj;
   } // Settings::Load()
 
+
+  /*  Getters and Setters  */
+
+  void Settings::display_tag_last_read_timeout(char *out) {sprintf(out, "%lu", tag_last_read_timeout);}
+  void Settings::set_tag_last_read_timeout(char *data) {tag_last_read_timeout = (uint32_t)strtol(data, NULL, 10);}
+
+  void Settings::display_tag_read_sleep_interval(char *out) {sprintf(out, "%lu", tag_read_sleep_interval);}
+  void Settings::set_tag_read_sleep_interval(char *data) {tag_read_sleep_interval = (uint32_t)strtol(data, NULL, 10);}
+
+  void Settings::display_reader_cycle_low_duration(char *out) {sprintf(out, "%lu", reader_cycle_low_duration);}
+  void Settings::set_reader_cycle_low_duration(char *data) {reader_cycle_low_duration = (uint32_t)strtol(data, NULL, 10);}
+
+  void Settings::display_reader_cycle_high_duration(char *out) {sprintf(out, "%lu", reader_cycle_high_duration);}
+  void Settings::set_reader_cycle_high_duration(char *data) {reader_cycle_high_duration = (uint32_t)strtol(data, NULL, 10);}
+
+  void Settings::display_admin_timeout(char *out) {sprintf(out, "%lu", admin_timeout);}
+  void Settings::set_admin_timeout(char *data) { admin_timeout = (uint32_t)strtol(data, NULL, 10); if (admin_timeout < 10) {admin_timeout = 10;} }
+
+  void Settings::display_proximity_state_startup(char *out) {sprintf(out, "%i", proximity_state_startup);}
+  void Settings::set_proximity_state_startup(char *data) {proximity_state_startup = (int)strtol(data, NULL, 10);}
+
+  void Settings::display_enable_debug(char *out) {sprintf(out, "%i", enable_debug);}
+  void Settings::set_enable_debug(char *data) {enable_debug = (int)strtol(data, NULL, 10);}
+
+  void Settings::display_default_reader(char *out) {sprintf(out, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));}
+  void Settings::set_default_reader(char *data) {default_reader = (uint8_t)strtol(data, NULL, 10);}
+
+  void Settings::display_hw_serial_baud(char *out) {sprintf(out, "%li", hw_serial_baud);}
+  void Settings::set_hw_serial_baud(char *data) {hw_serial_baud = (long)strtol(data, NULL, 10);}
+
+  void Settings::display_bt_baud(char *out) {sprintf(out, "%li", bt_baud);}
+  void Settings::set_bt_baud(char *data) {bt_baud = (long)strtol(data, NULL, 10);}
+
+  void Settings::display_rfid_baud(char *out) {sprintf(out, "%li", rfid_baud);}
+  void Settings::set_rfid_baud(char *data) {rfid_baud = (long)strtol(data, NULL, 10);}
+
+  void Settings::display_tone_frequency(char *out) {sprintf(out, "%i", tone_frequency);}
+  void Settings::set_tone_frequency(char *data) {tone_frequency = (int)strtol(data, NULL, 10);}
+
+  void Settings::display_admin_startup_timeout(char *out) {sprintf(out, "%i", admin_startup_timeout);}
+  void Settings::set_admin_startup_timeout(char *data) {admin_startup_timeout = (int)strtol(data, NULL, 10);}
+
+  void Settings::display_log_to_bt(char *out) {sprintf(out, "%i", log_to_bt);}
+  void Settings::set_log_to_bt(char *data) {log_to_bt = (bool)strtol(data, NULL, 10);}
+
+  void Settings::display_log_level(char *out) {sprintf(out, "%hhu", log_level);}
+  void Settings::set_log_level(char *data) {log_level = (uint8_t)strtol(data, NULL, 10);}
+
+
+
+  /*  Global & Special Initializers  */
 
   // Initializes a default settings object as soon as this file loads.
   Settings Settings::Current = Settings();

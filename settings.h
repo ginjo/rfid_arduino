@@ -28,26 +28,49 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 3 // quantity of settings vars
+  #define SETTINGS_SIZE 15 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 32 // max length of a setting var name
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
+
+
+  /*
+    Each setting in the Settings class must have the following:
+
+    Declaration
+    Definition
+    Initializer
+    Getter function (declaration & definition)
+    Setter function (declaration & definition)
+    Entry in SettingsList array of struct
+
+    Make sure Settings' global constraints (like SETTINGS_SIZE, SETTINGS_NAME_SIZE etc.)
+    are set correctly.
+    
+   */
 
 
   /*  Defines types for settings getters and setters  */
 
   class Settings; // forward declaration for the following...
   
-  using getter_func_t = void(*)(Settings*, char*);
-  using setter_func_t = getter_func_t;
-  using settings_list_t = struct {
-    //const char name[SETTINGS_NAME_SIZE]; // you'd think this would work, but no. Even though it uses less ram.
-    const char *name; // Original decl that worked in prototype. Did it?
-    getter_func_t getter_func;
-    setter_func_t setter_func;
-      
-    //  int call(char *_retval, int _index){
-    //  }
+  //  using getter_func_t = void(*)(Settings*, char*);
+  //  using setter_func_t = getter_func_t;
+  //  using settings_list_t = struct {
+  //    //const char name[SETTINGS_NAME_SIZE]; // you'd think this would work, but no. Even though it uses less ram.
+  //    const char *name; // Original decl that worked in prototype. Did it?
+  //    getter_func_t getter_func;
+  //    setter_func_t setter_func;
+  //      
+  //    //  int call(char *_retval, int _index){
+  //    //  }
+  //  };
+
+  using getter_setter_T = void(Settings::*)(char*);
+  using settings_list_T = struct {
+    const char name[SETTINGS_NAME_SIZE];
+    getter_setter_T display_fp;
+    getter_setter_T setter_fp;
   };
   
 
@@ -65,8 +88,9 @@
 
     /***  Static  ***/
 
-    // Declares a static member-array of type LAM.
-    const static settings_list_t SettingsList[SETTINGS_SIZE] PROGMEM;
+    // Declares a static member-array to hold name, display, and setter for each setting.
+    //static settings_list_t const SettingsList[] PROGMEM;
+    static settings_list_T const SettingsList[] PROGMEM;
     
     static Settings Current;
 
@@ -113,7 +137,55 @@
     void printSettings(Stream*);
     bool debugMode();
     int  save();
+
+
+    /*  Getters and Setters  */
+
+    void display_tag_last_read_timeout(char*);
+    void set_tag_last_read_timeout(char*);
     
+    void display_tag_read_sleep_interval(char*);
+    void set_tag_read_sleep_interval(char*);
+    
+    void display_reader_cycle_low_duration(char*);
+    void set_reader_cycle_low_duration(char*);
+    
+    void display_reader_cycle_high_duration(char*);
+    void set_reader_cycle_high_duration(char*);
+    
+    void display_admin_timeout(char*);
+    void set_admin_timeout(char*);
+    
+    void display_proximity_state_startup(char*);
+    void set_proximity_state_startup(char*);
+    
+    void display_enable_debug(char*);
+    void set_enable_debug(char*);
+    
+    void display_default_reader(char*);
+    void set_default_reader(char*);
+    
+    void display_hw_serial_baud(char*);
+    void set_hw_serial_baud(char*);
+    
+    void display_bt_baud(char*);
+    void set_bt_baud(char*);
+    
+    void display_rfid_baud(char*);
+    void set_rfid_baud(char*);
+    
+    void display_tone_frequency(char*);
+    void set_tone_frequency(char*);
+    
+    void display_admin_startup_timeout(char*);
+    void set_admin_startup_timeout(char*);
+    
+    void display_log_to_bt(char*);
+    void set_log_to_bt(char*);
+    
+    void display_log_level(char*);
+    void set_log_level(char*);
+
   };  // class Settings
 
 
