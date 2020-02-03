@@ -450,6 +450,7 @@
     serial_port->print(F("AddTag() result: "));
     serial_port->print(result); serial_port->print(", ");
 
+    // Warning: a missing 'break' will allow drop-thru to the next case.
     switch (result) {
       case 0:
         serial_port->print(F("success"));
@@ -532,20 +533,8 @@
   
   void Menu::menuMain(void *dat) {
     MU_LOG(6, F("Menu::menuMain()"), true);
-    serial_port->println(F("Menu"));
-    serial_port->println(F("0. Exit"));
-    serial_port->println(F("1. List tags"));
-    serial_port->println(F("2. Add tag"));
-    serial_port->println(F("3. Delete tag"));
-    serial_port->println(F("4. Delete all tags"));
-    serial_port->println(F("5. Settings"));
-    serial_port->println(F("6. Show free memory"));
-    serial_port->println(F("7. List readers"));
-    serial_port->println(F("8. Restart"));
-    serial_port->println(F("9. BT command"));
-    
-    serial_port->println("");
 
+    // Extracts MenuItems[n] from PROGMEM and prints item name.
     for (int n=0; n<MENU_ITEMS_SIZE; n++) {
       menu_item_T item = {};
       memcpy_P(&item, &MenuItems[n], sizeof(item));
@@ -602,45 +591,7 @@
       menuMain();
     }
     
-    //  switch (selected_menu_item) {
-    //    // warn: a missing 'break' will allow
-    //    // drop-thru to the next case.
-    //    case 0:
-    //      //serial_port->println(F("Exiting admin console\r\n\r\n"));
-    //      updateAdminTimeout(0);
-    //      break;
-    //    case 1:
-    //      menuListTags();
-    //      break;
-    //    case 2:
-    //      menuAddTag();
-    //      break;
-    //    case 3:
-    //      menuDeleteTag();
-    //      break;
-    //    case 4:
-    //      menuDeleteAllTags();
-    //      break;
-    //    case 5:
-    //      menuSettings();
-    //      break;
-    //    case 6:
-    //      menuShowFreeMemory();
-    //      //MenuItems[1].function();
-    //      break;
-    //    case 7:
-    //      menuListReaders();
-    //      break;
-    //    case 8:
-    //      menuReboot();
-    //      break;
-    //    case 9:
-    //      menuManageBT();
-    //      break;
-    //    default:
-    //      menuMain();
-    //      break;
-    //  }
+
   } // menuSelectedMainItem
 
   // Lists tags for menu. See .h file for explanation of default args.

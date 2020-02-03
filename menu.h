@@ -38,18 +38,6 @@
   class Menu : public Stack<Menu> {
   public:
 
-    /*  Type Defs  */
-    
-    //  // Function pionter, expecting args void* and CB (which is defined in Stack)
-    //  typedef void (Menu::*MenuItemFunction)(void*);
-    //  typedef void (Menu::*MenuItemFunctionWithCB)(void*, CB);
-  
-    //const typedef struct MenuItem_t {
-    //  char name[18];
-    //  MenuItemFunction function; // takes 1 arg: void* (can be anything, just remember to cast to void*).
-    //  MenuItemFunctionWithCB function_with_cb; // takes two args: void*, CB (same as above, plus any '&Qualified::functionName'.
-    //} MenuItem ;
-
 
     /*  Static Vars & Functions  */
         
@@ -112,8 +100,8 @@
 
 
     /* Data
-       Note that some of these will complain at compile time about unused parameter... it's OK */
-
+       Note that some of these will complain at compile time about unused parameter... it's OK
+    */
     int  byteToAsciiChrNum(char);
     void addTagString(void*);
     void deleteTag(void*);
