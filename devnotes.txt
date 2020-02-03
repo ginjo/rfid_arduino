@@ -687,5 +687,7 @@ NOTE: √ All of the UB appears to have been fixed.
 			
 TODO: Make short-reader-power-cycle a bona fide setting.
 
-
+TODO: Could the entire SettingsList[] code be put into its own pair of files?
+			Would this be any benefit?
+			
 			

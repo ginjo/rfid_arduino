@@ -54,80 +54,31 @@
   }
 
 
-//  // Defines static array of custom struct objects as setting containers
-//  // Anonymous namespace somehow enables the PROGMEM to work correctly.
-//      
-//  settings_list_t const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
-//    { "tag_last_read_timeout",
-//      [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_last_read_timeout);},
-//      [](Settings *s, char *_data){s->tag_last_read_timeout = (uint32_t)strtol(_data, NULL, 10);} },
-//    //  { "tag_read_sleep_interval",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->tag_read_sleep_interval);},
-//    //    [](Settings *s, char *_data){s->tag_read_sleep_interval = (uint32_t)strtol(_data, NULL, 10);} },
-//    //  { "reader_cycle_low_duration",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_low_duration);},
-//    //    [](Settings *s, char *_data){s->reader_cycle_low_duration = (uint32_t)strtol(_data, NULL, 10);} },
-//    //  { "reader_cycle_high_duration",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->reader_cycle_high_duration);},
-//    //    [](Settings *s, char *_data){s->reader_cycle_high_duration = (uint32_t)strtol(_data, NULL, 10);} },
-//    //  { "admin_timeout",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%lu", s->admin_timeout);},
-//    //    [](Settings *s, char *_data){s->admin_timeout = (uint32_t)strtol(_data, NULL, 10); if (s->admin_timeout < 10) s->admin_timeout = 10;} },
-//    //  { "proximity_state_startup",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->proximity_state_startup);},
-//    //    [](Settings *s, char *_data){s->proximity_state_startup = (int)strtol(_data, NULL, 10);} },
-//    { "enable_debug",
-//      [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->enable_debug);},
-//      [](Settings *s, char *_data){s->enable_debug = (int)strtol(_data, NULL, 10);} },
-//    //  { "default_reader",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i (%s)", s->default_reader, Reader::NameFromIndex((int)s->default_reader));},
-//    //    [](Settings *s, char *_data){s->default_reader = (uint8_t)strtol(_data, NULL, 10);} },
-//    //  { "hw_serial_baud",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->hw_serial_baud);},
-//    //    [](Settings *s, char *_data){s->hw_serial_baud = (long)strtol(_data, NULL, 10);} },
-//    //  { "bt_baud",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->bt_baud);},
-//    //    [](Settings *s, char *_data){s->bt_baud = (long)strtol(_data, NULL, 10);} },
-//    //  { "rfid_baud",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%li", s->rfid_baud);},
-//    //    [](Settings *s, char *_data){s->rfid_baud = (long)strtol(_data, NULL, 10);} },
-//    //  { "tone_frequency",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->tone_frequency);},
-//    //    [](Settings *s, char *_data){s->tone_frequency = (int)strtol(_data, NULL, 10);} },
-//    //  { "admin_startup_timeout",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->admin_startup_timeout);},
-//    //    [](Settings *s, char *_data){s->admin_startup_timeout = (int)strtol(_data, NULL, 10);} },
-//    //  { "log_to_bt",
-//    //    [](Settings *s, char *setting_value){sprintf(setting_value, "%i", s->log_to_bt);},
-//    //    [](Settings *s, char *_data){s->log_to_bt = (bool)strtol(_data, NULL, 10);} },
-//    { "log_level",
-//      [](Settings *s, char *setting_value){sprintf(setting_value, "%hhu", s->log_level);},
-//      [](Settings *s, char *_data){s->log_level = (uint8_t)strtol(_data, NULL, 10);} }
-//  };
+  // List of all setting names, getters, and setters.
+  /*
+    This list defines the order (and thus the index) that settings are displayed in.
+    See notes in settings.h for further info on Settings structure
+  */
+  settings_list_T const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
+    { "admin_startup_timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
+    { "admin_timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
+    { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
 
+    { "log_level", &Settings::display_log_level, &Settings::set_log_level},
+    { "enable_debug", &Settings::display_enable_debug, &Settings::set_enable_debug},
+    { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
+    
+    { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
+    { "reader_cycle_high_duration", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
+    { "reader_cycle_low_duration", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
+    { "tag_read_sleep_interval", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
 
-    // List of all setting names, getters, and setters.
-    /*
-      This list defines the order (and thus the index) that settings are displayed in.
-      See notes in settings.h for further info on Settings structure
-    */
-    settings_list_T const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
-      { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
-      { "tag_read_sleep_interval", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
-      { "reader_cycle_low_duration", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
-      { "reader_cycle_high_duration", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
-      { "admin_timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
-      { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
-      { "enable_debug", &Settings::display_enable_debug, &Settings::set_enable_debug},
-      { "default_reader", &Settings::display_default_reader, &Settings::set_default_reader},
-      { "hw_serial_baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
-      { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
-      { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
-      { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
-      { "admin_startup_timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
-      { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
-      { "log_level", &Settings::display_log_level, &Settings::set_log_level}
-    };  
+    { "default_reader", &Settings::display_default_reader, &Settings::set_default_reader},
+    { "hw_serial_baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
+    { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
+    { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
+    { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
+  };  
   
 
   // Updates a setting given setting index with data.
