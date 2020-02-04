@@ -657,6 +657,7 @@
     resetFunc();
   }
 
+
   void Menu::menuSettings(void *dat) {
     MU_LOG(6, F("Menu::menuSettings()"), true);
     //selected_menu_item = NULL;
@@ -709,10 +710,10 @@
     MU_LOG(6, F("Menu::menuHandleSaveSettings()"), true);
     
     char *text = (char*)input;
-    if (text[0] == 'Y' || text[0] == 'y') S.save();
+    if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1' || text[0] == 13 || text[0] == 10) S.save();
+    LOG(5, F("Calling S.save()"), true);
     menuMain();
   }
-
 
 
   // Lists readers for menu.

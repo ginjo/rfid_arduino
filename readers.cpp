@@ -23,8 +23,9 @@
     }
   
     uint32_t processTagData(uint8_t _tag[24]) {
-  
-      LOG(5, F("RDM6300 prcs tag inpt: "));
+
+      LOG(5, name(), false);
+      LOG(5, F(" prcs tag inpt: "));
       LOG(5, strtol((char *)_tag, NULL, HEX), true);
   
       uint8_t id_len = id_end - id_begin;
@@ -35,8 +36,9 @@
       }
   
       uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
-    
-      RD_LOG(6, F("RDM6300 tag read: "), false);
+
+      RD_LOG(6, name(), false);
+      RD_LOG(6, F(" tag read: "), false);
       RD_LOG(6, (char *)tmp_str, false);
       RD_LOG(6, ", ", false);
       RD_LOG(6, tag_id, true);
@@ -63,7 +65,8 @@
     }
       
     uint32_t processTagData(uint8_t _tag[]) {
-      LOG(5, F("R7941E prcs tag inpt: "));
+      LOG(5, name(), false);
+      LOG(5, F(" prcs tag inpt: "));
       //RD_PRINT((char *)_tag); // Looks weird cuz some bytes might not be readable ascii characters.
       LOG(5, F("id_begin: "));
       LOG(5, id_begin);
@@ -84,8 +87,9 @@
       }
   
       uint32_t tag_id = strtol(id_hex, NULL, 16);
-    
-      RD_LOG(6, F("R7941E tag read: "), false);
+
+      RD_LOG(6, name(), false);
+      RD_LOG(6, F(" tag read: "), false);
       RD_LOG(6, id_hex, false);
       RD_LOG(6, ", ", false);
       RD_LOG(6, tag_id, true);
@@ -119,8 +123,9 @@
     }
   
     uint32_t processTagData(uint8_t _tag[]) {
-    
-      LOG(5, F("WL125 prcs tag inpt: "));
+
+      LOG(5, name(), false);
+      LOG(5, F(" prcs tag inpt: "));
       LOG(5, F("id_begin: "));
       LOG(5, id_begin);
       LOG(5, F(", id_end: "));
@@ -141,8 +146,9 @@
       }
   
       uint32_t tag_id = strtol(id_char, NULL, 16);
-    
-      RD_LOG(6, F("WL125 read: "), false);
+
+      RD_LOG(6, name(), false);
+      RD_LOG(6, F(" read: "), false);
       RD_LOG(6, id_char, false);
       RD_LOG(6, ", ", false);
       RD_LOG(6, tag_id, true);
@@ -174,7 +180,7 @@
         break;
         
       default:
-        return (new RDM6300);
+        return (new WL125);
     }
   }
 

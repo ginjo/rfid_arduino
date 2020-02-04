@@ -28,7 +28,7 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 16 // quantity of settings vars
+  #define SETTINGS_SIZE 15 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 28 // max length of a setting var name AND of the Settings object name.
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
@@ -124,7 +124,7 @@
     void displaySetting(int, char*);
     void printSettings(Stream*);
     bool debugMode();
-    void save(char*); // This is to accommodate putting 'Save' option into settings list.
+    //void save(char*); // This is to accommodate putting 'Save' option into settings list.
     int  save(); 
 
 

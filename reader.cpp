@@ -235,7 +235,14 @@
   // TODO (from Controller): create macro definition for max-tag-length that can be used in func definition array args.
   void Reader::processTag(uint8_t _tag[]) {
     LOG(5, name(), false);
-    LOG(5, F(" processTag() received buffer"), true);
+    LOG(5, F(" processTag() received buffer: 0x "), false);
+    if (LogLevel() >=5) {
+      for (int n=0; n<raw_tag_length; n++) {
+        LOG(5, _tag[n], 16, false);
+        LOG(5, F(" "), false);
+      }
+      LOG(5, "", true);
+    }
 
     // DEV (from Controller): Use this to ensure that virtual functions are working in derived classes.
     //  RD_PRINT(F("Reader::processTag() calling echo(): "));

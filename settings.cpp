@@ -78,8 +78,6 @@
     { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
     { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
     { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
-
-    { "SAVE", nullptr, &Settings::save},
   };  
   
 
@@ -146,7 +144,7 @@
     ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
     
     if (index <= SETTINGS_SIZE && setting.display_fp) {
-      ST_LOG(6, F(", Calling setting display_fp, "), false);
+      ST_LOG(6, F(", Calling setting display_fp"), false);
       getter_setter_T fp = setting.display_fp;
       (this->*fp)(setting_value);
     }
@@ -198,15 +196,15 @@
     }
   }
 
-  // This save is to accommodate settings list triggering of save().
-  // The char arg is only for passing in a flag: '0' bypasses saving, '1' performs save.
-  void Settings::save(char *dat) {
-    LOG(5, F("Settings.save called from list with "), false);
-    LOG(5, (char*)dat, true);
-    if (dat[0] == '0') return;
-    LOG(5, "Saving settings from list", true);
-    save();
-  }
+  //  // This save is to accommodate settings list triggering of save().
+  //  // The char arg is only for passing in a flag: '0' bypasses saving, '1' performs save.
+  //  void Settings::save(char *dat) {
+  //    LOG(5, F("Settings.save called from list with "), false);
+  //    LOG(5, (char*)dat, true);
+  //    if (dat[0] == '0') return;
+  //    LOG(5, "Saving settings from list", true);
+  //    save();
+  //  }
 
   // This is the main (and original) save() function.
   int Settings::save() {

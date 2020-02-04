@@ -686,6 +686,7 @@ NOTE: √ All of the UB appears to have been fixed.
 			2. Was integer overflow in Led::cycle_count.
 			
 TODO: Make short-reader-power-cycle a bona fide setting.
+			Is this really necessary?
 
 TODO: Could the entire SettingsList[] code be put into its own pair of files?
 			Would this be any benefit?
@@ -698,5 +699,5 @@ TODO: √ Probably need menu-items-length and menu-item-name-length globals.
 			
 TODO: Set up password protection for admin mode. Do not use Settings structure to store it.
 
-TODO: Disable automatic save for settings. Ask to save on settings exit (if checksum differs).
+TODO: √ Disable automatic save for settings. Ask to save on settings exit (if checksum differs).
 

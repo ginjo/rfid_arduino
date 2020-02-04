@@ -129,8 +129,8 @@
 
   // Adds tag to this set, and saves the set in EEPROM.
   int Tags::addTag(uint32_t new_tag) {
-    LOG(4, F("addTag() "));
-    LOG(4, new_tag, true);
+    LOG(5, F("addTag() "));
+    LOG(5, new_tag, true);
     compactTags();
     int tag_count = countTags();
     
