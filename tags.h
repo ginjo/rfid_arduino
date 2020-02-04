@@ -26,7 +26,7 @@
   //       extensible, and scaleable.
 
 
-  // This is for aliasing Controller::Tags to the new Tags class (Tags::TagSet.tags).
+  // This is for aliasing Controller::Tags to the new Tags class (Tags::TagSet.tag_array).
   // It can also be used as a type for any array that holds 32-bit tag ids.
   typedef uint32_t TagArray[TAG_LIST_SIZE];
   
@@ -71,6 +71,7 @@
     int deleteTag(uint32_t);
     int deleteTagIndex(int);
     int deleteAllTags();
+    void printTags(Stream*);
 
   }; // Tags
 

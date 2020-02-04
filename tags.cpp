@@ -185,5 +185,19 @@
     save();
     return 0;
   }
-  
+
+  void Tags::printTags(Stream *serial_port) {
+    serial_port->print(F("Tags, chksm 0x"));
+    serial_port->print(checksum, 16);
+    serial_port->print(F(", size "));
+    serial_port->println(sizeof(this));
+    
+    for (int n = 0; n < TAG_LIST_SIZE; n ++) {
+      if (tag_array[n] > 0) {
+        char out[4 + 10 + 2 + 10 + 1] = "";
+        sprintf_P(out, PSTR("%2i  %10lu  0x%lx"), n+1, tag_array[n], tag_array[n]);
+        serial_port->println(out);
+      }
+    }
+  }
   

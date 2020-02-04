@@ -163,7 +163,7 @@
     
     getSettingByIndex(index, setting_name, setting_value);
     // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
-    sprintf(output, "%2i  %-28s %s", index, setting_name, setting_value);
+    sprintf_P(output, PSTR("%2i  %-28s %s"), index, setting_name, setting_value);
     
     ST_LOG(5, F("Settings::displaySetting() gathered: "), false);
     ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
@@ -317,6 +317,8 @@
 
 
   /*  Getters and Setters  */
+
+  // TODO: Convert all strings to PSTR (and sprintf to sprintf_P).
 
   void Settings::display_tag_last_read_timeout(char *out) {sprintf(out, "%lu", tag_last_read_timeout);}
   void Settings::set_tag_last_read_timeout(char *data) {tag_last_read_timeout = (uint32_t)strtol(data, NULL, 10);}

@@ -65,7 +65,7 @@
     unsigned long rminutes = minutes % 60;
 
     char *_out = new char[13];
-    snprintf(_out, 13, "%02li:%02li:%02li.%-3li", hours, rminutes, rseconds, rmillis);
+    snprintf_P(_out, 13, PSTR("%02li:%02li:%02li.%-3li"), hours, rminutes, rseconds, rmillis);
     return _out;
   }
 
@@ -85,13 +85,13 @@
 
     switch (level) {
       case (3) :
-        sprintf(_out, "%sWARN ", _out);
+        sprintf_P(_out, PSTR("%sWARN: "), _out);
         break;
       case (2) :
-        sprintf(_out, "%sERROR ", _out);
+        sprintf_P(_out, PSTR("%sERROR: "), _out);
         break;
       case (1) :
-        sprintf(_out, "%sFATAL ", _out);
+        sprintf_P(_out, PSTR("%sFATAL: "), _out);
         break;
     }
 

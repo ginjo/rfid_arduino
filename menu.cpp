@@ -533,14 +533,14 @@
   void Menu::menuMain(void *dat) {
     MU_LOG(6, F("Menu::menuMain()"), true);
 
-    // Extracts MenuItems[n] from PROGMEM and prints item name.
-    for (int n=0; n<MENU_ITEMS_SIZE; n++) {
+    // Extracts MenuItems[n] from PROGMEM and prints index and item name.
+    for (int n=0; n < MENU_ITEMS_SIZE; n++) {
       menu_item_T item = {};
       memcpy_P(&item, &MenuItems[n], sizeof(item));
-      
-      serial_port->print(n);
-      serial_port->print("  ");
-      serial_port->println(item.name);
+
+      char out[MENU_ITEMS_SIZE + 5] = "";
+      sprintf_P(out, PSTR("%2i  %s"), n, item.name);
+      serial_port->println(out);
     }
 
     serial_port->println("");
@@ -593,23 +593,23 @@
   } // menuSelectedMainItem
 
   // Lists tags for menu. See .h file for explanation of default args.
-  // TODO: Shouldn't most of this be moved to Tags class?
   void Menu::menuListTags(void *dat) {menuListTags(dat, nullptr);}
   void Menu::menuListTags(void *dat, CB cback ) {
     MU_LOG(6, F("Menu::menuListTags()"), true);
-    serial_port->print(F("Tags, chksm 0x"));
-    serial_port->print(Tags::TagSet.checksum, 16);
-    serial_port->print(F(", size "));
-    serial_port->println(sizeof(Tags::TagSet));
-    
-    for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-      if (Tags::TagSet.tag_array[i] > 0) {
-        serial_port->print(i+1);
-        serial_port->print(F("  "));
-        serial_port->print(Tags::TagSet.tag_array[i]);
-        serial_port->println("");
-      }
-    }
+    //  serial_port->print(F("Tags, chksm 0x"));
+    //  serial_port->print(Tags::TagSet.checksum, 16);
+    //  serial_port->print(F(", size "));
+    //  serial_port->println(sizeof(Tags::TagSet));
+    //  
+    //  for (int i = 0; i < TAG_LIST_SIZE; i ++) {
+    //    if (Tags::TagSet.tag_array[i] > 0) {
+    //      serial_port->print(i+1);
+    //      serial_port->print(F("  "));
+    //      serial_port->print(Tags::TagSet.tag_array[i]);
+    //      serial_port->println("");
+    //    }
+    //  }
+    Tags::TagSet.printTags(serial_port);
     serial_port->println("");
 
     if (cback) {
