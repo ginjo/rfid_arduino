@@ -78,6 +78,8 @@
     { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
     { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
     { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
+
+    { "SAVE", nullptr, &Settings::save},
   };  
   
 
@@ -105,14 +107,18 @@
 
       // MAGIC: Sets up and calls pointer-to-member-function on 'this',
       // passing in data to store in field.
-      getter_setter_T fp = setting.setter_fp;
-      (this->*fp)(_data);
+      if (setting.setter_fp) {
+        ST_LOG(6, F("Calling setting setter_fp"), true);
+        getter_setter_T fp = setting.setter_fp;
+        (this->*fp)(_data);
+      }
       
     }
 
-    // Stores Settings object to EEPROM.
-    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE); // Name of full Settings object.
-    save();
+    // Auto-store Settings object to EEPROM.
+    // This was moved to save().
+    //strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE); // Name of full Settings object.
+    //save();
     
     return true;
   }
@@ -122,6 +128,8 @@
   // Note that this does not return any values.
   // 
   // The passed-in index is 1-based.
+  //
+  // TODO: This is only used in displaySetting(), so maybe it should be rolled into that?
   // 
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
@@ -137,8 +145,8 @@
     sprintf(setting_name, "%s", (char*)setting.name); //, sizeof(SETTINGS_NAME_SIZE));
     ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
     
-    if (index <= SETTINGS_SIZE) {
-      //SettingsList[index-1].getter_func(this, setting_value);
+    if (index <= SETTINGS_SIZE && setting.display_fp) {
+      ST_LOG(6, F("Calling setting display_fp"), true);
       getter_setter_T fp = setting.display_fp;
       (this->*fp)(setting_value);
     }
@@ -152,7 +160,9 @@
   // Pass this an initialized output string to return via:
   //   char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
   void Settings::displaySetting(int index, char *output) {
-    char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
+    char setting_name[SETTINGS_NAME_SIZE] = {};
+    char setting_value[SETTINGS_VALUE_SIZE] = {};
+    
     getSettingByIndex(index, setting_name, setting_value);
     // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
     sprintf(output, "%2i  %-28s %s", index, setting_name, setting_value);
@@ -171,7 +181,7 @@
     sp->println(sizeof(S));
     
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = "";
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE + 8] = {};
       S.displaySetting(n, output);
       sp->println(output);
     }
@@ -188,11 +198,28 @@
     }
   }
 
+  // This save is to accommodate settings list triggering of save().
+  // The char arg is only for passing in a flag: '0' bypasses saving, '1' performs save.
+  void Settings::save(char *dat) {
+    LOG(5, F("Settings.save called from list with "), false);
+    LOG(5, (char*)dat, true);
+    if (dat[0] == '0') return;
+    LOG(5, "Saving settings from list", true);
+    save();
+  }
+
+  // This is the main (and original) save() function.
   int Settings::save() {
+    int result = 0;
+
+    // This sets the name of entire Settings object.
+    // This used to be in updateSetting().
+    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
+    
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
-    int result = Storage::save();
-    LOG(4, F("Settings::save() result: ")); LOG(4, result, true);
+    result = Storage::save();
+    LOG(5, F("Settings::save() result: ")); LOG(5, result, true);
     //Serial.println(F("Settings::save() END"))
     return result;
   }

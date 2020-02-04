@@ -30,7 +30,7 @@
   using menu_item_T = struct {
     const char name[MENU_ITEM_NAME_SIZE];
     CB fp;
-    const void *data;
+    void *data;
     CB callback;
   };
 

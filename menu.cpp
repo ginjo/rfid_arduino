@@ -514,11 +514,12 @@
     MU_LOG(5, str, true);
 
     if (str[0] == 13 || str[0] == 10 || str[0] == 0) {
-      LOG(4, F("updateSetting() aborted"), true);
+      LOG(5, F("updateSetting() aborted"), true);
     } else if (S.updateSetting(selected_menu_item, str)) {
       // Because we need this after updating any Menu settings
       // and there isn't a better place for this (yet?).
-      updateAdminTimeout();          
+      updateAdminTimeout();
+      //serial_port->println(F("Don't forget to Save Settings!"));
     } else {
       LOG(2, F("updateSetting() call to S.updateSetting() failed"), true);
     }
@@ -687,7 +688,7 @@
 
     // If user selected valid settings item.
     if (selected_menu_item > 0 && selected_menu_item <= SETTINGS_SIZE) {
-      char setting_name[SETTINGS_NAME_SIZE], setting_value[SETTINGS_VALUE_SIZE];
+      char setting_name[SETTINGS_NAME_SIZE] = {}, setting_value[SETTINGS_VALUE_SIZE] = {};
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);
@@ -737,8 +738,6 @@
       menuListReaders();
     }
   }
-
-
 
   
   /*

@@ -28,8 +28,8 @@
   
   #include "storage.h"
     
-  #define SETTINGS_SIZE 15 // quantity of settings vars
-  #define SETTINGS_NAME_SIZE 28 // max length of a setting var name
+  #define SETTINGS_SIZE 16 // quantity of settings vars
+  #define SETTINGS_NAME_SIZE 28 // max length of a setting var name AND of the Settings object name.
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
 
@@ -53,18 +53,6 @@
   /*  Defines types for settings getters and setters  */
 
   class Settings; // forward declaration for the following...
-  
-  //  using getter_func_t = void(*)(Settings*, char*);
-  //  using setter_func_t = getter_func_t;
-  //  using settings_list_t = struct {
-  //    //const char name[SETTINGS_NAME_SIZE]; // you'd think this would work, but no. Even though it uses less ram.
-  //    const char *name; // Original decl that worked in prototype. Did it?
-  //    getter_func_t getter_func;
-  //    setter_func_t setter_func;
-  //      
-  //    //  int call(char *_retval, int _index){
-  //    //  }
-  //  };
 
   using getter_setter_T = void(Settings::*)(char*);
   using settings_list_T = struct {
@@ -136,7 +124,8 @@
     void displaySetting(int, char*);
     void printSettings(Stream*);
     bool debugMode();
-    int  save();
+    void save(char*); // This is to accommodate putting 'Save' option into settings list.
+    int  save(); 
 
 
     /*  Getters and Setters  */
