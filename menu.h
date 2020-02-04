@@ -23,7 +23,7 @@
   #endif
 
   #define INPUT_BUFFER_LENGTH 24
-  #define MENU_ITEMS_SIZE 10
+  #define MENU_ITEMS_SIZE 11
   #define MENU_ITEM_NAME_SIZE 16
 
   using CB = Stack<Menu>::CB;
@@ -123,6 +123,8 @@
     void menuReboot(void* = nullptr);
     void menuSettings(void* = nullptr);
     void menuSelectedSetting(void* = nullptr); // (char[]);
+    void menuSaveSettings(void* = nullptr);
+    void menuHandleSaveSettings(void* = nullptr);
     void menuListReaders(void* = nullptr);
     void menuSelectedReader(void* = nullptr);
     void menuManageBT(void* = nullptr);

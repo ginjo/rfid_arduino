@@ -59,13 +59,11 @@
     { "Delete tag", &Menu::menuDeleteTag, nullptr, nullptr },
     { "Delete all tags", &Menu::menuDeleteAllTags, nullptr, nullptr },
     { "List tags", &Menu::menuListTags, nullptr, nullptr },
-
     { "List Readers", &Menu::menuListReaders, nullptr, nullptr },
     { "Show free mem", &Menu::menuShowFreeMemory, nullptr, nullptr },
-
     { "BT command", &Menu::menuManageBT, nullptr, nullptr },    
     { "Settings", &Menu::menuSettings, nullptr, nullptr },
-
+    { "Save settings", &Menu::menuSaveSettings, nullptr, nullptr },
     { "Restart", &Menu::menuReboot, nullptr, nullptr },
   };
 
@@ -672,7 +670,6 @@
   }
 
   // Handle selected setting.
-  //void Menu::menuSelectedSetting(char bytes[]) {
   void Menu::menuSelectedSetting(void *input) {
     MU_LOG(6, F("Menu::menuSelectedSetting()"), true);
     
@@ -701,6 +698,22 @@
       menuSettings();
     }
   } // menuSelectedSetting()
+
+  
+  void Menu::menuSaveSettings(void *dat) {
+    prompt("Save settings? [Y/n]", &Menu::menuHandleSaveSettings);
+  }
+  
+  // Handle save settings.
+  void Menu::menuHandleSaveSettings(void *input) {
+    MU_LOG(6, F("Menu::menuHandleSaveSettings()"), true);
+    
+    char *text = (char*)input;
+    if (text[0] == 'Y' || text[0] == 'y') S.save();
+    menuMain();
+  }
+
+
 
   // Lists readers for menu.
   void Menu::menuListReaders(void *dat) {

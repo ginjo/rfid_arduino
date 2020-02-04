@@ -146,7 +146,7 @@
     ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
     
     if (index <= SETTINGS_SIZE && setting.display_fp) {
-      ST_LOG(6, F("Calling setting display_fp"), true);
+      ST_LOG(6, F(", Calling setting display_fp, "), false);
       getter_setter_T fp = setting.display_fp;
       (this->*fp)(setting_value);
     }
