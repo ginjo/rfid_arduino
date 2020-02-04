@@ -701,3 +701,7 @@ TODO: Set up password protection for admin mode. Do not use Settings structure t
 
 TODO: √ Disable automatic save for settings. Ask to save on settings exit.
 
+TODO: Should there be an option to enable/disable auto-save?
+
+TODO: Consider making all indexed lists righ-justified for index column.
+
