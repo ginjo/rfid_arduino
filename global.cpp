@@ -28,6 +28,7 @@
     // from controller
     pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
     pinMode(OUTPUT_SWITCH_PIN, OUTPUT);
+    digitalWrite(OUTPUT_SWITCH_PIN, HIGH);
 
     TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 

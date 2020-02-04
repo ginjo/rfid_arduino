@@ -710,8 +710,11 @@
     MU_LOG(6, F("Menu::menuHandleSaveSettings()"), true);
     
     char *text = (char*)input;
-    if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1' || text[0] == 13 || text[0] == 10) S.save();
-    LOG(5, F("Calling S.save()"), true);
+    if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1' || text[0] == 13 || text[0] == 10) {
+      LOG(5, F("Calling S.save()"), true);
+      S.save();
+    }
+    
     menuMain();
   }
 
