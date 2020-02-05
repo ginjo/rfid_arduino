@@ -67,8 +67,8 @@
     proximity_state_startup(2), // 0 = off, 1 = on, 2 = auto (uses last saved state)
 
     // NOT: enables debugging (separate from using DEBUG macro).
-    // Changed to: Sets the debug level if debug-pin is held low.
-    enable_debug(5U),
+    // Changed to: Overrides log_level if debug-pin is held low or debugMode() is true.
+    enable_debug(4),
 
     // sets default reader index
     default_reader(3),
