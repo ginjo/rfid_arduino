@@ -34,24 +34,8 @@
     );
   }
 
-  //  // Converts milliseconds to readable h,m,s.
-  //  // TODO: Make Uptime() a global function that returns c-string.
-  //  extern void PrintUptime(bool line) {
-  //    unsigned long milliseconds = millis();
-  //    unsigned long seconds = milliseconds/1000;
-  //    unsigned long minutes = seconds/60;
-  //    unsigned long hours   = minutes/60;
-  //    unsigned long rseconds = seconds % 60;
-  //    unsigned long rminutes = minutes % 60;
-  //
-  //    char out[8] = {};
-  //    sprintf(out, "%li:%li:%li", hours, rminutes, rseconds);
-  //    
-  //    LOG(4, out, line);
-  //  }
 
-
-  // Converts milliseconds to readable h:m:s.
+  // Converts milliseconds to readable h:m:s.ms
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
   char *Uptime() {
     unsigned long milliseconds = millis();
@@ -71,7 +55,7 @@
   // Returns pointer to pre-log text.
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
   char *PreLog(int level) {
-    char *_out = new char[21];
+    char *_out = new char[22];
 
     if (log_in_progress) return _out; else log_in_progress = true;
     

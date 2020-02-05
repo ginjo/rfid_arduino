@@ -27,7 +27,7 @@
   #define MENU_ITEM_NAME_SIZE 16
 
   using CB = Stack<Menu>::CB;
-  using menu_item_T = struct {
+  using menu_item_T = struct { // This is like typdef buf better syntax.
     const char name[MENU_ITEM_NAME_SIZE];
     CB fp;
     void *data;

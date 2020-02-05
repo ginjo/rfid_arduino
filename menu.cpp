@@ -537,7 +537,7 @@
     // Extracts MenuItems[n] from PROGMEM and prints index and item name.
     for (int n=0; n < MENU_ITEMS_SIZE; n++) {
       menu_item_T item = {};
-      memcpy_P(&item, &MenuItems[n], sizeof(item));
+      memcpy_P(&item, &MenuItems[n], sizeof(menu_item_T));
 
       char out[MENU_ITEM_NAME_SIZE + 5] = "";
       sprintf_P(out, PSTR("%2i  %s"), n, item.name);
@@ -687,7 +687,7 @@
 
     // If user selected valid settings item.
     if (selected_menu_item > 0 && selected_menu_item <= SETTINGS_SIZE) {
-      char setting_name[SETTINGS_NAME_SIZE+1] = {}, setting_value[SETTINGS_VALUE_SIZE+1] = {};
+      char setting_name[SETTINGS_NAME_SIZE] = {}, setting_value[SETTINGS_VALUE_SIZE] = {};
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);

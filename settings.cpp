@@ -5,6 +5,39 @@
   // This is moved here by suggestion to stop EEPROM warnings.
   #include <EEPROM.h>
 
+
+
+  /***  Static & Extern  ***/
+
+
+  /*
+    List of all setting names, getters, and setters.
+    
+    This list defines the order (and thus the index) that settings are displayed in.
+    See notes in settings.h for further info on Settings structure
+  */
+  settings_list_T const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
+    { "admin_startup_timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
+    { "admin_timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
+    { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
+
+    { "log_level", &Settings::display_log_level, &Settings::set_log_level},
+    { "enable_debug", &Settings::display_enable_debug, &Settings::set_enable_debug},
+    { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
+    
+    { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
+    { "reader_cycle_high_duration", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
+    { "reader_cycle_low_duration", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
+    { "tag_read_sleep_interval", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
+
+    { "default_reader", &Settings::display_default_reader, &Settings::set_default_reader},
+    { "hw_serial_baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
+    { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
+    { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
+    { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
+  };  
+
+  /*  Constructor  */
   
   Settings::Settings() :
     Storage("settings", SETTINGS_EEPROM_ADDRESS),
@@ -46,40 +79,70 @@
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
     log_to_bt(false),
-    log_level(6U)
+    log_level(5U)
   {     
-    //strlcpy(settings_name, "default-settings", sizeof(settings_name));
-    strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE+1);
-    //strlcpy(default_reader, "WL-125", sizeof(default_reader));
+    strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
   }
 
+ 
+  bool Settings::Failsafe() {
+    //return digitalRead(FAILSAFE_PIN) == LOW;
+    //Let's try using just a single user-space troubleshooting pin.
+    return digitalRead(DEBUG_PIN) == LOW;
+  }
 
-  // List of all setting names, getters, and setters.
-  /*
-    This list defines the order (and thus the index) that settings are displayed in.
-    See notes in settings.h for further info on Settings structure
-  */
-  settings_list_T const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
-    { "admin_startup_timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
-    { "admin_timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
-    { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
+  // This is a settings-specific wrapper for Storage::Load().
+  // It handles settings-specific behavior.
+  //
+  // See Tags::Load() for potential refactor solution to decouple this function
+  // from the static var Settings::Current().
+  //
+  // Here's the line from Tags:
+  // Tags* Tags::Load(Tags* _tag_set, int _eeprom_address) {
+  //
+  // Is the above still relevant?
+  //
+  Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
+    LOG(5, F("Settings::Load() BEGIN"), true);
+    bool rslt;
 
-    { "log_level", &Settings::display_log_level, &Settings::set_log_level},
-    { "enable_debug", &Settings::display_enable_debug, &Settings::set_enable_debug},
-    { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
-    
-    { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
-    { "reader_cycle_high_duration", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
-    { "reader_cycle_low_duration", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
-    { "tag_read_sleep_interval", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
+    if (Failsafe()) {
+      LOG(3, F("Failsafe enabled"), true);
+      rslt = 0;
+    } else {
+      rslt = Storage::Load(settings_obj, _eeprom_address);
 
-    { "default_reader", &Settings::display_default_reader, &Settings::set_default_reader},
-    { "hw_serial_baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
-    { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
-    { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
-    { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
-  };  
+      #ifdef ST_DEBUG
+        LOG(5, F("Settings::Load() storage_name '"));
+        LOG(5, settings_obj->storage_name);
+        LOG(5, F("' settings_name '"));
+        LOG(5, settings_obj->settings_name);
+        LOG(5, F("' stored chksm 0x"));
+        LOG(5, settings_obj->checksum, 16, true);
+      #endif
   
+      if (! rslt) {
+        LOG(3, F("Settings::Load() chksm mismatch"), true);
+      }
+    }
+
+    if (! rslt || Failsafe()) {
+      LOG(4, F("Using default settings '"));
+    } else {
+      LOG(4, F("Using stored settings '"));
+    }
+    
+    LOG(4, settings_obj->settings_name); LOG(4, "'", true);
+    #ifdef ST_DEBUG
+      LOG(6, F("Settings::Load() END"), true);
+    #endif
+
+    return settings_obj;
+  } // Settings::Load()
+
+
+
+  /***  Instance  ***/
 
   // Updates a setting given setting index with data.
   //
@@ -102,7 +165,7 @@
       settings_list_T setting = {};
       memcpy_P(&setting, &SettingsList[_index-1], sizeof(setting));
 
-      char setting_name[SETTINGS_NAME_SIZE+1] = {}; // A single setting name.
+      char setting_name[SETTINGS_NAME_SIZE] = {}; // A single setting name.
       strcpy(setting_name, setting.name);
       ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
       ST_LOG(5, _data, true);
@@ -162,8 +225,8 @@
   // Pass this an initialized output string to return via:
   //   char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
   void Settings::displaySetting(int index, char *output) {
-    char setting_name[SETTINGS_NAME_SIZE+1] = {};
-    char setting_value[SETTINGS_VALUE_SIZE+1] = {};
+    char setting_name[SETTINGS_NAME_SIZE] = {};
+    char setting_value[SETTINGS_VALUE_SIZE] = {};
     
     getSettingByIndex(index, setting_name, setting_value);
     // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
@@ -183,7 +246,7 @@
     sp->println(sizeof(S));
     
     for (int n=1; n <= SETTINGS_SIZE; n++) {
-      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE + 8] = {};
+      char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE + 8] = {}; // Don't forget null-terminator.
       S.displaySetting(n, output);
       sp->println(output);
     }
@@ -216,7 +279,7 @@
 
     // This sets the name of entire Settings object.
     // This used to be in updateSetting().
-    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE+1);
+    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
     
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
@@ -227,98 +290,9 @@
   }
 
   
-
-  /***  Static & Extern  ***/
-
- 
-  bool Settings::Failsafe() {
-    //return digitalRead(FAILSAFE_PIN) == LOW;
-    //Let's try using just a single user-space troubleshooting pin.
-    return digitalRead(DEBUG_PIN) == LOW;
-  }
-
-  // This is a settings-specific wrapper for Storage::Load().
-  // It handles settings-specific behavior, like saving default
-  // settings if checksum mismatch.
-  //
-  // See Tags::Load() for potential refactor solution to decouple this function
-  // from the static var Settings::Current().
-  //
-  // Here's the line from Tags:
-  // Tags* Tags::Load(Tags* _tag_set, int _eeprom_address) {
-  //
-  //   void Settings::Load() {
-  //
-  Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
-    LOG(5, F("Settings::Load() BEGIN"), true);
-
-    //uint16_t calculated_checksum = Current.calculateChecksum();
-    //Storage::Load(&Current, _eeprom_address);
-    if (Failsafe()) {
-      LOG(3, F("Failsafe enabled"), true);
-    } else {
-      Settings *temp_settings = new Settings();
-      Settings *to_delete = temp_settings;
-      Storage::Load(temp_settings, _eeprom_address);
-
-      #ifdef ST_DEBUG
-        LOG(5, F("Settings::Load() storage_name '"));
-        LOG(5, temp_settings->storage_name);
-        LOG(5, F("' settings_name '"));
-        LOG(5, temp_settings->settings_name);
-        LOG(5, F("' chksm 0x"));
-        LOG(5, temp_settings->checksum, 16, true);
-      #endif
-  
-      if (!temp_settings->checksumMatch()) {
-        LOG(3, F("Settings::Load() chksm mismatch"), true);
-      } else {
-        *settings_obj = *temp_settings;
-      }
-      delete to_delete;
-    }
-
-    // WARN: Can't reliably do ST_PRINT from here, since we don't have a confirmed
-    // valid Settings instance yet. Printing settings data before it has been
-    // verified can result in UB !!!
-    //
-
-
-    // Handles checksum mismatch by loading default settings.
-    // TODO: √ Don't save default settings, let the user do it.
-    //if (GetStoredChecksum() != calculated_checksum) {
-    if (!settings_obj->checksumMatch() || Failsafe()) {
-      LOG(4, F("Settings chksm mismatch or failsafe"), true);
-       
-      //  Settings *ss = new Settings();  // Gets new object pointer.
-      //  *settings_obj = *ss;            // Copies new object to settings_obj (same as Current).
-      //  delete ss;                      // Deletes soon-to-be abandoned new object ss.
-      
-      strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE+1);
-      settings_obj->eeprom_address = _eeprom_address;
-      /* Disabled saving of default settings (let the user decide instead).
-         Re-enable this to automatically save default settings to eeprom.
-         Currently the user needs to change/save a default setting
-         to get the entire defaults set to save to eeprom. This is good. */
-      //if (! Failsafe()) settings_obj->save();
-      LOG(4, F("Using default settings '"));
-      
-    } else {
-      LOG(4, F("Using stored settings '"));
-    }
-    
-    LOG(4, settings_obj->settings_name); LOG(4, "'", true);
-    #ifdef ST_DEBUG
-      LOG(6, F("Settings::Load() END"), true);
-    #endif
-
-    return settings_obj;
-  } // Settings::Load()
-
-
   /*  Getters and Setters  */
 
-  // TODO: Convert all strings to PSTR (and sprintf to sprintf_P).
+  // TODO: Convert all strings to PSTR() (and sprintf to sprintf_P).
 
   void Settings::display_tag_last_read_timeout(char *out) {sprintf(out, "%lu", tag_last_read_timeout);}
   void Settings::set_tag_last_read_timeout(char *data) {tag_last_read_timeout = (uint32_t)strtol(data, NULL, 10);}

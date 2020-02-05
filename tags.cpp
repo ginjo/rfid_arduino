@@ -9,9 +9,10 @@
     Storage("tags", TAGS_EEPROM_ADDRESS),
     tag_array {}
   {
-    if (strcmp(storage_name, "") == 0 || storage_name[0] == 0) {
-      strlcpy(storage_name, "tags-default", sizeof(storage_name));
-    }
+    // Why do we need this?
+    //  if (strcmp(storage_name, "") == 0 || storage_name[0] == 0) {
+    //    strlcpy(storage_name, "tags-default", sizeof(storage_name));
+    //  }
   }
   
   
@@ -38,11 +39,8 @@
   Tags *Tags::Load(Tags* _tag_set, int _eeprom_address) {
     TA_LOG(5, F("Tags::Load() BEGIN"), true);
     
-    Storage::Load(_tag_set, _eeprom_address);
-
-		LOG(4, F("Tags loaded"), true);
+    bool rslt = Storage::Load(_tag_set, _eeprom_address);
 		
-		//if (S.debugMode()) {
 		#ifdef TA_DEBUG
 			if (LogLevel() >= 5U) {
 				for (int i=0; i < TAG_LIST_SIZE; i++) {
@@ -52,19 +50,10 @@
 			TA_LOG(5, "", true);
 		#endif
 
-    if (! _tag_set->checksumMatch()) {
-      LOG(2, F("Tags::Load() checksum mismatch, creating new tag-set"), true);
-      //_tag_set = new Tags(); // This only changes the local pointer.
-      //*_tag_set = Tags(); // This changes the actual value, but will it go out of scope when this function ends?
-      //*_tag_set = *(new Tags()); // memory leak.
-      Tags *ts = new Tags(); // somehow uses less memory
-      *_tag_set = *ts;
-      delete ts;
-      
-      /* Don't save _tag_set automatically, cuz it overwrites all saved tags.
-         Let the user decide whether to overwrite all saved tags by adding a new tag
-      */
-      //_tag_set->save();
+    if (! rslt) {
+      LOG(3, F("Tags::Load() checksum mismatch"), true);
+    } else {
+      LOG(4, F("Tags loaded"), true);
     }
 
     _tag_set->compactTags();

@@ -13,7 +13,7 @@
     #define SO_LOG(...)
   #endif
 
-  #define STORAGE_NAME_SIZE 16
+  #define STORAGE_NAME_SIZE 16 // should include null-terminator
   #define STATE_EEPROM_ADDRESS 0
   #define TAGS_EEPROM_ADDRESS 700
   #define SETTINGS_EEPROM_ADDRESS 800
@@ -56,26 +56,51 @@
 
 
     /***  Static / Class Vars & Functions  ***/
-        
-    static T* Load (T * object_ref, int eeprom_address) {
-      SO_LOG(5, F("Storage::Load() Begin"), true);
-      
-      EEPROM.get(eeprom_address, *object_ref); // .get() expects data, not pointer.
 
-      object_ref->eeprom_address = eeprom_address;
-      
-      if (! object_ref->checksumMatch()) {
-        LOG(3, F("Storage::Load() checksum mismatch"), true);
-      }
-      
+    /* Constructor */
+    Storage(const char *_storage_name, int _eeprom_address = -1) :
+      /*
+        eeprom_address should not default to 0,
+        since that is a legitimate address and may
+        be used for something
+      */
+      eeprom_address(_eeprom_address),
+      checksum(0U)
+    {
+      strlcpy(storage_name, _storage_name, STORAGE_NAME_SIZE);
+    }
+
+
+    static bool Load (T * object_ref, int eeprom_address) {
+      SO_LOG(5, F("Storage::Load() Begin"), true);
+
+      T *temp_obj;
+      EEPROM.get(eeprom_address, temp_obj); // .get() expects data, not pointer.
+
+      //temp_obj->eeprom_address = eeprom_address;
+
+      bool rslt = temp_obj->checksumMatch();
+
       SO_LOG(6, F("Storage eeprom_address "), false); SO_LOG(6, eeprom_address, true);
-      SO_LOG(6, F("Storage object_ref->storage_name '"), false); SO_LOG(6, object_ref->storage_name, false); SO_LOG(6, "'", true);
-      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); SO_LOG(6, sizeof(*object_ref), true);
+      SO_LOG(6, F("Storage object_ref->storage_name '"), false); SO_LOG(6, temp_obj->storage_name, false); SO_LOG(6, "'", true);
+      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); SO_LOG(6, sizeof(*temp_obj), true);
       SO_LOG(6, F("Storage sizeof(T) "), false); SO_LOG(6, sizeof(T), true);
+      
+      if (! rslt ) {
+        LOG(3, F("Storage::Load() checksum mismatch"), true);
+      } else {
+        *object_ref = *temp_obj;
+      }
+
+      if (object_ref->eeprom_address != eeprom_address) {
+        object_ref->eeprom_address = eeprom_address;
+      }
+
+      delete temp_obj;
 
       SO_LOG(6, F("Storage::Load() End"), true);
       
-      return object_ref;
+      return rslt;
     }
 
 
@@ -84,16 +109,6 @@
     int eeprom_address;
     uint16_t checksum;
     char storage_name[STORAGE_NAME_SIZE];
-
-    /* Constructor */
-    Storage(const char *_storage_name, int _eeprom_address = -1) :
-      eeprom_address(_eeprom_address),
-      checksum(0)
-    {
-      strlcpy(storage_name, _storage_name, STORAGE_NAME_SIZE);
-      // Change this above so there is always a default of -1 (will this break anything?).
-      //if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
-    }
     
     // Saves this Storage instance to the correct storage address.
     // Sub-classes, like Settings, should carry the info about
@@ -101,7 +116,7 @@
     int save(int _eeprom_address = -1) {
       SO_LOG(6, F("Storage::save() BEGIN"), true);
 
-      // TODO: Gracefully fail if address < 0.
+      // TODO: Gracefully fail if address < 0, or if any of the 3 Storage fields are not correct.
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
 
       SO_LOG(5, F("Storage::save() '"), false); SO_LOG(5, storage_name, false);
@@ -133,8 +148,11 @@
     }
   
     uint16_t calculateChecksum() {
-      // The 'checksum' field needs to always be 0 when
-      // calculating object checksum.
+      /*
+        The 'checksum' field needs to always be 0 when
+        calculating object checksum. Otherwise you have
+        an infinite recursion chicken/egg problem.
+      */
       uint16_t stored_checksum = checksum;
       checksum = (uint16_t)0;
       
@@ -160,8 +178,6 @@
     }
 
     bool checksumMatch() {
-      //  uint16_t stored_checksum = checksum;
-      //  checksum = (uint16_t)0;
       uint16_t calculated_checksum = calculateChecksum();
       bool result = (
         checksum == calculated_checksum &&
@@ -176,7 +192,6 @@
         SO_LOG(6, ", bool-result: ", false); SO_LOG(6, result, true);
       #endif
           
-      //  checksum = stored_checksum;
       return result;
     }
     
