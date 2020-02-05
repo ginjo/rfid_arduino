@@ -386,9 +386,10 @@
       reader->loop();
       if (reader->last_tag_read_id) {
         MU_LOG(6, F("Menu::getTagFromScanner() found tag "), false); MU_LOG(6, reader->last_tag_read_id, true);
-        char str[9];
+        char str[10]; // TODO: This was 9, shouldn't it be 12 (10 digits + LF + null)? Why do we need this var?
         sprintf(str, "%lu", reader->last_tag_read_id);
         strlcpy(buff, str, sizeof(buff));
+        // Adds missing LF to end of buff (and pushes null to next byte).
         for (uint8_t i=0; i < sizeof(buff); i++) {
           if (buff[i] == 0) {
             buff[i] = 10;
@@ -538,7 +539,7 @@
       menu_item_T item = {};
       memcpy_P(&item, &MenuItems[n], sizeof(item));
 
-      char out[MENU_ITEMS_SIZE + 5] = "";
+      char out[MENU_ITEM_NAME_SIZE + 5] = "";
       sprintf_P(out, PSTR("%2i  %s"), n, item.name);
       serial_port->println(out);
     }
@@ -686,7 +687,7 @@
 
     // If user selected valid settings item.
     if (selected_menu_item > 0 && selected_menu_item <= SETTINGS_SIZE) {
-      char setting_name[SETTINGS_NAME_SIZE] = {}, setting_value[SETTINGS_VALUE_SIZE] = {};
+      char setting_name[SETTINGS_NAME_SIZE+1] = {}, setting_value[SETTINGS_VALUE_SIZE+1] = {};
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);

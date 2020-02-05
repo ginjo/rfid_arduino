@@ -705,3 +705,22 @@ TODO: Should there be an option to enable/disable auto-save?
 
 TODO: √ Consider making all indexed lists righ-justified for index column.
 			Remember to leave space for the null-terminator in the sprintf statement.
+
+TODO: When Settings::Load() is running, it uses the log level of the loaded settings,
+			even if the loaded settings object is bogus. So log level (and any other settings)
+			in the default-settings are not being honored during the brief time that the
+			bogus Settings object is loaded into Current (durring boot).
+			
+			Suggest storing loaded Settings into temp variable until it can be verified.
+			Then copy it to the Current location. Actually, handle this in Storage.
+			Make Storage::Load() return bool instead of data. Don't change the passed-in
+			data object if the loaded checksum doesn't match.
+			
+			Make most Storage log lines level 5, just the nitty-gritty ones level 6.
+			
+			Make sure Settings defaults are complete enough that you don't have to
+			load a new generic Settings instance if the stored one is bogus. Same with tags.
+			
+			
+			
+			

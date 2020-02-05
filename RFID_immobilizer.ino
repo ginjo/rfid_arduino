@@ -86,7 +86,7 @@
 
 
     // Displays current settings and readers.
-    if (LogLevel() >=4) {
+    if (LogLevel() >= 4U) {
       LOG(4, "", true);
       S.printSettings(&Serial);
       Serial.println("");
@@ -107,7 +107,7 @@
     /*  Initialize main objects. See global files for declarations/definitions.  */
 
     #ifdef BK_DEBUG
-      if (LogLevel() >= 5 ) Led::PrintStaticIntervals();
+      if (LogLevel() >= 5U ) Led::PrintStaticIntervals();
     #endif
 
     RGB[0] = new Led(LED_RED_PIN, "Rd");

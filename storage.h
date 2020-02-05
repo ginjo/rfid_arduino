@@ -173,7 +173,7 @@
         // This might need to use LOG cuz it needs to pass integer base.
         SO_LOG(6, "Storage::checksumMatch() stor 0x", false); LOG(6, checksum, 16);
         SO_LOG(6, " calc 0x", false); LOG(6, calculated_checksum, 16);
-        SO_LOG(6, ", bool-result: ", false); SO_LOG(6, (char *)result, true);
+        SO_LOG(6, ", bool-result: ", false); SO_LOG(6, result, true);
       #endif
           
       //  checksum = stored_checksum;

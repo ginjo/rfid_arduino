@@ -6,13 +6,11 @@
 
   bool log_in_progress = false; // Controlls PreLog() output for multi-part log entries.
 
-  extern int LogLevel() {
-    //if (S.debugMode() && S.log_level < 5U) {
-    //if (S.debugMode() && S.enable_debug >= S.log_level) {
+  extern uint8_t LogLevel() {
     if (S.debugMode()) {
-      return S.enable_debug;
+      return (uint8_t)S.enable_debug;
     } else {
-      return (int)S.log_level;
+      return (uint8_t)S.log_level;
     }
   }
 
@@ -73,13 +71,13 @@
   // Returns pointer to pre-log text.
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
   char *PreLog(int level) {
-    char *_out = new char[16];
+    char *_out = new char[21];
 
     if (log_in_progress) return _out; else log_in_progress = true;
     
     if (Menu::RunMode == 0) {
       char *uptime = Uptime();
-      sprintf(_out, "%s  ", uptime);
+      sprintf_P(_out, PSTR("%s  "), uptime);
       delete uptime;
     }
 

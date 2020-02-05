@@ -49,7 +49,7 @@
   void Led::begin(const uint16_t _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
     
     BK_LOG(5, F("Led::begin old, new: "), false); BK_LOG(5, led_name, true);
-    if (LogLevel() >= 5) {
+    if (LogLevel() >= 5U) {
       printIntervals(intervals);
       printIntervals(StaticIntervals[intervals_index]);
     }
@@ -78,7 +78,7 @@
     
     BK_LOG(6, F("Led::update old, new: "), false); BK_LOG(6, led_name, true);
     #ifdef BK_DEBUG
-      if (LogLevel() >= 6) {
+      if (LogLevel() >= 6U) {
         printIntervals(intervals);
         printIntervals(StaticIntervals[intervals_index]);
       }
@@ -183,7 +183,7 @@
   }
 
   void Led::printIntervals(const int _intervals[]) {
-    if (LogLevel() < 5) return;
+    if (LogLevel() < 5U) return;
     BK_LOG(5, num_cycles, false);
     BK_LOG(5, ",", false);
     for (int n = 0; n < INTERVALS_LENGTH; n ++) {

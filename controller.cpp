@@ -203,7 +203,7 @@
 
       // Only changes status if debugging, otherwise info-level debug will show
       // some statuses (like TIMEOUT) at every loop.
-      if (LogLevel() >=5) ctrl_status = 0; 
+      if (LogLevel() >= 5U) ctrl_status = 0; 
     }
 
     // TODO: Is there a better place for this? UPDATE: I don't think so.

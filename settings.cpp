@@ -35,7 +35,7 @@
 
     // NOT: enables debugging (separate from using DEBUG macro).
     // Changed to: Sets the debug level if debug-pin is held low.
-    enable_debug(4),
+    enable_debug(5U),
 
     // sets default reader index
     default_reader(3),
@@ -46,10 +46,10 @@
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
     log_to_bt(false),
-    log_level(4)
+    log_level(6U)
   {     
     //strlcpy(settings_name, "default-settings", sizeof(settings_name));
-    strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
+    strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE+1);
     //strlcpy(default_reader, "WL-125", sizeof(default_reader));
   }
 
@@ -90,12 +90,11 @@
     ST_LOG(5, F("S.updateSetting() "), false);
     ST_LOG(5, _index, false); ST_LOG(5, ", ", false);
 
-    char setting_name[SETTINGS_NAME_SIZE]; // A single setting name.
+    //char setting_name[SETTINGS_NAME_SIZE]; // A single setting name.
     // TODO: Is this safe? Is there a strlcpy_P that we can use?
     //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[_index-1])));
-
-    ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
-    ST_LOG(5, _data, true);
+    //ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
+    //ST_LOG(5, _data, true);
 
     if (_index <= SETTINGS_SIZE) {  
           
@@ -103,6 +102,11 @@
       settings_list_T setting = {};
       memcpy_P(&setting, &SettingsList[_index-1], sizeof(setting));
 
+      char setting_name[SETTINGS_NAME_SIZE+1] = {}; // A single setting name.
+      strcpy(setting_name, setting.name);
+      ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false);
+      ST_LOG(5, _data, true);
+      
       // MAGIC: Sets up and calls pointer-to-member-function on 'this',
       // passing in data to store in field.
       if (setting.setter_fp) {
@@ -141,7 +145,7 @@
     //  Serial.println((char*)pgm_read_word(&SettingsList[index-1].name));
 
     sprintf(setting_name, "%s", (char*)setting.name); //, sizeof(SETTINGS_NAME_SIZE));
-    ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
+    ST_LOG(6, F("Settings::getSettingByIndex: "), false); ST_LOG(6, index, false); ST_LOG(5, ", ", false); ST_LOG(6, setting_name, false);
     
     if (index <= SETTINGS_SIZE && setting.display_fp) {
       ST_LOG(6, F(", Calling setting display_fp"), false);
@@ -149,7 +153,7 @@
       (this->*fp)(setting_value);
     }
     
-    ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
+    ST_LOG(6, ", ", false); ST_LOG(6, setting_value, true);
   } // function
 
   // Prints out one line of settings. Can use variable int '*' in format string here,
@@ -158,18 +162,18 @@
   // Pass this an initialized output string to return via:
   //   char output[SETTINGS_NAME_SIZE + SETTINGS_VALUE_SIZE] = {};
   void Settings::displaySetting(int index, char *output) {
-    char setting_name[SETTINGS_NAME_SIZE] = {};
-    char setting_value[SETTINGS_VALUE_SIZE] = {};
+    char setting_name[SETTINGS_NAME_SIZE+1] = {};
+    char setting_value[SETTINGS_VALUE_SIZE+1] = {};
     
     getSettingByIndex(index, setting_name, setting_value);
     // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
     sprintf_P(output, PSTR("%2i  %-28s %s"), index, setting_name, setting_value);
     
-    ST_LOG(5, F("Settings::displaySetting() gathered: "), false);
-    ST_LOG(5, setting_name, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_value, true);
+    ST_LOG(6, F("Settings::displaySetting() gathered: "), false);
+    ST_LOG(6, setting_name, false); ST_LOG(6, ", ", false); ST_LOG(6, setting_value, true);
     
-    ST_LOG(5, F("Settings::displaySetting() returning: "), false);
-    ST_LOG(5, output, true);
+    ST_LOG(6, F("Settings::displaySetting() returning: "), false);
+    ST_LOG(6, output, true);
   }
 
   void Settings::printSettings(Stream *sp) {
@@ -212,7 +216,7 @@
 
     // This sets the name of entire Settings object.
     // This used to be in updateSetting().
-    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
+    strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE+1);
     
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
@@ -251,20 +255,27 @@
     //uint16_t calculated_checksum = Current.calculateChecksum();
     //Storage::Load(&Current, _eeprom_address);
     if (Failsafe()) {
-      LOG(4, F("Failsafe enabled, skipping stored settings"), true);
+      LOG(3, F("Failsafe enabled"), true);
     } else {
-      Storage::Load(settings_obj, _eeprom_address);
+      Settings *temp_settings = new Settings();
+      Settings *to_delete = temp_settings;
+      Storage::Load(temp_settings, _eeprom_address);
 
       #ifdef ST_DEBUG
         LOG(5, F("Settings::Load() storage_name '"));
-        LOG(5, settings_obj->storage_name);
+        LOG(5, temp_settings->storage_name);
         LOG(5, F("' settings_name '"));
-        LOG(5, settings_obj->settings_name);
+        LOG(5, temp_settings->settings_name);
         LOG(5, F("' chksm 0x"));
-        LOG(5, settings_obj->checksum, 16, true);
+        LOG(5, temp_settings->checksum, 16, true);
       #endif
   
-      if (!settings_obj->checksumMatch()) {LOG(3, F("Settings::Load() chksm mismatch"), true);}
+      if (!temp_settings->checksumMatch()) {
+        LOG(3, F("Settings::Load() chksm mismatch"), true);
+      } else {
+        *settings_obj = *temp_settings;
+      }
+      delete to_delete;
     }
 
     // WARN: Can't reliably do ST_PRINT from here, since we don't have a confirmed
@@ -277,34 +288,23 @@
     // TODO: √ Don't save default settings, let the user do it.
     //if (GetStoredChecksum() != calculated_checksum) {
     if (!settings_obj->checksumMatch() || Failsafe()) {
-      LOG(3, F("Settings::Load() chksm mismatch or failsafe"), true);
-      /* Two problems here, I think.
-       * 1. The new Settings objected pointed to here will go out of scope after this function ends.
-       * 2. The settings_obj points to an address of value in Current,
-       *    but the address pointed to by settings_obj gets changed to the new Settings value.
-       *    
-       * So to get the new Settings to stick in the static var Current, what do we do?
-       * I think we have to either make Current a pointer, or take settings_obj arg as a reference type var.
-       * 
-       * Or even better, we just de-reference the pointers and set the original Current var with new value.
-       * Old: settings_obj = new Settings();  // doesn't work, repoints settings_obj to new address.
-       */
+      LOG(4, F("Settings chksm mismatch or failsafe"), true);
        
-      Settings *ss = new Settings();  // Gets new object pointer.
-      *settings_obj = *ss;            // Copies new object to settings_obj (same as Current).
-      delete ss;                      // Deletes abandoned new object ss.
+      //  Settings *ss = new Settings();  // Gets new object pointer.
+      //  *settings_obj = *ss;            // Copies new object to settings_obj (same as Current).
+      //  delete ss;                      // Deletes soon-to-be abandoned new object ss.
       
-      strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE);
+      strlcpy(settings_obj->settings_name, "default-settings", SETTINGS_NAME_SIZE+1);
       settings_obj->eeprom_address = _eeprom_address;
       /* Disabled saving of default settings (let the user decide instead).
          Re-enable this to automatically save default settings to eeprom.
          Currently the user needs to change/save a default setting
          to get the entire defaults set to save to eeprom. This is good. */
       //if (! Failsafe()) settings_obj->save();
-      LOG(4, F("Settings::Load() using default settings '"));
+      LOG(4, F("Using default settings '"));
       
     } else {
-      LOG(4, F("Settings::Load() using stored settings '"));
+      LOG(4, F("Using stored settings '"));
     }
     
     LOG(4, settings_obj->settings_name); LOG(4, "'", true);
@@ -338,8 +338,8 @@
   void Settings::display_proximity_state_startup(char *out) {sprintf(out, "%i", proximity_state_startup);}
   void Settings::set_proximity_state_startup(char *data) {proximity_state_startup = (int)strtol(data, NULL, 10);}
 
-  void Settings::display_enable_debug(char *out) {sprintf(out, "%i", enable_debug);}
-  void Settings::set_enable_debug(char *data) {enable_debug = (int)strtol(data, NULL, 10);}
+  void Settings::display_enable_debug(char *out) {sprintf(out, "%u", enable_debug);}
+  void Settings::set_enable_debug(char *data) {enable_debug = (uint8_t)strtol(data, NULL, 10);}
 
   void Settings::display_default_reader(char *out) {sprintf(out, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));}
   void Settings::set_default_reader(char *data) {default_reader = (uint8_t)strtol(data, NULL, 10);}

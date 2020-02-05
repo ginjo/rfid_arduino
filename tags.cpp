@@ -44,7 +44,7 @@
 		
 		//if (S.debugMode()) {
 		#ifdef TA_DEBUG
-			if ((int)LogLevel() >= 5) {
+			if (LogLevel() >= 5U) {
 				for (int i=0; i < TAG_LIST_SIZE; i++) {
 					TA_LOG(5, (uint32_t)(_tag_set->tag_array[i])); TA_LOG(5, ",", false);
 				}
@@ -195,7 +195,7 @@
     for (int n = 0; n < TAG_LIST_SIZE; n ++) {
       if (tag_array[n] > 0) {
         char out[4 + 10 + 2 + 10 + 1] = "";
-        sprintf_P(out, PSTR("%2i  %10lu  0x%lx"), n+1, tag_array[n], tag_array[n]);
+        sprintf_P(out, PSTR("%2i  %-10lu  0x%lx"), n+1, tag_array[n], tag_array[n]);
         serial_port->println(out);
       }
     }

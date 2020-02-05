@@ -42,8 +42,8 @@
     //#define RD_DEBUG   // reader
     //#define MU_DEBUG   // serial menu
     //#define SK_DEBUG   // stack
-    #define ST_DEBUG   // settings
-    //#define SO_DEBUG   // storage
+    //#define ST_DEBUG   // settings
+    #define SO_DEBUG   // storage
     //#define TA_DEBUG   // tags
   #endif
   
@@ -56,7 +56,7 @@
   // Forward declaration
   class Menu;
 
-  extern int LogLevel();
+  extern uint8_t LogLevel();
 
   extern int FreeRam(const char[] = "");
 
@@ -76,7 +76,7 @@
   // The templating here allows to receive any type of parameter!!!
   template<typename T>
   extern void LOG(int level, T dat, const int base, bool line = false) {
-    if (level > LogLevel()) return;
+    if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
     char *prelog = PreLog(level);
     
@@ -99,7 +99,7 @@
   // The templating here allows to receive any type of parameter!!!
   template<typename T>
   extern void LOG(int level, T dat, bool line = false) {
-    if (level > LogLevel()) return;
+    if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
     char *prelog = PreLog(level);
     

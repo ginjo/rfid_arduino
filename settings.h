@@ -29,7 +29,7 @@
   #include "storage.h"
     
   #define SETTINGS_SIZE 15 // quantity of settings vars
-  #define SETTINGS_NAME_SIZE 28 // max length of a setting var name AND of the Settings object name.
+  #define SETTINGS_NAME_SIZE 26 // max length of a setting var name AND of the Settings object name.
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var
   //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
 
@@ -56,7 +56,7 @@
 
   using getter_setter_T = void(Settings::*)(char*);
   using settings_list_T = struct {
-    const char name[SETTINGS_NAME_SIZE];
+    const char name[SETTINGS_NAME_SIZE+1];
     getter_setter_T display_fp;
     getter_setter_T setter_fp;
   };
@@ -89,7 +89,7 @@
 
     /***  Instance  ***/
 
-    char settings_name[SETTINGS_NAME_SIZE];
+    char settings_name[SETTINGS_NAME_SIZE+1];
     
     uint32_t tag_last_read_timeout;
     uint32_t tag_read_sleep_interval; // ms
@@ -98,7 +98,7 @@
 
     uint32_t admin_timeout;
     int proximity_state_startup;
-    int enable_debug;
+    uint8_t enable_debug;
 
     //char default_reader[SETTINGS_VALUE_SIZE];
     uint8_t default_reader;
