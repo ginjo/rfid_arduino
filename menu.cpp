@@ -89,7 +89,7 @@
     //      Find a better way to poll input from SW while admining with HW.
     if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {
       SW->loop();
-    } 
+    }
   }
 
 
@@ -162,6 +162,10 @@
     // TODO: Re-enable this after decoupling from readLine (which should only care about completed buff).
     //       Really? Is this todo still relevant?
     //checkSerialPort();
+
+    // Checks tag reader periodically, and disableds admin if tag read.
+    if (millis() % 1000 < 1) reader->loop();
+    if (reader->last_tag_read_id && ! get_tag_from_scanner)  exitAdmin();
     
     call();
     MU_LOG(6, F("MENU LOOP END"), true);
@@ -254,7 +258,7 @@
       // If someone typed anything into this serial port,
       // and Current isn't already set,
       // make this instance the Current one.
-      if (! Current) Current = this;
+      if (! Current) { Current = this; Beeper->mediumBeep(3); }
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout();

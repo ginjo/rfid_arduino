@@ -697,7 +697,12 @@ TODO: √ Do the struct array thing with Menu items.
 			
 TODO: √ Probably need menu-items-length and menu-item-name-length globals.
 			
-TODO: Set up password protection for admin mode. Do not use Settings structure to store it.
+TODO: (security) Set up password protection for admin mode. Do not use Settings object to store it.
+
+TODO: (security) Add short beep(s) when admin mode is activated.
+
+TODO: (Security) Exit admin mode as soon as a tag is authorized (other than tag management).
+			This means listening occasionally for tags.
 
 TODO: √ Disable automatic save for settings. Ask to save on settings exit.
 
@@ -725,6 +730,10 @@ TODO: Save settings needs better results/confirmation output.
 
 TODO: Change name of enable_debug to 'debug_level'.
 
+TODO: Sometimes the first Uptime() call is printing garbage.
 
+TODO: Should run-mode default to 2? (until admin is activated (1) or times out (0)).
+			Or is there another way to determine that we're listening for admin mode,
+			but it hasn't been activated yet?
 			
 			

@@ -11,7 +11,8 @@
     {470,30},
     {70},
     {80,80},
-    {500,500}
+    {500,500},
+    {100,400}
   };
 
   void Led::PrintStaticIntervals() {
@@ -270,6 +271,11 @@
     //const int _intervals[INTERVALS_LENGTH] = {500,500};
     //update(_count, _intervals);
     update(_count, 7);
+  }
+
+  void Led::mediumBeep(uint16_t _count) {
+    BK_LOG(6, F("Led::mediumBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+    update(_count, 8);
   }
 
   

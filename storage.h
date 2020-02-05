@@ -74,7 +74,7 @@
     static bool Load (T * object_ref, int eeprom_address) {
       SO_LOG(5, F("Storage::Load() Begin"), true);
 
-      T temp_obj = T();
+      T temp_obj;// = T(); Does this work without the T()?
 
       /*
         .get() apparently expects data (a regular object),
@@ -98,13 +98,9 @@
         *object_ref = temp_obj;
       } else {
         LOG(3, F("Storage::Load() checksum mismatch"), true);
-        //*object_ref = *(new T());
       }
 
-      //if (object_ref->eeprom_address != eeprom_address) {
-        object_ref->eeprom_address = eeprom_address;
-      //}
-
+      object_ref->eeprom_address = eeprom_address;
 
       SO_LOG(6, F("Storage::Load() End"), true);
       

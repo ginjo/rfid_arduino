@@ -37,7 +37,20 @@
 
   // Converts milliseconds to readable h:m:s.ms
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  char *Uptime() {
+  //  char *Uptime() {
+  //    unsigned long milliseconds = millis();
+  //    unsigned long seconds  = milliseconds/1000;
+  //    unsigned long rmillis  = milliseconds % 1000;
+  //    unsigned long minutes  = seconds/60;
+  //    unsigned long rseconds = seconds % 60;
+  //    unsigned long hours    = minutes/60;
+  //    unsigned long rminutes = minutes % 60;
+  //
+  //    char *_out = new char[13];
+  //    snprintf_P(_out, 13, PSTR("%02li:%02li:%02li.%-3li"), hours, rminutes, rseconds, rmillis);
+  //    return _out;
+  //  }
+  const char *Uptime() {
     unsigned long milliseconds = millis();
     unsigned long seconds  = milliseconds/1000;
     unsigned long rmillis  = milliseconds % 1000;
@@ -46,23 +59,50 @@
     unsigned long hours    = minutes/60;
     unsigned long rminutes = minutes % 60;
 
-    char *_out = new char[13];
+    static char _out[13] = "";
     snprintf_P(_out, 13, PSTR("%02li:%02li:%02li.%-3li"), hours, rminutes, rseconds, rmillis);
+
+    //const char *out = (const char*)_out;
+    //return out;
     return _out;
   }
 
-
   // Returns pointer to pre-log text.
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  char *PreLog(int level) {
-    char *_out = new char[22];
+  //  char *PreLog(int level) {
+  //    char *_out = new char[22];
+  //
+  //    if (log_in_progress) return _out; else log_in_progress = true;
+  //    
+  //    if (Menu::RunMode == 0) {
+  //      char *uptime = Uptime();
+  //      sprintf_P(_out, PSTR("%s  "), uptime);
+  //      // delete uptime;
+  //    }
+  //
+  //    switch (level) {
+  //      case (3) :
+  //        sprintf_P(_out, PSTR("%sWARN: "), _out);
+  //        break;
+  //      case (2) :
+  //        sprintf_P(_out, PSTR("%sERROR: "), _out);
+  //        break;
+  //      case (1) :
+  //        sprintf_P(_out, PSTR("%sFATAL: "), _out);
+  //        break;
+  //    }
+  //
+  //    return _out;
+  //  }
+  const char *PreLog(int level) {
+    static char _out[22] = "";
 
     if (log_in_progress) return _out; else log_in_progress = true;
     
     if (Menu::RunMode == 0) {
-      char *uptime = Uptime();
+      const char *uptime = Uptime();
       sprintf_P(_out, PSTR("%s  "), uptime);
-      delete uptime;
+      // delete uptime;
     }
 
     switch (level) {
@@ -77,9 +117,10 @@
         break;
     }
 
+    //const char *out = (const char*)_out;
+    //return out;
     return _out;
   }
-
 
   // Handles final new-line at end of log entry.
   void PostLog(bool line) {

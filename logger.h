@@ -61,13 +61,14 @@
   extern int FreeRam(const char[] = "");
 
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  extern char *Uptime();
+  extern const char *Uptime();
   
   extern bool CanLogToBT();
 
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  char *PreLog(int);
+  char const *PreLog(int);
 
+  // TODO: Should this return like PreLog() ?
   void PostLog(bool);
 
   
@@ -78,7 +79,7 @@
   extern void LOG(int level, T dat, const int base, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
-    char *prelog = PreLog(level);
+    const char *prelog = PreLog(level);
     
     if (CanLogToBT()) {
       BTserial->print(prelog);
@@ -90,7 +91,7 @@
 
     PostLog(line);
 
-    delete prelog;
+    // delete prelog;
   }
 
   
@@ -101,7 +102,7 @@
   extern void LOG(int level, T dat, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
-    char *prelog = PreLog(level);
+    const char *prelog = PreLog(level);
     
     if (CanLogToBT()) {      
       BTserial->print(prelog);
@@ -113,7 +114,7 @@
 
     PostLog(line);
 
-    delete prelog;
+    // delete prelog;
   }
   
 #endif
