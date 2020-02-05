@@ -721,6 +721,10 @@ TODO: When Settings::Load() is running, it uses the log level of the loaded sett
 			Make sure Settings defaults are complete enough that you don't have to
 			load a new generic Settings instance if the stored one is bogus. Same with tags.
 			
-			
+TODO: Save settings needs better results/confirmation output.
+
+TODO: Change name of enable_debug to 'debug_level'.
+
+
 			
 			

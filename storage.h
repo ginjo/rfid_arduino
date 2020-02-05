@@ -75,9 +75,17 @@
       SO_LOG(5, F("Storage::Load() Begin"), true);
 
       T temp_obj = T();
-      EEPROM.get(eeprom_address, temp_obj); // .get() expects data, not pointer. (Really?)
 
-      temp_obj.eeprom_address = eeprom_address;
+      /*
+        .get() apparently expects data (a regular object),
+        not a pointer to an object.
+        
+        I think .get coppies the the loaded object,
+        instead of just repointing.
+      */
+      EEPROM.get(eeprom_address, temp_obj);
+
+      //temp_obj.eeprom_address = eeprom_address;
 
       bool rslt = temp_obj.checksumMatch();
 
@@ -97,7 +105,6 @@
         object_ref->eeprom_address = eeprom_address;
       //}
 
-      //delete temp_obj;
 
       SO_LOG(6, F("Storage::Load() End"), true);
       

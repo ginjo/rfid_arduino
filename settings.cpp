@@ -68,7 +68,7 @@
 
     // NOT: enables debugging (separate from using DEBUG macro).
     // Changed to: Overrides log_level if debug-pin is held low or debugMode() is true.
-    enable_debug(4),
+    enable_debug(5),
 
     // sets default reader index
     default_reader(3),
@@ -79,7 +79,7 @@
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
     log_to_bt(false),
-    log_level(5U)
+    log_level(4)
   {     
     strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
   }
