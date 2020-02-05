@@ -38,6 +38,8 @@
   //
   Tags *Tags::Load(Tags* _tag_set, int _eeprom_address) {
     TA_LOG(5, F("Tags::Load() BEGIN"), true);
+
+    
     
     bool rslt = Storage::Load(_tag_set, _eeprom_address);
 		

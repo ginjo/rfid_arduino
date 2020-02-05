@@ -62,7 +62,7 @@
       /*
         eeprom_address should not default to 0,
         since that is a legitimate address and may
-        be used for something
+        be in use.
       */
       eeprom_address(_eeprom_address),
       checksum(0U)
@@ -74,29 +74,30 @@
     static bool Load (T * object_ref, int eeprom_address) {
       SO_LOG(5, F("Storage::Load() Begin"), true);
 
-      T *temp_obj;
-      EEPROM.get(eeprom_address, temp_obj); // .get() expects data, not pointer.
+      T temp_obj = T();
+      EEPROM.get(eeprom_address, temp_obj); // .get() expects data, not pointer. (Really?)
 
-      //temp_obj->eeprom_address = eeprom_address;
+      temp_obj.eeprom_address = eeprom_address;
 
-      bool rslt = temp_obj->checksumMatch();
+      bool rslt = temp_obj.checksumMatch();
 
       SO_LOG(6, F("Storage eeprom_address "), false); SO_LOG(6, eeprom_address, true);
-      SO_LOG(6, F("Storage object_ref->storage_name '"), false); SO_LOG(6, temp_obj->storage_name, false); SO_LOG(6, "'", true);
-      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); SO_LOG(6, sizeof(*temp_obj), true);
+      SO_LOG(6, F("Storage object_ref->storage_name '"), false); SO_LOG(6, temp_obj.storage_name, false); SO_LOG(6, "'", true);
+      SO_LOG(6, F("Storage sizeof(*object_ref) "), false); SO_LOG(6, sizeof(temp_obj), true);
       SO_LOG(6, F("Storage sizeof(T) "), false); SO_LOG(6, sizeof(T), true);
       
-      if (! rslt ) {
-        LOG(3, F("Storage::Load() checksum mismatch"), true);
+      if (rslt) {
+        *object_ref = temp_obj;
       } else {
-        *object_ref = *temp_obj;
+        LOG(3, F("Storage::Load() checksum mismatch"), true);
+        //*object_ref = *(new T());
       }
 
-      if (object_ref->eeprom_address != eeprom_address) {
+      //if (object_ref->eeprom_address != eeprom_address) {
         object_ref->eeprom_address = eeprom_address;
-      }
+      //}
 
-      delete temp_obj;
+      //delete temp_obj;
 
       SO_LOG(6, F("Storage::Load() End"), true);
       
