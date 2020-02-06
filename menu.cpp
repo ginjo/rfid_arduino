@@ -251,7 +251,10 @@
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
       //  sp->listen();
       //  while (! sp->isListening()) delay(2);
-      if (! sp->isListening()) sp->listen();
+      if (! sp->isListening()) {
+        sp->listen();
+        delay(100);
+      }
       while (! sp->isListening()) {
         ; //delay(2);
       }

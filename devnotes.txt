@@ -701,16 +701,18 @@ TODO: (security) Set up password protection for admin mode. Do not use Settings 
 
 TODO: √ (security) Add short beep(s) when admin mode is activated.
 
-TODO: (Security) Exit admin mode as soon as a tag is authorized (other than tag management).
+TODO: √ (Security) Exit admin mode as soon as a tag is authorized (other than tag management).
 			This means listening occasionally for tags.
 			
-			Changed Uptime() and PreLog() to use static-const-char, instead
+			√Changed Uptime() and PreLog() to use static-const-char, instead
 			of heap variable (new char[22]), for internal buffer. This is
 			intended to reduce the liability of calling functions to free()
 			the returned heap memory.
 			
-			* It is not working correctly, results in old uptime data in buffer
+			√ It is not working correctly, results in old uptime data in buffer
 				being written to log.
+				
+			√ Have changed it back to using heap allocation.
 
 TODO: √ Disable automatic save for settings. Ask to save on settings exit.
 
@@ -735,11 +737,11 @@ TODO: √ When Settings::Load() is running, it uses the log level of the loaded 
 			√ Make sure Settings defaults are complete enough that you don't have to
 			load a new generic Settings instance if the stored one is bogus. Same with tags.
 			
-TODO: Save settings needs better results/confirmation output.
+TODO: √ Save settings needs better results/confirmation output.
 
-TODO: Change name of enable_debug to 'debug_level'.
+TODO: √ Change name of enable_debug to 'debug_level'.
 
-TODO: Sometimes the first Uptime() call is printing garbage.
+TODO: ? Sometimes the first Uptime() call is printing garbage. Still?
 
 TODO: Should run-mode default to 2? (until admin is activated (1) or times out (0)).
 			Or is there another way to determine that we're listening for admin mode,
@@ -747,5 +749,14 @@ TODO: Should run-mode default to 2? (until admin is activated (1) or times out (
 			
 TODO: Rebase since last push to github, and update commit messages with more accurate data.
 
-TODO: Remove Update() call from cycleReaderPower log line.
+TODO: √ Remove Update() call from cycleReaderPower log line.
 
+TODO: √ When using BT admin to add-tag, manual entry is not currently possible,
+			probably due to tag reader hogging the loop.
+			
+			Fixed by making both Reader and Menu delay(100) at each listen. Not sure
+			why this helps but it does!
+			
+			
+			
+			
