@@ -37,17 +37,19 @@
   /*
     Each setting in the Settings class must have the following:
 
-    Declaration
-    Definition
-    Initializer
-    Getter function (declaration & definition)
-    Setter function (declaration & definition)
-    Entry in SettingsList array of struct
+    * These are what the program uses.
+    Declaration/definition (.h)
+    Initializer (.cpp)
+
+    * These are for UI only (using Menu system).
+    Getter function (declaration & definition) (.h, .cpp)
+    Setter function (declaration & definition) (.h, .cpp)
+    Entry in SettingsList array of struct (.cpp)
 
     Make sure Settings' global constraints (like SETTINGS_SIZE, SETTINGS_NAME_SIZE etc.)
-    are set correctly.
+    are set correctly. And don't forget about null-terminators on strings.
     
-   */
+  */
 
 
   /*  Defines types for settings getters and setters  */
@@ -65,16 +67,13 @@
   class Settings : public Storage<Settings> {
   public:
 
-    // Custom type LAM is experimental array of function pointers (to lambdas)
-    // that each take a pointer to a Settings instance 'this',
-    // and a char pointer to receive the result.
-    //
-    // The lambdas are intended to be called to retrieve formatted
-    // string versions of the Settings instance variables,
-    // one lambda per instance var.
-    //typedef void(*LAM)(Settings* s, char* setting_value);
 
-    /***  Static  ***/
+    /*  Constructors  */
+
+    Settings();
+
+
+    /*  Static  */
 
     // Declares a static member-array to hold name, display, and setter for each setting.
     //static settings_list_t const SettingsList[] PROGMEM;
@@ -87,7 +86,7 @@
     static bool Failsafe();
     
 
-    /***  Instance  ***/
+    /*  Instance  */
 
     char settings_name[SETTINGS_NAME_SIZE];
     
@@ -98,7 +97,7 @@
 
     uint32_t admin_timeout;
     int proximity_state_startup;
-    uint8_t enable_debug;
+    uint8_t debug_level;
 
     uint8_t default_reader;
 
@@ -110,10 +109,6 @@
     int admin_startup_timeout;
     bool log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
     uint8_t log_level;
-
-    /*  Constructors  */
-
-    Settings();
 
 
     /*  Functions  */
@@ -127,7 +122,7 @@
     int  save(); 
 
 
-    /*  Getters and Setters  */
+    /*  Getters and Setters for UI (Menu system)  */
 
     void display_tag_last_read_timeout(char*);
     void set_tag_last_read_timeout(char*);
@@ -147,8 +142,8 @@
     void display_proximity_state_startup(char*);
     void set_proximity_state_startup(char*);
     
-    void display_enable_debug(char*);
-    void set_enable_debug(char*);
+    void display_debug_level(char*);
+    void set_debug_level(char*);
     
     void display_default_reader(char*);
     void set_default_reader(char*);
@@ -174,70 +169,16 @@
     void display_log_level(char*);
     void set_log_level(char*);
 
-  };  // class Settings
+  };  // Settings class
 
 
-  /***  Global / External Vars & Funcs  ***/
+  /*  Global / External Vars & Funcs  */
 
   // This declares an extern 'S' of type Settings.
   // This will be a ref to Settings::Current
   // and is intended as a convenience shortcut, since
   // Settings::Current is referred to so many times in the project.
   extern Settings& S;
-
-
-  //  // Creates an extern constant 2D char array 'SETTING_NAMES' that holds Settings var names.
-  //  // This is used to get names/values by index and to iterate through Settings
-  //  // for UI purposes (displaying lists, displaying individual settings).
-  //  // Note that this array is 0-based, unlike some other Menu lists, which are 1-based.
-  //  //
-  //  //  There are now 5 places where settings need to be managed:
-  //  //  1. Declaration in settings.h
-  //  //  2. Initialization in settings.cpp
-  //  //  3. Retrieving by index in settings.cpp
-  //  //  4. Setting by index in settings.cpp
-  //  //  5. Names index in settings.h (for storage of strings in PROGMEM).
-  //  //
-  //  // TODO: Should SETTING_NAMES[] be converted to static Settings variable?
-  //  //
-  //  namespace {  // a nameless namespace helps build a 2D array of char strings in PROGMEM.
-  //    // See here for why the 'namespace' makes this work. Otherwise we get compilation errors.
-  //    // https://stackoverflow.com/questions/2727582/multiple-definition-in-header-file
-  //    const static char str_0[] PROGMEM = "tag_last_read_timeout"; // "String 0" etc are strings to store - change to suit.
-  //    const static char str_1[] PROGMEM = "tag_read_sleep_interval";
-  //    const static char str_2[] PROGMEM = "reader_cycle_low_duration";
-  //    const static char str_3[] PROGMEM =  "reader_cycle_high_duration";
-  //    const static char str_4[] PROGMEM =  "admin_timeout";
-  //    const static char str_5[] PROGMEM =  "proximity_state_startup";
-  //    const static char str_6[] PROGMEM =  "enable_debug";
-  //    const static char str_7[] PROGMEM =  "default_reader";
-  //    const static char str_8[] PROGMEM =  "hw_serial_baud";
-  //    const static char str_9[] PROGMEM =  "bt_baud";
-  //    const static char str_10[] PROGMEM =  "rfid_baud";
-  //    const static char str_11[] PROGMEM =  "tone_frequency";
-  //    const static char str_12[] PROGMEM =  "admin_startup_timeout";
-  //    const static char str_13[] PROGMEM =  "log_to_bt";
-  //    const static char str_14[] PROGMEM =  "log_level";
-  //    
-  //    extern const char *const SETTING_NAMES[] PROGMEM = {
-  //      str_0,
-  //      str_1,
-  //      str_2,
-  //      str_3,
-  //      str_4,
-  //      str_5,
-  //      str_6,
-  //      str_7,
-  //      str_8,
-  //      str_9,
-  //      str_10,
-  //      str_11,
-  //      str_12,
-  //      str_13,
-  //      str_14
-  //    };
-  //
-  //  } // end nameless namespace
     
 #endif  // end __SETTINGS_H__
 

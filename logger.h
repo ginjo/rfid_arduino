@@ -43,7 +43,7 @@
     //#define MU_DEBUG   // serial menu
     //#define SK_DEBUG   // stack
     //#define ST_DEBUG   // settings
-    #define SO_DEBUG   // storage
+    //#define SO_DEBUG   // storage
     //#define TA_DEBUG   // tags
   #endif
   

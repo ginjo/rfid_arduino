@@ -335,10 +335,34 @@
     return bool_result;
   }
 
-  void Menu::prompt(const char _message[], CB _cback, bool _read_tag) {
+
+  //  // So you can do prompt(F("whatever"))
+  //  void Menu::prompt(const __FlashStringHelper *str, CB _cback, bool _read_tag) {
+  //    prompt_P((const char*)str, _cback, _read_tag);
+  //  }
+  
+  // So you can do prompt_P(PSTR("whatever"))
+  void Menu::prompt_P(const char *str, CB _cback, bool _read_tag) {
+    // See https://forum.arduino.cc/index.php?topic=50197.0
+    // See https://forum.arduino.cc/index.php?topic=158375.0
+    // See https://forum.arduino.cc/index.php?topic=556489.0
+    
+    //  char *buff;
+    //  buff=(char *)malloc(strlen_P(str)+1);
+    //  strcpy_P(buff, *str);
+    //  prompt(buff, _cback, _read_tag);
+    //  free(buff);
+
+    char buff[strlen_P(str)+1];
+    strcpy_P(buff, str);
+    prompt(buff, _cback, _read_tag);
+  }
+  
+  void Menu::prompt(const char *_message, CB _cback, bool _read_tag) {
     
     if (_message[0]) {
       serial_port->print(_message);
+      //serial_port->print((const char*)(__FlashStringHelper*)_message);
       //serial_port->print(F(" "));
     }
 
@@ -530,7 +554,7 @@
       updateAdminTimeout();
       //serial_port->println(F("Don't forget to Save Settings!"));
     } else {
-      LOG(2, F("updateSetting() call to S.updateSetting() failed"), true);
+      LOG(2, F("Menu call to S.updateSetting() failed"), true);
     }
 
     selected_menu_item = -1;
@@ -542,7 +566,7 @@
   /***  Menu  ***/
   
   void Menu::menuMain(void *dat) {
-    MU_LOG(6, F("Menu::menuMain()"), true);
+    MU_LOG(6, F("menuMain()"), true);
 
     // Extracts MenuItems[n] from PROGMEM and prints index and item name.
     for (int n=0; n < MENU_ITEMS_SIZE; n++) {
@@ -606,20 +630,8 @@
   // Lists tags for menu. See .h file for explanation of default args.
   void Menu::menuListTags(void *dat) {menuListTags(dat, nullptr);}
   void Menu::menuListTags(void *dat, CB cback ) {
-    MU_LOG(6, F("Menu::menuListTags()"), true);
-    //  serial_port->print(F("Tags, chksm 0x"));
-    //  serial_port->print(Tags::TagSet.checksum, 16);
-    //  serial_port->print(F(", size "));
-    //  serial_port->println(sizeof(Tags::TagSet));
-    //  
-    //  for (int i = 0; i < TAG_LIST_SIZE; i ++) {
-    //    if (Tags::TagSet.tag_array[i] > 0) {
-    //      serial_port->print(i+1);
-    //      serial_port->print(F("  "));
-    //      serial_port->print(Tags::TagSet.tag_array[i]);
-    //      serial_port->println("");
-    //    }
-    //  }
+    MU_LOG(6, F("menuListTags()"), true);
+
     Tags::TagSet.printTags(serial_port);
     serial_port->println("");
 
@@ -634,14 +646,14 @@
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
   void Menu::menuAddTag(void *dat) {
-    MU_LOG(6, F("Menu::menuAddTag()"), true);
+    MU_LOG(6, F("menuAddTag()"), true);
     //get_tag_from_scanner = 1; // now handled by promt(,,true). See promt().
-    prompt("Enter (or scan) a tag number (unsigned long) to store", &Menu::addTagString, true);
+    prompt_P(PSTR("Enter or scan a tag number to store"), &Menu::addTagString, true);
   }
 
   // Asks user for index of tag to delete from EEPROM.
   void Menu::menuDeleteTag(void *dat) {
-    MU_LOG(6, F("Menu::menuDeleteTag()"), true);
+    MU_LOG(6, F("menuDeleteTag()"), true);
     //menuListTags();
     //prompt("Enter tag index to delete", &Menu::deleteTag);
     menuListTags((void*)"Enter tag index to delete", &Menu::deleteTag);
@@ -649,13 +661,13 @@
 
   // Deletes all tags from EEPROM.
   void Menu::menuDeleteAllTags(void *dat) {
-    MU_LOG(6, F("Menu::menuDeleteAllTags()"), true);
+    MU_LOG(6, F("menuDeleteAllTags()"), true);
     //prompt("Delete all tags [y/N]?", &Menu::deleteAllTags);
     menuListTags((void*)"Delete all tags [y/N]?", &Menu::deleteAllTags);
   }
 
   void Menu::menuShowFreeMemory(void *dat) {
-    MU_LOG(6, F("Menu::menuShowFreeMemory()"), true);
+    MU_LOG(6, F("menuShowFreeMemory()"), true);
     int ram = FreeRam();
     serial_port->print(F("Free Memory: "));
     serial_port->println(ram);
@@ -664,13 +676,13 @@
   }
 
   void Menu::menuReboot(void *dat) {
-    MU_LOG(6, F("Menu::menuReboot()"), true);
+    MU_LOG(6, F("menuReboot()"), true);
     resetFunc();
   }
 
 
   void Menu::menuSettings(void *dat) {
-    MU_LOG(6, F("Menu::menuSettings()"), true);
+    MU_LOG(6, F("menuSettings()"), true);
     //selected_menu_item = NULL;
     selected_menu_item = -1;
 
@@ -678,12 +690,12 @@
 
     serial_port->println("");
 
-    prompt("Select a setting to edit", &Menu::menuSelectedSetting);
+    prompt_P(PSTR("Select a setting to edit"), &Menu::menuSelectedSetting);
   }
 
   // Handle selected setting.
   void Menu::menuSelectedSetting(void *input) {
-    MU_LOG(6, F("Menu::menuSelectedSetting()"), true);
+    MU_LOG(6, F("menuSelectedSetting()"), true);
     
     char *bytes = (char*)input;
     
@@ -701,7 +713,7 @@
       S.getSettingByIndex(selected_menu_item, setting_name, setting_value);
       serial_port->print(setting_name); serial_port->print(F(": "));
       serial_port->println(setting_value);
-      prompt("Type a new value for setting", &Menu::updateSetting);
+      prompt_P(PSTR("Type a new value for setting"), &Menu::updateSetting);
       
     // If user selects "0", return, or enter, then go back to main menu.
     } else if (bytes[0] == '0' || bytes[0] == '\r' || bytes[0] == '\n') {
@@ -713,12 +725,12 @@
 
   
   void Menu::menuSaveSettings(void *dat) {
-    prompt("Save settings? [Y/n]", &Menu::menuHandleSaveSettings);
+    prompt_P(PSTR("Save settings? [Y/n]"), &Menu::menuHandleSaveSettings);
   }
   
   // Handle save settings.
   void Menu::menuHandleSaveSettings(void *input) {
-    MU_LOG(6, F("Menu::menuHandleSaveSettings()"), true);
+    MU_LOG(6, F("menuHandleSaveSettings()"), true);
     
     char *text = (char*)input;
     if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1' || text[0] == 13 || text[0] == 10) {
@@ -732,12 +744,12 @@
 
   // Lists readers for menu.
   void Menu::menuListReaders(void *dat) {
-    MU_LOG(6, F("Menu::menuListReaders()"), true);
+    MU_LOG(6, F("menuListReaders()"), true);
     
     Reader::PrintReaders(serial_port);
     serial_port->println("");
 
-    prompt("Select a reader", &Menu::menuSelectedReader);
+    prompt_P(PSTR("Select a reader"), &Menu::menuSelectedReader);
   }
 
   void Menu::menuSelectedReader(void *input) {
@@ -786,7 +798,7 @@
       SW->clearSerialPort();
       SW->resetInputBuffer();
       
-      HW->prompt("Enter AT+ command", &Menu::menuSendAtCommand);
+      HW->prompt_P(PSTR("Enter AT+ command"), &Menu::menuSendAtCommand);
     } else {
       serial_port->println(F("N/A"));
       serial_port->println("");

@@ -22,7 +22,7 @@
     { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
 
     { "log_level", &Settings::display_log_level, &Settings::set_log_level},
-    { "enable_debug", &Settings::display_enable_debug, &Settings::set_enable_debug},
+    { "debug_level", &Settings::display_debug_level, &Settings::set_debug_level},
     { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
     
     { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
@@ -68,7 +68,7 @@
 
     // NOT: enables debugging (separate from using DEBUG macro).
     // Changed to: Overrides log_level if debug-pin is held low or debugMode() is true.
-    enable_debug(5),
+    debug_level(5),
 
     // sets default reader index
     default_reader(3),
@@ -103,7 +103,7 @@
   // Is the above still relevant?
   //
   Settings* Settings::Load(Settings *settings_obj, int _eeprom_address) {
-    LOG(5, F("Settings::Load() BEGIN"), true);
+    LOG(5, F("Stng Load() BEGIN"), true);
     bool rslt;
 
     if (Failsafe()) {
@@ -113,7 +113,7 @@
       rslt = Storage::Load(settings_obj, _eeprom_address);
 
       #ifdef ST_DEBUG
-        LOG(5, F("Settings::Load() storage_name '"));
+        LOG(5, F("Stng Load() storage_name '"));
         LOG(5, settings_obj->storage_name);
         LOG(5, F("' settings_name '"));
         LOG(5, settings_obj->settings_name);
@@ -122,7 +122,7 @@
       #endif
   
       if (! rslt) {
-        LOG(3, F("Settings::Load() chksm mismatch"), true);
+        LOG(3, F("Stng Load() chksm mismatch"), true);
       }
     }
 
@@ -134,7 +134,7 @@
     
     LOG(4, settings_obj->settings_name); LOG(4, "'", true);
     #ifdef ST_DEBUG
-      LOG(6, F("Settings::Load() END"), true);
+      LOG(6, F("Stng Load() END"), true);
     #endif
 
     return settings_obj;
@@ -208,7 +208,7 @@
     //  Serial.println((char*)pgm_read_word(&SettingsList[index-1].name));
 
     sprintf(setting_name, "%s", (char*)setting.name); //, sizeof(SETTINGS_NAME_SIZE));
-    ST_LOG(6, F("Settings::getSettingByIndex: "), false); ST_LOG(6, index, false); ST_LOG(5, ", ", false); ST_LOG(6, setting_name, false);
+    ST_LOG(6, F("Stng getSettingByIndex: "), false); ST_LOG(6, index, false); ST_LOG(5, ", ", false); ST_LOG(6, setting_name, false);
     
     if (index <= SETTINGS_SIZE && setting.display_fp) {
       ST_LOG(6, F(", Calling setting display_fp"), false);
@@ -232,10 +232,10 @@
     // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
     sprintf_P(output, PSTR("%2i  %-28s %s"), index, setting_name, setting_value);
     
-    ST_LOG(6, F("Settings::displaySetting() gathered: "), false);
+    ST_LOG(6, F("Stng displaySetting() gathered: "), false);
     ST_LOG(6, setting_name, false); ST_LOG(6, ", ", false); ST_LOG(6, setting_value, true);
     
-    ST_LOG(6, F("Settings::displaySetting() returning: "), false);
+    ST_LOG(6, F("Stng displaySetting() returning: "), false);
     ST_LOG(6, output, true);
   }
 
@@ -263,15 +263,6 @@
     }
   }
 
-  //  // This save is to accommodate settings list triggering of save().
-  //  // The char arg is only for passing in a flag: '0' bypasses saving, '1' performs save.
-  //  void Settings::save(char *dat) {
-  //    LOG(5, F("Settings.save called from list with "), false);
-  //    LOG(5, (char*)dat, true);
-  //    if (dat[0] == '0') return;
-  //    LOG(5, "Saving settings from list", true);
-  //    save();
-  //  }
 
   // This is the main (and original) save() function.
   int Settings::save() {
@@ -284,7 +275,7 @@
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
     result = Storage::save();
-    LOG(5, F("Settings::save() result: ")); LOG(5, result, true);
+    LOG(5, F("Stng save() result: ")); LOG(5, result, true);
     //Serial.println(F("Settings::save() END"))
     return result;
   }
@@ -294,49 +285,49 @@
 
   // TODO: Convert all strings to PSTR() (and sprintf to sprintf_P).
 
-  void Settings::display_tag_last_read_timeout(char *out) {sprintf(out, "%lu", tag_last_read_timeout);}
+  void Settings::display_tag_last_read_timeout(char *out) {sprintf_P(out, PSTR("%lu"), tag_last_read_timeout);}
   void Settings::set_tag_last_read_timeout(char *data) {tag_last_read_timeout = (uint32_t)strtol(data, NULL, 10);}
 
-  void Settings::display_tag_read_sleep_interval(char *out) {sprintf(out, "%lu", tag_read_sleep_interval);}
+  void Settings::display_tag_read_sleep_interval(char *out) {sprintf_P(out, PSTR("%lu"), tag_read_sleep_interval);}
   void Settings::set_tag_read_sleep_interval(char *data) {tag_read_sleep_interval = (uint32_t)strtol(data, NULL, 10);}
 
-  void Settings::display_reader_cycle_low_duration(char *out) {sprintf(out, "%lu", reader_cycle_low_duration);}
+  void Settings::display_reader_cycle_low_duration(char *out) {sprintf_P(out, PSTR("%lu"), reader_cycle_low_duration);}
   void Settings::set_reader_cycle_low_duration(char *data) {reader_cycle_low_duration = (uint32_t)strtol(data, NULL, 10);}
 
-  void Settings::display_reader_cycle_high_duration(char *out) {sprintf(out, "%lu", reader_cycle_high_duration);}
+  void Settings::display_reader_cycle_high_duration(char *out) {sprintf_P(out, PSTR("%lu"), reader_cycle_high_duration);}
   void Settings::set_reader_cycle_high_duration(char *data) {reader_cycle_high_duration = (uint32_t)strtol(data, NULL, 10);}
 
-  void Settings::display_admin_timeout(char *out) {sprintf(out, "%lu", admin_timeout);}
+  void Settings::display_admin_timeout(char *out) {sprintf_P(out, PSTR("%lu"), admin_timeout);}
   void Settings::set_admin_timeout(char *data) { admin_timeout = (uint32_t)strtol(data, NULL, 10); if (admin_timeout < 10) {admin_timeout = 10;} }
 
-  void Settings::display_proximity_state_startup(char *out) {sprintf(out, "%i", proximity_state_startup);}
+  void Settings::display_proximity_state_startup(char *out) {sprintf_P(out, PSTR("%i"), proximity_state_startup);}
   void Settings::set_proximity_state_startup(char *data) {proximity_state_startup = (int)strtol(data, NULL, 10);}
 
-  void Settings::display_enable_debug(char *out) {sprintf(out, "%u", enable_debug);}
-  void Settings::set_enable_debug(char *data) {enable_debug = (uint8_t)strtol(data, NULL, 10);}
+  void Settings::display_debug_level(char *out) {sprintf_P(out, PSTR("%u"), debug_level);}
+  void Settings::set_debug_level(char *data) {debug_level = (uint8_t)strtol(data, NULL, 10);}
 
-  void Settings::display_default_reader(char *out) {sprintf(out, "%i (%s)", default_reader, Reader::NameFromIndex((int)default_reader));}
+  void Settings::display_default_reader(char *out) {sprintf_P(out, PSTR("%i (%s)"), default_reader, Reader::NameFromIndex((int)default_reader));}
   void Settings::set_default_reader(char *data) {default_reader = (uint8_t)strtol(data, NULL, 10);}
 
-  void Settings::display_hw_serial_baud(char *out) {sprintf(out, "%li", hw_serial_baud);}
+  void Settings::display_hw_serial_baud(char *out) {sprintf_P(out, PSTR("%li"), hw_serial_baud);}
   void Settings::set_hw_serial_baud(char *data) {hw_serial_baud = (long)strtol(data, NULL, 10);}
 
-  void Settings::display_bt_baud(char *out) {sprintf(out, "%li", bt_baud);}
+  void Settings::display_bt_baud(char *out) {sprintf_P(out, PSTR("%li"), bt_baud);}
   void Settings::set_bt_baud(char *data) {bt_baud = (long)strtol(data, NULL, 10);}
 
-  void Settings::display_rfid_baud(char *out) {sprintf(out, "%li", rfid_baud);}
+  void Settings::display_rfid_baud(char *out) {sprintf_P(out, PSTR("%li"), rfid_baud);}
   void Settings::set_rfid_baud(char *data) {rfid_baud = (long)strtol(data, NULL, 10);}
 
-  void Settings::display_tone_frequency(char *out) {sprintf(out, "%i", tone_frequency);}
+  void Settings::display_tone_frequency(char *out) {sprintf_P(out, PSTR("%i"), tone_frequency);}
   void Settings::set_tone_frequency(char *data) {tone_frequency = (int)strtol(data, NULL, 10);}
 
-  void Settings::display_admin_startup_timeout(char *out) {sprintf(out, "%i", admin_startup_timeout);}
+  void Settings::display_admin_startup_timeout(char *out) {sprintf_P(out, PSTR("%i"), admin_startup_timeout);}
   void Settings::set_admin_startup_timeout(char *data) {admin_startup_timeout = (int)strtol(data, NULL, 10);}
 
-  void Settings::display_log_to_bt(char *out) {sprintf(out, "%i", log_to_bt);}
+  void Settings::display_log_to_bt(char *out) {sprintf_P(out, PSTR("%i"), log_to_bt);}
   void Settings::set_log_to_bt(char *data) {log_to_bt = (bool)strtol(data, NULL, 10);}
 
-  void Settings::display_log_level(char *out) {sprintf(out, "%hhu", log_level);}
+  void Settings::display_log_level(char *out) {sprintf_P(out, PSTR("%hhu"), log_level);}
   void Settings::set_log_level(char *data) {log_level = (uint8_t)strtol(data, NULL, 10);}
 
 

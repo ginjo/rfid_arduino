@@ -92,7 +92,9 @@
     void clearSerialPort();
     void resetInputBuffer();
     bool bufferReady();
-    void prompt(const char[] = "", CB = nullptr, bool=false);
+    //void prompt(const __FlashStringHelper*, CB = nullptr, bool = false);
+    void prompt_P(const char*, CB = nullptr, bool = false);
+    void prompt(const char* = "", CB = nullptr, bool=false);
     //void getLine(char);
     void readLineWithCallback(CB, bool=false);
     void readLine(void* = nullptr);

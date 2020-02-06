@@ -8,7 +8,7 @@
 
   extern uint8_t LogLevel() {
     if (S.debugMode()) {
-      return (uint8_t)S.enable_debug;
+      return (uint8_t)S.debug_level;
     } else {
       return (uint8_t)S.log_level;
     }
