@@ -12,7 +12,7 @@
     {70},
     {80,80},
     {500,500},
-    {100,400}
+    {30,70}
   };
 
   void Led::PrintStaticIntervals() {
@@ -110,7 +110,7 @@
       
       // TODO: This should be refactored so that it reverts to
       // previous interval-set after cycle_count goes above num_cycles.
-      if (num_cycles > 0U && cycle_count > num_cycles) {
+      if (num_cycles > 0U && cycle_count >= num_cycles) {
         //reset();
         led_state = 0;
         return;

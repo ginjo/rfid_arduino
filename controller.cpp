@@ -102,6 +102,7 @@
 
     if (
     // If NO TAG READ AT STARTUP and reader has recently power cycled.
+    //
     // This should probably calculate or use global setting for
     // appropriate time-to-wait since last power cycle.
 

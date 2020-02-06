@@ -153,19 +153,25 @@
   void Menu::loop() {
     MU_LOG(6, F("MENU LOOP BEGIN: "), false); MU_LOG(6, instance_name, true);
 
+    // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
+    if (millis() % 1000 < 500 && !Current && this == SW) {
+      reader->loop();
+      if (reader->last_tag_read_id && !get_tag_from_scanner) {
+        exitAdmin();
+      }
+
+      return;
+    }
+
     // Disables switch output if active admin mode (assummed if admin_timeout equals the main setting).
     // TODO: This should probably call something like Controller::outputoff().
-    if (RunMode == 1 && admin_timeout == S.admin_timeout) { digitalWrite(OUTPUT_SWITCH_PIN, LOW); }
+    if (RunMode == 1 && admin_timeout == S.admin_timeout) digitalWrite(OUTPUT_SWITCH_PIN, LOW);
     
     if (! Current || Current == this) adminTimeout();
 
     // TODO: Re-enable this after decoupling from readLine (which should only care about completed buff).
     //       Really? Is this todo still relevant?
     //checkSerialPort();
-
-    // Checks tag reader periodically, and disableds admin if tag read.
-    if (millis() % 1000 < 1) reader->loop();
-    if (reader->last_tag_read_id && ! get_tag_from_scanner)  exitAdmin();
     
     call();
     MU_LOG(6, F("MENU LOOP END"), true);

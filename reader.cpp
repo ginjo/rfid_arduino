@@ -313,12 +313,7 @@
       } else {
         LOG(5, F("never"));
       }
-
-      LOG(5, F(", uptime "));
-
-      const char *uptime = Uptime();
-      LOG(5, uptime, true);
-      // delete uptime;
+      LOG(5, "", true);
 
       RD_LOG(6, F("cycleReaderPower() setting power LOW"), true);
             

@@ -91,7 +91,7 @@
 
     PostLog(line);
 
-    // delete prelog;
+    delete prelog;
   }
 
   
@@ -114,7 +114,7 @@
 
     PostLog(line);
 
-    // delete prelog;
+    delete prelog;
   }
   
 #endif
