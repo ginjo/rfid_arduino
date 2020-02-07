@@ -747,6 +747,22 @@ TODO: Should run-mode default to 2? (until admin is activated (1) or times out (
 			Or is there another way to determine that we're listening for admin mode,
 			but it hasn't been activated yet?
 			
+			Make run-mode like this:
+			0. starting up, no menu activated
+			1. menu activated by user
+			2. live (reader only, no serial read from menus)
+			
+TODO: √ There is a delay when reader gets a bogus tag during aging cycle
+			which can be heard as a lag in the fast-beep.
+			
+			Make sure that reader does not delay for anything during live run-mode.
+			Also make sure nothing takes 'listen' away from reader during live run-mode.
+			
+			Hmm, this might just be due to the time it takes to read and process a tag.
+			
+			√ Yes, it is due to writing log output during tag read. Reducing log-level
+			to 4 solves the problem.
+			
 TODO: Rebase since last push to github, and update commit messages with more accurate data.
 
 TODO: √ Remove Update() call from cycleReaderPower log line.
@@ -754,9 +770,33 @@ TODO: √ Remove Update() call from cycleReaderPower log line.
 TODO: √ When using BT admin to add-tag, manual entry is not currently possible,
 			probably due to tag reader hogging the loop.
 			
-			Fixed by making both Reader and Menu delay(100) at each listen. Not sure
+			√ Fixed by making both Reader and Menu delay(100) at each listen. Not sure
 			why this helps but it does!
 			
+			! Works well with USB power, but not so well with crappy 5v switching regulator.
 			
+TODO: Create a better 5v regulated power supply for entire project.
+			The current regulator is crap-full of noise, or something, that is causing
+			one or more components to behave unreliably.
+			
+			Try a LM7805 or LM2937 (automotive) or LM1117, with appropriate external parts, for converting
+			12v unregulated to 5v regulated. See links in Programming/Arduino... folder.
+			
+			√ Tried a LM7805 with the recommended capacitors (on their spec sheet),
+			and it works much better than the crapy cheap switching regulator.
+			
+TODO: Consider storing in EEPROM last-up-time and total-number-of-runs, just for fun.
+
+TODO: Consider making eeprom-addresses automatic, based on sizes all stored objects.
+			state_epradrs = 0
+			tags_epradrs  = state_epradrs + sizeof(state-object) + 1
+			settings_epradrs = tags_epradrs + sizeof(tags-object) + 1
+			
+TODO: - Consider using a rotating array of bytes for state.
+			Doesn't buy us anything, since current-position needs to be stored somewhere static.
+			
+TODO: Clean up and shorten ALL strings to reduce progmem usage.
+
+
 			
 			

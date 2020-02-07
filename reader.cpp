@@ -61,16 +61,12 @@
 
   void Reader::loop() {
 
-    //  serial_port->listen();
-    //  while (! serial_port->isListening()) delay(2);
-    //  delay(20);
-
     if (! serial_port->isListening()) {
       serial_port->listen();
       delay(100); // Gives better chances of tag being read when adding tags by scanning.
     }
     while (! serial_port->isListening()) {
-      //delay(2);
+      ; //delay(2);
     }
 
     RD_LOG(6, F("READER LOOP BEGIN "), false);

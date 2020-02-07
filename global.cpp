@@ -31,8 +31,6 @@
     digitalWrite(OUTPUT_SWITCH_PIN, HIGH);
 
     TempDebug = (digitalRead(DEBUG_PIN) == LOW);
-
-    //delay(100); // Allows voltages to stabilize... maybe?
   }
 
   

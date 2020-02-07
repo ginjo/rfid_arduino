@@ -14,8 +14,9 @@ Mosfet N-channel for reader power control
 Bluetooth serial module (HC-06, HC-05, HM-10, BT-12, BT-05)
 
 5v power supply module with angle headers
+or better: LM7805 or LM2937 with .1uf and 10uf capacitors
 
-7812 12v regulator 
+7812 12v regulator (only for dash dimmer sensor)
 
 2K/1K or 20K/10K resistors to form 3.3v voltage divider
   for Arduino TX output to BT RX pin.
@@ -45,7 +46,7 @@ NPN transistor for LED dimmer
 
 Button for momentary debug mode
 
-Button for momentary failsafe mode
+Button for momentary failsafe mode (no longer needed)
 
 SSR output relay (~5v => ~12v)
 
