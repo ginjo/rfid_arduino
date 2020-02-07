@@ -53,18 +53,18 @@
 
 
   menu_item_T const Menu::MenuItems[MENU_ITEMS_SIZE] PROGMEM = { 
-    { "Exit", &Menu::updateAdminTimeout, (void*)0, nullptr },
+    { "Exit", &Menu::updateAdminTimeout, (void*)0},// nullptr },
 
-    { "Add tag", &Menu::menuAddTag, nullptr, nullptr },
-    { "Delete tag", &Menu::menuDeleteTag, nullptr, nullptr },
-    { "Delete all tags", &Menu::menuDeleteAllTags, nullptr, nullptr },
-    { "List tags", &Menu::menuListTags, nullptr, nullptr },
-    { "List Readers", &Menu::menuListReaders, nullptr, nullptr },
-    { "Show free mem", &Menu::menuShowFreeMemory, nullptr, nullptr },
-    { "BT command", &Menu::menuManageBT, nullptr, nullptr },    
-    { "Settings", &Menu::menuSettings, nullptr, nullptr },
-    { "Save settings", &Menu::menuSaveSettings, nullptr, nullptr },
-    { "Restart", &Menu::menuReboot, nullptr, nullptr },
+    { "Add tag", &Menu::menuAddTag, nullptr},// nullptr },
+    { "Delete tag", &Menu::menuDeleteTag, nullptr},// nullptr },
+    { "Delete all tags", &Menu::menuDeleteAllTags},// nullptr, nullptr },
+    { "List tags", &Menu::menuListTags, nullptr},// nullptr },
+    { "List Readers", &Menu::menuListReaders, nullptr},// nullptr },
+    { "Show free mem", &Menu::menuShowFreeMemory, nullptr},// nullptr },
+    { "BT command", &Menu::menuManageBT, nullptr},// nullptr },    
+    { "Settings", &Menu::menuSettings, nullptr},// nullptr },
+    { "Save settings", &Menu::menuSaveSettings, nullptr},// nullptr },
+    { "Restart", &Menu::menuReboot, nullptr},// nullptr },
   };
 
 
@@ -267,7 +267,7 @@
       // If someone typed anything into this serial port,
       // and Current isn't already set,
       // make this instance the Current one.
-      if (! Current) { Current = this; Beeper->shortBeep(3); }
+      if (! Current) { Current = this; Beeper->mediumBeep(1); }
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout();
@@ -505,7 +505,11 @@
         break;
     }
     
-  	if (result >= 0) Beeper->shortBeep(result+1);
+  	if (result = 0) {
+  	  Beeper->shortBeep(3);
+  	} else {
+      Beeper->mediumBeep(1);
+  	}
     
     serial_port->println(); serial_port->println();
     resetInputBuffer();

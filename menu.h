@@ -31,7 +31,7 @@
     const char name[MENU_ITEM_NAME_SIZE];
     CB fp;
     void *data;
-    CB callback;
+    //CB callback;
   };
 
 

@@ -12,7 +12,8 @@
     {70},
     {80,80},
     {500,500},
-    {30,70}
+    {30,70},
+    {200, 200},
   };
 
   void Led::PrintStaticIntervals() {
@@ -109,9 +110,10 @@
       
       // TODO: This should be refactored so that it reverts to
       // previous interval-set after cycle_count goes above num_cycles.
-      if (num_cycles > 0U && cycle_count > num_cycles) {
+      if (num_cycles > 0U && cycle_count >= num_cycles) {
         //reset();
         led_state = 0;
+        off();
         return;
       } else if (num_cycles > 0U) {
         cycle_count ++;
@@ -278,4 +280,11 @@
     update(_count, 8);
   }
 
+  void Led::mediumBeep(uint16_t _count) {
+    BK_LOG(6, F("Led.mediumBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+    reset();
+    update(_count, 9);
+  }
+
+  
   
