@@ -34,7 +34,7 @@
     int stack_index = -1;
     
     virtual void push(CB func) {
-      SK_LOG(5, "Stack::push() to index ", false); SK_LOG(5, stack_index+1, true);
+      SK_LOG(5, "Stack.push() to index ", false); SK_LOG(5, stack_index+1, true);
       // SK_PRINT(T::instance_name); SK_PRINT(", ");
       //((T*)this->*func)((char*)"push() called with this func");
       if (func) {
@@ -46,7 +46,7 @@
     }
 
     virtual CB pop() {
-        SK_LOG(5, "Stack::pop() from index ", false); SK_LOG(5, stack_index, true);
+        SK_LOG(5, "Stack.pop() from index ", false); SK_LOG(5, stack_index, true);
         if (stack_index < 0) return nullptr;
         CB func = top();
         stack_index -= 1;
@@ -55,13 +55,13 @@
     }
     
     virtual CB top() {
-        SK_LOG(5, "Stack::top() index ", false); SK_LOG(5, stack_index, true);
+        SK_LOG(5, "Stack.top() index ", false); SK_LOG(5, stack_index, true);
         if (stack_index < 0) return nullptr;
         return stack[stack_index];
     }
 
     virtual void call(void *dat = nullptr, bool _pop = false) {
-        SK_LOG(5, "Stack::call() index ", false); SK_LOG(5, stack_index, true);
+        SK_LOG(5, "Stack.call() index ", false); SK_LOG(5, stack_index, true);
         CB cback = top();
         if (stack_index < 0 || !cback) return;
         // Need to pop before calling, otherwise pop will happen
@@ -73,7 +73,7 @@
 
     // Optionally receives function pointer of type CB.
     virtual void resetStack(CB func = nullptr) {
-      SK_LOG(5, "Stack::resetStack() with index ", false); SK_LOG(5, stack_index, true);
+      SK_LOG(5, "Stack.resetStack() with index ", false); SK_LOG(5, stack_index, true);
       stack_index = -1;
       
       for (int i=0; i < FUNCTION_STACK_SIZE; i++) {

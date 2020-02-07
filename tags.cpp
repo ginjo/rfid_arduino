@@ -37,7 +37,7 @@
   // TODO: Is this decoupled option appropriate for the Settings class too?
   //
   Tags *Tags::Load(Tags* _tag_set, int _eeprom_address) {
-    TA_LOG(5, F("Tags::Load() BEGIN"), true);
+    TA_LOG(5, F("Tags.Load() BEGIN"), true);
 
     
     
@@ -53,14 +53,14 @@
 		#endif
 
     if (! rslt) {
-      LOG(3, F("Tags::Load() checksum mismatch"), true);
+      LOG(3, F("Tags.Load() checksum mismatch"), true);
     } else {
       LOG(4, F("Tags loaded"), true);
     }
 
     _tag_set->compactTags();
 
-    TA_LOG(6, F("Tags::Load() END"), true);
+    TA_LOG(6, F("Tags.Load() END"), true);
     
     return _tag_set;
   } // Load()
@@ -72,7 +72,7 @@
   void Tags::save() {
     compactTags();
 
-    TA_LOG(5, F("Saving tags with checksum 0x"), false);
+    TA_LOG(5, F("Saving tags with chksm 0x"), false);
     TA_LOG(5, calculateChecksum(), 16, false);
     TA_LOG(5, F(" to address "), false);
     TA_LOG(5, eeprom_address, true);

@@ -94,7 +94,7 @@
     void once();
     void fastBeep(uint16_t=0U);
     void slowBeep(uint16_t=0U);
-    void mediumBeep(uint16_t=0U);
+    void shortBeep(uint16_t=0U);
     void go_low();
     void go_high();
   

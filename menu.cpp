@@ -69,7 +69,7 @@
 
 
   void Menu::Begin() {
-    LOG(4, F("Menu::Begin()"), true);
+    LOG(4, F("Menu.Begin()"), true);
     HW->begin();
     SW->begin();
 
@@ -209,12 +209,12 @@
 
   // Exits admin (and allows main Controller loop to run).
   void Menu::exitAdmin() {
-    MU_LOG(5, F("Menu::exitAdmin()"), true);
+    MU_LOG(5, F("Menu.exitAdmin()"), true);
     resetInputBuffer();
     resetStack();
     if (RunMode != 0) {
       LOG(5, instance_name);
-      LOG(5, F(" setting RunMode => 0"), true);
+      LOG(5, F(" setting RunMode to 0"), true);
       LOG(4, F("Entering run mode"), true);
       LOG(4, "", true);
 
@@ -267,7 +267,7 @@
       // If someone typed anything into this serial port,
       // and Current isn't already set,
       // make this instance the Current one.
-      if (! Current) { Current = this; Beeper->mediumBeep(3); }
+      if (! Current) { Current = this; Beeper->shortBeep(3); }
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout();
@@ -309,12 +309,12 @@
 
   // Clears any data waiting on serial port, if any.
   void Menu::clearSerialPort() {
-    MU_LOG(6, F("Menu::clearSerialPort()"), true);
+    MU_LOG(6, F("Menu.clearSerialPort()"), true);
     while (serial_port->available()) serial_port->read();    
   }
 
   void Menu::resetInputBuffer() {
-    MU_LOG(6, F("Menu::resetInputBuffer()"), true);
+    MU_LOG(6, F("Menu.resetInputBuffer()"), true);
     memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
     get_tag_from_scanner = 0;
@@ -333,7 +333,7 @@
     }
     MU_LOG(6, "", true);
 
-    if (bool_result) { MU_LOG(6, F("Menu::bufferReady(): "), false); MU_LOG(6, buff, true); }
+    if (bool_result) { MU_LOG(6, F("Menu.bufferReady(): "), false); MU_LOG(6, buff, true); }
     
     return bool_result;
   }
@@ -378,7 +378,7 @@
 
   // TODO: Consider renaming this... maybe getInput()?
   void Menu::readLineWithCallback(CB cback, bool _read_tag) {
-    MU_LOG(6, F("Menu::readLineWithCallback()"), true);
+    MU_LOG(6, F("Menu.readLineWithCallback()"), true);
     push(cback);
     push(&Menu::readLine);
     clearSerialPort();
@@ -422,7 +422,7 @@
     if (get_tag_from_scanner) {
       reader->loop();
       if (reader->last_tag_read_id) {
-        MU_LOG(6, F("Menu::getTagFromScanner() found tag "), false); MU_LOG(6, reader->last_tag_read_id, true);
+        MU_LOG(6, F("Menu.getTagFromScanner() found tag "), false); MU_LOG(6, reader->last_tag_read_id, true);
         char str[10]; // TODO: This was 9, shouldn't it be 12 (10 digits + LF + null)? Why do we need this var?
         sprintf(str, "%lu", reader->last_tag_read_id);
         strlcpy(buff, str, sizeof(buff));
@@ -449,7 +449,7 @@
   // Converts byte (some kind of integer) to the integer represented
   // by the ascii character of byte. This only works for ascii 48-57.
   int Menu::byteToAsciiChrNum(const char byt) {
-    MU_LOG(6, F("Menu::byteToAsciiChrNum rcvd byte: "), false);
+    MU_LOG(6, F("Menu.byteToAsciiChrNum rcvd byte: "), false);
     MU_LOG(6, (int)byt, true);
     //  MU_PRINT(" (");
     //  MU_PRINT(byt);
@@ -492,18 +492,20 @@
         serial_port->print(F("success"));
         break;
       case 1:
-        serial_port->print(F("aborted, invalid tag-id string"));
+        serial_port->print(F("invalid tag-id string"));
         break;
       case 2:
-        serial_port->print(F("failed, tag list is full"));
+        serial_port->print(F("tag list is full"));
         break;
       case 3:
-        serial_port->print(F("failed, tag is duplicate"));
+        serial_port->print(F("tag is duplicate"));
         break;
       case -1:
-        serial_port->print(F("failed, unknown error"));
+        serial_port->print(F("unknown error"));
         break;
     }
+    
+  	if (result >= 0) Beeper->shortBeep(result+1);
     
     serial_port->println(); serial_port->println();
     resetInputBuffer();
@@ -512,7 +514,7 @@
   }
 
   void Menu::deleteTag(void *dat) {
-    MU_LOG(6, F("Menu::deleteTag()"), true);
+    MU_LOG(6, F("Menu.deleteTag()"), true);
     
     char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
@@ -543,7 +545,7 @@
   void Menu::updateSetting(void *dat) {
     char *str = (char*)dat;
     
-    MU_LOG(5, F("Menu::updateSetting(): "), false);
+    MU_LOG(5, F("Menu.updateSetting(): "), false);
     MU_LOG(5, selected_menu_item, false);
     MU_LOG(5, ", ", false);
     //MU_PRINTLN((char *)buff);

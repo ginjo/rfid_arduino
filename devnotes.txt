@@ -716,7 +716,7 @@ TODO: √ (Security) Exit admin mode as soon as a tag is authorized (other than 
 
 TODO: √ Disable automatic save for settings. Ask to save on settings exit.
 
-TODO: Should there be an option to enable/disable auto-save?
+TODO: - Should there be an option to enable/disable auto-save? Nah.
 
 TODO: √ Consider making all indexed lists righ-justified for index column.
 			Remember to leave space for the null-terminator in the sprintf statement.
@@ -775,11 +775,11 @@ TODO: √ When using BT admin to add-tag, manual entry is not currently possible
 			
 			! Works well with USB power, but not so well with crappy 5v switching regulator.
 			
-TODO: Create a better 5v regulated power supply for entire project.
+TODO: √ Create a better 5v regulated power supply for entire project.
 			The current regulator is crap-full of noise, or something, that is causing
 			one or more components to behave unreliably.
 			
-			Try a LM7805 or LM2937 (automotive) or LM1117, with appropriate external parts, for converting
+			√ Try a LM7805 or LM2937 (automotive) or LM1117, with appropriate external parts, for converting
 			12v unregulated to 5v regulated. See links in Programming/Arduino... folder.
 			
 			√ Tried a LM7805 with the recommended capacitors (on their spec sheet),
@@ -797,6 +797,16 @@ TODO: - Consider using a rotating array of bytes for state.
 			
 TODO: Clean up and shorten ALL strings to reduce progmem usage.
 
+TODO: Move debugMode() from Settings to Logger.
 
+TODO: Play beep (or two) when tag scanned in admin mode.
+
+TODO: Fix led/beeper when calling with specific num-cycles. It gives inconsistent number of beeps.
+			Sometimes it doesn't run at all.
+			
+			Maybe try calling off(), after cycle-count has reached its limit.
+			
+			
+			
 			
 			

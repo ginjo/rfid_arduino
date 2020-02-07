@@ -254,6 +254,7 @@
 
   // enbable_debug is no longer a boolean.
   // It is the log-level when debug-pin is activated.
+  // TODO: This should be moved to Logger.
   bool Settings::debugMode() {
     //if (digitalRead(DEBUG_PIN) == LOW || TempDebug == true || enable_debug == 1) {
     if (digitalRead(DEBUG_PIN) == LOW || TempDebug == true) {

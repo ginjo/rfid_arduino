@@ -49,7 +49,7 @@
   //void Led::begin(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
   void Led::begin(const uint16_t _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
     
-    BK_LOG(5, F("Led::begin old, new: "), false); BK_LOG(5, led_name, true);
+    BK_LOG(5, F("Led.begin old, new: "), false); BK_LOG(5, led_name, true);
     if (LogLevel() >= 5U) {
       printIntervals(intervals);
       printIntervals(StaticIntervals[intervals_index]);
@@ -77,7 +77,7 @@
   //void Led::update(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
   void Led::update(const uint16_t _num_cycles, const int intervals_index, const int _freq, const int _pwm) {
     
-    BK_LOG(6, F("Led::update old, new: "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.update old, new: "), false); BK_LOG(6, led_name, true);
     #ifdef BK_DEBUG
       if (LogLevel() >= 6U) {
         printIntervals(intervals);
@@ -96,7 +96,7 @@
         )
       )
     {
-      BK_LOG(6, F("Led::update() skipping begin()"), true);
+      BK_LOG(6, F("Led.update() skpng begin()"), true);
     } else {
       begin(_num_cycles, intervals_index, _freq, _pwm);      
     }
@@ -106,11 +106,10 @@
   void Led::startPhase(int phz) {
     current_phase = phz;
     if (phz == 0) {
-      //cycle_count ++;
       
       // TODO: This should be refactored so that it reverts to
       // previous interval-set after cycle_count goes above num_cycles.
-      if (num_cycles > 0U && cycle_count >= num_cycles) {
+      if (num_cycles > 0U && cycle_count > num_cycles) {
         //reset();
         led_state = 0;
         return;
@@ -195,7 +194,7 @@
   }
 
   void Led::printData() {
-    BK_LOG(6, F("Led Current Data "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led Crnt Dat "), false); BK_LOG(6, led_name, true);
     BK_LOG(6, F("current_phase "), false); BK_LOG(6, current_phase, true);
     BK_LOG(6, F("cycle_count "), false); BK_LOG(6, cycle_count, true);
     BK_LOG(6, F("interval "), false); BK_LOG(6, intervals[current_phase], true);
@@ -229,52 +228,53 @@
   /*  Pattern presets  */
   
   void Led::steady() {
-    BK_LOG(6, F("Led::steady() "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.steady() "), false); BK_LOG(6, led_name, true);
     update(0, 0);
   }
 
   void Led::off() {
-    BK_LOG(6, F("Led::off() "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.off() "), false); BK_LOG(6, led_name, true);
     update(0, 1);
   }
 
   void Led::slowBlink() {
-    BK_LOG(6, F("Led::slowBlink() "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.slowBlink() "), false); BK_LOG(6, led_name, true);
     update(0, 2);
   }
 
   void Led::fastBlink() {
-    BK_LOG(6, F("Led::fastBlink() "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.fastBlink() "), false); BK_LOG(6, led_name, true);
     update(0, 3);
   }
 
   void Led::startupBlink() {
-    BK_LOG(6, F("Led::startupBlink() "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.startupBlink() "), false); BK_LOG(6, led_name, true);
     update(0, 4);
   }
 
   void Led::once() {
-    BK_LOG(6, F("Led::once() "), false); BK_LOG(6, led_name, true);
+    BK_LOG(6, F("Led.once() "), false); BK_LOG(6, led_name, true);
     reset();
     update(1, 5);
   }
 
   void Led::fastBeep(uint16_t _count) {
-    BK_LOG(6, F("Led::fastBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+    BK_LOG(6, F("Led.fastBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
     //const int _intervals[INTERVALS_LENGTH] = {80,80};
     //update(_count, _intervals);
     update(_count, 6);
   }
 
   void Led::slowBeep(uint16_t _count) {
-    BK_LOG(6, F("Led::slowBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+    BK_LOG(6, F("Led.slowBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
     //const int _intervals[INTERVALS_LENGTH] = {500,500};
     //update(_count, _intervals);
     update(_count, 7);
   }
 
-  void Led::mediumBeep(uint16_t _count) {
-    BK_LOG(6, F("Led::mediumBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+  void Led::shortBeep(uint16_t _count) {
+    BK_LOG(6, F("Led.shortBeep() "), false); BK_LOG(6, led_name, false); BK_LOG(6, F(" "), false); BK_LOG(6, _count, true);
+    reset();
     update(_count, 8);
   }
 

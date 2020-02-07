@@ -30,9 +30,9 @@
 
     LOG(4, F("Starting Controller with "), false);
     LOG(4, reader->name(), false);
-    LOG(5, F(", proximity "), false);
+    LOG(5, F(", state "), false);
     LOG(5, proximity_state, false);
-    LOG(5, F(", switch pin "), false);
+    LOG(5, F(", out pin "), false);
     LOG(5, OUTPUT_SWITCH_PIN, false);
     LOG(4, "", true);
         
@@ -64,7 +64,7 @@
     //proximity_state = S.proximity_state;
 
 
-    LOG(4, F("Setting outpt switch per prox-state: "));
+    LOG(4, F("Setting outpt switch: "));
     LOG(4, proximity_state, true);
     // Switches the main load according to current proximity_state.
     // This turns on the load if saved prox-state was "on".
@@ -90,14 +90,14 @@
   // while this function is actively looping.
   // 
   void Controller::proximityStateController() {
-    CT_LOG(6, F("*** proximityStateController()"), true);
+    CT_LOG(6, F("* Controller *"), true);
     CT_LOG(6, F("last_tag_read_ms "), false); CT_LOG(6, reader->last_tag_read_ms, true);
     CT_LOG(6, F("last_reader_power_cycle_ms "), false); CT_LOG(6, reader->last_reader_power_cycle_ms, true);
     CT_LOG(6, F("msSinceLastTagRead() "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
     CT_LOG(6, F("msSinceLastReaderPowerCycle() "), false); CT_LOG(6, reader->msSinceLastReaderPowerCycle(), true);
     CT_LOG(6, F("ms_reader_cycle_total "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
     //CT_LOG(6, F("tagLastReadTimeoutX1000() "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
-    CT_LOG(6, F("***"), true);
+    CT_LOG(6, F("* *"), true);
     
 
     if (
@@ -113,7 +113,7 @@
 
       if (ctrl_status != 1) LOG(3, F("TIMEOUT: grace period"), true); // only prints once.
       
-      CT_LOG(6, F("Timeout: grace"), true);
+      CT_LOG(6, F("Timeout:grace"), true);
       RGB[0]->slowBlink();
       RGB[1]->off();
       //blinker[2]->off();
@@ -134,7 +134,7 @@
 
       if (ctrl_status != 2) LOG(3, F("TIMEOUT: general"), true); // only prints once.
       
-      CT_LOG(6, F("Timeout: general"), true);
+      CT_LOG(6, F("Timeout:general"), true);
       RGB[0]->slowBlink();
       RGB[1]->off();
       //blinker[2]->off();
@@ -219,7 +219,7 @@
       proximity_state = _state;
 
       if (proximity_state != previous_proximity_state && S.proximity_state_startup == 2) {
-        LOG(4, F("Calling EEPROM.update with prox-state: "));
+        LOG(4, F("Ctrl calling EEPROM.update w/state: "));
         LOG(4, proximity_state, true);
         EEPROM.update(STATE_EEPROM_ADDRESS, proximity_state);
       }

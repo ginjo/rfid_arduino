@@ -47,8 +47,11 @@
     delay(25);
 
     LOG(4, F("RFID proximity sensor pre-boot"), true);
-    LOG(4, F("Initialized HW serial port @ 57600"), true);
-    FREERAM("Main setup() before Settings::Load()");
+    LOG(4, F("HW, SW serial @ "), false);
+    LOG(4, S.hw_serial_baud, false);
+    LOG(4, F(", "), false);
+    LOG(4, S.bt_baud, true);
+    FREERAM("Before Settings::Load()");
     
     Settings::Load();
 
@@ -58,7 +61,7 @@
     while (! Serial) delay(10);
     delay(25);
 
-    LOG(4, F("Booting RFID proximity sensor, "));
+    LOG(4, F("Booting RFID proximity control, "));
     LOG(4, VERSION);
     LOG(4, F(", c++ "));
     LOG(4, __cplusplus);
@@ -66,7 +69,7 @@
     LOG(4, TIMESTAMP, true);
 
     #ifdef INO_DEBUG
-      LOG(5, F("Loaded Settings '"));
+      LOG(5, F("Loaded '"));
       LOG(5, S.settings_name);
       LOG(5, F("' with checksum '0x"));
       LOG(5, S.calculateChecksum(), 16);
@@ -74,11 +77,13 @@
       LOG(5, sizeof(S), true);
     #endif
 
-    LOG(4, F("Initialized HW serial port @ "));
-    LOG(4, S.hw_serial_baud, true);
+    LOG(4, F("HW, SW serial @ "), false);
+    LOG(4, S.hw_serial_baud, false);
+    LOG(4, F(", "), false);
+    LOG(4, S.bt_baud, true);
 
-    LOG(4, F("Debug pin status: "));
-    LOG(4, TempDebug, true);
+    LOG(4, F("Debug mode: "));
+    LOG(4, S.debugMode(), true);
 
     LOG(4, F("LogLevel(): "));
     LOG(4, LogLevel(), true);
@@ -101,7 +106,7 @@
       }
     }
 
-    FREERAM("setup() pre obj new");
+    FREERAM("setup() pre new objcts");
 
 
     /*  Initialize main objects. See global files for declarations/definitions.  */

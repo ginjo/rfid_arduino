@@ -7,9 +7,7 @@
   const char Reader::Name[READER_NAME_LENGTH] = "base";
 
   void Reader::PrintReaders(Stream *sp) {
-    sp->print(F("Readers ("));
-    sp->print(READER_COUNT);
-    sp->println(F(")"));
+    sp->println(F("Readers"));
     for (int n=1; n <= READER_COUNT; n++) {
       int output_length = READER_NAME_LENGTH + 9;
       char output[output_length] = "";
@@ -42,8 +40,8 @@
     //tag_last_read_timeout_x_1000(0UL),
     
   {
-    //LOG(4, F("Constructing Reader: "));
-    //LOG(4, name(), true);
+    LOG(4, F("Loading reader: "));
+    LOG(4, name(), true);
   }
 
 
@@ -156,7 +154,7 @@
   // Polls reader serial port and processes incoming tag data.
   void Reader::pollReader() {
     // If data available on Controller serial port, do something.
-    RD_LOG(6, F("Reader::pollReader() name, len: "), false);
+    RD_LOG(6, F("Reader.pollReader() name, len: "), false);
     RD_LOG(6, name(), false);    
     RD_LOG(6, F(", "), false);
     RD_LOG(6, raw_tag_length, true);
@@ -270,7 +268,7 @@
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     } else {
       //LOG(4, F("Unauthorized or invalid tag: "));
-      LOG(4, F("Unauthorized or invalid tag: "));
+      LOG(4, F("Tag not valid/authorized: "));
     }
 
     //Serial.println(tag_id);
@@ -311,14 +309,14 @@
       }
       LOG(5, "", true);
 
-      RD_LOG(6, F("cycleReaderPower() setting power LOW"), true);
+      RD_LOG(6, F("cycleReaderPower() setting LOW"), true);
             
       //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
       last_reader_power_cycle_ms = current_ms;
       
     } else if (current_ms >= cycle_low_finish_ms) {
-      RD_LOG(6, F("cycleReaderPower() setting power HIGH"), true);
+      RD_LOG(6, F("cycleReaderPower() setting HIGH"), true);
       //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
     }
