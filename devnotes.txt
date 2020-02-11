@@ -785,7 +785,7 @@ TODO: √ Create a better 5v regulated power supply for entire project.
 			√ Tried a LM7805 with the recommended capacitors (on their spec sheet),
 			and it works much better than the crapy cheap switching regulator.
 			
-TODO: Consider storing in EEPROM last-up-time and total-number-of-runs, just for fun.
+TODO: Consider storing in EEPROM last-up-time and total-number-of-runs, just for info.
 
 TODO: Consider making eeprom-addresses automatic, based on sizes all stored objects.
 			state_epradrs = 0
@@ -793,24 +793,36 @@ TODO: Consider making eeprom-addresses automatic, based on sizes all stored obje
 			settings_epradrs = tags_epradrs + sizeof(tags-object) + 1
 			
 TODO: - Consider using a rotating array of bytes for state.
-			Doesn't buy us anything, since current-position needs to be stored somewhere static.
+			Update: Won't buy us anything, since current-position needs to be stored somewhere static.
 			
-TODO: Clean up and shorten ALL strings to reduce progmem usage.
+TODO: √ Clean up and shorten ALL strings to reduce progmem usage.
 
-TODO: Move debugMode() from Settings to Logger.
+TODO: Move debugMode() function from Settings to Logger.
 
-TODO: Play beep (or two) when tag scanned in admin mode.
+TODO: √ Play beep (or two) when tag scanned in admin mode.
 
-TODO: Fix led/beeper when calling with specific num-cycles. It gives inconsistent number of beeps.
+TODO: √ Fix led/beeper when calling with specific num-cycles. It gives inconsistent number of beeps.
 			Sometimes it doesn't run at all.
 			
-			Maybe try calling off(), after cycle-count has reached its limit.
+			√ Maybe try calling off(), after cycle-count has reached its limit.
 			
-TODO: Beeper triggered during add-tag is always 1 cycle shorter than specified.
+TODO: √ Beeper triggered durring add-tag is always 1 cycle shorter than specified.
 			This means that a beep called with 1 cycle won't be heard.
+			
+			Update: Beeper and blinker issues have been fixed by refining the Led logic and cycles.
 			
 TODO: Change the work 'phase' to 'interval' in Led files.
 			
-TODO: During admin, 4-quick-beeps after failed scan have a too-long first beep.
-			This issue goes away after running an AT command. What is changing? 
+TODO: √ During admin, 4-quick-beeps after failed scan have a too-long first beep.
+			This issue goes away after running an AT command. What is changing?
 			
+			Update: The extra-long beep is from the switching between listening to the Reader
+			and the Menu. Calling the AT command menu item resets the SW menu, and this seems
+			to fix the issue. So I put the same reset commands on SW at the point where Current
+			is set, but only if 'this' is HW.
+
+TODO: Make it so when Menu is waiting for tag scan, the cycle-reader function runs more
+			often than 5 sec.
+			
+TODO: Consider moving RunMode to Controller instead of Menu.
+

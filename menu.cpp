@@ -71,8 +71,9 @@
   void Menu::Begin() {
     LOG(4, F("Menu.Begin()"), true);
     HW->begin();
+    HW->reader->reader_power_cycle_high_duration = 1UL;
     SW->begin();
-
+    
     // NOTE: Menu::Current is set in checkSerialPort()
   }
   
@@ -171,7 +172,7 @@
     if (! Current || Current == this) adminTimeout();
 
     // TODO: Re-enable this after decoupling from readLine (which should only care about completed buff).
-    //       Really? Is this todo still relevant?
+    //       Really? Is this still relevant?
     //checkSerialPort();
     
     call();
@@ -225,6 +226,9 @@
       TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 
       RunMode = 0;
+
+      reader->reader_power_cycle_high_duration = 0UL;
+      
       FREERAM("exitAdmin()");
     }
   }
@@ -250,17 +254,15 @@
   void Menu::checkSerialPort() {
     if (strcmp(instance_name, "SW") == 0) {
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
-      //  sp->listen();
-      //  while (! sp->isListening()) delay(2);
+
       if (! sp->isListening()) {
         sp->listen();
+        LOG(6, F("Menu listen"), true);
         delay(100);
       }
       while (! sp->isListening()) {
         ; //delay(2);
       }
-      //delay(get_tag_from_scanner ? 10 : 1);
-      //delay(get_tag_from_scanner ? 10 : 0);
     }
     
     if (serial_port->available()) {
@@ -268,7 +270,23 @@
       // If someone typed anything into this serial port,
       // and Current isn't already set,
       // make this instance the Current one.
-      if (! Current) { Current = this; Beeper->mediumBeep(1); }
+      if (! Current) {
+        Current = this;
+
+        // This is new, an attempt to mimic selecting manage-bt,
+        // which cleans up the first beep of a multi-beep signal
+        // after tag-scanning during add-tag.
+        // This should only run on the SW menu object, if 'this'
+        // is the HW object.
+        //
+        if (this == HW) {
+          SW->resetStack();
+          SW->clearSerialPort();
+          SW->resetInputBuffer();
+        }
+        
+        Beeper->mediumBeep(1);
+      }
 
       // Always update the admin timeout when user inputs anything.
       updateAdminTimeout();
@@ -574,7 +592,6 @@
   }
 
 
-
   /***  Menu  ***/
   
   void Menu::menuMain(void *dat) {
@@ -800,7 +817,7 @@
    These functions are specific to the convoluted back-and-forth
    between the two serial interfaces (HW, SW), and the logic
    is specific to the process of managing the BT (SW) port
-   via the HW serial interface menu. 
+   via the HW serial interface menu object. 
   */
   
   void Menu::menuManageBT(void *dat) {

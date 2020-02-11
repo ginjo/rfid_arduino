@@ -61,6 +61,7 @@
 
     if (! serial_port->isListening()) {
       serial_port->listen();
+      LOG(6, F("Reader listen"), true);
       delay(100); // Gives better chances of tag being read when adding tags by scanning.
     }
     while (! serial_port->isListening()) {
@@ -68,6 +69,7 @@
     }
 
     RD_LOG(6, F("READER LOOP BEGIN "), false);
+    
     current_ms = millis();
     RD_LOG(6, current_ms, true);
     
