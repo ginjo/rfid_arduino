@@ -611,13 +611,7 @@ TODO: √ Change log level of reader byte-detail output to 6 (instead of 5).
 TODO: √ Prevent settings list for printing at startup if log level < 4.
 
 TODO: √ Preface each log line with level name and Uptime().
-      How to handle log items that are in the midddle of a line?
-      
-      Maybe only do this for levels 1-3.
-      
-      This will require a function prepareDat().
-      
-      Only do this during run-mode == 0
+      Must handle log items that are in the midddle of a line.
       
 TODO: Add log line in .ino for initialization of BTserial port.
 
@@ -811,7 +805,7 @@ TODO: √ Beeper triggered durring add-tag is always 1 cycle shorter than specif
 			
 			Update: Beeper and blinker issues have been fixed by refining the Led logic and cycles.
 			
-TODO: Change the work 'phase' to 'interval' in Led files.
+TODO: Change the work 'phase' to 'interval' in Led files, or vise-versa.
 			
 TODO: √ During admin, 4-quick-beeps after failed scan have a too-long first beep.
 			This issue goes away after running an AT command. What is changing?
@@ -821,8 +815,10 @@ TODO: √ During admin, 4-quick-beeps after failed scan have a too-long first be
 			to fix the issue. So I put the same reset commands on SW at the point where Current
 			is set, but only if 'this' is HW.
 
-TODO: Make it so when Menu is waiting for tag scan, the cycle-reader function runs more
+TODO: √ Make it so when Menu is waiting for tag scan, the cycle-reader function runs more
 			often than 5 sec.
+			
+			Should this be a setting? Like the 3-sec cycle when in timeout mode.
 			
 TODO: Consider moving RunMode to Controller instead of Menu.
 
