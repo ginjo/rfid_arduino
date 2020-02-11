@@ -7,15 +7,10 @@
   #include <EEPROM.h>
 
   // Constructors
-  // Receives a Reader and an array of Led objecs (*RGB[] from .ino file).
-  //Controller::Controller(Reader *_reader, Led *_blinker[], Led *_beeper) :
-  //Controller::Controller(Reader *_reader, Led _blinker[], Led *_beeper) :
   Controller::Controller(Reader *_reader) :
     //proximity_state(0),
     proximity_state(S.proximity_state_startup == 2 ? EEPROM.read(0) : S.proximity_state_startup),
     reader(_reader),
-    //blinker(_blinker),
-    //beeper(_beeper),
     ctrl_status(0)
   { ; }
 
@@ -24,9 +19,6 @@
   void Controller::begin() {
     // Make sure to run this somewhere, if not here.
     initializeOutput();
-    
-    // Sets local 'reader' to instance of Reader.
-    //reader = GetReader(S.default_reader); // Moving to main .ino, to be passed into Controller::Controller().
 
     LOG(4, F("Starting Controller with "), false);
     LOG(4, reader->name(), false);
@@ -37,7 +29,6 @@
     LOG(4, "", true);
         
     // Initializes the reader power/reset control.
-    //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? HIGH : LOW);
     // This first one is to clear any built-up charge, as something is holding the reader low at startup.
     digitalWrite(READER_POWER_CONTROL_PIN, reader->power_control_logic ? LOW : HIGH);
     delay(50);
@@ -54,14 +45,6 @@
 
   // Initializes output switch.
   void Controller::initializeOutput() {
-        
-    // Starts up with whatever state we left off in.
-    // Protects against thief using 'admin' to move
-    // in fits and starts, since a failed proximity
-    // timeout will set S.proximity_state to 0.
-    // This also tells the proximityStateController
-    // where we left off at power-down (or reset).
-    //proximity_state = S.proximity_state;
 
 
     LOG(4, F("Setting outpt switch: "));
@@ -101,29 +84,33 @@
     
 
     if (
-    // If NO TAG READ AT STARTUP and reader has recently power cycled.
+    // TIMEOUT (grace period)
+    // If no tag read at startup and reader has recently power cycled.
     //
     // This should probably calculate or use global setting for
-    // appropriate time-to-wait since last power cycle.
+    // appropriate time-to-wait since last power cycle. (isn't this done?)
 
       reader->last_tag_read_ms == 0UL &&
       reader->last_reader_power_cycle_ms > 0UL &&
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
-
-      if (ctrl_status != 1) LOG(3, F("TIMEOUT: grace period"), true); // only prints once.
       
       CT_LOG(6, F("Timeout:grace"), true);
       RGB[0]->slowBlink();
       RGB[1]->off();
-      //blinker[2]->off();
-      Beeper->slowBeep(3);
+      
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
+
+      if (ctrl_status != 1) {
+        LOG(3, F("TIMEOUT: startup"), true);
+        Beeper->slowBeep(3);
+      }
 
       ctrl_status = 1;
     
     } else if (
+    // TIMEOUT (general).
     // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
       
       reader->msSinceLastTagRead() > reader->tagLastReadTimeoutX1000() &&
@@ -132,19 +119,22 @@
       reader->msSinceLastReaderPowerCycle() > 2000UL
       ){
 
-      if (ctrl_status != 2) LOG(3, F("TIMEOUT: general"), true); // only prints once.
-      
       CT_LOG(6, F("Timeout:general"), true);
       RGB[0]->slowBlink();
       RGB[1]->off();
-      //blinker[2]->off();
-      Beeper->slowBeep(3);
+      
       setProximityState(0);
       reader->reader_power_cycle_high_duration = 3UL;
+
+      if (ctrl_status != 2) {
+        LOG(3, F("TIMEOUT: general"), true); // only prints once.
+        Beeper->slowBeep(3);
+      }
 
       ctrl_status = 2;
 
     } else if (
+    // AGING phase of controller.
     // If last read is greater than reader-power-cycle-total AND
     // less than final timeout total, we're in the AGING zone.
     
@@ -153,61 +143,62 @@
       reader->msSinceLastTagRead() <= reader->tagLastReadTimeoutX1000()
       ){
 
-      if (ctrl_status != 3) LOG(3, F("AGING"), true); // only prints once.
-
       CT_LOG(6, F("Aging"), true);
       if (proximity_state) {
         RGB[0]->off();
         RGB[1]->fastBlink();
       } else {
         RGB[0]->fastBlink();
-        RGB[1]->off();        
+        RGB[1]->off(); 
       }
       
-      //blinker[2]->off();
+      //RGB[2]->off();
       Beeper->fastBeep();
       
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 3UL;
 
+      if (ctrl_status != 3) LOG(3, F("AGING"), true); // only prints once.
+
       ctrl_status = 3;
 
     } else if (
-    // If we're FRESH and still young.
+    // FRESH
+    // A valid and recognized tag has recently been read.
     
       reader->last_tag_read_ms > 0UL &&
       reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
       ){
-
-      if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
         
       CT_LOG(6, F("Fresh"), true);
       RGB[0]->off();
       RGB[1]->steady();
-      //blinker[2]->off();
+      //RGB[2]->off();
       Beeper->off();
+      
       setProximityState(1);
       reader->reader_power_cycle_high_duration = 0UL;
+
+      if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
 
       ctrl_status = 4;
 
     
     } else {
-    // No expected condition was met (not sure what to do here, if anything).
-    // This condition is not necessarily a problem.
-
-      //blinker[2]->off();
-
-      if (ctrl_status != 0) LOG(5, F("PASS"), true); // only prints once.
+    // PASS phase. Doesn't do anything.
+    // This condition is NOT a problem state.
       
       CT_LOG(6, F("Pass"), true); // always prints
 
-      // Only changes status if debugging, otherwise info-level debug will show
-      // some statuses (like TIMEOUT) at every loop.
-      if (LogLevel() >= 5U) ctrl_status = 0; 
+      // For debugging only.
+      // Must enable both of these to log "PASS".
+      //
+      // NOTE: This will print too much, unless the following ctrl_status is set to 0.
+      //if (ctrl_status != 0) LOG(5, F("PASS"), true); // only prints once.
+      // NOTE: This will foul up the timeout and aging beepers, so only use it when debugging requires!
+      //if (LogLevel() >= 5U) ctrl_status = 0; 
     }
 
-    // TODO: Is there a better place for this? UPDATE: I don't think so.
     if (Menu::RunMode == 0) digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
     
   } // proximityStateController()

@@ -33,11 +33,11 @@
       6 trace
   */
   
-  //#define DEBUG        // master debug control
+  #define DEBUG        // master debug control
   
   #ifdef DEBUG
     //#define INO_DEBUG    // main ino file
-    //#define BK_DEBUG   // blinker
+    #define BK_DEBUG   // blinker
     //#define CT_DEBUG   // controller
     //#define RD_DEBUG   // reader
     //#define MU_DEBUG   // menu

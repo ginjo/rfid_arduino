@@ -1,4 +1,4 @@
-/* 
+  /* 
  * Passive RFID-activated switch with bluetooth serial admin console.
  * For use in any switching application where RFID tag proximity is required for operation.
  * 
@@ -46,12 +46,14 @@
     BTserial->begin(S.bt_baud);
     delay(25);
 
-    LOG(4, F("RFID proximity sensor pre-boot"), true);
-    LOG(4, F("HW, SW serial @ "), false);
-    LOG(4, S.hw_serial_baud, false);
-    LOG(4, F(", "), false);
-    LOG(4, S.bt_baud, true);
-    FREERAM("Before Settings::Load()");
+    #ifdef INO_DEBUG
+      LOG(4, F("RFID proximity sensor pre-boot"), true);
+      LOG(4, F("HW, SW serial @ "), false);
+      LOG(4, S.hw_serial_baud, false);
+      LOG(4, F(", "), false);
+      LOG(4, S.bt_baud, true);
+      FREERAM("Before Settings::Load()");
+    #endif
     
     Settings::Load();
 
@@ -61,53 +63,51 @@
     while (! Serial) delay(10);
     delay(25);
 
-    LOG(4, F("Booting RFID proximity control, "));
-    LOG(4, VERSION);
-    LOG(4, F(", c++ "));
-    LOG(4, __cplusplus);
-    LOG(4, F(", "));
-    LOG(4, TIMESTAMP, true);
-
     #ifdef INO_DEBUG
+      LOG(4, F("Booting RFID proximity control, "));
+      LOG(4, VERSION);
+      LOG(4, F(", c++ "));
+      LOG(4, __cplusplus);
+      LOG(4, F(", "));
+      LOG(4, TIMESTAMP, true);
+  
       LOG(5, F("Loaded '"));
       LOG(5, S.settings_name);
       LOG(5, F("' with checksum '0x"));
       LOG(5, S.calculateChecksum(), 16);
       LOG(5, F("' of size "));
       LOG(5, sizeof(S), true);
-    #endif
-
-    LOG(4, F("HW, SW serial @ "), false);
-    LOG(4, S.hw_serial_baud, false);
-    LOG(4, F(", "), false);
-    LOG(4, S.bt_baud, true);
-
-    LOG(4, F("Debug mode: "));
-    LOG(4, S.debugMode(), true);
-
-    LOG(4, F("LogLevel(): "));
-    LOG(4, LogLevel(), true);
-    
-
-
-    // Displays current settings and readers.
-    if (LogLevel() >= 4U) {
-      LOG(4, "", true);
-      S.printSettings(&Serial);
-      Serial.println("");
-      Reader::PrintReaders(&Serial);
-      Serial.println("");
-      //
-      if (CanLogToBT()) {
-        S.printSettings(BTserial);
-        BTserial->println("");
-        Reader::PrintReaders(BTserial);
-        BTserial->println("");
+  
+      LOG(4, F("HW, SW serial @ "), false);
+      LOG(4, S.hw_serial_baud, false);
+      LOG(4, F(", "), false);
+      LOG(4, S.bt_baud, true);
+  
+      LOG(4, F("Debug mode: "));
+      LOG(4, S.debugMode(), true);
+  
+      LOG(4, F("LogLevel(): "));
+      LOG(4, LogLevel(), true);
+  
+  
+      // Displays current settings and readers.
+      if (LogLevel() >= 4U) {
+        LOG(4, "", true);
+        S.printSettings(&Serial);
+        Serial.println("");
+        Reader::PrintReaders(&Serial);
+        Serial.println("");
+        //
+        if (CanLogToBT()) {
+          S.printSettings(BTserial);
+          BTserial->println("");
+          Reader::PrintReaders(BTserial);
+          BTserial->println("");
+        }
       }
-    }
-
-    FREERAM("setup() pre new objcts");
-
+  
+      FREERAM("setup() pre new objcts");
+    #endif
 
     /*  Initialize main objects. See global files for declarations/definitions.  */
 
@@ -148,10 +148,12 @@
     // Activates the admin console.
     Menu::Begin();
 
-    FREERAM("setup() end");
-
-    // Add empty line before beginning loop.
-    LOG(4, "", true);
+     #ifdef BK_DEBUG
+      FREERAM("setup() end");
+  
+      // Add empty line before beginning loop.
+      LOG(4, "", true);
+    #endif
 
   } // setup()
 

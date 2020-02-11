@@ -806,7 +806,11 @@ TODO: Fix led/beeper when calling with specific num-cycles. It gives inconsisten
 			
 			Maybe try calling off(), after cycle-count has reached its limit.
 			
+TODO: Beeper triggered during add-tag is always 1 cycle shorter than specified.
+			This means that a beep called with 1 cycle won't be heard.
 			
+TODO: Change the work 'phase' to 'interval' in Led files.
 			
-			
+TODO: During admin, 4-quick-beeps after failed scan have a too-long first beep.
+			This issue goes away after running an AT command. What is changing? 
 			

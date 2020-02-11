@@ -17,8 +17,8 @@
   #endif
   
   // Max allowed size of intervals array.
-  #define INTERVALS_LENGTH 2 // for a max of 1 on/off cycles.
-  
+  #define INTERVALS_LENGTH 2 // for a max of 1 on/off per cycle.
+
   
   class Led {
   public:
@@ -71,9 +71,13 @@
     // A status signature, to know when state has changed
     int signature[4]; // led_pin, led_state, frequency, pin
 
+
     // constructor
     Led(int, const char[], const int=0, const int=0);
-    
+
+
+    // TODO: make freq & pwm default to 0, much easier to maintain.
+    //
     //void begin(int, const int[], const int=-1, const int=-1);
     void begin(uint16_t, const int, const int=-1, const int=-1);
     //void update(int, const int[], const int=-1, const int=-1);
@@ -83,7 +87,8 @@
     void handleBlinker();
     void printIntervals(const int[]);
     int  countIntervals(const int[]);
-    void printData();
+    void logData(const int);
+    void logWriteOneLine(const int);
     void reset();
 
     void steady();

@@ -64,7 +64,7 @@
     { "BT command", &Menu::menuManageBT, nullptr},// nullptr },    
     { "Settings", &Menu::menuSettings, nullptr},// nullptr },
     { "Save settings", &Menu::menuSaveSettings, nullptr},// nullptr },
-    { "Restart", &Menu::menuReboot, nullptr},// nullptr },
+    { "Restart", &Menu::menuReboot, nullptr},// nullptr }
   };
 
 
@@ -87,6 +87,7 @@
     
     // FIX: This was to allow AT commands to the BT module, but it currently breaks the menus.
     //      Find a better way to poll input from SW while admining with HW.
+    //      Is this still an issue? 2020-02-09
     if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {
       SW->loop();
     }
@@ -489,29 +490,31 @@
     // Warning: a missing 'break' will allow drop-thru to the next case.
     switch (result) {
       case 0:
-        serial_port->print(F("success"));
+        serial_port->println(F("success"));
         break;
       case 1:
-        serial_port->print(F("invalid tag-id string"));
+        serial_port->println(F("invalid tag-id string"));
         break;
       case 2:
-        serial_port->print(F("tag list is full"));
+        serial_port->println(F("tag list is full"));
         break;
       case 3:
-        serial_port->print(F("tag is duplicate"));
+        serial_port->println(F("tag is duplicate"));
         break;
       case -1:
-        serial_port->print(F("unknown error"));
+        serial_port->println(F("unknown error"));
         break;
     }
-    
-  	if (result = 0) {
-  	  Beeper->shortBeep(3);
-  	} else {
+
+    if (result == 0) {
       Beeper->mediumBeep(1);
-  	}
+    } else if (result > 0) {
+      Beeper->shortBeep(result);
+    } else if (result < 0) {
+      Beeper->shortBeep(5);
+    }
     
-    serial_port->println(); serial_port->println();
+    serial_port->println("");
     resetInputBuffer();
     //return result;
     menuListTags();
@@ -523,11 +526,11 @@
     char *str = (char*)dat;
     int tag_index = strtol(str, NULL, 10);
     
-    if (tag_index < 1 || str[0] == 13 || str[0] == 10 || tag_index >= TAG_LIST_SIZE) {
+    if (tag_index < 1 || str[0] == 13 || str[0] == 10 || tag_index > TAG_LIST_SIZE) {
       serial_port->println(F("deleteTag() aborted"));
     } else {
       int rslt = Tags::TagSet.deleteTagIndex(tag_index-1);
-      serial_port->print(F("DeleteTag() result: "));
+      serial_port->print(F("deleteTag() result: "));
       serial_port->println(rslt);
     }
     serial_port->println();
