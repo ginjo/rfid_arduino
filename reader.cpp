@@ -135,8 +135,14 @@
   uint32_t Reader::readerPowerCycleHighDuration() {
     if (reader_power_cycle_high_duration > 0UL) {
       return reader_power_cycle_high_duration;
-    } else {
+    //} else {
+    //  return S.reader_cycle_high_duration;
+    // Makes sure that reader will always cycle at least once in five seconds,
+    // even if reader_cycle_high_duration is greater than 5.
+    } else if (S.reader_cycle_high_duration <= 5) {
       return S.reader_cycle_high_duration;
+    } else {
+      return 5;
     }
   }
 

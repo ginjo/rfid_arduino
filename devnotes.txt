@@ -822,3 +822,7 @@ TODO: √ Make it so when Menu is waiting for tag scan, the cycle-reader functio
 			
 TODO: Consider moving RunMode to Controller instead of Menu.
 
+FIX:  Select-reader menu flow is not working correctly.
+
+FIX: Typing in a password that is too long will lock up the admin UI.
+

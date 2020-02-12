@@ -9,7 +9,7 @@
   // Constructors
   Controller::Controller(Reader *_reader) :
     //proximity_state(0),
-    proximity_state(S.proximity_state_startup == 2 ? EEPROM.read(0) : S.proximity_state_startup),
+    proximity_state(S.proximity_state_startup == 2 ? EEPROM.read(STATE_EEPROM_ADDRESS) : S.proximity_state_startup),
     reader(_reader),
     ctrl_status(0)
   { ; }
@@ -116,7 +116,7 @@
       reader->msSinceLastTagRead() > reader->tagLastReadTimeoutX1000() &&
       reader->last_reader_power_cycle_ms > 0UL &&
       reader->msSinceLastTagRead() > reader->msSinceLastReaderPowerCycle() &&
-      reader->msSinceLastReaderPowerCycle() > 2000UL
+      reader->msSinceLastReaderPowerCycle() > 2000UL // TODO: What is this 2000 figure?
       ){
 
       CT_LOG(6, F("Timeout:general"), true);

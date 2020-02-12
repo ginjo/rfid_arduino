@@ -886,8 +886,10 @@
     char cstr[len];
     strlcpy(cstr, (char*)_input, len); 
 
-    if (LogLevel() >=6) {
-      LOG(6, F("PW:")); LOG(6, len, false); LOG(6, F(":")); LOG(6, cstr, true);
+    // TODO: should be level 6 before running a build in a live .
+    int pw_login_log_level = 5;
+    if (LogLevel() >= pw_login_log_level) {
+      LOG(pw_login_log_level, F("PW:")); LOG(pw_login_log_level, len, false); LOG(pw_login_log_level, F(":")); LOG(pw_login_log_level, cstr, true);
       for (int n=0; n < (int)len-1; n++) {
         LOG(6, (int)(cstr)[n], true);
       }
