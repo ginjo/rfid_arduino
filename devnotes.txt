@@ -518,17 +518,19 @@ TODO: √ Missig some log items in BTserial when only log_to_bt is set (no HW pi
       to return false. Nothing we can do about this. Just use the debug pin, if you
       want to see the earlier log output in the BTserial monitor.
 
-TODO: Debug-logging clobbers HW menu interface when debug-pin is used.
+TODO: √ Debug-logging clobbers HW menu interface when debug-pin is used.
       Logging to HW interface should be minimal when HW serial menu is active.
       
       Ok, now all log-trace output is sent only with level 6.
       Not sure how to handle this issue though, when we need
       to view trace logging for classes with lots of looping log output.
       
-TODO: Standard log output should always show what is about to happen, not what just happened.
+      Update: I think this is mostly fixed with current logging scheme.
+      
+NOTE: Standard log output should always show what is about to happen, not what just happened.
       This will give you more info in case of a failure/crash/error.
       Debug log output should add the "what just happened" info.
-      Or do I have this backwards with regards to standard vs debug output.
+      Or do I have this backwards?
       
       Example (good):
         Loading settings
@@ -573,14 +575,16 @@ TODO: Test all the new logging calls at level 6 with each class _DEBUG enabled.
 TODO: Need some way to recover from sending AT command with no response. Timeout?
       Create a timeout function for waiting for serial input.
 
-TODO: Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4, 5, or 6).
+TODO: - Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4, 5, or 6).
       Or would that create a software-serial mess?
       Maybe only when debug button is LOW (or was LOW at startup)... ?
       
-TODO: Should debug button take level all the way to max (6)?
+      Probably not: During run mode 0, the only SW serial listener should be the reader.
+      
+TODO: - Should debug button take level all the way to max (6)?
       See below for suggested refactor of Settings.debug_mode.
 
-TODO: Log level 5 with BTserial connected & with Reader debug enabled causes
+Fix:  Log level 5 with BTserial connected & with Reader debug enabled causes
       reader/controller confusion when tag is read, leading to false aging mode.
       (it's the reader byte detail that seems to cause the most trouble).
       The problem goes away immediattely when log level is reverted to 4, or when
@@ -619,11 +623,13 @@ TODO: Add option to control volume of beeper, and to disable it entirely.
       Is that safe? There should be a warning that it could be dangerous
       to not know when a tag read is growing stale (aging).
       
-TODO: Make sure output switch is always on as early as possible, even before
+TODO: √ Make sure output switch is always on as early as possible, even before
       saved proximity-state is considered. This is so output-controlled devices
       (motors, pumps, etc) can power up per their original design.
       
       Do we need hardware for this?
+      
+      Update: Now it goes on as soon as the output pin is initialized.
       
 TODO: √ LED is behaving weirdly, especially in aging and timeout states.
       The errors don't happen with Led debug enabled!
@@ -679,8 +685,9 @@ NOTE: √ All of the UB appears to have been fixed.
 			1. Was char array overflow in PrintUptime().
 			2. Was integer overflow in Led::cycle_count.
 			
-TODO: Make short-reader-power-cycle a bona fide setting.
-			Is this really necessary?
+TODO: - Make short-reader-power-cycle a bona fide setting.
+			Is this really necessary? I don't think so, since the short cycles
+			(1s at startup, 3s during timeout) are specific to certain situations.
 
 TODO: Could the entire SettingsList[] code be put into its own pair of files?
 			Would this be any benefit?
@@ -691,7 +698,7 @@ TODO: √ Do the struct array thing with Menu items.
 			
 TODO: √ Probably need menu-items-length and menu-item-name-length globals.
 			
-TODO: (security) Set up password protection for admin mode. Do not use Settings object to store it.
+TODO: √ (security) Set up password protection for BT admin mode.
 
 TODO: √ (security) Add short beep(s) when admin mode is activated.
 
@@ -824,5 +831,16 @@ TODO: Consider moving RunMode to Controller instead of Menu.
 
 FIX:  Select-reader menu flow is not working correctly.
 
-FIX: Typing in a password that is too long will lock up the admin UI.
+FIX:  Typing in a too-long password at the login prompt will lock up the admin UI.
+
+FIX:  Save Settings is still not showing a reliable response when using BT menu.
+
+TODO: Make 3 failed pw attempts exit admin or reboot.
+
+TODO: Settings setters should probably return boolean in case setting fails (esp for password).
+
+TODO: In Menu log level 6, 'bufferReady?' logging is spitting out too much data, when no bytes
+			are in buffer.
+			
+TODO: Make reader-cycle max duration 15 instead of 5.
 

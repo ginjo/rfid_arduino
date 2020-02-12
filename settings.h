@@ -27,11 +27,12 @@
   #endif
   
   #include "storage.h"
-    
-  #define SETTINGS_SIZE 15 // quantity of settings vars
+
+  // NOTE: Remember to iclude null terminator in all char array lengths.
+  #define SETTINGS_SIZE 16 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 27 // max length for 'setting_name' and 'settings_name'. Remember null-terminator.
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var.
-  //#define SETTINGS_EEPROM_ADDRESS 800 // see storage.h, see settings class definition
+  #define ADMIN_PASSWORD_SIZE 11 // max length of admin password.
 
 
   /*
@@ -109,6 +110,7 @@
     int admin_startup_timeout;
     bool log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
     uint8_t log_level;
+    char admin_password[ADMIN_PASSWORD_SIZE];
 
 
     /*  Functions  */
@@ -168,6 +170,9 @@
     
     void display_log_level(char*);
     void set_log_level(char*);
+
+    void display_admin_password(char*);
+    void set_admin_password(char*);
 
   };  // Settings class
 

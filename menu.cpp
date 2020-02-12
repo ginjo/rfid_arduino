@@ -882,22 +882,35 @@
   }
   
   void Menu::menuProcessLogin(void *_input) {
+    // NOTE: This will chomp the trailing return (good), since strlen doesn't count the null terminator.
+    
     unsigned long len = strlen((char*)_input);
     char cstr[len];
     strlcpy(cstr, (char*)_input, len); 
 
-    // TODO: should be level 6 before running a build in a live .
-    int pw_login_log_level = 5;
-    if (LogLevel() >= pw_login_log_level) {
-      LOG(pw_login_log_level, F("PW:")); LOG(pw_login_log_level, len, false); LOG(pw_login_log_level, F(":")); LOG(pw_login_log_level, cstr, true);
-      for (int n=0; n < (int)len-1; n++) {
-        LOG(6, (int)(cstr)[n], true);
+    #ifdef MU_DEBUG
+      int pw_login_log_level = 5;
+      
+      if (LogLevel() >= pw_login_log_level) {
+        LOG(pw_login_log_level, F("PWs"), true);
+        
+        //LOG(pw_login_log_level, F("pw:")); LOG(pw_login_log_level, len, false); LOG(pw_login_log_level, F(":")); LOG(pw_login_log_level, cstr, true);
+        for (int n=0; n < (int)len-1; n++) {
+          LOG(pw_login_log_level, (int)(cstr)[n], false); LOG(pw_login_log_level, F("."), false);
+        }
+        LOG(pw_login_log_level, F(""), true);
+
+        //LOG(pw_login_log_level, F("PW:")); LOG(pw_login_log_level, strlen(S.admin_password), false); LOG(pw_login_log_level, F(":")); LOG(pw_login_log_level, S.admin_password, true);
+        for (int n=0; n < (int)strlen(S.admin_password); n++) {
+          LOG(pw_login_log_level, (int)(S.admin_password)[n], false); LOG(pw_login_log_level, F("."), false);
+        }
+        LOG(pw_login_log_level, F(""), true);
       }
-    }
+    #endif
     
-    char pw[] = "2928";
+    //char pw[] = "2928";
     
-    if (strcmp(cstr, pw) == 0) {
+    if (strcmp(cstr, S.admin_password) == 0) {
   		menuMain();
   	} else {
   		menuLogin();

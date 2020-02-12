@@ -35,6 +35,7 @@
     { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
     { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
     { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
+    { "admin pw", &Settings::display_admin_password, &Settings::set_admin_password}
   };  
 
   /*  Constructor  */
@@ -82,6 +83,7 @@
     log_level(4)
   {     
     strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
+    strlcpy(admin_password, "12345", ADMIN_PASSWORD_SIZE);
   }
 
  
@@ -331,7 +333,13 @@
   void Settings::display_log_level(char *out) {sprintf_P(out, PSTR("%hhu"), log_level);}
   void Settings::set_log_level(char *data) {log_level = (uint8_t)strtol(data, NULL, 10);}
 
-
+  void Settings::display_admin_password(char *out) {sprintf_P(out, PSTR("*****"));}
+  void Settings::set_admin_password(char *data) {
+    // NOTE: This will chomp the trailing return (good), since strlen doesn't count the null terminator.
+    size_t len = strlen(data);
+    if (len > ADMIN_PASSWORD_SIZE) return; // TODO: Make return boolean here.
+    strlcpy(admin_password, data, len);
+  }
 
   /*  Global & Special Initializers  */
 
