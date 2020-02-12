@@ -132,6 +132,8 @@
     void menuManageBT(void* = nullptr);
     void menuSendAtCommand(void* = nullptr);
     void menuPrintATResponse(void* = nullptr);
+    void menuLogin(void* = nullptr);
+    void menuProcessLogin(void* = nullptr);
     
   }; // Menu
 

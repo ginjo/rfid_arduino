@@ -55,16 +55,16 @@
   menu_item_T const Menu::MenuItems[MENU_ITEMS_SIZE] PROGMEM = { 
     { "Exit", &Menu::updateAdminTimeout, (void*)0},// nullptr },
 
-    { "Add tag", &Menu::menuAddTag, nullptr},// nullptr },
-    { "Delete tag", &Menu::menuDeleteTag, nullptr},// nullptr },
-    { "Delete all tags", &Menu::menuDeleteAllTags},// nullptr, nullptr },
-    { "List tags", &Menu::menuListTags, nullptr},// nullptr },
-    { "List Readers", &Menu::menuListReaders, nullptr},// nullptr },
-    { "Show free mem", &Menu::menuShowFreeMemory, nullptr},// nullptr },
-    { "BT command", &Menu::menuManageBT, nullptr},// nullptr },    
-    { "Settings", &Menu::menuSettings, nullptr},// nullptr },
-    { "Save settings", &Menu::menuSaveSettings, nullptr},// nullptr },
-    { "Restart", &Menu::menuReboot, nullptr},// nullptr }
+    { "Add tag", &Menu::menuAddTag, nullptr},  // nullptr },
+    { "Delete tag", &Menu::menuDeleteTag, nullptr},  // nullptr },
+    { "Delete all tags", &Menu::menuDeleteAllTags, nullptr},  //, nullptr },
+    { "List tags", &Menu::menuListTags, nullptr},  // nullptr },
+    { "List Readers", &Menu::menuListReaders, nullptr},  // nullptr },
+    { "Show free mem", &Menu::menuShowFreeMemory, nullptr},  // nullptr },
+    { "BT command", &Menu::menuManageBT, nullptr},  // nullptr },    
+    { "Settings", &Menu::menuSettings, nullptr},  // nullptr },
+    { "Save settings", &Menu::menuSaveSettings, nullptr},  // nullptr },
+    { "Restart", &Menu::menuReboot, nullptr},  // nullptr }
   };
 
 
@@ -117,7 +117,6 @@
   void Menu::begin() {    
     updateAdminTimeout((void*)S.admin_startup_timeout);
     resetInputBuffer();
-    //resetStack(&Menu::menuMain);
     
     if (strcmp(instance_name, "HW") == 0) {
       /* If this is hard-serial instance, just listen for input. */
@@ -145,7 +144,8 @@
        But we still need to create the listener/callback, so input will be processed.
       */      
       //menuMainPrompt("");
-      readLineWithCallback(&Menu::menuSelectedMainItem);
+      //readLineWithCallback(&Menu::menuSelectedMainItem);
+      menuLogin();
     }
  	}
 
@@ -871,5 +871,34 @@
     HW->serial_port->println("");
 
     HW->menuManageBT();
+  }
+  
+  void Menu::menuLogin(void *dat) {
+      resetStack();
+      clearSerialPort();
+      resetInputBuffer();
+      
+      prompt_P(PSTR("Password"), &Menu::menuProcessLogin);  	
+  }
+  
+  void Menu::menuProcessLogin(void *_input) {
+    unsigned long len = strlen((char*)_input);
+    char cstr[len];
+    strlcpy(cstr, (char*)_input, len); 
+
+    if (LogLevel() >=6) {
+      LOG(6, F("PW:")); LOG(6, len, false); LOG(6, F(":")); LOG(6, cstr, true);
+      for (int n=0; n < (int)len-1; n++) {
+        LOG(6, (int)(cstr)[n], true);
+      }
+    }
+    
+    char pw[] = "2928";
+    
+    if (strcmp(cstr, pw) == 0) {
+  		menuMain();
+  	} else {
+  		menuLogin();
+  	}
   }
   

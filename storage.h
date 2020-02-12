@@ -14,6 +14,7 @@
   #endif
 
   #define STORAGE_NAME_SIZE 16 // should include null-terminator
+  
   #define STATE_EEPROM_ADDRESS 0
   #define TAGS_EEPROM_ADDRESS 700
   #define SETTINGS_EEPROM_ADDRESS 800
@@ -23,6 +24,7 @@
    *  cpp examples. Also note that we are no longer using static vars in this way.
    *  
    *  This is a base class, Storage, that provides EEPROM persistance for any sublclass instance.
+   *  All non-static member data will be saved with the instance.
    *  
    *  The key to making this work is to make the base class also a template class, and to
    *  pass in the subclass name when declaring the subclass. This is referred to as the CRTP
