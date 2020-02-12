@@ -839,8 +839,18 @@ TODO: Make 3 failed pw attempts exit admin or reboot.
 
 TODO: Settings setters should probably return boolean in case setting fails (esp for password).
 
-TODO: In Menu log level 6, 'bufferReady?' logging is spitting out too much data, when no bytes
+TODO: - In Menu log level 6, 'bufferReady?' logging is spitting out too much data, when no bytes
 			are in buffer.
 			
-TODO: Make reader-cycle max duration 15 instead of 5.
+			Update: gonna leave this alone, since it's required for deep debugging.
+			
+TODO: √ Make reader-cycle max duration 15 instead of 5.
 
+TODO: Consider a soft-timeout-duration setting, separate from reader-cycle-high-duration,
+			OR just change name of reader-cycle-high-duration to soft-timeout-duration. In that case
+			leave the function readerCycleHighDuration() as is, and that can still pull data
+			from the newly named (but essentially the same) soft-timeout-duration.
+			
+			This is one of those SW/HW architecture vs UI architecture issues. Which do we favor?
+			Can a solution be found that satisfies both SW/HW and UI architecture?
+			
