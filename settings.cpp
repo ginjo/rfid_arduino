@@ -17,25 +17,25 @@
     See notes in settings.h for further info on Settings structure
   */
   settings_list_T const Settings::SettingsList[SETTINGS_SIZE] PROGMEM = {
-    { "admin_startup_timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
-    { "admin_timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
-    { "proximity_state_startup", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
+    { "Startup state", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
+    { "Startup timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
+    { "Admin timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
+    { "Hard timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
+    { "Soft timeout", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
 
-    { "log_level", &Settings::display_log_level, &Settings::set_log_level},
-    { "debug_level", &Settings::display_debug_level, &Settings::set_debug_level},
-    { "log_to_bt", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
-    
-    { "tag_last_read_timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
-    { "reader_cycle_high_duration", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
-    { "reader_cycle_low_duration", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
-    { "tag_read_sleep_interval", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
+    { "Log level", &Settings::display_log_level, &Settings::set_log_level},
+    { "Log to BT", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
+    { "Debug log level", &Settings::display_debug_level, &Settings::set_debug_level},
 
-    { "default_reader", &Settings::display_default_reader, &Settings::set_default_reader},
-    { "hw_serial_baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
-    { "bt_baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
-    { "rfid_baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
-    { "tone_frequency", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
-    { "admin pw", &Settings::display_admin_password, &Settings::set_admin_password}
+    { "Reader", &Settings::display_default_reader, &Settings::set_default_reader},
+    { "Reader cycle low (ms)", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
+    { "Tag read sleep (ms)", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
+
+    { "HW serial baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
+    { "BT serial baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
+    { "Reader serial baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
+    { "Tone freq", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
+    { "Admin password", &Settings::display_admin_password, &Settings::set_admin_password}
   };  
 
   /*  Constructor  */

@@ -882,8 +882,8 @@
   }
   
   void Menu::menuProcessLogin(void *_input) {
-    // NOTE: This will chomp the trailing return (good), since strlen doesn't count the null terminator.
     
+    // NOTE: This will chomp the trailing return (good), since strlen doesn't count the null terminator.
     unsigned long len = strlen((char*)_input);
     char cstr[len];
     strlcpy(cstr, (char*)_input, len); 
