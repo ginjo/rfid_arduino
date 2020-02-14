@@ -854,3 +854,5 @@ TODO: Consider a soft-timeout-duration setting, separate from reader-cycle-high-
 			This is one of those SW/HW architecture vs UI architecture issues. Which do we favor?
 			Can a solution be found that satisfies both SW/HW and UI architecture?
 			
+TODO: Remove the word 'reader' from Reader functions.
+

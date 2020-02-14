@@ -128,6 +128,7 @@
     return (uint32_t)(current_ms - last_reader_power_cycle_ms);
   }
 
+  // TODO: this is currently not used (2020-02-14), but should be to decouple reader-cycle-high-duration from soft-timeout.
   uint32_t Reader::msReaderCycleTotal() {
     return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
   }
