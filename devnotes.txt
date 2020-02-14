@@ -854,5 +854,13 @@ TODO: Consider a soft-timeout-duration setting, separate from reader-cycle-high-
 			This is one of those SW/HW architecture vs UI architecture issues. Which do we favor?
 			Can a solution be found that satisfies both SW/HW and UI architecture?
 			
+			Update: Controller should use the S.tag_last_read_soft_timeout (was reader-cycle-high-duration).
+							Reader should use readerPowerCycleHighDuration().
+							
+FIX:  See line 141 in Controller.cpp for needed repairs/updates resulting from the above changes.
+			
 TODO: Remove the word 'reader' from Reader functions.
-
+		
+TODO: Remove vars or functions that are redundant of each other.
+			For example: reader_cycle_total vs readerCycleTotal()
+			

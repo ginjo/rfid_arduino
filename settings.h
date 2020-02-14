@@ -91,10 +91,10 @@
 
     char settings_name[SETTINGS_NAME_SIZE];
     
-    uint32_t tag_last_read_timeout;
+    uint32_t tag_last_read_hard_timeout;
     uint32_t tag_read_sleep_interval; // ms
     uint32_t reader_cycle_low_duration; // ms
-    uint32_t reader_cycle_high_duration;
+    uint32_t tag_last_read_soft_timeout;
 
     uint32_t admin_timeout;
     int proximity_state_startup;
@@ -126,8 +126,8 @@
 
     /*  Getters and Setters for UI (Menu system)  */
 
-    void display_tag_last_read_timeout(char*);
-    void set_tag_last_read_timeout(char*);
+    void display_tag_last_read_hard_timeout(char*);
+    void set_tag_last_read_hard_timeout(char*);
     
     void display_tag_read_sleep_interval(char*);
     void set_tag_read_sleep_interval(char*);
@@ -135,8 +135,8 @@
     void display_reader_cycle_low_duration(char*);
     void set_reader_cycle_low_duration(char*);
     
-    void display_reader_cycle_high_duration(char*);
-    void set_reader_cycle_high_duration(char*);
+    void display_tag_last_read_soft_timeout(char*);
+    void set_tag_last_read_soft_timeout(char*);
     
     void display_admin_timeout(char*);
     void set_admin_timeout(char*);

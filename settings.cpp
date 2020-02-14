@@ -20,8 +20,8 @@
     { "Startup state", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
     { "Startup timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
     { "Admin timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
-    { "Hard timeout", &Settings::display_tag_last_read_timeout, &Settings::set_tag_last_read_timeout},
-    { "Soft timeout", &Settings::display_reader_cycle_high_duration, &Settings::set_reader_cycle_high_duration},
+    { "Hard timeout", &Settings::display_tag_last_read_hard_timeout, &Settings::set_tag_last_read_hard_timeout},
+    { "Soft timeout", &Settings::display_tag_last_read_soft_timeout, &Settings::set_tag_last_read_soft_timeout},
 
     { "Log level", &Settings::display_log_level, &Settings::set_log_level},
     { "Log to BT", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
@@ -48,7 +48,7 @@
     //settings_name("default-settings"),
   
     // ultimate valid-tag timeout
-    tag_last_read_timeout(30), // seconds
+    tag_last_read_hard_timeout(30), // seconds
 
     // time between attempts to listen to reader
     tag_read_sleep_interval(1000), // millis
@@ -58,10 +58,10 @@
 
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
-    reader_cycle_high_duration(15), // seconds
+    tag_last_read_soft_timeout(15), // seconds
 
     // idle time before admin mode switches to run mode
-    // should be greater than reader_cycle_high_duration
+    // should be greater than tag_last_read_soft_timeout
     admin_timeout(60), // seconds
 
     // Sets whether output switches off or on at startup.
@@ -288,8 +288,8 @@
 
   // TODO: Convert all strings to PSTR() (and sprintf to sprintf_P).
 
-  void Settings::display_tag_last_read_timeout(char *out) {sprintf_P(out, PSTR("%lu"), tag_last_read_timeout);}
-  void Settings::set_tag_last_read_timeout(char *data) {tag_last_read_timeout = (uint32_t)strtol(data, NULL, 10);}
+  void Settings::display_tag_last_read_hard_timeout(char *out) {sprintf_P(out, PSTR("%lu"), tag_last_read_hard_timeout);}
+  void Settings::set_tag_last_read_hard_timeout(char *data) {tag_last_read_hard_timeout = (uint32_t)strtol(data, NULL, 10);}
 
   void Settings::display_tag_read_sleep_interval(char *out) {sprintf_P(out, PSTR("%lu"), tag_read_sleep_interval);}
   void Settings::set_tag_read_sleep_interval(char *data) {tag_read_sleep_interval = (uint32_t)strtol(data, NULL, 10);}
@@ -297,8 +297,8 @@
   void Settings::display_reader_cycle_low_duration(char *out) {sprintf_P(out, PSTR("%lu"), reader_cycle_low_duration);}
   void Settings::set_reader_cycle_low_duration(char *data) {reader_cycle_low_duration = (uint32_t)strtol(data, NULL, 10);}
 
-  void Settings::display_reader_cycle_high_duration(char *out) {sprintf_P(out, PSTR("%lu"), reader_cycle_high_duration);}
-  void Settings::set_reader_cycle_high_duration(char *data) {reader_cycle_high_duration = (uint32_t)strtol(data, NULL, 10);}
+  void Settings::display_tag_last_read_soft_timeout(char *out) {sprintf_P(out, PSTR("%lu"), tag_last_read_soft_timeout);}
+  void Settings::set_tag_last_read_soft_timeout(char *data) {tag_last_read_soft_timeout = (uint32_t)strtol(data, NULL, 10);}
 
   void Settings::display_admin_timeout(char *out) {sprintf_P(out, PSTR("%lu"), admin_timeout);}
   void Settings::set_admin_timeout(char *data) { admin_timeout = (uint32_t)strtol(data, NULL, 10); if (admin_timeout < 10) {admin_timeout = 10;} }

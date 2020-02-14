@@ -139,6 +139,8 @@
     // less than final timeout total, we're in the AGING zone.
     
       reader->last_tag_read_ms > 0UL &&
+      // FIX: These need upating to use the newly named (and slightly repurposed)
+      //      vars or functions that separate soft-timeout from reader-cycle-high.
       reader->msSinceLastTagRead() > reader->ms_reader_cycle_total &&
       reader->msSinceLastTagRead() <= reader->tagLastReadTimeoutX1000()
       ){

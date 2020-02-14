@@ -37,7 +37,7 @@
     cycle_high_finish_ms(0UL),
     last_tag_read_id(0UL),
     serial_port(NULL) // experimental, so that serial_port is initialized
-    //tag_last_read_timeout_x_1000(0UL),
+    //tag_last_read_hard_timeout_x_1000(0UL),
     
   {
     LOG(4, F("Loading reader: "));
@@ -72,15 +72,17 @@
     
     current_ms = millis();
     RD_LOG(6, current_ms, true);
-    
+
+    // TODO: 1. Make sure upstream caller can handle readerPowerCycleHighDuration().
+    //       2. Check if these vars have a function() equivalent. Sort them out if so.
     cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.reader_cycle_low_duration);
     cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
     
     //RD_PRINT(F("cycle_low_finish_ms: ")); RD_PRINTLN(cycle_low_finish_ms);
     //RD_PRINT(F("cycle_high_finish_ms: ")); RD_PRINTLN(cycle_high_finish_ms);
     
-    ms_reader_cycle_total = (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
-    //tag_last_read_timeout_x_1000 = (uint32_t)(S.tag_last_read_timeout*1000UL);
+    ms_reader_cycle_total = (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + readerPowerCycleHighDuration()*1000UL);
+    //tag_last_read_hard_timeout_x_1000 = (uint32_t)(S.tag_last_read_hard_timeout*1000UL);
 
     
     /*
@@ -130,26 +132,30 @@
 
   // TODO: this is currently not used (2020-02-14), but should be to decouple reader-cycle-high-duration from soft-timeout.
   uint32_t Reader::msReaderCycleTotal() {
-    return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.reader_cycle_high_duration*1000UL);
+    return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + readerPowerCycleHighDuration()*1000UL);
   }
 
   uint32_t Reader::readerPowerCycleHighDuration() {
     if (reader_power_cycle_high_duration > 0UL) {
+      // This is a local var only. If you set it, make sure to
+      // return it to 0UL at some point.
       return reader_power_cycle_high_duration;
-    //} else {
-    //  return S.reader_cycle_high_duration;
-    //
-    // Makes sure that reader will always cycle at least a few times a minute,
-    // even if reader_cycle_high_duration is set to a large value.
-    } else if (S.reader_cycle_high_duration <= 15) {
-      return S.reader_cycle_high_duration;
+      
+      //} else {
+      //  return S.tag_last_read_soft_timeout;
+      //
+      // Makes sure that reader will always cycle at least a few times a minute,
+      // even if is set to a large value.
+      //
+    } else if (S.tag_last_read_soft_timeout < 15) {
+      return S.tag_last_read_soft_timeout;
     } else {
       return 15;
     }
   }
 
   uint32_t Reader::tagLastReadTimeoutX1000() {
-    return (uint32_t)(S.tag_last_read_timeout*1000UL);
+    return (uint32_t)(S.tag_last_read_hard_timeout*1000UL);
   }
 
   //  uint32_t Reader::cycleLowFinishMs() {
