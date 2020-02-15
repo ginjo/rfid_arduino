@@ -71,7 +71,7 @@
   void Menu::Begin() {
     LOG(4, F("Menu.Begin()"), true);
     HW->begin();
-    HW->reader->reader_power_cycle_high_duration = 1UL;
+    HW->reader->power_cycle_high_duration_override = 1UL;
     SW->begin();
     
     // NOTE: Menu::Current is set in checkSerialPort()
@@ -158,7 +158,7 @@
     // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
     if (millis() % 1000 < 500 && !Current && this == SW) {
       reader->loop();
-      if (reader->last_tag_read_id && !get_tag_from_scanner) {
+      if (reader->tag_last_read_id && !get_tag_from_scanner) {
         exitAdmin();
       }
 
@@ -227,7 +227,7 @@
 
       RunMode = 0;
 
-      reader->reader_power_cycle_high_duration = 0UL;
+      reader->power_cycle_high_duration_override = 0UL;
       
       FREERAM("exitAdmin()");
     }
@@ -431,8 +431,8 @@
   } // readLine()
 
   // This should loop as long as get_tag_from_scanner == 1,
-  // until reader has last_tag_read_id, then this will set buff
-  // with reader's last_tag_read_id and set get_tag_from_scanner to 0.
+  // until reader has tag_last_read_id, then this will set buff
+  // with reader's tag_last_read_id and set get_tag_from_scanner to 0.
   //
   // The tag reader needs to be checked and handled regardless
   // of whether or not typed input is available on the UI serial-port.
@@ -440,10 +440,10 @@
   void Menu::getTagFromScanner() {
     if (get_tag_from_scanner) {
       reader->loop();
-      if (reader->last_tag_read_id) {
-        MU_LOG(6, F("Menu.getTagFromScanner() found tag "), false); MU_LOG(6, reader->last_tag_read_id, true);
+      if (reader->tag_last_read_id) {
+        MU_LOG(6, F("Menu.getTagFromScanner() found tag "), false); MU_LOG(6, reader->tag_last_read_id, true);
         char str[10]; // TODO: This was 9, shouldn't it be 12 (10 digits + LF + null)? Why do we need this var?
-        sprintf(str, "%lu", reader->last_tag_read_id);
+        sprintf(str, "%lu", reader->tag_last_read_id);
         strlcpy(buff, str, sizeof(buff));
         // Adds missing LF to end of buff (and pushes null to next byte).
         for (uint8_t i=0; i < sizeof(buff); i++) {
@@ -454,7 +454,7 @@
             break;
           }
         }
-        reader->last_tag_read_id = 0;
+        reader->tag_last_read_id = 0;
         reader->resetBuffer();
         get_tag_from_scanner = 0;
       }

@@ -50,6 +50,7 @@
     //void updateProximityState(int);
     void proximityStateController();
     void initializeOutput();
+    uint32_t softCycleTotalMs();
   
   };  // Controller
 

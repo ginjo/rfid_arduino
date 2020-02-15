@@ -74,12 +74,12 @@
   // 
   void Controller::proximityStateController() {
     CT_LOG(6, F("* Controller *"), true);
-    CT_LOG(6, F("last_tag_read_ms "), false); CT_LOG(6, reader->last_tag_read_ms, true);
-    CT_LOG(6, F("last_reader_power_cycle_ms "), false); CT_LOG(6, reader->last_reader_power_cycle_ms, true);
+    CT_LOG(6, F("tag_last_read_ms "), false); CT_LOG(6, reader->tag_last_read_ms, true);
+    CT_LOG(6, F("last_power_cycle_ms "), false); CT_LOG(6, reader->last_power_cycle_ms, true);
     CT_LOG(6, F("msSinceLastTagRead() "), false); CT_LOG(6, reader->msSinceLastTagRead(), true);
-    CT_LOG(6, F("msSinceLastReaderPowerCycle() "), false); CT_LOG(6, reader->msSinceLastReaderPowerCycle(), true);
-    CT_LOG(6, F("ms_reader_cycle_total "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
-    //CT_LOG(6, F("tagLastReadTimeoutX1000() "), false); CT_LOG(6, reader->tagLastReadTimeoutX1000(), true);
+    CT_LOG(6, F("msSinceLastPowerCycle() "), false); CT_LOG(6, reader->msSinceLastPowerCycle(), true);
+    //CT_LOG(6, F("ms_reader_cycle_total "), false); CT_LOG(6, reader->ms_reader_cycle_total, true);
+    //CT_LOG(6, F("tagLastReadHardTimeoutX1000() "), false); CT_LOG(6, reader->tagLastReadHardTimeoutX1000(), true);
     CT_LOG(6, F("* *"), true);
     
 
@@ -90,9 +90,9 @@
     // This should probably calculate or use global setting for
     // appropriate time-to-wait since last power cycle. (isn't this done?)
 
-      reader->last_tag_read_ms == 0UL &&
-      reader->last_reader_power_cycle_ms > 0UL &&
-      reader->msSinceLastReaderPowerCycle() > 2000UL
+      reader->tag_last_read_ms == 0UL &&
+      reader->last_power_cycle_ms > 0UL &&
+      reader->msSinceLastPowerCycle() > 2000UL
       ){
       
       CT_LOG(6, F("Timeout:grace"), true);
@@ -100,7 +100,7 @@
       RGB[1]->off();
       
       setProximityState(0);
-      reader->reader_power_cycle_high_duration = 3UL;
+      reader->power_cycle_high_duration_override = 3UL;
 
       if (ctrl_status != 1) {
         LOG(3, F("TIMEOUT: startup"), true);
@@ -113,10 +113,10 @@
     // TIMEOUT (general).
     // If last read is beyond TIMEOUT, and we've cycled reader at least once in that interval.
       
-      reader->msSinceLastTagRead() > reader->tagLastReadTimeoutX1000() &&
-      reader->last_reader_power_cycle_ms > 0UL &&
-      reader->msSinceLastTagRead() > reader->msSinceLastReaderPowerCycle() &&
-      reader->msSinceLastReaderPowerCycle() > 2000UL // TODO: What is this 2000 figure?
+      reader->msSinceLastTagRead() > reader->tagLastReadHardTimeoutX1000() &&
+      reader->last_power_cycle_ms > 0UL &&
+      reader->msSinceLastTagRead() > reader->msSinceLastPowerCycle() &&
+      reader->msSinceLastPowerCycle() > 2000UL // TODO: What is this 2000 figure?
       ){
 
       CT_LOG(6, F("Timeout:general"), true);
@@ -124,7 +124,7 @@
       RGB[1]->off();
       
       setProximityState(0);
-      reader->reader_power_cycle_high_duration = 3UL;
+      reader->power_cycle_high_duration_override = 3UL;
 
       if (ctrl_status != 2) {
         LOG(3, F("TIMEOUT: general"), true); // only prints once.
@@ -138,11 +138,10 @@
     // If last read is greater than reader-power-cycle-total AND
     // less than final timeout total, we're in the AGING zone.
     
-      reader->last_tag_read_ms > 0UL &&
-      // FIX: These need upating to use the newly named (and slightly repurposed)
-      //      vars or functions that separate soft-timeout from reader-cycle-high.
-      reader->msSinceLastTagRead() > reader->ms_reader_cycle_total &&
-      reader->msSinceLastTagRead() <= reader->tagLastReadTimeoutX1000()
+      reader->tag_last_read_ms > 0UL &&
+      //reader->msSinceLastTagRead() > reader->ms_reader_cycle_total &&
+      reader->msSinceLastTagRead() > softCycleTotalMs() &&
+      reader->msSinceLastTagRead() <= reader->tagLastReadHardTimeoutX1000()
       ){
 
       CT_LOG(6, F("Aging"), true);
@@ -158,7 +157,7 @@
       Beeper->fastBeep();
       
       setProximityState(1);
-      reader->reader_power_cycle_high_duration = 3UL;
+      reader->power_cycle_high_duration_override = 3UL;
 
       if (ctrl_status != 3) LOG(3, F("AGING"), true); // only prints once.
 
@@ -168,8 +167,9 @@
     // FRESH
     // A valid and recognized tag has recently been read.
     
-      reader->last_tag_read_ms > 0UL &&
-      reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
+      reader->tag_last_read_ms > 0UL &&
+      //reader->msSinceLastTagRead() <= reader->ms_reader_cycle_total
+      reader->msSinceLastTagRead() <= softCycleTotalMs()
       ){
         
       CT_LOG(6, F("Fresh"), true);
@@ -179,7 +179,7 @@
       Beeper->off();
       
       setProximityState(1);
-      reader->reader_power_cycle_high_duration = 0UL;
+      reader->power_cycle_high_duration_override = 0UL;
 
       if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
 
@@ -220,4 +220,6 @@
     return proximity_state;
   }
 
-  
+  uint32_t Controller::softCycleTotalMs() {
+    return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.tag_last_read_soft_timeout * 1000UL);
+  }

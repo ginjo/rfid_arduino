@@ -74,16 +74,16 @@
     uint8_t buff[MAX_TAG_LENGTH];
     uint8_t buff_index;
     uint32_t current_ms;
-    uint32_t last_tag_read_ms;
-    uint32_t last_reader_power_cycle_ms;
-    uint32_t reader_power_cycle_high_duration; // seconds
+    uint32_t tag_last_read_ms;
+    uint32_t last_power_cycle_ms;
+    uint32_t power_cycle_high_duration_override; // seconds
     //uint32_t ms_since_last_tag_read;
     //uint32_t ms_since_last_reader_power_cycle;
-    uint32_t ms_reader_cycle_total;
+    //uint32_t ms_reader_cycle_total;
     uint32_t cycle_low_finish_ms;
     uint32_t cycle_high_finish_ms;
     //uint32_t tag_last_read_hard_timeout_x_1000;
-    uint32_t last_tag_read_id;
+    uint32_t tag_last_read_id;
     SoftwareSerial * serial_port;
 
 
@@ -95,10 +95,10 @@
     // void processTagData(uint8_t []); // Had to change name after moving to Reader.
     void processTag(uint8_t []);
     uint32_t msSinceLastTagRead();
-    uint32_t msSinceLastReaderPowerCycle();
-    uint32_t msReaderCycleTotal();
-    uint32_t readerPowerCycleHighDuration();
-    uint32_t tagLastReadTimeoutX1000();
+    uint32_t msSinceLastPowerCycle();
+    //uint32_t cycleTotalMs();
+    uint32_t powerCycleHighDuration();
+    uint32_t tagLastReadHardTimeoutX1000();
     //uint32_t cycleLowFinishMs();
     //uint32_t cycleHighFinishMs();
     

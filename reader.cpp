@@ -27,18 +27,14 @@
     buff {},
     buff_index(0UL),
     current_ms(millis()),
-    last_tag_read_ms(0UL),
-    last_reader_power_cycle_ms(0UL),
-    reader_power_cycle_high_duration(0UL),
-    //ms_since_last_tag_read(0UL),
-    //ms_since_last_reader_power_cycle(0UL),
-    ms_reader_cycle_total(0UL),
+    tag_last_read_ms(0UL),
+    last_power_cycle_ms(0UL),
+    power_cycle_high_duration_override(0UL),
     cycle_low_finish_ms(0UL),
     cycle_high_finish_ms(0UL),
-    last_tag_read_id(0UL),
+    tag_last_read_id(0UL),
     serial_port(NULL) // experimental, so that serial_port is initialized
-    //tag_last_read_hard_timeout_x_1000(0UL),
-    
+        
   {
     LOG(4, F("Loading reader: "));
     LOG(4, name(), true);
@@ -46,7 +42,7 @@
 
 
 
-  /*  Instance vars & functions  */
+  /*  Instance functions  */
 
   char *Reader::name() {return (char *)Name;}
 
@@ -73,97 +69,89 @@
     current_ms = millis();
     RD_LOG(6, current_ms, true);
 
-    // TODO: 1. Make sure upstream caller can handle readerPowerCycleHighDuration().
+    // TODO: 1. Make sure upstream caller can handle powerCycleHighDuration().
     //       2. Check if these vars have a function() equivalent. Sort them out if so.
-    cycle_low_finish_ms = (uint32_t)(last_reader_power_cycle_ms + S.reader_cycle_low_duration);
-    cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + readerPowerCycleHighDuration()*1000UL);
+    cycle_low_finish_ms = (uint32_t)(last_power_cycle_ms + S.reader_cycle_low_duration);
+    cycle_high_finish_ms = (uint32_t)(cycle_low_finish_ms + powerCycleHighDuration()*1000UL);
     
     //RD_PRINT(F("cycle_low_finish_ms: ")); RD_PRINTLN(cycle_low_finish_ms);
     //RD_PRINT(F("cycle_high_finish_ms: ")); RD_PRINTLN(cycle_high_finish_ms);
     
-    ms_reader_cycle_total = (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + readerPowerCycleHighDuration()*1000UL);
-    //tag_last_read_hard_timeout_x_1000 = (uint32_t)(S.tag_last_read_hard_timeout*1000UL);
-
     
     /*
       Displays most if not all local vars.
-      TODO: Should this be put into a function?
+      TODO: Should this be put into a function? Yes, I think so!
     */
-    RD_LOG(6, F("last_tag_read_ms "), false);
-      RD_LOG(6, last_tag_read_ms, true);
-    RD_LOG(6, F("last_reader_power_cycle_ms "), false);
-      RD_LOG(6, last_reader_power_cycle_ms, true);
+    RD_LOG(6, F("tag_last_read_ms "), false);
+      RD_LOG(6, tag_last_read_ms, true);
     RD_LOG(6, F("msSinceLastTagRead() "), false);
       RD_LOG(6, msSinceLastTagRead(), true);
-    RD_LOG(6, F("msSinceLastReaderPowerCycle() "), false);
-      RD_LOG(6, msSinceLastReaderPowerCycle(), true);
-    RD_LOG(6, F("ms_reader_cycle_total "), false);
-      RD_LOG(6, ms_reader_cycle_total, true);
-    //RD_PRINT(F("tagLastReadTimeoutX1000(): "));
-    //  RD_PRINTLN(tagLastReadTimeoutX1000());
-    //RD_PRINT(F("readerPowerCycleHighDuration()"))
-    //  RD_PRINTLN(readerPowerCycleHighDuration());
-    //RD_PRINT(F("RPCHD*1000: "));
-    //  RD_PRINTLN(readerPowerCycleHighDuration()*1000UL);
+    RD_LOG(6, F("last_power_cycle_ms "), false);
+      RD_LOG(6, last_power_cycle_ms, true);
+    RD_LOG(6, F("msSinceLastPowerCycle() "), false);
+      RD_LOG(6, msSinceLastPowerCycle(), true);
+
           
     if (msSinceLastTagRead() > S.tag_read_sleep_interval) {
       // Checks the rfid reader for new data.
       pollReader();
     }
 
-    //if (msSinceLastTagRead() > ms_reader_cycle_total) last_tag_read_id = 0;
+    //if (msSinceLastTagRead() > ms_reader_cycle_total) tag_last_read_id = 0;
 
     // Hmm... adding this log line, and the bogus value appears to have vanished.
-    //  RD_LOG(6, F("last_tag_read_ms again "), false);
-    //    RD_LOG(6, last_tag_read_ms, true);
+    //  RD_LOG(6, F("tag_last_read_ms again "), false);
+    //    RD_LOG(6, tag_last_read_ms, true);
 
-    RD_LOG(6, "last_tag_read_id: ", false); RD_LOG(6, last_tag_read_id, true);
+    RD_LOG(6, "tag_last_read_id: ", false); RD_LOG(6, tag_last_read_id, true);
     RD_LOG(6, F("READER LOOP END "), false); RD_LOG(6, millis(), true);
   }
   
 
   uint32_t Reader::msSinceLastTagRead() {
-    return (uint32_t)(current_ms - last_tag_read_ms);
+    return (uint32_t)(current_ms - tag_last_read_ms);
   }
 
-  uint32_t Reader::msSinceLastReaderPowerCycle() {
-    return (uint32_t)(current_ms - last_reader_power_cycle_ms);
+  uint32_t Reader::msSinceLastPowerCycle() {
+    return (uint32_t)(current_ms - last_power_cycle_ms);
   }
 
   // TODO: this is currently not used (2020-02-14), but should be to decouple reader-cycle-high-duration from soft-timeout.
-  uint32_t Reader::msReaderCycleTotal() {
-    return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + readerPowerCycleHighDuration()*1000UL);
-  }
+  //uint32_t Reader::msReaderCycleTotal() {
+	// uint32_t Reader::cycleTotalMs() {
+	// 	//return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + powerCycleHighDuration()*1000UL);
+	// 	return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.tag_last_read_soft_timeout * 1000UL);
+	// }
 
-  uint32_t Reader::readerPowerCycleHighDuration() {
-    if (reader_power_cycle_high_duration > 0UL) {
-      // This is a local var only. If you set it, make sure to
+  uint32_t Reader::powerCycleHighDuration() {
+    if (power_cycle_high_duration_override > 0UL) {
+      // This is an instance variable. If you set it, make sure to
       // return it to 0UL at some point.
-      return reader_power_cycle_high_duration;
-      
+      //if (power_cycle_high_duration_override > 15) {
+      //  power_cycle_high_duration_override = 0;
+      //  return 15
       //} else {
-      //  return S.tag_last_read_soft_timeout;
-      //
-      // Makes sure that reader will always cycle at least a few times a minute,
-      // even if is set to a large value.
-      //
+        return power_cycle_high_duration_override;
+      //}
+
     } else if (S.tag_last_read_soft_timeout < 15) {
       return S.tag_last_read_soft_timeout;
+      
     } else {
       return 15;
     }
   }
 
-  uint32_t Reader::tagLastReadTimeoutX1000() {
+  uint32_t Reader::tagLastReadHardTimeoutX1000() {
     return (uint32_t)(S.tag_last_read_hard_timeout*1000UL);
   }
 
   //  uint32_t Reader::cycleLowFinishMs() {
-  //    return last_reader_power_cycle_ms + S.reader_cycle_low_duration;
+  //    return last_power_cycle_ms + S.reader_cycle_low_duration;
   //  }
   //
   //  uint32_t Reader::cycleHighFinishMs() {
-  //    return cycleLowFinishMs() + readerPowerCycleHighDuration()*1000;
+  //    return cycleLowFinishMs() + powerCycleHighDuration()*1000;
   //  }
 
 
@@ -220,7 +208,7 @@
         } else { // tag complete, now process it
           RD_LOG(lv, "", true);
           processTag(buff);
-          //last_tag_read_ms = current_ms;
+          //tag_last_read_ms = current_ms;
           resetBuffer();
           return;
         }
@@ -229,8 +217,8 @@
     // If no data on Controller serial port and sufficient conditions exist,
     // then call cycle-reader-power.
     } else if (
-      msSinceLastTagRead() > readerPowerCycleHighDuration() * 1000UL ||
-      last_tag_read_ms == 0UL
+      msSinceLastTagRead() > powerCycleHighDuration() * 1000UL ||
+      tag_last_read_ms == 0UL
     ) {
       cycleReaderPower();
     }    
@@ -272,11 +260,11 @@
     }
 
     // If tag is valid, immediatly update proximity-state.
-    // Actually, in the refactored Reader implementation, just update last_tag_read_ms,
+    // Actually, in the refactored Reader implementation, just update tag_last_read_ms,
     // and maybe store the last-read-tag in a var.
     // Proximity state should be entirely handled by Controller (Gate/State) class.
     if (tag_id > 0UL && ::Tags::TagSet.getTagIndex(tag_id) >= 0) { // 0 is valid index.  
-      last_tag_read_ms = current_ms;
+      tag_last_read_ms = current_ms;
 
       //LOG(4, F("Authorized tag: "));
       LOG(4, F("Authorized tag: "));
@@ -290,7 +278,7 @@
     //Serial.println(tag_id);
     LOG(4, tag_id, true);
     
-    last_tag_read_id = tag_id;
+    tag_last_read_id = tag_id;
     
   } // processTag()
 
@@ -304,10 +292,10 @@
   }
 
   void Reader::cycleReaderPower() {
-    if (current_ms >= cycle_high_finish_ms || last_reader_power_cycle_ms == 0UL) {
+    if (current_ms >= cycle_high_finish_ms || last_power_cycle_ms == 0UL) {
       
       LOG(5, F("cycleReaderPower() tag read "));
-      if (last_tag_read_ms > 0UL) {
+      if (tag_last_read_ms > 0UL) {
         //LOG(4, (ms_since_last_tag_read)/1000UL);
         LOG(5, msSinceLastTagRead()/1000UL);
         LOG(5, F("s ago"));
@@ -316,9 +304,9 @@
       }
 
       LOG(5, F(", cycled "));
-      if (last_reader_power_cycle_ms > 0UL) {
+      if (last_power_cycle_ms > 0UL) {
         //LOG(4, (ms_since_last_reader_power_cycle)/1000UL);
-        LOG(5, msSinceLastReaderPowerCycle()/1000UL);
+        LOG(5, msSinceLastPowerCycle()/1000UL);
         LOG(5, F("s ago"));
       } else {
         LOG(5, F("never"));
@@ -329,7 +317,7 @@
             
       //digitalWrite(READER_POWER_CONTROL_PIN, S.READER_POWER_CONTROL_POLARITY ? LOW : HIGH);
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
-      last_reader_power_cycle_ms = current_ms;
+      last_power_cycle_ms = current_ms;
       
     } else if (current_ms >= cycle_low_finish_ms) {
       RD_LOG(6, F("cycleReaderPower() setting HIGH"), true);
