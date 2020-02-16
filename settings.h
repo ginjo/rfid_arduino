@@ -29,7 +29,7 @@
   #include "storage.h"
 
   // NOTE: Remember to iclude null terminator in all char array lengths.
-  #define SETTINGS_SIZE 16 // quantity of settings vars
+  #define SETTINGS_SIZE 17 // quantity of settings vars
   #define SETTINGS_NAME_SIZE 27 // max length for 'setting_name' and 'settings_name'. Remember null-terminator.
   #define SETTINGS_VALUE_SIZE 16 // max length of a setting var.
   #define ADMIN_PASSWORD_SIZE 11 // max length of admin password.
@@ -174,6 +174,9 @@
 
     void display_admin_password(char*);
     void set_admin_password(char*);
+
+    void display_reader_cycle_high_max(char*);
+    void set_reader_cycle_high_max(char*);
 
   };  // Settings class
 

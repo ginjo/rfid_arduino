@@ -20,16 +20,17 @@
     { "Startup state", &Settings::display_proximity_state_startup, &Settings::set_proximity_state_startup},
     { "Startup timeout", &Settings::display_admin_startup_timeout, &Settings::set_admin_startup_timeout},
     { "Admin timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
-    { "Hard timeout", &Settings::display_tag_last_read_hard_timeout, &Settings::set_tag_last_read_hard_timeout},
     { "Soft timeout", &Settings::display_tag_last_read_soft_timeout, &Settings::set_tag_last_read_soft_timeout},
+    { "Hard timeout", &Settings::display_tag_last_read_hard_timeout, &Settings::set_tag_last_read_hard_timeout},
+
+    { "Reader", &Settings::display_default_reader, &Settings::set_default_reader},
+    { "Reader cycle max", &Settings::display_reader_cycle_high_max, &Settings::set_reader_cycle_high_max},
+    { "Reader cycle low (ms)", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
+    { "Tag read sleep (ms)", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
 
     { "Log level", &Settings::display_log_level, &Settings::set_log_level},
     { "Log to BT", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
     { "Debug log level", &Settings::display_debug_level, &Settings::set_debug_level},
-
-    { "Reader", &Settings::display_default_reader, &Settings::set_default_reader},
-    { "Reader cycle low (ms)", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
-    { "Tag read sleep (ms)", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
 
     { "HW serial baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
     { "BT serial baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
@@ -335,6 +336,9 @@
 
   void Settings::display_log_level(char *out) {sprintf_P(out, PSTR("%hhu"), log_level);}
   void Settings::set_log_level(char *data) {log_level = (uint8_t)strtol(data, NULL, 10);}
+
+  void Settings::display_reader_cycle_high_max(char *out) {sprintf_P(out, PSTR("%lu"), reader_cycle_high_max);}
+  void Settings::set_reader_cycle_high_max(char *data) {reader_cycle_high_max = (uint8_t)strtol(data, NULL, 10);}
 
   void Settings::display_admin_password(char *out) {sprintf_P(out, PSTR("*****"));}
   void Settings::set_admin_password(char *data) {
