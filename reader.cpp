@@ -36,8 +36,7 @@
     serial_port(NULL) // experimental, so that serial_port is initialized
         
   {
-    LOG(4, F("Loading reader: "));
-    LOG(4, name(), true);
+    LOG(4, F("Loading reader "));
   }
 
 
@@ -47,7 +46,7 @@
   char *Reader::name() {return (char *)Name;}
 
   uint32_t Reader::processTagData(uint8_t[]) {
-    LOG(2, F("Base Reader called processTagData"), true); // This should never happen, if everything running correctly.
+    LOG(2, F("Base Reader called processTagData"), true); // This should never happen, if everything is running correctly.
     return 0UL;
   }
 

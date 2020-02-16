@@ -825,7 +825,9 @@ TODO: √ During admin, 4-quick-beeps after failed scan have a too-long first be
 TODO: √ Make it so when Menu is waiting for tag scan, the cycle-reader function runs more
 			often than 5 sec.
 			
-			Should this be a setting? Like the 3-sec cycle when in timeout mode.
+			- Should this be a setting? Like the 3-sec cycle when in timeout mode.
+			
+			Update: This issue is moot now with the progressive reader cycle decay.
 			
 TODO: Consider moving RunMode to Controller instead of Menu.
 
@@ -862,7 +864,9 @@ FIX:  √ See line 141 in Controller.cpp for needed repairs/updates resulting fr
 TODO: Remove the word 'reader' from Reader functions.
 		
 TODO: Remove vars or functions that are redundant of each other.
-			For example: reader_cycle_total vs readerCycleTotal()
+			For example: reader_cycle_total vs readerCycleTotal().
+			
+			Update: Mostly done.
 			
 FIX:  √ Reader-cycle-low is taking too long (3+ sec!) when progressive cycle decay is increasing.
       But once it reaches same interval as soft-timeout, it (cycle-low) works as expected.
@@ -872,22 +876,27 @@ FIX:  √ Reader-cycle-low is taking too long (3+ sec!) when progressive cycle d
       Update: This issue is due to pollReader() skipping cycleReaderPower() because
       powerCycleHighDur() has doubled since reader went low.
       
-TODO: Find a clean way to enable/disable progressive reader cycling decay.
+      Update: Adding another condition (from cycleReader) to pollReader helped.
+      
+TODO: - Find a clean way to enable/disable progressive reader cycling decay.
+			Update: With reader-cycle-high-max now, I don't think this is necessary.
 
-FIX:  Make sure reader is cycled one last time before shift to AGING or TIMEOUT.
+FIX:  √ Make sure reader is cycled one last time before shift to AGING or TIMEOUT.
 			This is an issue at startup when going to run mode. See next issue below...
 			
 			Idea: What if we just set cycle-high-override with (soft-timeout - 1),
 			instead of setting it to exactly soft-timeout.
 			
-			Update: Made the changes, now just need to test
+			Update: Made the changes, now just need to test... ok, all good!
       
-FIX:  The quick tag reads during startup don't seem to be captured by the ARD and recognized
+FIX:  √ The quick tag reads during startup don't seem to be captured by the ARD and recognized
 			as valid. Is this a dueling serial port issue? Or is this the same issue as directly above?
+			
+			Update: I think this was fixed by setting reader-cycle-override back to 1 upon exitAdmin().
 			
 TODO: What is the '2000UL' hard-code? Should it be a setting?
 
-TODO: To maximize soft-timeout period during runtime incidents, there should be
+TODO: √ To maximize soft-timeout period during runtime incidents, there should be
 			a cycle_high_duration_max setting. Ultimately (sadly) the reader cycle should be kept
 			low (5 sec?) during normal runtime, so a missing tag has the most soft-timeout period
 			available that is reasonable. So with a soft-timeout of 15s and a cycle-high-max of 5s,
@@ -895,7 +904,7 @@ TODO: To maximize soft-timeout period during runtime incidents, there should be
 			rest of your hard-timeout setting before hard-timeout is activated). This is good, because
 			you don't want the soft-timeout alarm sounding as soon as a tag goes missing.
 			
-FIX:  Fix reader constructor log messages.
+FIX:  √ Fix reader constructor log messages.
 
 TODO: Mask all sensitive data in logs (what about in menu?)
 

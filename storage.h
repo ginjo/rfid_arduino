@@ -74,7 +74,7 @@
 
 
     static bool Load (T * object_ref, int eeprom_address) {
-      SO_LOG(5, F("Strg Load() Begin"), true);
+      SO_LOG(5, F("Strg.Load Begin"), true);
 
       T temp_obj;// = T(); Does this work without the T()?
 
@@ -93,18 +93,18 @@
 
       SO_LOG(6, F("Strg eeprom_address "), false); SO_LOG(6, eeprom_address, true);
       SO_LOG(6, F("Strg object_ref->storage_name '"), false); SO_LOG(6, temp_obj.storage_name, false); SO_LOG(6, "'", true);
-      SO_LOG(6, F("Strg sizeof(*object_ref) "), false); SO_LOG(6, sizeof(temp_obj), true);
-      SO_LOG(6, F("Strg sizeof(T) "), false); SO_LOG(6, sizeof(T), true);
+      SO_LOG(6, F("Strg sizeof *object_ref "), false); SO_LOG(6, sizeof(temp_obj), true);
+      SO_LOG(6, F("Strg sizeof T "), false); SO_LOG(6, sizeof(T), true);
       
       if (rslt) {
         *object_ref = temp_obj;
       } else {
-        LOG(3, F("Strg Load() checksum mismatch"), true);
+        LOG(3, F("Strg.Load chksm mismatch"), true);
       }
 
       object_ref->eeprom_address = eeprom_address;
 
-      SO_LOG(6, F("Strg Load() End"), true);
+      SO_LOG(6, F("Strg.Load End"), true);
       
       return rslt;
     }
@@ -120,26 +120,26 @@
     // Sub-classes, like Settings, should carry the info about
     // what address to use.
     int save(int _eeprom_address = -1) {
-      SO_LOG(6, F("Strg save() BEGIN"), true);
+      SO_LOG(6, F("Strg.save BEGIN"), true);
 
       // TODO: Gracefully fail if address < 0, or if any of the 3 Storage fields are not correct.
       if (_eeprom_address >= 0) eeprom_address = _eeprom_address;
 
-      SO_LOG(5, F("Strg save() '"), false); SO_LOG(5, storage_name, false);
+      SO_LOG(5, F("Strg.save '"), false); SO_LOG(5, storage_name, false);
       SO_LOG(5, F("' to address "), false); SO_LOG(5, eeprom_address, false);
-      SO_LOG(5, F(" sizeof(T) "), false); SO_LOG(5, sizeof(T), true);
+      SO_LOG(5, F(" sizeof T "), false); SO_LOG(5, sizeof(T), true);
 
       // TODO: Reverse the logic here, just cuz it will read better.
       if (checksumMatch()) {
 
-        SO_LOG(5, F("Strg save() EEPROM update not necessary"), true);
-        SO_LOG(6, F("Strg save() END"), true);
+        SO_LOG(5, F("Strg.save EEPROM update not necessary"), true);
+        SO_LOG(6, F("Strg.save END"), true);
         LOG(4, F("EEPROM update not necessary"), true);
         return 0;
 
       } else {
 
-        SO_LOG(5, F("Strg save() chksm mismatch, calling EEPROM.put()"), true);
+        SO_LOG(5, F("Strg.save chksm mismatch, calling EEPROM.put"), true);
 
         checksum = calculateChecksum();
         
@@ -149,7 +149,7 @@
         EEPROM.put(eeprom_address, *(T*)this);
         LOG(4, F("EEPROM updated"), true);
 
-        SO_LOG(6, F("Strg save() END"), true);
+        SO_LOG(6, F("Strg.save END"), true);
         
         return 1;
       }
@@ -195,9 +195,9 @@
 
       #ifdef SO_DEBUG
         // This might need to use LOG cuz it needs to pass integer base.
-        SO_LOG(6, "Strg checksumMatch() stor 0x", false); LOG(6, checksum, 16);
+        SO_LOG(6, "Strg.checksumMatch stor 0x", false); LOG(6, checksum, 16);
         SO_LOG(6, " calc 0x", false); LOG(6, calculated_checksum, 16);
-        SO_LOG(6, ", bool-result: ", false); SO_LOG(6, result, true);
+        SO_LOG(6, ", bool-result ", false); SO_LOG(6, result, true);
       #endif
           
       return result;

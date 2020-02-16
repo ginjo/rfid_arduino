@@ -153,7 +153,7 @@
   /***  Control  ***/
 
   void Menu::loop() {
-    MU_LOG(6, F("MENU LOOP BEGIN: "), false); MU_LOG(6, instance_name, true);
+    MU_LOG(6, F("MENU LOOP BEGIN "), false); MU_LOG(6, instance_name, true);
 
     // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
     if (millis() % 1000 < 500 && !Current && this == SW) {
@@ -184,7 +184,7 @@
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
-    MU_LOG(6, F("adminTimeout() RunMode, admin_timeout, now, previous_ms: "), false);
+    MU_LOG(6, F("adminTimeout() mode, adm-tmout, now, prev-ms: "), false);
     MU_LOG(6, RunMode, false); MU_LOG(6, " ", false);
     MU_LOG(6, admin_timeout, false); MU_LOG(6, " ", false);
     MU_LOG(6, current_ms, false); MU_LOG(6, " ", false);
@@ -200,7 +200,7 @@
   void Menu::updateAdminTimeout(void *intgr) {
     unsigned long seconds = (unsigned long)intgr;
     if (admin_timeout != seconds) {
-      MU_LOG(5, F("updateAdminTimeout(): "), false);
+      MU_LOG(5, F("updateAdminTimeout() "), false);
       MU_LOG(5, seconds, true);
     }
     
@@ -220,14 +220,14 @@
       LOG(4, F("Entering run mode"), true);
       LOG(4, "", true);
 
-      // Experimental, divides debug pin recognition into two sessions: Admin and Run.
+      // Divides debug pin recognition into two sessions: Admin and Run.
       // If you startup with TempDebug, it will reset to false upon entering run-mode,
       // unless you are holding the DEBUG_PIN low.
       TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 
       RunMode = 0;
 
-      //reader->power_cycle_high_duration_override = 0UL;
+      reader->power_cycle_high_duration_override = 1UL;
       
       FREERAM("exitAdmin()");
     }

@@ -19,13 +19,13 @@
       Reader(14, 3, 10, 1)
     {
       //  LOG(4, F("Loading reader: "));
-      //  LOG(4, name(), true);  
+      LOG(4, name(), true);  
     }
   
     uint32_t processTagData(uint8_t _tag[24]) {
 
       LOG(5, name(), false);
-      LOG(5, F(" prcs tag inpt: "));
+      LOG(5, F(" processTagData "));
       LOG(5, strtol((char *)_tag, NULL, HEX), true);
   
       uint8_t id_len = id_end - id_begin;
@@ -38,9 +38,9 @@
       uint32_t tag_id = strtol((char *)tmp_str, NULL, 16);
 
       RD_LOG(6, name(), false);
-      RD_LOG(6, F(" tag read: "), false);
+      RD_LOG(6, F(" tag read "), false);
       RD_LOG(6, (char *)tmp_str, false);
-      RD_LOG(6, ", ", false);
+      RD_LOG(6, " ", false);
       RD_LOG(6, tag_id, true);
       
       return tag_id;
@@ -61,20 +61,20 @@
       Reader(10, 4, 7, 1)
     {
       //  LOG(4, F("Loading reader: "));
-      //  LOG(4, name(), true);  
+      LOG(4, name(), true);  
     }
       
     uint32_t processTagData(uint8_t _tag[]) {
       LOG(5, name(), false);
-      LOG(5, F(" prcs tag inpt: "));
+      LOG(5, F(" processTagData "));
       //RD_PRINT((char *)_tag); // Looks weird cuz some bytes might not be readable ascii characters.
-      LOG(5, F("id_begin: "));
+      LOG(5, F("id_begin "));
       LOG(5, id_begin);
-      LOG(5, F(", id_end: "));
+      LOG(5, F(", id_end "));
       LOG(5, id_end);
       
       uint8_t id_len = (id_end - id_begin +1)*2;
-      LOG(5, F(", id_len: "));
+      LOG(5, F(", id_len "));
       LOG(5, id_len);
       
       LOG(5, F(", checksum (dec): "));
@@ -89,9 +89,9 @@
       uint32_t tag_id = strtol(id_hex, NULL, 16);
 
       RD_LOG(6, name(), false);
-      RD_LOG(6, F(" tag read: "), false);
+      RD_LOG(6, F(" tag read "), false);
       RD_LOG(6, id_hex, false);
-      RD_LOG(6, ", ", false);
+      RD_LOG(6, " ", false);
       RD_LOG(6, tag_id, true);
             
       return tag_id;
@@ -119,24 +119,24 @@
       Reader(13, 3, 10, 0)
     {
       //  LOG(4, F("Loading reader: "));
-      //  LOG(4, name(), true);  
+      LOG(4, name(), true);  
     }
   
     uint32_t processTagData(uint8_t _tag[]) {
 
       LOG(5, name(), false);
-      LOG(5, F(" prcs tag inpt: "));
-      LOG(5, F("id_begin: "));
+      LOG(5, F(" processTagData "));
+      LOG(5, F("id_begin "));
       LOG(5, id_begin);
-      LOG(5, F(", id_end: "));
+      LOG(5, F(", id_end "));
       LOG(5, id_end);
       
       uint8_t id_len = (id_end - id_begin +1);
       
-      LOG(5, F(", id_len: "));
+      LOG(5, F(", id_len "));
       LOG(5, id_len);
       
-      LOG(5, F(", checksum (hex): "));
+      LOG(5, F(", chksm (hex) "));
       LOG(5, _tag[11], 16, true);
   
       char id_char[id_len+1] = ""; // need to initialize this to empty.
@@ -147,10 +147,11 @@
   
       uint32_t tag_id = strtol(id_char, NULL, 16);
 
+      // TODO: Make this a function and compatible with all readers.
       RD_LOG(6, name(), false);
-      RD_LOG(6, F(" read: "), false);
+      RD_LOG(6, F(" read "), false);
       RD_LOG(6, id_char, false);
-      RD_LOG(6, ", ", false);
+      RD_LOG(6, " ", false);
       RD_LOG(6, tag_id, true);
       
       return tag_id;

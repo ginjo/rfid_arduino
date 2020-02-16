@@ -156,7 +156,7 @@
   //
   bool Settings::updateSetting(int _index, char _data[]) {
 
-    ST_LOG(5, F("S.updateSetting() "), false);
+    ST_LOG(5, F("S.updateSetting "), false);
     ST_LOG(5, _index, false); ST_LOG(5, ", ", false);
 
     //char setting_name[SETTINGS_NAME_SIZE]; // A single setting name.
@@ -214,10 +214,10 @@
     //  Serial.println((char*)pgm_read_word(&SettingsList[index-1].name));
 
     sprintf(setting_name, "%s", (char*)setting.name); //, sizeof(SETTINGS_NAME_SIZE));
-    ST_LOG(6, F("Stng getSettingByIndex: "), false); ST_LOG(6, index, false); ST_LOG(5, ", ", false); ST_LOG(6, setting_name, false);
+    ST_LOG(6, F("Stng getSettingByIndex "), false); ST_LOG(6, index, false); ST_LOG(5, ", ", false); ST_LOG(6, setting_name, false);
     
     if (index <= SETTINGS_SIZE && setting.display_fp) {
-      ST_LOG(6, F(", Calling setting display_fp"), false);
+      ST_LOG(6, F(", Calling stng display_fp"), false);
       getter_setter_T fp = setting.display_fp;
       (this->*fp)(setting_value);
     }
@@ -238,10 +238,10 @@
     // TODO: Find a way to insert SETTINGS_NAME_SIZE into format string here.
     sprintf_P(output, PSTR("%2i  %-28s %s"), index, setting_name, setting_value);
     
-    ST_LOG(6, F("Stng displaySetting() gathered: "), false);
+    ST_LOG(6, F("Stng displaySetting gathered: "), false);
     ST_LOG(6, setting_name, false); ST_LOG(6, ", ", false); ST_LOG(6, setting_value, true);
     
-    ST_LOG(6, F("Stng displaySetting() returning: "), false);
+    ST_LOG(6, F("Stng displaySetting returning: "), false);
     ST_LOG(6, output, true);
   }
 
@@ -282,7 +282,7 @@
     //Serial.println(F("Settings::save() BEGIN"));
     //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
     result = Storage::save();
-    LOG(5, F("Stng save() result: ")); LOG(5, result, true);
+    LOG(5, F("Stng.save result ")); LOG(5, result, true);
     //Serial.println(F("Settings::save() END"))
     return result;
   }
