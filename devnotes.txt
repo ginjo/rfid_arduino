@@ -829,7 +829,7 @@ TODO: √ Make it so when Menu is waiting for tag scan, the cycle-reader functio
 			
 TODO: Consider moving RunMode to Controller instead of Menu.
 
-FIX:  Select-reader menu flow is not working correctly.
+FIX:  Select-reader menu flow is not working correctly and not storing selection.
 
 FIX:  Typing in a too-long password at the login prompt will lock up the admin UI.
 
@@ -846,7 +846,7 @@ TODO: - In Menu log level 6, 'bufferReady?' logging is spitting out too much dat
 			
 TODO: √ Make reader-cycle max duration 15 instead of 5.
 
-TODO: Consider a soft-timeout-duration setting, separate from reader-cycle-high-duration,
+TODO: √ Consider a soft-timeout-duration setting, separate from reader-cycle-high-duration,
 			OR just change name of reader-cycle-high-duration to soft-timeout-duration. In that case
 			leave the function readerCycleHighDuration() as is, and that can still pull data
 			from the newly named (but essentially the same) soft-timeout-duration.
@@ -857,10 +857,47 @@ TODO: Consider a soft-timeout-duration setting, separate from reader-cycle-high-
 			Update: Controller should use the S.tag_last_read_soft_timeout (was reader-cycle-high-duration).
 							Reader should use readerPowerCycleHighDuration().
 							
-FIX:  See line 141 in Controller.cpp for needed repairs/updates resulting from the above changes.
+FIX:  √ See line 141 in Controller.cpp for needed repairs/updates resulting from the above changes.
 			
 TODO: Remove the word 'reader' from Reader functions.
 		
 TODO: Remove vars or functions that are redundant of each other.
 			For example: reader_cycle_total vs readerCycleTotal()
 			
+FIX:  √ Reader-cycle-low is taking too long (3+ sec!) when progressive cycle decay is increasing.
+      But once it reaches same interval as soft-timeout, it (cycle-low) works as expected.
+      
+      You need some kind of logging for when reader cycle gos high.
+      
+      Update: This issue is due to pollReader() skipping cycleReaderPower() because
+      powerCycleHighDur() has doubled since reader went low.
+      
+TODO: Find a clean way to enable/disable progressive reader cycling decay.
+
+FIX:  Make sure reader is cycled one last time before shift to AGING or TIMEOUT.
+			This is an issue at startup when going to run mode. See next issue below...
+			
+			Idea: What if we just set cycle-high-override with (soft-timeout - 1),
+			instead of setting it to exactly soft-timeout.
+			
+			Update: Made the changes, now just need to test
+      
+FIX:  The quick tag reads during startup don't seem to be captured by the ARD and recognized
+			as valid. Is this a dueling serial port issue? Or is this the same issue as directly above?
+			
+TODO: What is the '2000UL' hard-code? Should it be a setting?
+
+TODO: To maximize soft-timeout period during runtime incidents, there should be
+			a cycle_high_duration_max setting. Ultimately (sadly) the reader cycle should be kept
+			low (5 sec?) during normal runtime, so a missing tag has the most soft-timeout period
+			available that is reasonable. So with a soft-timeout of 15s and a cycle-high-max of 5s,
+			you would have a minimum of 10s before soft-timeout and the associated alarm (plus the
+			rest of your hard-timeout setting before hard-timeout is activated). This is good, because
+			you don't want the soft-timeout alarm sounding as soon as a tag goes missing.
+			
+FIX:  Fix reader constructor log messages.
+
+TODO: Mask all sensitive data in logs (what about in menu?)
+
+
+		

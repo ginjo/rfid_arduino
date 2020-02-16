@@ -100,9 +100,12 @@
       RGB[1]->off();
       
       setProximityState(0);
-      reader->power_cycle_high_duration_override = 3UL;
+      //reader->power_cycle_high_duration_override = 3UL;
+      
 
+      // Only runs once per ctrl_status change.
       if (ctrl_status != 1) {
+        reader->power_cycle_high_duration_override = 1UL;
         LOG(3, F("TIMEOUT: startup"), true);
         Beeper->slowBeep(3);
       }
@@ -124,9 +127,11 @@
       RGB[1]->off();
       
       setProximityState(0);
-      reader->power_cycle_high_duration_override = 3UL;
+      //reader->power_cycle_high_duration_override = 3UL;
 
+      // Only runs once per ctrl_status change.
       if (ctrl_status != 2) {
+        reader->power_cycle_high_duration_override = 1UL;
         LOG(3, F("TIMEOUT: general"), true); // only prints once.
         Beeper->slowBeep(3);
       }
@@ -142,7 +147,7 @@
       //reader->msSinceLastTagRead() > reader->ms_reader_cycle_total &&
       reader->msSinceLastTagRead() > softCycleTotalMs() &&
       reader->msSinceLastTagRead() <= reader->tagLastReadHardTimeoutX1000()
-      ){
+     ){
 
       CT_LOG(6, F("Aging"), true);
       if (proximity_state) {
@@ -157,9 +162,13 @@
       Beeper->fastBeep();
       
       setProximityState(1);
-      reader->power_cycle_high_duration_override = 3UL;
+      //reader->power_cycle_high_duration_override = 3UL;
 
-      if (ctrl_status != 3) LOG(3, F("AGING"), true); // only prints once.
+      // Only runs once per ctrl_status change.
+      if (ctrl_status != 3) {
+        reader->power_cycle_high_duration_override = 1UL;
+        LOG(3, F("AGING"), true);
+      }
 
       ctrl_status = 3;
 
@@ -179,9 +188,13 @@
       Beeper->off();
       
       setProximityState(1);
-      reader->power_cycle_high_duration_override = 0UL;
+      //reader->power_cycle_high_duration_override = 0UL;
 
-      if (ctrl_status != 4) LOG(5, F("FRESH"), true); // only prints once.
+      // Only runs once per ctrl_status change.
+      if (ctrl_status != 4) {
+        reader->power_cycle_high_duration_override = 3UL;
+        LOG(5, F("FRESH"), true); 
+      }
 
       ctrl_status = 4;
 

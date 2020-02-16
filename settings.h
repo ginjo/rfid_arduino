@@ -94,6 +94,7 @@
     uint32_t tag_last_read_hard_timeout;
     uint32_t tag_read_sleep_interval; // ms
     uint32_t reader_cycle_low_duration; // ms
+    uint32_t reader_cycle_high_max;
     uint32_t tag_last_read_soft_timeout;
 
     uint32_t admin_timeout;

@@ -56,6 +56,9 @@
     // off duration during reader power cycle
     reader_cycle_low_duration(150), // millis
 
+    // max on duration of reader power cycle
+    reader_cycle_high_max(15),
+
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
     tag_last_read_soft_timeout(15), // seconds

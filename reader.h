@@ -77,12 +77,7 @@
     uint32_t tag_last_read_ms;
     uint32_t last_power_cycle_ms;
     uint32_t power_cycle_high_duration_override; // seconds
-    //uint32_t ms_since_last_tag_read;
-    //uint32_t ms_since_last_reader_power_cycle;
-    //uint32_t ms_reader_cycle_total;
     uint32_t cycle_low_finish_ms;
-    uint32_t cycle_high_finish_ms;
-    //uint32_t tag_last_read_hard_timeout_x_1000;
     uint32_t tag_last_read_id;
     SoftwareSerial * serial_port;
 
@@ -97,10 +92,10 @@
     uint32_t msSinceLastTagRead();
     uint32_t msSinceLastPowerCycle();
     //uint32_t cycleTotalMs();
-    uint32_t powerCycleHighDuration();
+    uint32_t powerCycleHighDuration(uint8_t = 1);
     uint32_t tagLastReadHardTimeoutX1000();
     //uint32_t cycleLowFinishMs();
-    //uint32_t cycleHighFinishMs();
+    uint32_t cycleHighFinishMs();
     
     virtual uint32_t processTagData(uint8_t[]);
     //virtual const char *name() {return Name;}

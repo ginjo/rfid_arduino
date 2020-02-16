@@ -227,7 +227,7 @@
 
       RunMode = 0;
 
-      reader->power_cycle_high_duration_override = 0UL;
+      //reader->power_cycle_high_duration_override = 0UL;
       
       FREERAM("exitAdmin()");
     }
