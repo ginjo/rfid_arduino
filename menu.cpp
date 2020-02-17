@@ -71,7 +71,6 @@
   void Menu::Begin() {
     LOG(4, F("Menu.Begin()"), true);
     HW->begin();
-    //HW->reader->power_cycle_high_duration_override = 1UL;
     SW->begin();
     
     // NOTE: Menu::Current is set in checkSerialPort()
@@ -83,19 +82,19 @@
       HW->loop();
     }
 
-    // Runs software-serial loop().
-    //if (!Current || Current == SW) {
-    
-    // FIX: This was to allow AT commands to the BT module, but it currently breaks the menus.
-    //      Find a better way to poll input from SW while admining with HW.
-    //      Is this still an issue? 2020-02-09
-    if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {
+    // Runs software-serial loop.
+    //
+    // The last condition allows AT commands to be sent from the HW menu to the BT module.
+    // TODO: Is there a better way to poll input from SW while admining with HW?
+    //
+    //if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {  // works well.
+    if (Current != HW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {                // also works well but shorter code.
       SW->loop();
     }
   }
 
 
-  /*** Constructors and Setup ***/
+  /*** Constructors ***/
 
   Menu::Menu(Stream *stream_ref, Reader *_reader, const char _instance_name[]) :
     serial_port(stream_ref),
@@ -113,10 +112,14 @@
     //strlcpy(input_mode, "menu", sizeof(input_mode));
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
 	}
-	
+
+
+  /***  Controll  ***/
+  
   void Menu::begin() {    
     updateAdminTimeout((void*)S.admin_startup_timeout);
     resetInputBuffer();
+    clearSerialPort(); // recently added, dunno if needed.
     
     if (strcmp(instance_name, "HW") == 0) {
       /* If this is hard-serial instance, just listen for input. */
@@ -125,6 +128,8 @@
       /*
         If this is soft-serial instance, prints info,
         but only if soft-serial is connected (via BT).
+
+        Then sets up the login challenge.
       */
       
       if (digitalRead(BT_STATUS_PIN) == LOW) {
@@ -132,25 +137,12 @@
         serial_port->print(VERSION);
         serial_port->print(", ");
         serial_port->println(TIMESTAMP);
-        serial_port->println();        
+        serial_port->println();
       }
-      /*
-       Calls menuMainPromp(""), which sets up a listener for input.
-       passing an empty string will hide the default menuMain prompt string,
-       but will still create the ":" or ">" prompt and push the necessary functions
-       to the stack.
 
-       Actually, we don't want a prompt or any output if this is SW menu starting up.
-       But we still need to create the listener/callback, so input will be processed.
-      */      
-      //menuMainPrompt("");
-      //readLineWithCallback(&Menu::menuSelectedMainItem);
       menuLogin();
     }
  	}
-
-
-  /***  Control  ***/
 
   void Menu::loop() {
     MU_LOG(6, F("MENU LOOP BEGIN "), false); MU_LOG(6, instance_name, true);
@@ -227,8 +219,6 @@
       TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 
       RunMode = 0;
-
-      //reader->power_cycle_high_duration_override = 1UL;
       
       FREERAM("exitAdmin()");
     }
@@ -358,42 +348,40 @@
     return bool_result;
   }
 
-
-  //  // So you can do prompt(F("whatever"))
-  //  void Menu::prompt(const __FlashStringHelper *str, CB _cback, bool _read_tag) {
-  //    prompt_P((const char*)str, _cback, _read_tag);
-  //  }
   
-  // So you can do prompt_P(PSTR("whatever"))
+  // So you can store prompt text in progmem: prompt_P(PSTR("whatever"))
+  //
+  // Properly copies progmem string to local var.
+  // See https://forum.arduino.cc/index.php?topic=50197.0
+  // See https://forum.arduino.cc/index.php?topic=158375.0
+  // See https://forum.arduino.cc/index.php?topic=556489.0
+  //
+  // Also suggested:
+  //  char *buff;
+  //  buff=(char *)malloc(strlen_P(str)+1);
+  //  strcpy_P(buff, *str);
+  //  prompt(buff, _cback, _read_tag);
+  //  free(buff);
+  //
   void Menu::prompt_P(const char *str, CB _cback, bool _read_tag) {
-    // See https://forum.arduino.cc/index.php?topic=50197.0
-    // See https://forum.arduino.cc/index.php?topic=158375.0
-    // See https://forum.arduino.cc/index.php?topic=556489.0
-    
-    //  char *buff;
-    //  buff=(char *)malloc(strlen_P(str)+1);
-    //  strcpy_P(buff, *str);
-    //  prompt(buff, _cback, _read_tag);
-    //  free(buff);
-
     char buff[strlen_P(str)+1];
     strcpy_P(buff, str);
     prompt(buff, _cback, _read_tag);
   }
-  
+
+  // Displays a prompt with string, sending eventual user input to callback.
   void Menu::prompt(const char *_message, CB _cback, bool _read_tag) {
     
-    if (_message[0]) {
+    if (_message[0] && !(this == SW && digitalRead(BT_STATUS_PIN) == HIGH)) {
       serial_port->print(_message);
-      //serial_port->print((const char*)(__FlashStringHelper*)_message);
-      //serial_port->print(F(" "));
+      serial_port->print(F(": "));
     }
 
     // This can only go BEFORE the ">" IF it doesn't call anything (just does set-up).
     // Otherwise it should go after the ">" (but then any errors will show up after the prompt).
     readLineWithCallback(_cback, _read_tag);
 
-    serial_port->print(F(": "));
+    //serial_port->print(F(": "));
   }
 
   // TODO: Consider renaming this... maybe getInput()?

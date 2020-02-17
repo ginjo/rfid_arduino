@@ -136,10 +136,10 @@
     
     /*  Run setup/begin/init functions  */
 
-    // Activates the Controller handler.
+    // Activates the Controller instance.
     OutputControl->begin();
 
-    // Activates the serial port for the Controller handler.
+    // Activates the serial port for the RFID reader.
     RfidSerial->begin(S.rfid_baud);
 
     // Loads tags to default location (Tags::TagSet).
@@ -148,12 +148,12 @@
     // Activates the admin console.
     Menu::Begin();
 
-     #ifdef BK_DEBUG
-      FREERAM("setup() end");
-  
-      // Add empty line before beginning loop.
-      LOG(4, "", true);
-    #endif
+   #ifdef BK_DEBUG
+    FREERAM("setup() end");
+
+    // Add empty line before beginning loop.
+    LOG(4, "", true);
+  #endif
 
   } // setup()
 

@@ -913,5 +913,20 @@ FIX:  √ Fix reader constructor log messages.
 TODO: √ Mask sensitive data in logs at runtime (what about in menu?)
 			Update: Mostly handled now, at least for log level 4.
 
-
-		
+FIX:  √ At startup, BT is sending "ERROR", which triggers admin mode.
+			It only happens sometimes, and it happens more often with external power.
+			
+			Sometimes this admin mode never ends.
+			
+			Update: Was because prompt was writing login request to BT
+			when BT was not connected. Fixed by not allowing prompt() to
+			write to BT unless it's connected.
+			
+TODO: Make sure NOTHING else is writing to BT at startup, if not connected.
+			
+TODO: Check all of the Menu clear/reset functions and where they are used.
+			Some of their callings are probably not needed, but which ones?
+			
+			
+			
+			
