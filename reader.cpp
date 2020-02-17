@@ -70,9 +70,7 @@
 
     cycle_low_finish_ms = (uint32_t)(last_power_cycle_ms + S.reader_cycle_low_duration);
     
-    /*
-      TODO: Should this be put into a function? Yes, I think so!
-    */
+    // TODO: Should this be put into a function? Yes, I think so!
     RD_LOG(6, F("tag_last_read_ms "), false); RD_LOG(6, tag_last_read_ms, true);
     RD_LOG(6, F("msSinceLastTagRead "), false); RD_LOG(6, msSinceLastTagRead(), true);
     RD_LOG(6, F("last_power_cycle_ms "), false); RD_LOG(6, last_power_cycle_ms, true);
@@ -101,10 +99,19 @@
     return (uint32_t)(current_ms - last_power_cycle_ms);
   }
 
-  // Sets power_cycle_high_duration_override with the lowest of three possibilities.
-  // Pass in a multiplier (uint8_t) to increase power_cycle_high_duration_override
-  // within the confines of the rules.
-  //
+
+  /*
+    Gets calculated value, but also sets the override value.
+    Usually, you just want to get the correct calculated value.
+    BUT if you pass in a multiplier > 1, it will change the override
+    value by multiplying it. This is how the progressive power cycle decay works.
+    
+    Sets power_cycle_high_duration_override with the lowest of three possibilities.
+    Pass in a multiplier (uint8_t) to increase power_cycle_high_duration_override
+    within the confines of the rules.
+    
+    This is a good example of getting the lowest of three different values.
+  */
   uint32_t Reader::powerCycleHighDuration(uint8_t multiplier) {
     if (power_cycle_high_duration_override > 0UL) {
       uint32_t o = power_cycle_high_duration_override * multiplier;
@@ -189,21 +196,23 @@
       }
 
     } else if (
-    // If no data on Controller serial port and sufficient conditions exist,
-    // then call cycle-reader-power.
-    //
-    // NOTE: The progressive cycle decay messes with the logic here,
-    // and causes the loop to skip this after cycle-low, when it shouldn't.
-    // Therefore, trying to divide by 2 to 'loosen' this up a bit.
-    // Update: The divide-by-2 helped a bit, but the 3rd condition solved the issue.
-    //
-    // I'm not sure if this 'else if' is really needed. Could it just be 'else' ?
-    // The conditions might just be to reduce the number of unnecessary calls to cycleReaderPower().
-    // Extra calls to cycleReaderPower() shouldn't hurt anything... right??
-
+    /*
+      If no data on Controller serial port and sufficient conditions exist,
+      then call cycle-reader-power.
+      
+      NOTE: The progressive cycle decay messes with the logic here,
+      and causes the loop to skip this after cycle-low, when it shouldn't.
+      Therefore, trying to divide by 2 to 'loosen' this up a bit.
+      Update: The divide-by-2 helped a bit, but the 3rd condition solved the issue.
+      
+      I'm not sure if this 'else if' is really needed. Could it just be 'else' ?
+      The conditions might just be to reduce the number of unnecessary calls to cycleReaderPower().
+      Extra calls to cycleReaderPower() shouldn't hurt anything... right??
+    */
       msSinceLastTagRead() > (powerCycleHighDuration() * 1000UL)/2 ||
-      tag_last_read_ms == 0UL ||
-      current_ms >= cycle_low_finish_ms ) // to make sure cycleReader is called when it needs to go HIGH from LOW.
+      tag_last_read_ms == 0UL ||         // if tag has never been read.
+      current_ms >= cycle_low_finish_ms  // to make sure cycleReader is called when it needs to go HIGH from LOW.
+    ) 
     {
       // This log line puts out a LOT of data but can be useful.
       //RD_LOG(6, F("poll-calling-cycl "), false); RD_LOG(6, msSinceLastTagRead(), false); RD_LOG(6, F(" "), false); RD_LOG(6, powerCycleHighDuration() * 1000UL, true); 
@@ -212,13 +221,14 @@
     }
   }
 
-  // TODO (Reader): I think part of this function should stay in Controller,
-  // the part that decides what to do with a successfull tag read/authentication.
-  // The big question is: Where/what do we do with the successfully read tag? Where do we store it?
-  //
-  // Processes a received array of tag bytes.
-  // NOTE (from Controller): array args in func definitions can only use absolute constants, not vars.
-  //
+  /*
+    TODO (Reader): I think part of this function should stay in Controller,
+    the part that decides what to do with a successfull tag read/authentication.
+    The big question is: Where/what do we do with the successfully read tag? Where do we store it?
+    
+    Processes a received array of tag bytes.
+    NOTE (from Controller): array args in func definitions can only use absolute constants, not vars.
+  */
   void Reader::processTag(uint8_t _tag[]) {
     LOG(5, name(), false);
     LOG(5, F(" processTag rcvd buffer: 0x "), false);
@@ -235,10 +245,10 @@
     //  int tst = echo(24);
     //  RD_PRINTLN(tst);
 
-    // Calls the reader-specific process code.
+    // Calls reader-specific process code.
     //RD_LOG(F("Reader::processTag() calling processTagData()"), true);
     uint32_t tag_id = processTagData(_tag);
-    
+
     //  RD_LOG(5, F("Rslt from processTagData "), false);
     //  RD_LOG(5, tag_id, true);
 
@@ -255,18 +265,28 @@
       tag_last_read_ms = current_ms;
 
       //LOG(4, F("Authorized tag: "));
-      LOG(4, F("Authorized tag: "));
+      LOG(4, F("Authorized tag xx"));
 
     } else {
     // Otherwise, don't do anything (not necessarily a failed proximity-state yet).
     
       //LOG(4, F("Unauthorized or invalid tag: "));
-      LOG(4, F("Tag not valid/authorized: "));
+      LOG(4, F("Tag not valid/authorized xx"));
     }
 
-    LOG(4, tag_id, true);
-    
+    // This mask works but takes a couple hundred bytes of progmem!
+    //char str[10] = {};
+    //sprintf(str, "xxxxxx%4lu", tag_id % 10000);
+    //LOG(4, str, true);
+
+    // This mask works and takes less progmem.
+    // This is a good example of using remainders from dividing by
+    // 10, 100, 1000, etc. to get the right-most digits of a larger number.
+    LOG(4, tag_id % 10000, true);
+
+    // Stores the tag id in an instance variable.
     tag_last_read_id = tag_id;
+    
   } // processTag()
 
   void Reader::resetBuffer() {
@@ -278,6 +298,10 @@
     memset(buff, 0U, MAX_TAG_LENGTH);
   }
 
+  /*
+    If conditions are right, sets the reader power low. Then, during
+    a future pass thru the loop, this sets reader power high again.
+  */
   void Reader::cycleReaderPower() {
     if (current_ms >= cycleHighFinishMs() || last_power_cycle_ms == 0UL) {
       
@@ -301,16 +325,14 @@
       LOG(5, powerCycleHighDuration(), true);
       
 
-      RD_LOG(6, F("cycleReaderPower LOW"), true);
+      RD_LOG(6, F("Reader LOW"), true);
 
-      // Exponentially increases time between power cycles (until Controller state changes).
+      /*
+        If power_cycle_high_duration_override is not 0,
+        call powerCycleHighDuration() with a factor of 2,
+        which will increment power_cycle_high_duration_override by doubling it.
+      */
       if (power_cycle_high_duration_override) {
-        //  power_cycle_high_duration_override = ( // the following is a ternary experession... a big one!
-        //    power_cycle_high_duration_override > S.tag_last_read_soft_timeout ?
-        //    S.tag_last_read_soft_timeout - 1 :
-        //    (power_cycle_high_duration_override * 2)
-        //  );
-        
         powerCycleHighDuration(2);
       }
             

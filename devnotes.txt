@@ -584,7 +584,7 @@ TODO: - Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3,
 TODO: - Should debug button take level all the way to max (6)?
       See below for suggested refactor of Settings.debug_mode.
 
-Fix:  Log level 5 with BTserial connected & with Reader debug enabled causes
+Fix:  √ Log level 5 with BTserial connected & with Reader debug enabled causes
       reader/controller confusion when tag is read, leading to false aging mode.
       (it's the reader byte detail that seems to cause the most trouble).
       The problem goes away immediattely when log level is reverted to 4, or when
@@ -593,6 +593,8 @@ Fix:  Log level 5 with BTserial connected & with Reader debug enabled causes
       
       The only solution may be to always use HW serial to view log output,
       while using BT serial to view deeper levels of output is at-your-own-risk...
+      
+      Update: I think this was UB... I'm calling it done.
       
 TODO: OR, try preventing switching of SW serial listener, whenever the RFID reader
       is in the middle of reading a tag. Maybe allow only ONE loop section to operate
@@ -742,7 +744,7 @@ TODO: √ Save settings needs better results/confirmation output.
 
 TODO: √ Change name of enable_debug to 'debug_level'.
 
-TODO: ? Sometimes the first Uptime() call is printing garbage. Still?
+TODO: √ Sometimes the first Uptime() call is printing garbage. Still?
 
 TODO: Should run-mode default to 2? (until admin is activated (1) or times out (0)).
 			Or is there another way to determine that we're listening for admin mode,
@@ -764,7 +766,7 @@ TODO: √ There is a delay when reader gets a bogus tag during aging cycle
 			√ Yes, it is due to writing log output during tag read. Reducing log-level
 			to 4 solves the problem.
 			
-TODO: Rebase since last push to github, and update commit messages with more accurate data.
+TODO: - Rebase since last push to github, and update commit messages with more accurate data.
 
 TODO: √ Remove Update() call from cycleReaderPower log line.
 
@@ -906,7 +908,8 @@ TODO: √ To maximize soft-timeout period during runtime incidents, there should
 			
 FIX:  √ Fix reader constructor log messages.
 
-TODO: Mask all sensitive data in logs (what about in menu?)
+TODO: √ Mask sensitive data in logs at runtime (what about in menu?)
+			Update: Mostly handled now, at least for log level 4.
 
 
 		

@@ -80,7 +80,7 @@
       LOG(5, F(", checksum (dec): "));
       LOG(5, _tag[8], true);
       
-      char id_hex[id_len+1] = ""; // need to initialize this to empty.
+      char id_hex[id_len+1] = ""; // need to initialize this to empty. using {} takes 4 more bytes.
   
       for (int n=id_begin; n<=id_end; n++) {
         sprintf(id_hex + strlen(id_hex), "%02x", _tag[n]);
