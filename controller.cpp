@@ -84,7 +84,7 @@
     
 
     if (
-    // TIMEOUT (grace period)
+    // TIMEOUT (startup grace period)
     // If no tag read at startup and reader has recently power cycled.
     //
     // This should probably calculate or use global setting for
@@ -106,7 +106,7 @@
       // Only runs once per ctrl_status change.
       if (ctrl_status != 1) {
         reader->power_cycle_high_duration_override = 1UL;
-        LOG(3, F("TIMEOUT startup"), true);
+        LOG(3, F("TIMEOUT"), true);
         Beeper->slowBeep(3);
       }
 
@@ -132,7 +132,7 @@
       // Only runs once per ctrl_status change.
       if (ctrl_status != 2) {
         reader->power_cycle_high_duration_override = 1UL;
-        LOG(3, F("TIMEOUT general"), true); // only prints once.
+        LOG(3, F("TIMEOUT"), true); // only prints once.
         Beeper->slowBeep(3);
       }
 

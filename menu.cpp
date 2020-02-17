@@ -71,7 +71,7 @@
   void Menu::Begin() {
     LOG(4, F("Menu.Begin()"), true);
     HW->begin();
-    HW->reader->power_cycle_high_duration_override = 1UL;
+    //HW->reader->power_cycle_high_duration_override = 1UL;
     SW->begin();
     
     // NOTE: Menu::Current is set in checkSerialPort()
@@ -157,6 +157,7 @@
 
     // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
     if (millis() % 1000 < 500 && !Current && this == SW) {
+      reader->power_cycle_high_duration_override = 1UL; // Resets override to 1 on each pass, so it never decays.
       reader->loop();
       if (reader->tag_last_read_id && !get_tag_from_scanner) {
         exitAdmin();
@@ -227,7 +228,7 @@
 
       RunMode = 0;
 
-      reader->power_cycle_high_duration_override = 1UL;
+      //reader->power_cycle_high_duration_override = 1UL;
       
       FREERAM("exitAdmin()");
     }
@@ -402,7 +403,11 @@
     push(&Menu::readLine);
     clearSerialPort();
     resetInputBuffer();
-    if (_read_tag) {reader->resetBuffer(); get_tag_from_scanner = 1;} // not sure if reader->resetBuffer() is necessary.
+    if (_read_tag) {
+      // not sure if the resetBuffer() is necessary.
+      reader->resetBuffer();
+      get_tag_from_scanner = 1;
+    }
   }
 
   // Checks for bufferReady() and reacts by calling stack-callback.
@@ -439,6 +444,7 @@
   //
   void Menu::getTagFromScanner() {
     if (get_tag_from_scanner) {
+      reader->power_cycle_high_duration_override = 1UL; // Resets override to 1 on each pass, so it never decays.
       reader->loop();
       if (reader->tag_last_read_id) {
         MU_LOG(6, F("Menu.getTagFromScanner() found tag "), false); MU_LOG(6, reader->tag_last_read_id, true);

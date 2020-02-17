@@ -897,6 +897,8 @@ FIX:  √ The quick tag reads during startup don't seem to be captured by the AR
 			Update: I think this was fixed by setting reader-cycle-override back to 1 upon exitAdmin().
 			
 TODO: What is the '2000UL' hard-code? Should it be a setting?
+			I think it's to allow time for the tag to be read and processed
+			after a reader power cycle.
 
 TODO: √ To maximize soft-timeout period during runtime incidents, there should be
 			a cycle_high_duration_max setting. Ultimately (sadly) the reader cycle should be kept
