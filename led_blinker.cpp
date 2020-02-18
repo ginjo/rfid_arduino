@@ -16,6 +16,7 @@
   };
 
   void Led::PrintStaticIntervals() {
+    // TODO: Should this be converted to use LOG function?
     Serial.println(F("PrintStaticIntervals()"));
     for (int n = 0; n < 6; n++) {
       Serial.print(n); Serial.print(":");

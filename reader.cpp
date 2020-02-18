@@ -113,10 +113,13 @@
     falls within the confines of the prescribed logic.
 
     If the multiplier is negative, it will be used as (1/abs(multiplier))
+    TODO: Will we ever use the fractional multiplier (with negative param)?
+          If we remove it, we'll reclaim ~22 bytes of progmem.
   */
   uint32_t Reader::powerCycleHighDuration(int8_t multiplier) {
     if (power_cycle_high_duration_override != 0UL) {
-      uint32_t o = power_cycle_high_duration_override * (multiplier > 0 ? multiplier : 1/(-1*multiplier));
+      //uint32_t o = power_cycle_high_duration_override * (multiplier > 0 ? multiplier : 1/(-1*multiplier));
+      uint32_t o = power_cycle_high_duration_override * multiplier;
       uint32_t &s = S.tag_last_read_soft_timeout;
       uint32_t &m = S.reader_cycle_high_max;
 
@@ -201,16 +204,6 @@
     /*
       If no data on Controller serial port and sufficient conditions exist,
       then call cycle-reader-power.
-      
-      NOTE: The progressive cycle decay messes with the logic here,
-      and causes the loop to skip this after cycle-low, when it shouldn't.
-      Therefore, trying to divide by 2 to 'loosen' this up a bit.
-      Update: The divide-by-2 helped a bit, but the 3rd condition solved the issue.
-      
-      Should this logic be inside the cycleReaderPower() function,
-      wrapping the rest of the current function. OR is there a reason
-      to keep this logic out of that function? Is the function used
-      for anything different or called from anywhere else?
 
       The divide by 2 reduces short-term (by half) interval duration,
       if manual tag reads have been made after half the of the current
@@ -218,6 +211,13 @@
       override within one cycle. This is not necessary but is not harmful
       and could be helpful. Without the divide by 2, the reader will always
       wait to cycle until a tag has not been read for the cycle-high duration.
+
+      TODO: Should this condition be inside the cycleReaderPower() function,
+      instead of here (leaving this as just a simple 'else')?
+      If this condition were moved to cycleReaderPower, it would wrap
+      the rest of that function. OR is there a reason
+      to keep this logic out of that function? Is the function used
+      for anything different or called from anywhere else? (No, not used anywehre else right now).
     */
       msSinceLastTagRead() > (powerCycleHighDuration() * 1000UL)/2 ||
       //msSinceLastTagRead() > (powerCycleHighDuration(-2) * 1000UL) ||
@@ -310,7 +310,7 @@
 
   /*
     If conditions are right, sets the reader power low. Then, during
-    a future pass thru the loop, this sets reader power high again.
+    a future pass thru the loop, sets reader power high again.
   */
   void Reader::cycleReaderPower() {
     if (current_ms >= cycleHighFinishMs() || last_power_cycle_ms == 0UL) {
@@ -342,6 +342,9 @@
         If power_cycle_high_duration_override is not 0,
         call powerCycleHighDuration() with a factor of 2,
         which will increment power_cycle_high_duration_override by doubling it.
+
+        TODO: Should the multiplier here be a user-setting?
+              Would the user ever have any reason to adjust the multiplier?
       */
       if (power_cycle_high_duration_override) {
         power_cycle_high_duration_override = powerCycleHighDuration(2);

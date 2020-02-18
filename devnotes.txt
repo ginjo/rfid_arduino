@@ -896,9 +896,12 @@ FIX:  √ The quick tag reads during startup don't seem to be captured by the AR
 			
 			Update: I think this was fixed by setting reader-cycle-override back to 1 upon exitAdmin().
 			
-TODO: What is the '2000UL' hard-code? Should it be a setting?
+TODO: √ What is the '2000UL' hard-code? Should it be a setting?
 			I think it's to allow time for the tag to be read and processed
 			after a reader power cycle.
+			
+			Update: 2000ms is a safe time to wait for tag read after power cycle.
+			This is only used to decide when to begin TIMEOUT state.
 
 TODO: √ To maximize soft-timeout period during runtime incidents, there should be
 			a cycle_high_duration_max setting. Ultimately (sadly) the reader cycle should be kept
@@ -922,13 +925,13 @@ FIX:  √ At startup, BT is sending "ERROR", which triggers admin mode.
 			when BT was not connected. Fixed by not allowing prompt() to
 			write to BT unless it's connected.
 			
-TODO: Make sure NOTHING else is writing to BT at startup, if not connected.
+TODO: √ Make sure NOTHING else is writing to BT at startup, if not connected.
 			
 TODO: Check all of the Menu clear/reset functions and where they are used.
 			Some of their callings are probably not needed, but which ones?
 			
-TODO: Tag reads in the middle of the cycle interval are not pushing the next cyclic read
+FIX:  √ Tag reads in the middle of the cycle interval are not pushing the next cyclic read
 			forward. The cycle should account for recent manual tag reads, and restart the cycle timer.
 			
-TODO: Figure out the roll separation between pollReader() and cycleReaderPower().
+TODO: √ Figure out the roll separation between pollReader() and cycleReaderPower().
 

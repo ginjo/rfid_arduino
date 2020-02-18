@@ -121,17 +121,23 @@
     resetInputBuffer();
     clearSerialPort(); // recently added, dunno if needed.
     
-    if (strcmp(instance_name, "HW") == 0) {
+    //if (strcmp(instance_name, "HW") == 0) {
+    if (this == HW) {
       /* If this is hard-serial instance, just listen for input. */
       readLineWithCallback(&Menu::menuSelectedMainItem);
-    } else if (strcmp(instance_name, "SW") == 0) {
+    //} else if (strcmp(instance_name, "SW") == 0) {
+    } else if (this == SW) {
       /*
         If this is soft-serial instance, prints info,
         but only if soft-serial is connected (via BT).
 
         Then sets up the login challenge.
       */
-      
+
+      // NOTE: Don't use Logger here, since this needs
+      // to be printed in cases where Logger would skip it.
+      // So basically, always print this if BT is connected.
+      //
       if (digitalRead(BT_STATUS_PIN) == LOW) {
         serial_port->print(F("RFID admin console, "));
         serial_port->print(VERSION);
@@ -243,7 +249,8 @@
   // line as described above.
   //
   void Menu::checkSerialPort() {
-    if (strcmp(instance_name, "SW") == 0) {
+    //if (strcmp(instance_name, "SW") == 0) {
+    if (this == SW) {
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
 
       if (! sp->isListening()) {

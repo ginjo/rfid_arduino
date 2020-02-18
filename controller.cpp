@@ -46,7 +46,6 @@
   // Initializes output switch.
   void Controller::initializeOutput() {
 
-
     LOG(4, F("Setting outpt switch: "));
     LOG(4, proximity_state, true);
     // Switches the main load according to current proximity_state.
@@ -92,7 +91,7 @@
 
       reader->tag_last_read_ms == 0UL &&
       reader->last_power_cycle_ms > 0UL &&
-      reader->msSinceLastPowerCycle() > 2000UL
+      reader->msSinceLastPowerCycle() > 2000UL // 2000ms is a safe time to wait for tag read after power cycle.
       ){
       
       CT_LOG(6, F("Timeout:grace"), true);
@@ -119,7 +118,7 @@
       reader->msSinceLastTagRead() > reader->tagLastReadHardTimeoutX1000() &&
       reader->last_power_cycle_ms > 0UL &&
       reader->msSinceLastTagRead() > reader->msSinceLastPowerCycle() &&
-      reader->msSinceLastPowerCycle() > 2000UL // TODO: What is this 2000 figure?
+      reader->msSinceLastPowerCycle() > 2000UL
       ){
 
       CT_LOG(6, F("Timeout:general"), true);
