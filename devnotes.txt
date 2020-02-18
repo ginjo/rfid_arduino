@@ -927,6 +927,8 @@ TODO: Make sure NOTHING else is writing to BT at startup, if not connected.
 TODO: Check all of the Menu clear/reset functions and where they are used.
 			Some of their callings are probably not needed, but which ones?
 			
+TODO: Tag reads in the middle of the cycle interval are not pushing the next cyclic read
+			forward. The cycle should account for recent manual tag reads, and restart the cycle timer.
 			
-			
-			
+TODO: Figure out the roll separation between pollReader() and cycleReaderPower().
+

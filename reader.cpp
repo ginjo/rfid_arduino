@@ -101,28 +101,30 @@
 
 
   /*
-    Gets calculated value, but also sets the override value.
-    Usually, you just want to get the correct calculated value.
-    BUT if you pass in a multiplier > 1, it will change the override
-    value by multiplying it. This is how the progressive power cycle decay works.
+    Gets calculated value. Accepts a multiplier that if > 1
+    multiplies the current override before doing the logic calcs.
+    This is how the progressive power cycle decay works.
+
+    Don't just run this function and multiply the result.
+    Always pass in the multiplier, if you intend to change the override.
     
-    Sets power_cycle_high_duration_override with the lowest of three possibilities.
-    Pass in a multiplier (uint8_t) to increase power_cycle_high_duration_override
-    within the confines of the rules.
-    
-    This is a good example of getting the lowest of three different values.
+    Gets the lowest of three values (a good example of generic technique
+    for that). Pass in a multiplier (int8_t) to get a changed value that
+    falls within the confines of the prescribed logic.
+
+    If the multiplier is negative, it will be used as (1/abs(multiplier))
   */
-  uint32_t Reader::powerCycleHighDuration(uint8_t multiplier) {
-    if (power_cycle_high_duration_override > 0UL) {
-      uint32_t o = power_cycle_high_duration_override * multiplier;
+  uint32_t Reader::powerCycleHighDuration(int8_t multiplier) {
+    if (power_cycle_high_duration_override != 0UL) {
+      uint32_t o = power_cycle_high_duration_override * (multiplier > 0 ? multiplier : 1/(-1*multiplier));
       uint32_t &s = S.tag_last_read_soft_timeout;
       uint32_t &m = S.reader_cycle_high_max;
 
-      if (o <= s-1 && o <= m) power_cycle_high_duration_override = o;
-      else if (s-1 <= o && s-1 <= m) power_cycle_high_duration_override = s-1;
-      else power_cycle_high_duration_override = m;
+      if (o <= s-1 && o <= m)         o = o;
+      else if (s-1 <= o && s-1 <= m)  o = s-1;
+      else                            o = m;
 
-      return power_cycle_high_duration_override;
+      return o;
     } else {
       return S.tag_last_read_soft_timeout;
     }
@@ -205,18 +207,26 @@
       Therefore, trying to divide by 2 to 'loosen' this up a bit.
       Update: The divide-by-2 helped a bit, but the 3rd condition solved the issue.
       
-      I'm not sure if this 'else if' is really needed. Could it just be 'else' ?
-      The conditions might just be to reduce the number of unnecessary calls to cycleReaderPower().
-      Extra calls to cycleReaderPower() shouldn't hurt anything... right??
+      Should this logic be inside the cycleReaderPower() function,
+      wrapping the rest of the current function. OR is there a reason
+      to keep this logic out of that function? Is the function used
+      for anything different or called from anywhere else?
+
+      The divide by 2 reduces short-term (by half) interval duration,
+      if manual tag reads have been made after half the of the current
+      cycle duration has passed. Then the duration goes back to the set
+      override within one cycle. This is not necessary but is not harmful
+      and could be helpful. Without the divide by 2, the reader will always
+      wait to cycle until a tag has not been read for the cycle-high duration.
     */
       msSinceLastTagRead() > (powerCycleHighDuration() * 1000UL)/2 ||
-      tag_last_read_ms == 0UL ||         // if tag has never been read.
-      current_ms >= cycle_low_finish_ms  // to make sure cycleReader is called when it needs to go HIGH from LOW.
+      //msSinceLastTagRead() > (powerCycleHighDuration(-2) * 1000UL) ||
+      tag_last_read_ms == 0UL // ||         // if tag has never been read.
+      //current_ms >= cycle_low_finish_ms  // to make sure cycleReader is called when it needs to go HIGH from LOW.
     ) 
     {
       // This log line puts out a LOT of data but can be useful.
       //RD_LOG(6, F("poll-calling-cycl "), false); RD_LOG(6, msSinceLastTagRead(), false); RD_LOG(6, F(" "), false); RD_LOG(6, powerCycleHighDuration() * 1000UL, true); 
-      
       cycleReaderPower();
     }
   }
@@ -304,7 +314,8 @@
   */
   void Reader::cycleReaderPower() {
     if (current_ms >= cycleHighFinishMs() || last_power_cycle_ms == 0UL) {
-      
+    // Sets reader power Off (LOW or HIGH electrical state dependent on reader type).
+    
       LOG(5, F("cycleReaderPower tag read "));
       if (tag_last_read_ms > 0UL) {
         LOG(5, msSinceLastTagRead()/1000UL);
@@ -333,13 +344,15 @@
         which will increment power_cycle_high_duration_override by doubling it.
       */
       if (power_cycle_high_duration_override) {
-        powerCycleHighDuration(2);
+        power_cycle_high_duration_override = powerCycleHighDuration(2);
       }
             
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
       last_power_cycle_ms = current_ms;
       
     } else if (current_ms >= cycle_low_finish_ms) {
+    // Sets reader power On (HIGH or LOW electrical state dependent on reader type).
+    
       // This log line will produce a LOT of output but can be useful for troubleshooting.
       //RD_LOG(6, F("cycleReaderPower setting HIGH, high-dur "), false); RD_LOG(6, powerCycleHighDuration, true);
       
