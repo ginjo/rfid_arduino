@@ -112,14 +112,17 @@
     for that). Pass in a multiplier (int8_t) to get a changed value that
     falls within the confines of the prescribed logic.
 
+     The multiplier represents a decimal with 2 places, so 150 == 1.5.
+     This is fixed point math... to avoid floating point math.
+     With uint8_t, the highest you can go is 255, so 255/100 == 2.5 multiplier max.
+
     If the multiplier is negative, it will be used as (1/abs(multiplier))
     TODO: Will we ever use the fractional multiplier (with negative param)?
           If we remove it, we'll reclaim ~22 bytes of progmem.
   */
-  uint32_t Reader::powerCycleHighDuration(int8_t multiplier) {
+  uint32_t Reader::powerCycleHighDuration(uint8_t multiplier) {
     if (power_cycle_high_duration_override != 0UL) {
-      //uint32_t o = power_cycle_high_duration_override * (multiplier > 0 ? multiplier : 1/(-1*multiplier));
-      uint32_t o = power_cycle_high_duration_override * multiplier;
+      uint32_t o = power_cycle_high_duration_override * multiplier / 100;
       uint32_t &s = S.tag_last_read_soft_timeout;
       uint32_t &m = S.reader_cycle_high_max;
 
@@ -347,7 +350,7 @@
               Would the user ever have any reason to adjust the multiplier?
       */
       if (power_cycle_high_duration_override) {
-        power_cycle_high_duration_override = powerCycleHighDuration(2);
+        power_cycle_high_duration_override = powerCycleHighDuration(145); // 150 == 1.5 multiplier.
       }
             
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);

@@ -92,7 +92,7 @@
     uint32_t msSinceLastTagRead();
     uint32_t msSinceLastPowerCycle();
     //uint32_t cycleTotalMs();
-    uint32_t powerCycleHighDuration(int8_t = 1);
+    uint32_t powerCycleHighDuration(uint8_t = 1);
     uint32_t tagLastReadHardTimeoutX1000();
     //uint32_t cycleLowFinishMs();
     uint32_t cycleHighFinishMs();
