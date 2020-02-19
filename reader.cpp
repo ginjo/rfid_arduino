@@ -115,6 +115,8 @@
     The multiplier represents a a percentage, or decimal with 2 places,
     so 150 == 150% or 1.5. This is fixed point math... to avoid floating point math.
     With uint8_t, the highest you can go is 255, so 255/100 == 2.55 multiplier (255%) max.
+    Use this graphing calc to visualize: https://www.desmos.com/calculator
+    The formula for the graph is y = (150/100)^x
 
     If the multiplier is < 100, you are talking fractional multiplier,
     which gives you decay instead of growth.

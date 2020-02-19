@@ -833,7 +833,7 @@ TODO: √ Make it so when Menu is waiting for tag scan, the cycle-reader functio
 			
 TODO: Consider moving RunMode to Controller instead of Menu.
 
-FIX:  Select-reader menu flow is not working correctly and not storing selection.
+FIX:  √ Select-reader menu flow is not working correctly and not storing selection.
 
 FIX:  Typing in a too-long password at the login prompt will lock up the admin UI.
 
@@ -939,4 +939,6 @@ DONE: √ Changed cycle-high-override and readerCycleHighDuration to return ms.
 			This allows us to do simple decimal math in calculating cycle times.
 			
 TODO: Need data entry validation for settings. How to do?
+
+TODO: √ Change name of "Reader cycle max" setting to something else.
 

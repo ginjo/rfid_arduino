@@ -783,7 +783,7 @@
   }
 
   void Menu::menuSelectedReader(void *input) {
-    int selected_reader = (int)strtol((char *)input, NULL, 10);
+    uint8_t selected_reader = (uint8_t)strtol((char *)input, NULL, 10);
 
     //LOG(4, F("input: ")); LOG(4, (char *)input, true);
     //LOG(4, F("selected_reader: ")); LOG(4, selected_reader, true);
@@ -795,9 +795,11 @@
     if (selected_reader > 0 && selected_reader <= READER_COUNT) {
       serial_port->print(F("Selected: "));
       serial_port->println(Reader::NameFromIndex(selected_reader));
-      serial_port->println("");
+      serial_port->println(F("Save settings to persist"));
 
-      S.updateSetting(8, (char*)input);
+      //S.updateSetting(8, (char*)input);
+      S.default_reader = selected_reader;
+      
     }
 
     serial_port->println("");

@@ -22,9 +22,9 @@
     { "Admin timeout", &Settings::display_admin_timeout, &Settings::set_admin_timeout},
     { "Soft timeout", &Settings::display_tag_last_read_soft_timeout, &Settings::set_tag_last_read_soft_timeout},
     { "Hard timeout", &Settings::display_tag_last_read_hard_timeout, &Settings::set_tag_last_read_hard_timeout},
+    { "Reader cycle", &Settings::display_reader_cycle_high_max, &Settings::set_reader_cycle_high_max},
 
     { "Reader", &Settings::display_default_reader, &Settings::set_default_reader},
-    { "Reader cycle max", &Settings::display_reader_cycle_high_max, &Settings::set_reader_cycle_high_max},
     { "Reader cycle low (ms)", &Settings::display_reader_cycle_low_duration, &Settings::set_reader_cycle_low_duration},
     { "Tag read sleep (ms)", &Settings::display_tag_read_sleep_interval, &Settings::set_tag_read_sleep_interval},
 
@@ -186,9 +186,7 @@
       
     }
 
-    // Auto-store Settings object to EEPROM.
-    // This was moved to save().
-    //strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE); // Name of full Settings object.
+    // Auto-store Settings object to EEPROM. Not any more.
     //save();
     
     return true;
@@ -289,8 +287,6 @@
 
   
   /*  Getters and Setters  */
-
-  // TODO: Convert all strings to PSTR() (and sprintf to sprintf_P).
 
   void Settings::display_tag_last_read_hard_timeout(char *out) {sprintf_P(out, PSTR("%lu"), tag_last_read_hard_timeout);}
   void Settings::set_tag_last_read_hard_timeout(char *data) {tag_last_read_hard_timeout = (uint32_t)strtol(data, NULL, 10);}
