@@ -292,8 +292,10 @@ TODO: √ Consider disabling all clearing of serial ports, unless they are solvi
 TODO: √ Longer delays may actually hinder serial ports. Consider shorter delays placed more strategically,
       like as long before the port needs to be read as possible. 
 
-TODO: - Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
-	  So far, having an "Esc" key abort seems to suffice.
+TODO: √ Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
+	    So far, having an "Esc" key abort seems to suffice.
+	    
+	    Update: got it working!
 
 TODO: √ Create FREERAM macro that only runs if debug mode. Use it everywhere u have FreeRam() now,
       except at startup & other key places.

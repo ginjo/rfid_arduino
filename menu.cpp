@@ -311,10 +311,21 @@
           buff_index = 1;
           return;
         }
+
+        // Because we don't want to echo user input out to the other serial port.
+        if (this == Current) serial_port->write(byt);
+
+        // Handles backspace/delete (dunno why the above write doesn't send backspace).
+        if ((int)byt == 127 || (int)byt == 8) {
+          if (this == Current) serial_port->print("\b \b");
+          buff_index -= 1;
+          buff[buff_index] = '\0';
         
-        if (Current == this) serial_port->write(byt);
-        buff[buff_index] = byt;
-        buff_index += 1;
+        // Handles normal character input.
+        } else {
+          buff[buff_index] = byt;
+          buff_index += 1;
+        }
 
         if ((int)byt == 13 || (int)byt == 10) {   // || (int)byt == 0) {
           MU_LOG(6, F("checkSerialPort EOL indx: "), false); MU_LOG(6, buff_index-1, true);
