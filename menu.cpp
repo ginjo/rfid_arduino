@@ -155,7 +155,7 @@
 
     // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
     if (millis() % 1000 < 500 && !Current && this == SW) {
-      reader->power_cycle_high_duration_override = 1UL; // Resets override to 1 on each pass, so it never decays.
+      reader->power_cycle_high_duration_override_ms = 1000UL; // Resets override to 1 on each pass, so it never decays.
       reader->loop();
       if (reader->tag_last_read_id && !get_tag_from_scanner) {
         exitAdmin();
@@ -439,7 +439,7 @@
   //
   void Menu::getTagFromScanner() {
     if (get_tag_from_scanner) {
-      reader->power_cycle_high_duration_override = 1UL; // Resets override to 1 on each pass, so it never decays.
+      reader->power_cycle_high_duration_override_ms = 1000UL; // Resets override to 1 on each pass, so it never decays.
       reader->loop();
       if (reader->tag_last_read_id) {
         MU_LOG(6, F("Menu.getTagFromScanner() found tag "), false); MU_LOG(6, reader->tag_last_read_id, true);

@@ -99,12 +99,12 @@
       RGB[1]->off();
       
       setProximityState(0);
-      //reader->power_cycle_high_duration_override = 3UL;
+      //reader->power_cycle_high_duration_override_ms = 3UL;
       
 
       // Only runs once per ctrl_status change.
       if (ctrl_status != 1) {
-        reader->power_cycle_high_duration_override = 1UL;
+        reader->power_cycle_high_duration_override_ms = 1000UL;
         LOG(3, F("TIMEOUT"), true);
         Beeper->slowBeep(3);
       }
@@ -126,11 +126,11 @@
       RGB[1]->off();
       
       setProximityState(0);
-      //reader->power_cycle_high_duration_override = 3UL;
+      //reader->power_cycle_high_duration_override_ms = 3UL;
 
       // Only runs once per ctrl_status change.
       if (ctrl_status != 2) {
-        reader->power_cycle_high_duration_override = 1UL;
+        reader->power_cycle_high_duration_override_ms = 1000UL;
         LOG(3, F("TIMEOUT"), true); // only prints once.
         Beeper->slowBeep(3);
       }
@@ -161,11 +161,11 @@
       Beeper->fastBeep();
       
       setProximityState(1);
-      //reader->power_cycle_high_duration_override = 3UL;
+      //reader->power_cycle_high_duration_override_ms = 3UL;
 
       // Only runs once per ctrl_status change.
       if (ctrl_status != 3) {
-        reader->power_cycle_high_duration_override = 1UL;
+        reader->power_cycle_high_duration_override_ms = 1000UL;
         LOG(3, F("AGING"), true);
       }
 
@@ -187,11 +187,11 @@
       Beeper->off();
       
       setProximityState(1);
-      //reader->power_cycle_high_duration_override = 0UL;
+      //reader->power_cycle_high_duration_override_ms = 0UL;
 
       // Only runs once per ctrl_status change.
       if (ctrl_status != 4) {
-        reader->power_cycle_high_duration_override = 3UL;
+        reader->power_cycle_high_duration_override_ms = 3000UL;
         LOG(5, F("FRESH"), true); 
       }
 

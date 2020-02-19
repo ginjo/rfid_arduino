@@ -935,3 +935,8 @@ FIX:  √ Tag reads in the middle of the cycle interval are not pushing the next
 			
 TODO: √ Figure out the roll separation between pollReader() and cycleReaderPower().
 
+DONE: √ Changed cycle-high-override and readerCycleHighDuration to return ms.
+			This allows us to do simple decimal math in calculating cycle times.
+			
+TODO: Need data entry validation for settings. How to do?
+

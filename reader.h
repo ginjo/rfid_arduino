@@ -76,7 +76,7 @@
     uint32_t current_ms;
     uint32_t tag_last_read_ms;
     uint32_t last_power_cycle_ms;
-    uint32_t power_cycle_high_duration_override; // seconds
+    uint32_t power_cycle_high_duration_override_ms;
     uint32_t cycle_low_finish_ms;
     uint32_t tag_last_read_id;
     SoftwareSerial * serial_port;
@@ -92,7 +92,7 @@
     uint32_t msSinceLastTagRead();
     uint32_t msSinceLastPowerCycle();
     //uint32_t cycleTotalMs();
-    uint32_t powerCycleHighDuration(uint8_t = 1);
+    uint32_t powerCycleHighDurationMs(uint8_t = 100); // multiplier represents percentage.
     uint32_t tagLastReadHardTimeoutX1000();
     //uint32_t cycleLowFinishMs();
     uint32_t cycleHighFinishMs();

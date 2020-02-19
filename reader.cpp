@@ -29,7 +29,7 @@
     current_ms(millis()),
     tag_last_read_ms(0UL),
     last_power_cycle_ms(0UL),
-    power_cycle_high_duration_override(0UL),
+    power_cycle_high_duration_override_ms(0UL),
     cycle_low_finish_ms(0UL),
     //cycle_high_finish_ms(0UL),
     tag_last_read_id(0UL),
@@ -75,8 +75,8 @@
     RD_LOG(6, F("msSinceLastTagRead "), false); RD_LOG(6, msSinceLastTagRead(), true);
     RD_LOG(6, F("last_power_cycle_ms "), false); RD_LOG(6, last_power_cycle_ms, true);
     RD_LOG(6, F("msSinceLastPowerCycle "), false); RD_LOG(6, msSinceLastPowerCycle(), true);
-    RD_LOG(6, F("powerCycleHighDuration "), false); RD_LOG(6, powerCycleHighDuration(), true);
-    RD_LOG(6, F("power_cycle_high_duration_override "), false); RD_LOG(6, power_cycle_high_duration_override, true);
+    RD_LOG(6, F("powerCycleHighDurationMs "), false); RD_LOG(6, powerCycleHighDurationMs(), true);
+    RD_LOG(6, F("power_cycle_high_duration_override_ms "), false); RD_LOG(6, power_cycle_high_duration_override_ms, true);
     RD_LOG(6, F("cycle_low_finish_ms "), false); RD_LOG(6, cycle_low_finish_ms, true);
     RD_LOG(6, F("cycleHighFinishMs "), false); RD_LOG(6, cycleHighFinishMs(), true);
 
@@ -101,9 +101,9 @@
 
 
   /*
-    Gets calculated value. Accepts a multiplier that if > 1
+    Gets calculated value as ms. Accepts a multiplier that if > 1
     multiplies the current override before doing the logic calcs.
-    This is how the progressive power cycle decay works.
+    This is how the progressive power cycle growth/decay works.
 
     Don't just run this function and multiply the result.
     Always pass in the multiplier, if you intend to change the override.
@@ -112,27 +112,26 @@
     for that). Pass in a multiplier (int8_t) to get a changed value that
     falls within the confines of the prescribed logic.
 
-     The multiplier represents a decimal with 2 places, so 150 == 1.5.
-     This is fixed point math... to avoid floating point math.
-     With uint8_t, the highest you can go is 255, so 255/100 == 2.5 multiplier max.
+    The multiplier represents a a percentage, or decimal with 2 places,
+    so 150 == 150% or 1.5. This is fixed point math... to avoid floating point math.
+    With uint8_t, the highest you can go is 255, so 255/100 == 2.55 multiplier (255%) max.
 
-    If the multiplier is negative, it will be used as (1/abs(multiplier))
-    TODO: Will we ever use the fractional multiplier (with negative param)?
-          If we remove it, we'll reclaim ~22 bytes of progmem.
+    If the multiplier is < 100, you are talking fractional multiplier,
+    which gives you decay instead of growth.
   */
-  uint32_t Reader::powerCycleHighDuration(uint8_t multiplier) {
-    if (power_cycle_high_duration_override != 0UL) {
-      uint32_t o = power_cycle_high_duration_override * multiplier / 100;
-      uint32_t &s = S.tag_last_read_soft_timeout;
-      uint32_t &m = S.reader_cycle_high_max;
+  uint32_t Reader::powerCycleHighDurationMs(uint8_t multiplier) {
+    if (power_cycle_high_duration_override_ms != 0UL) {
+      uint32_t o = power_cycle_high_duration_override_ms * multiplier / 100;
+      uint32_t s = S.tag_last_read_soft_timeout * 1000UL;
+      uint32_t m = S.reader_cycle_high_max * 1000UL;
 
       if (o <= s-1 && o <= m)         o = o;
-      else if (s-1 <= o && s-1 <= m)  o = s-1;
+      else if (s-1 <= o && s-1 <= m)  o = s-1000UL;
       else                            o = m;
 
-      return o;
+      return (o < 1000UL ? 1000UL : o);
     } else {
-      return S.tag_last_read_soft_timeout;
+      return S.tag_last_read_soft_timeout * 1000UL;
     }
   }
 
@@ -141,7 +140,8 @@
   }
 
   uint32_t Reader::cycleHighFinishMs() {
-    return cycle_low_finish_ms + powerCycleHighDuration()*1000;
+    //return cycle_low_finish_ms + powerCycleHighDurationMs()*1000UL;
+    return cycle_low_finish_ms + powerCycleHighDurationMs();
   }
 
   // Polls reader serial port and processes incoming tag data.
@@ -222,14 +222,14 @@
       to keep this logic out of that function? Is the function used
       for anything different or called from anywhere else? (No, not used anywehre else right now).
     */
-      msSinceLastTagRead() > (powerCycleHighDuration() * 1000UL)/2 ||
-      //msSinceLastTagRead() > (powerCycleHighDuration(-2) * 1000UL) ||
+      //msSinceLastTagRead() > (powerCycleHighDurationMs() * 1000UL)/2 ||
+      msSinceLastTagRead() > powerCycleHighDurationMs()/2 ||
       tag_last_read_ms == 0UL // ||         // if tag has never been read.
       //current_ms >= cycle_low_finish_ms  // to make sure cycleReader is called when it needs to go HIGH from LOW.
     ) 
     {
       // This log line puts out a LOT of data but can be useful.
-      //RD_LOG(6, F("poll-calling-cycl "), false); RD_LOG(6, msSinceLastTagRead(), false); RD_LOG(6, F(" "), false); RD_LOG(6, powerCycleHighDuration() * 1000UL, true); 
+      //RD_LOG(6, F("poll-calling-cycl "), false); RD_LOG(6, msSinceLastTagRead(), false); RD_LOG(6, F(" "), false); RD_LOG(6, powerCycleHighDurationMs() * 1000UL, true); 
       cycleReaderPower();
     }
   }
@@ -335,22 +335,22 @@
         LOG(5, F("never"));
       }
       
-      LOG(5, F(", interval "));
-      LOG(5, powerCycleHighDuration(), true);
+      LOG(5, F(", interval ms "));
+      LOG(5, powerCycleHighDurationMs(), true);
       
 
       RD_LOG(6, F("Reader LOW"), true);
 
       /*
-        If power_cycle_high_duration_override is not 0,
-        call powerCycleHighDuration() with a factor of 2,
-        which will increment power_cycle_high_duration_override by doubling it.
+        If power_cycle_high_duration_override_ms is not 0,
+        call powerCycleHighDurationMs() with a factor of 2,
+        which will increment power_cycle_high_duration_override_ms by doubling it.
 
         TODO: Should the multiplier here be a user-setting?
               Would the user ever have any reason to adjust the multiplier?
       */
-      if (power_cycle_high_duration_override) {
-        power_cycle_high_duration_override = powerCycleHighDuration(145); // 150 == 1.5 multiplier.
+      if (power_cycle_high_duration_override_ms) {
+        power_cycle_high_duration_override_ms = powerCycleHighDurationMs(150); // 150 == 150% == 1.5 multiplier.
       }
             
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
@@ -360,7 +360,7 @@
     // Sets reader power On (HIGH or LOW electrical state dependent on reader type).
     
       // This log line will produce a LOT of output but can be useful for troubleshooting.
-      //RD_LOG(6, F("cycleReaderPower setting HIGH, high-dur "), false); RD_LOG(6, powerCycleHighDuration, true);
+      //RD_LOG(6, F("cycleReaderPower setting HIGH, high-dur "), false); RD_LOG(6, powerCycleHighDurationMs, true);
       
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
     }
