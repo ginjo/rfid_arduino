@@ -232,6 +232,10 @@
     return proximity_state;
   }
 
+
+  // TODO: Is this the right place for this?
   uint32_t Controller::softCycleTotalMs() {
     return (uint32_t)(S.tag_read_sleep_interval + S.reader_cycle_low_duration + S.tag_last_read_soft_timeout * 1000UL);
   }
+
+  

@@ -75,6 +75,7 @@
   // Handles printing to BTserial with numbers, considers integer base.
   // 
   // The templating here allows to receive any type of parameter!!!
+  //
   template<typename T>
   extern void LOG(int level, T dat, const int base, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
@@ -98,6 +99,7 @@
   // Handles printing to BTserial with strings and char arrays
   //.
   // The templating here allows to receive any type of parameter!!!
+  //
   template<typename T>
   extern void LOG(int level, T dat, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;

@@ -6,6 +6,7 @@
 
   bool log_in_progress = false; // Controlls PreLog() output for multi-part log entries.
 
+
   extern uint8_t LogLevel() {
     if (S.debugMode()) {
       return (uint8_t)S.debug_level;
@@ -13,6 +14,7 @@
       return (uint8_t)S.log_level;
     }
   }
+
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   extern int FreeRam (const char txt[]) {
@@ -23,6 +25,7 @@
     //LOG(4, F("FREE RAM (")); LOG(4, rslt); LOG(4, F(") ")); LOG(4, txt, true);
     return rslt;
   }
+
 
   // Checks if conditions are right to log to BTserial.
   extern bool CanLogToBT() {

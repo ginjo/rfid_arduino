@@ -2,9 +2,6 @@
 
 
 
-TODO: Change all 'previous_ms' to 'last_<whatever>'.
-      Do we still want this?
-
 TODO: √ Close fuel switch at startup, so we don't have to wait for software load.
       But track if there was a 'fatal' missing-tag timeout, using EEPROM.
       If there WAS a previous timeout, keep fuel switch OPEN at startup,
@@ -26,8 +23,6 @@ TODO: - Create var-to-eeprom address mapping for common settings (to be editable
 TODO: √ Provide standard message when admin menu exits/transitions to run mode.
 
 TODO: √ Sort out git repos in Documents/Arduino folder.
-
-TODO: Better code documentation. User documentation.
 
 TODO: √ Don't allow admin mode to extend the startup grace period.
 
@@ -58,10 +53,13 @@ TODO: √ Fix bug in addTagString (I think it's input_mode issue).
 
 TODO: √ Consider a function setProximityState(on-or-off, hight-or-low, whatever).
 
-TODO: Add status_text and updateStatusText() to efficiently display status change in logs.
+TODO: √ Add status_text and updateStatusText() to efficiently display status change in logs.
       This should display proximity_state status as text-label, whenever it changes.
       Use enum StatusText {recent, aging, expired}.
+      
       Update: do we still want this? Is it possible?
+      
+      Update: This is now handled.
 
 TODO: √ Reduce active logging lines in SerialMenu serial port reading.
 
@@ -129,7 +127,7 @@ TODO: √ Create a setting & control for reader-power-cycle polarity.
 
 TODO: √ Complete the Reader function that decides what reader to use.
 
-TODO: Convert settings, readers, led patterns to lists & enums, if possible. (settings are done).
+TODO: √ Convert settings, readers, led patterns to lists & enums, if possible. (settings are done).
       √ Also create settings for all possible current uses of literal data,
       mostly numbers, but maybe some strings?
       Update: This todo item might only make sense for led patterns now,
@@ -252,8 +250,6 @@ TODO: √ Refactor Storage Class, saving all needed data (including EEPROM addre
 NEXT: √ Storage refactor compiles. Now need to decouple it from the other classes, then review code, then try it.
       √ This has been done with Tags, next do with Settings (then with State - for proximity_state).
 
-TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
-
 TODO: ! Need validation routine in Tags or Reader to handle bad tag-id.
 	    Make sure that checksum is used to validate tags.
 
@@ -278,8 +274,8 @@ TODO: √ menuAddTag and addTag are all messed up, in different ways, for both H
       Update: I think most of this issue is solved, was UB from out-of-mem condition.
       Double-check on BTserial interface.
 
-TODO: Remove stuff from SerialMenu and Reader that isn't used any more.
-      Remember to check obsolete macros and global vars in .h files.
+TODO: √ Remove stuff from SerialMenu and Reader that isn't used any more.
+      √ Remember to check obsolete macros and global vars in .h files.
 
 TODO: √ Include uptime in cycleReaderPower periodic output.
 
@@ -296,21 +292,13 @@ TODO: √ Consider disabling all clearing of serial ports, unless they are solvi
 TODO: √ Longer delays may actually hinder serial ports. Consider shorter delays placed more strategically,
       like as long before the port needs to be read as possible. 
 
-TODO: Add settings for rfid-reader-add-tag-delay and menu-add-tag-delay,
-      so they can be adjusted without re-flashing device.
-      Update: add-tag seems to be working well... is this todo necessary?
-
 TODO: - Implement backspace/delete (ascii 127, 8) for tty. May need to use form-feed chr also (12).
 	  So far, having an "Esc" key abort seems to suffice.
-
-TODO: Make sure all 3 readers are working.
-      Do all readers start with 2 and end with 3 ?
-      Is each specific Reader subclass storing everything it needs for tag processing?
 
 TODO: √ Create FREERAM macro that only runs if debug mode. Use it everywhere u have FreeRam() now,
       except at startup & other key places.
 
-TODO: Remove Blinker from SerialMenu -- there's really no need for it there.
+TODO: - Remove Blinker from SerialMenu -- there's really no need for it there.
       Partially done: disabled call to Blinker in Menu.
 
 TODO: √ Rename SerialMenu to just Menu.
@@ -319,7 +307,7 @@ TODO: √ Rename RFID to Controller or Switch.
 
 TODO: √ Re-enable proximity_state EEPROM retrieve/save (see above for initial_state suggestion).
 
-TODO: Review organization and labels in main .ino file.
+TODO: √ Review organization and labels in main .ino file.
 
 TODO: √ Test the latest build, since the logging code changes.
 
@@ -328,17 +316,16 @@ TODO: √ Test changes to RGB implementation.
 TODO: √ Store pin assignments in code, not in settings.
       
 TODO: √ Store settings in code for all actual physical hardware settings.
-	  Pin assignments have now been stored as macro vars (global).
-	  Anything that is set through software or digital commands should be
-	  adjustable by the user or developer.
+			Pin assignments have now been stored as macro vars (global).
+			Anything that is set through software or digital commands should be
+			adjustable by the user or developer.
 
-TODO: Document RGB LED color and pattern meanings for end-user.
-      Document RGB usage for developers.
-
-TODO: Handle saving of blinker interval-set, so previous set can be
+TODO: - Handle saving of blinker interval-set, so previous set can be
       revived after cycle-count goes over num-cycles.
       An led-pattern-stack?
       See note in Led::startPhase(int).
+      
+      This has sorta been handled in a different way.
       
 TODO: √ Consider reducing reader cycle interval to 3 sec whenever state goes to aging.
       This is because there could be a 30+ second aging length, which would only
@@ -374,7 +361,7 @@ TODO: √ Since hardcoding pin assignments, find where you had to compromise
       start logging earlier, or to begin themselves earlier.
 
 TODO: ? Should the piezo buzzer be located with the RGB LED?
-	  What does this mean?
+			What does this mean?
 
 TODO: √ Setting tone_frequency from BTLE terminal gives weird results.
       I think it depends on the terminal client, cuz it works fine with
@@ -402,10 +389,10 @@ TODO: √ Create a setting 'log_mode'. If true, send all logs to BT-serial port 
   	  √ 4. Finally, replace all occurrences of Serial.print() with
   	     the new function (or macro), and you should be good to go.
 	  
-  	  5. Handle DPRINT and the passing of its args (to BTserial)
+  	  5. - Handle DPRINT and the passing of its args (to BTserial)
   	     after all of the above is working.
   	     
-  	  6. Consider a 'Log to BT' command at main menu level, that sets log_to_bt then exits admin.
+  	  6. - Consider a 'Log to BT' command at main menu level, that sets log_to_bt then exits admin.
 
 TODO: √ Create 'Reboot' command.
 
@@ -428,7 +415,8 @@ TODO: √ When debug pin is held during run mode, it makes a mess of the reader/
 TODO: √ There is garbage printing on BTserial at startup, even when log_to_bt is 0 and debug-pin is 1 (off).
       Maybe UB caused by the multiple BTserial declarations.
       
-      Update: I think it's due to floating pins, cuz is never happens when soft-rebooted from IDE.
+      Update: I think it's due to floating pins, cuz is never happens when soft-rebooted from IDE.\
+      Or it's from UB.
       
 TODO: √ Check to see if any class constructors are using LOG or BTserial in their construction methods.
       They probably should not.
@@ -462,7 +450,7 @@ TODO: - Consider if making Reader or Reader::Reader() a template
       will help reduce redundant/duplicate code in subclass reader defs (in readers.cpp)
       See the old TestReader() function (readers.cpp) for ideas.
       
-      Update: I don't think this would help, plus it would require putting the entire
+      Update: I don't think this would help, plus it would require putting the
       contents of reader.cpp into reader.h.
       
 TODO: √ Make reader index/name mapping 1-based (not zero-based).
@@ -471,7 +459,7 @@ WARN: - Use of 'char *var' declarations at static and class level
       may cause out-of-bound strings and UB.
       This may be an issue for the reader-name refactor.
       
-      I think we need to give Reader::Name and maybe Reader.reader_name defined length.
+      √ I think we need to give Reader::Name and maybe Reader.reader_name defined length.
       
       Setting this warning aside for now, since none of these items fixed the UB.
       
@@ -532,13 +520,13 @@ NOTE: Standard log output should always show what is about to happen, not what j
       Debug log output should add the "what just happened" info.
       Or do I have this backwards?
       
-      Example (good):
+      Example (for info logging):
         Loading settings
         Loading tags
         Starting controller
         Starting reader
         
-      Example (bad):
+      Example (for debug or trace logging):
         Loaded settings
         Loaded reader
         Loaded tags
@@ -547,9 +535,6 @@ NOTE: Standard log output should always show what is about to happen, not what j
 TODO: √ Remove unnecessary delay()s.
 
 TODO: √ Create functions for reading/writing to BT12 module.
-	  
-TODO:	Then add a menu option to change the BT12's advertised name.
-	    This could only be done from the HW serial admin menu (obviously).
 	  
 TODO: √ Should run_mode and adminTimeout() be stored & handled from Controller (instead of Menu)?
       A review showed that this could be done, however Menu is by far the largest
@@ -570,10 +555,7 @@ TODO: √ FIX: Tags list at startup shows a single string of letters.
       This was due to several LOG calls with the wrong level.
       I don't think there was any UB happening.
   
-TODO: Test all the new logging calls at level 6 with each class _DEBUG enabled.
-
-TODO: Need some way to recover from sending AT command with no response. Timeout?
-      Create a timeout function for waiting for serial input.
+TODO: - Test all the new logging calls at level 6 with each class _DEBUG enabled.
 
 TODO: - Can we poll HW menu in run-mode 0 for simple log-level changes (1, 2, 3, 4, 5, or 6).
       Or would that create a software-serial mess?
@@ -619,12 +601,6 @@ TODO: √ Prevent settings list for printing at startup if log level < 4.
 TODO: √ Preface each log line with level name and Uptime().
       Must handle log items that are in the midddle of a line.
       
-TODO: Add log line in .ino for initialization of BTserial port.
-
-TODO: Add option to control volume of beeper, and to disable it entirely.
-      Is that safe? There should be a warning that it could be dangerous
-      to not know when a tag read is growing stale (aging).
-      
 TODO: √ Make sure output switch is always on as early as possible, even before
       saved proximity-state is considered. This is so output-controlled devices
       (motors, pumps, etc) can power up per their original design.
@@ -652,7 +628,7 @@ TODO: √ With most delay() calls removed, Aging beeper is a little fast. Slow i
 TODO: - Change WL-125 reader baud to 57600 if possile. Ooo, apparently NOT possible.
 
 TODO: √ Reduce hardware buttons to only 1, will handle failsafe AND debug mode.
-	  Now startup looks like this with debug-button held low:
+			Now startup looks like this with debug-button held low:
 	    - debug enabled
 	    - failsafe enabled
 	    - debug re-enabled/disabled upon change from admin to run mode.
@@ -690,9 +666,6 @@ NOTE: √ All of the UB appears to have been fixed.
 TODO: - Make short-reader-power-cycle a bona fide setting.
 			Is this really necessary? I don't think so, since the short cycles
 			(1s at startup, 3s during timeout) are specific to certain situations.
-
-TODO: Could the entire SettingsList[] code be put into its own pair of files?
-			Would this be any benefit?
 			
 TODO: √ Do the struct array thing with Menu items.
 			√ You can probably use the CB typedef from Stack.
@@ -745,15 +718,6 @@ TODO: √ Save settings needs better results/confirmation output.
 TODO: √ Change name of enable_debug to 'debug_level'.
 
 TODO: √ Sometimes the first Uptime() call is printing garbage. Still?
-
-TODO: Should run-mode default to 2? (until admin is activated (1) or times out (0)).
-			Or is there another way to determine that we're listening for admin mode,
-			but it hasn't been activated yet?
-			
-			Make run-mode like this:
-			0. starting up, no menu activated
-			1. menu activated by user
-			2. live (reader only, no serial read from menus)
 			
 TODO: √ There is a delay when reader gets a bogus tag during aging cycle
 			which can be heard as a lag in the fast-beep.
@@ -788,13 +752,6 @@ TODO: √ Create a better 5v regulated power supply for entire project.
 			√ Tried a LM7805 with the recommended capacitors (on their spec sheet),
 			and it works much better than the crapy cheap switching regulator.
 			
-TODO: Consider storing in EEPROM last-up-time and total-number-of-runs, just for info.
-
-TODO: Consider making eeprom-addresses automatic, based on sizes all stored objects.
-			state_epradrs = 0
-			tags_epradrs  = state_epradrs + sizeof(state-object) + 1
-			settings_epradrs = tags_epradrs + sizeof(tags-object) + 1
-			
 TODO: - Consider using a rotating array of bytes for state.
 			Update: Won't buy us anything, since current-position needs to be stored somewhere static.
 			
@@ -813,9 +770,7 @@ TODO: √ Beeper triggered durring add-tag is always 1 cycle shorter than specif
 			This means that a beep called with 1 cycle won't be heard.
 			
 			Update: Beeper and blinker issues have been fixed by refining the Led logic and cycles.
-			
-TODO: Change the word 'phase' to 'interval' in Led files, or vise-versa.
-			
+						
 TODO: √ During admin, 4-quick-beeps after failed scan have a too-long first beep.
 			This issue goes away after running an AT command. What is changing?
 			
@@ -831,17 +786,7 @@ TODO: √ Make it so when Menu is waiting for tag scan, the cycle-reader functio
 			
 			Update: This issue is moot now with the progressive reader cycle decay.
 			
-TODO: Consider moving RunMode to Controller instead of Menu.
-
 FIX:  √ Select-reader menu flow is not working correctly and not storing selection.
-
-FIX:  Typing in a too-long password at the login prompt will lock up the admin UI.
-
-FIX:  Save Settings is still not showing a reliable response when using BT menu.
-
-TODO: Make 3 failed pw attempts exit admin or reboot.
-
-TODO: Settings setters should probably return boolean in case setting fails (esp for password).
 
 TODO: - In Menu log level 6, 'bufferReady?' logging is spitting out too much data, when no bytes
 			are in buffer.
@@ -862,13 +807,7 @@ TODO: √ Consider a soft-timeout-duration setting, separate from reader-cycle-h
 							Reader should use readerPowerCycleHighDuration().
 							
 FIX:  √ See line 141 in Controller.cpp for needed repairs/updates resulting from the above changes.
-			
-TODO: Remove the word 'reader' from Reader functions.
-		
-TODO: Remove vars or functions that are redundant of each other.
-			For example: reader_cycle_total vs readerCycleTotal().
-			
-			Update: Mostly done.
+
 			
 FIX:  √ Reader-cycle-low is taking too long (3+ sec!) when progressive cycle decay is increasing.
       But once it reaches same interval as soft-timeout, it (cycle-low) works as expected.
@@ -927,9 +866,6 @@ FIX:  √ At startup, BT is sending "ERROR", which triggers admin mode.
 			
 TODO: √ Make sure NOTHING else is writing to BT at startup, if not connected.
 			
-TODO: Check all of the Menu clear/reset functions and where they are used.
-			Some of their callings are probably not needed, but which ones?
-			
 FIX:  √ Tag reads in the middle of the cycle interval are not pushing the next cyclic read
 			forward. The cycle should account for recent manual tag reads, and restart the cycle timer.
 			
@@ -938,7 +874,87 @@ TODO: √ Figure out the roll separation between pollReader() and cycleReaderPow
 DONE: √ Changed cycle-high-override and readerCycleHighDuration to return ms.
 			This allows us to do simple decimal math in calculating cycle times.
 			
-TODO: Need data entry validation for settings. How to do?
 
 TODO: √ Change name of "Reader cycle max" setting to something else.
+
+
+
+/*****  All outstanding ToDo's have been moved down here  2020-02-18  *****/
+
+TODO: Change all 'previous_ms' to 'last_<whatever>'.
+      Do we still want this?
+      
+TODO: Code documentation. User documentation.
+
+TODO: Add validation code to storage.h to handle bad storage_name or bad eeprom_address.
+
+TODO: Note that this todo is old and may not be relevant any ore
+			Add settings for rfid-reader-add-tag-delay and menu-add-tag-delay,
+      so they can be adjusted without re-flashing device.
+      Update: add-tag seems to be working well... is this todo necessary?
+      
+TODO: Make sure all 3 readers are working.
+      Do all readers start with 2 and end with 3 ?
+      Is each specific Reader subclass storing everything it needs for tag processing?
+
+TODO: Document RGB LED color and pattern meanings for end-user.
+      Document RGB usage for developers.
+      
+TODO:	Add a menu option to change the BT12's advertised name.
+	    This could only be done from the HW serial admin menu (obviously).
+	    
+FIX:  Need some way to recover from sending AT command with no response. Timeout?
+      Create a timeout function for waiting for serial input.
+      
+TODO: Add log line in .ino for initialization of BTserial port.
+
+TODO: Add option to control volume of beeper, and to disable it entirely.
+      Is that safe? There should be a warning that it could be dangerous
+      to not know when a tag read is growing stale (aging).
+
+TODO: Could the entire SettingsList[] code be put into its own pair of files?
+			Would this be any benefit?
+
+TODO: Should run-mode default to 2? (until admin is activated (1) or times out (0)).
+			Or is there another way to determine that we're listening for admin mode,
+			but it hasn't been activated yet?
+			
+			Make run-mode like this:
+			0. starting up, no menu activated
+			1. menu activated by user
+			2. live (reader only, no serial read from menus)
+
+TODO: Consider storing in EEPROM last-up-time and total-number-of-runs, just for info.
+
+TODO: Consider making eeprom-addresses automatic, based on sizes of all stored objects.
+			state_epradrs = 0
+			tags_epradrs  = state_epradrs + sizeof(state-object) + 1
+			settings_epradrs = tags_epradrs + sizeof(tags-object) + 1
+			
+TODO: Change the word 'phase' to 'interval' in Led files, or vise-versa.
+
+TODO: Consider moving RunMode to Controller instead of Menu.
+
+FIX:  √ Typing in a too-long password at the login prompt will lock up the admin UI.
+			Fixed by putting a limit on input buffer.
+
+FIX:  Save Settings is still not showing a reliable response when using BT menu.
+
+TODO: Make 3 or 5 failed pw attempts exit admin or reboot.
+
+TODO: Settings setters should probably return boolean in case setting fails (esp for password).
+
+TODO: Remove the word 'reader' from Reader functions.
+		
+TODO: Remove vars or functions that are redundant of each other.
+			For example: reader_cycle_total vs readerCycleTotal().
+			
+			Update: Mostly done.
+			
+TODO: Check all of the Menu clear/reset functions and where they are used.
+			Some of their callings are probably not needed, but which ones?
+			
+TODO: Need data entry validation for settings. How to do?
+
+TODO: Clean up and refine readers' processTagData functions.
 

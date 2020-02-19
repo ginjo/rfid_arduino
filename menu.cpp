@@ -1,8 +1,3 @@
-  // Serial Menu Class
-  // Handles human-readable input and output between text-based serial port
-  // and arduino application (classes, functions, data, et.c.).
-  
-  
   /*
   
   * Refactored Menu with these features:
@@ -27,17 +22,21 @@
   #include "menu.h"
   #include "logger.h"
   #include "global.h"
-  // This is here because it seems to avoid circular include,
-  // which would happen if this was in menu.h.
-  // This is apparently a legitimate C/C++ technique.
-  // See https://www.acodersjourney.com/top-10-c-header-file-mistakes-and-how-to-fix-them/
+  /*
+  This is here because it seems to avoid circular include,
+  which would happen if this was in menu.h.
+  This is apparently a legitimate C/C++ technique.
+  See https://www.acodersjourney.com/top-10-c-header-file-mistakes-and-how-to-fix-them/
+  */
   #include "controller.h"
 
 
-  // Instantiates the built-in reset function.
-  // WARN: This does not work if placed in settings.h (where you would think it should be).
-  //       It causes multiple-definition errors if run there.
-  // NOTE: This is a function pointer.
+  /*
+  Instantiates the built-in reset function.
+  WARN: This does not work if placed in settings.h (where you would think it should be).
+        It causes multiple-definition errors if run there.
+  NOTE: This is a function pointer.
+  */
   void(* resetFunc) (void) = 0;
 
 
@@ -106,10 +105,11 @@
     selected_menu_item(-1),
     get_tag_from_scanner(0)
 	{
-		// Don't call .begin or Serial functions here, since this is too close to hardware init.
-		// The hardware might not be initialized yet, at this point.
-    // Call .begin from setup() function instead.
-    //strlcpy(input_mode, "menu", sizeof(input_mode));
+    /*
+      Don't call .begin or Serial functions here, since this is too close to hardware init.
+      The hardware might not be initialized yet, at this point.
+      Call .begin from setup() function instead.
+    */
     strlcpy(instance_name, _instance_name, sizeof(instance_name));
 	}
 
@@ -125,19 +125,18 @@
     if (this == HW) {
       /* If this is hard-serial instance, just listen for input. */
       readLineWithCallback(&Menu::menuSelectedMainItem);
+    
     //} else if (strcmp(instance_name, "SW") == 0) {
     } else if (this == SW) {
       /*
         If this is soft-serial instance, prints info,
         but only if soft-serial is connected (via BT).
+        Then it sets up the login challenge.
 
-        Then sets up the login challenge.
+        NOTE: Don't use Logger here, since this needs
+        to be printed in cases where Logger would skip it.
+        So basically, always print this if BT is connected.
       */
-
-      // NOTE: Don't use Logger here, since this needs
-      // to be printed in cases where Logger would skip it.
-      // So basically, always print this if BT is connected.
-      //
       if (digitalRead(BT_STATUS_PIN) == LOW) {
         serial_port->print(F("RFID admin console, "));
         serial_port->print(VERSION);
@@ -219,9 +218,11 @@
       LOG(4, F("Entering run mode"), true);
       LOG(4, "", true);
 
-      // Divides debug pin recognition into two sessions: Admin and Run.
-      // If you startup with TempDebug, it will reset to false upon entering run-mode,
-      // unless you are holding the DEBUG_PIN low.
+      /*
+        Divides debug pin recognition into two sessions: Admin and Run.
+        If you startup with TempDebug, it will reset to false upon entering run-mode,
+        unless you are holding the DEBUG_PIN low.
+      */
       TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 
       RunMode = 0;
@@ -235,19 +236,20 @@
 
   /***  Input  ***/
 
-  // Checks & reads data from serial port, until EOL is detected.
-  //
-  // Stops reading serial input after CR/LF is received.
-  // Only starts reading in data again, after the buff
-  // is reset (to null, with buff_index = 0).
-  //
-  // The resulting "line", as bufferReady() reports true,
-  // will be any string, with ending \r or \n, terminated by null (0).
-  // The final buff_index will point to the terminating null.
-  //
-  // All upstream/downstream functions should assume the resulting
-  // line as described above.
-  //
+  /*
+    Checks & reads data from serial port, until EOL is detected.
+    
+    Stops reading serial input after CR/LF is received.
+    Only starts reading in data again, after the buff
+    is reset (to null, with buff_index = 0).
+    
+    The resulting "line", as bufferReady() reports true,
+    will be any string, with ending \r or \n, terminated by null (0).
+    The final buff_index will point to the terminating null.
+    
+    All upstream/downstream functions should assume the resulting
+    line as described above.
+  */
   void Menu::checkSerialPort() {
     //if (strcmp(instance_name, "SW") == 0) {
     if (this == SW) {
@@ -265,18 +267,21 @@
     
     if (serial_port->available()) {
 
-      // If someone typed anything into this serial port,
-      // and Current isn't already set,
-      // make this instance the Current one.
+      /*
+        If someone typed anything into this serial port,
+        and Current isn't already set,
+        make this instance the Current one.
+      */
       if (! Current) {
         Current = this;
 
-        // This is new, an attempt to mimic selecting manage-bt,
-        // which cleans up the first beep of a multi-beep signal
-        // after tag-scanning during add-tag.
-        // This should only run on the SW menu object, if 'this'
-        // is the HW object.
-        //
+        /*
+          This is new, an attempt to mimic selecting manage-bt,
+          which cleans up the first beep of a multi-beep signal
+          after tag-scanning during add-tag.
+          This should only run on the SW menu object, if 'this'
+          is the HW object.
+        */
         if (this == HW) {
           SW->resetStack();
           SW->clearSerialPort();
@@ -299,7 +304,8 @@
         MU_LOG(6, (int)byt, true);
 
         // Escape key resets buffer and mimics Enter key, for data-entry abort.
-        if ((int)byt == 27) {
+        // Also abort if buff-index has grown too large.
+        if ((int)byt == 27 || buff_index >= INPUT_BUFFER_LENGTH ) {
           buff[0] = 10;
           buff[1] = 0;
           buff_index = 1;
@@ -319,10 +325,10 @@
           buff[buff_index] = 0;
           
         } // end if
-        
       } // end while
     } // end if
-  }
+  } // end checkSerialPort
+
 
   // Clears any data waiting on serial port, if any.
   void Menu::clearSerialPort() {
@@ -330,13 +336,15 @@
     while (serial_port->available()) serial_port->read();    
   }
 
+  // Clears all bytes in input buffer c-string.
   void Menu::resetInputBuffer() {
     MU_LOG(6, F("Menu.resetInputBuffer()"), true);
     memset(buff, 0, INPUT_BUFFER_LENGTH);
     buff_index = 0;
     get_tag_from_scanner = 0;
   }
-  
+
+  // Returns true if buffer contains a line of data.
   bool Menu::bufferReady() {
     bool bool_result = false;
     
@@ -355,26 +363,28 @@
     return bool_result;
   }
 
-  
-  // So you can store prompt text in progmem: prompt_P(PSTR("whatever"))
-  //
-  // Properly copies progmem string to local var.
-  // See https://forum.arduino.cc/index.php?topic=50197.0
-  // See https://forum.arduino.cc/index.php?topic=158375.0
-  // See https://forum.arduino.cc/index.php?topic=556489.0
-  //
-  // Also suggested:
-  //  char *buff;
-  //  buff=(char *)malloc(strlen_P(str)+1);
-  //  strcpy_P(buff, *str);
-  //  prompt(buff, _cback, _read_tag);
-  //  free(buff);
-  //
+
+  /*
+    So you can store prompt text in progmem: prompt_P(PSTR("whatever"))
+    
+    Properly copies progmem string to local var.
+    See https://forum.arduino.cc/index.php?topic=50197.0
+    See https://forum.arduino.cc/index.php?topic=158375.0
+    See https://forum.arduino.cc/index.php?topic=556489.0
+    
+    Also suggested:
+    //  char *buff;
+    //  buff=(char *)malloc(strlen_P(str)+1);
+    //  strcpy_P(buff, *str);
+    //  prompt(buff, _cback, _read_tag);
+    //  free(buff);
+  */
   void Menu::prompt_P(const char *str, CB _cback, bool _read_tag) {
     char buff[strlen_P(str)+1];
     strcpy_P(buff, str);
     prompt(buff, _cback, _read_tag);
   }
+
 
   // Displays a prompt with string, sending eventual user input to callback.
   void Menu::prompt(const char *_message, CB _cback, bool _read_tag) {
@@ -391,6 +401,7 @@
     //serial_port->print(F(": "));
   }
 
+
   // TODO: Consider renaming this... maybe getInput()?
   void Menu::readLineWithCallback(CB cback, bool _read_tag) {
     MU_LOG(6, F("Menu.readLineWithCallback()"), true);
@@ -404,6 +415,7 @@
       get_tag_from_scanner = 1;
     }
   }
+
 
   // Checks for bufferReady() and reacts by calling stack-callback.
   // Removes readLine() and callback from stack.
@@ -430,13 +442,15 @@
     } // end if
   } // readLine()
 
-  // This should loop as long as get_tag_from_scanner == 1,
-  // until reader has tag_last_read_id, then this will set buff
-  // with reader's tag_last_read_id and set get_tag_from_scanner to 0.
-  //
-  // The tag reader needs to be checked and handled regardless
-  // of whether or not typed input is available on the UI serial-port.
-  //
+
+  /*
+    This should loop as long as get_tag_from_scanner == 1,
+    until reader has tag_last_read_id, then this will set buff
+    with reader's tag_last_read_id and set get_tag_from_scanner to 0.
+    
+    The tag reader needs to be checked and handled regardless
+    of whether or not typed input is available on the UI serial-port.
+  */
   void Menu::getTagFromScanner() {
     if (get_tag_from_scanner) {
       reader->power_cycle_high_duration_override_ms = 1000UL; // Resets override to 1 on each pass, so it never decays.
@@ -487,6 +501,7 @@
     // I don't think we need to use the str... it should the exactly the same as byt.
     return (int)strtol(&byt, NULL, 10);
   }
+
 
   void Menu::addTagString(void *dat) {
     char *str = (char*)dat;
@@ -539,6 +554,7 @@
     menuListTags();
   }
 
+
   void Menu::deleteTag(void *dat) {
     MU_LOG(6, F("Menu.deleteTag()"), true);
     
@@ -556,6 +572,7 @@
     menuListTags();
   }
 
+
   void Menu::deleteAllTags(void *dat) {
     char *str = (char*)dat;
     int input = (int)(str[0]);
@@ -567,6 +584,7 @@
     serial_port->println();
     menuListTags();
   }
+
 
   void Menu::updateSetting(void *dat) {
     char *str = (char*)dat;
@@ -593,6 +611,7 @@
   }
 
 
+
   /***  Menu  ***/
   
   void Menu::menuMain(void *dat) {
@@ -613,11 +632,13 @@
     menuMainPrompt();
   }
 
+
   // Resets stack and gives default main-menu prompt.
   void Menu::menuMainPrompt(const char str[]) { // See .h for default string.
     resetStack();
     prompt(str, &Menu::menuSelectedMainItem);
   }
+
 
   // Activates an incoming menu selection.
   // TODO: Figure out when we pop() the stack ?!? This methods should always pop() itself out of the stack.
@@ -627,7 +648,7 @@
 
     // pop(); // I think the prompt() that set up this callback
     // will automatically pop() it, so we shouldn't need this.
-
+    
     // If first chr is not a numeric, set selected_menu_item to
     // something that will trigger default response.
     // TODO: This could all be encapsulated in byteToAsciiChrNum() function.
@@ -657,6 +678,7 @@
     
   } // menuSelectedMainItem
 
+
   // Lists tags for menu. See .h file for explanation of default args.
   void Menu::menuListTags(void *dat) {menuListTags(dat, nullptr);}
   void Menu::menuListTags(void *dat, CB cback ) {
@@ -673,6 +695,7 @@
     } 
   }
 
+
   // Asks user for full tag,
   // sets mode to receive-text-line-from-serial
   void Menu::menuAddTag(void *dat) {
@@ -680,6 +703,7 @@
     //get_tag_from_scanner = 1; // now handled by promt(,,true). See promt().
     prompt_P(PSTR("Enter or scan a tag number to store"), &Menu::addTagString, true);
   }
+
 
   // Asks user for index of tag to delete from EEPROM.
   void Menu::menuDeleteTag(void *dat) {
@@ -689,12 +713,14 @@
     menuListTags((void*)"Enter tag index to delete", &Menu::deleteTag);
   }
 
+
   // Deletes all tags from EEPROM.
   void Menu::menuDeleteAllTags(void *dat) {
     MU_LOG(6, F("menuDeleteAllTags()"), true);
     //prompt("Delete all tags [y/N]?", &Menu::deleteAllTags);
     menuListTags((void*)"Delete all tags [y/N]?", &Menu::deleteAllTags);
   }
+
 
   void Menu::menuShowFreeMemory(void *dat) {
     MU_LOG(6, F("menuShowFreeMemory()"), true);
@@ -704,6 +730,7 @@
     serial_port->println();
     menuMainPrompt(); 
   }
+
 
   void Menu::menuReboot(void *dat) {
     MU_LOG(6, F("menuReboot()"), true);
@@ -723,7 +750,8 @@
     prompt_P(PSTR("Select a setting to edit"), &Menu::menuSelectedSetting);
   }
 
-  // Handle selected setting.
+
+  // Handles selected setting.
   void Menu::menuSelectedSetting(void *input) {
     MU_LOG(6, F("menuSelectedSetting()"), true);
     
@@ -757,6 +785,7 @@
   void Menu::menuSaveSettings(void *dat) {
     prompt_P(PSTR("Save settings? [Y/n]"), &Menu::menuHandleSaveSettings);
   }
+
   
   // Handle save settings.
   void Menu::menuHandleSaveSettings(void *input) {
@@ -781,6 +810,7 @@
 
     prompt_P(PSTR("Select a reader"), &Menu::menuSelectedReader);
   }
+
 
   void Menu::menuSelectedReader(void *input) {
     uint8_t selected_reader = (uint8_t)strtol((char *)input, NULL, 10);
@@ -838,6 +868,7 @@
     }
   }
 
+
   void Menu::menuSendAtCommand(void *_input) {
     /* Remember that when you pass a char array to a function,
        you convert it to a pointer. Fortunately, strlen() knows
@@ -868,6 +899,7 @@
     }
   }
 
+
   void Menu::menuPrintATResponse(void *_input) {
     char *input = (char *)_input;
     HW->serial_port->println((char *)input);
@@ -875,6 +907,7 @@
 
     HW->menuManageBT();
   }
+
   
   void Menu::menuLogin(void *dat) {
       resetStack();
@@ -883,6 +916,7 @@
       
       prompt_P(PSTR("Password"), &Menu::menuProcessLogin);  	
   }
+
   
   void Menu::menuProcessLogin(void *_input) {
     
@@ -919,4 +953,5 @@
   		menuLogin();
   	}
   }
+
   

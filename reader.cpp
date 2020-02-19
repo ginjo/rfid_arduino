@@ -23,7 +23,6 @@
     id_end(_id_end),
     power_control_logic(_control_logic),
 
-    /* From Controller */
     buff {},
     buff_index(0UL),
     current_ms(millis()),
@@ -45,12 +44,37 @@
 
   char *Reader::name() {return (char *)Name;}
 
+  uint32_t Reader::msSinceLastTagRead() {
+    return (uint32_t)(current_ms - tag_last_read_ms);
+  }
+
+  uint32_t Reader::msSinceLastPowerCycle() {
+    return (uint32_t)(current_ms - last_power_cycle_ms);
+  }
+
+  uint32_t Reader::tagLastReadHardTimeoutX1000() {
+    return (uint32_t)(S.tag_last_read_hard_timeout*1000UL);
+  }
+
+  uint32_t Reader::cycleHighFinishMs() {
+    //return cycle_low_finish_ms + powerCycleHighDurationMs()*1000UL;
+    return cycle_low_finish_ms + powerCycleHighDurationMs();
+  }
+
   uint32_t Reader::processTagData(uint8_t[]) {
-    LOG(2, F("Base Reader called processTagData"), true); // This should never happen, if everything is running correctly.
+    LOG(2, F("Base Reader called processTagData"), true);
     return 0UL;
   }
 
-  /***  From Controller  ***/
+  void Reader::resetBuffer() {
+    // RD_LOG(6, "Reader::resetBuffer", true); // This makes a mess of other log items.
+    buff_index = 0U;
+    //strncpy(buff, NULL, reader->raw_tag_length);
+    //strncpy(buff, NULL, MAX_TAG_LENGTH);
+    //memcpy(buff, 0, MAX_TAG_LENGTH);
+    memset(buff, 0U, MAX_TAG_LENGTH);
+  }
+
 
   void Reader::loop() {
 
@@ -82,21 +106,11 @@
 
     // Limits reader serial port polling to once per tag_read_sleep_interval (1000 ms).
     if (msSinceLastTagRead() > S.tag_read_sleep_interval) {
-      // Checks the rfid reader for new data.
       pollReader();
     }
 
     RD_LOG(6, "tag_last_read_id ", false); RD_LOG(6, tag_last_read_id, true);
     RD_LOG(6, F("READER LOOP END "), false); RD_LOG(6, millis(), true);
-  }
-  
-
-  uint32_t Reader::msSinceLastTagRead() {
-    return (uint32_t)(current_ms - tag_last_read_ms);
-  }
-
-  uint32_t Reader::msSinceLastPowerCycle() {
-    return (uint32_t)(current_ms - last_power_cycle_ms);
   }
 
 
@@ -115,11 +129,13 @@
     The multiplier represents a a percentage, or decimal with 2 places,
     so 150 == 150% or 1.5. This is fixed point math... to avoid floating point math.
     With uint8_t, the highest you can go is 255, so 255/100 == 2.55 multiplier (255%) max.
-    Use this graphing calc to visualize: https://www.desmos.com/calculator
-    The formula for the graph is y = (150/100)^x
+    Use this graphing calc to visualize: https://www.desmos.com/calculator/kbbcqwqqwt
+    The formula for growth is y = n(f)^x, where n is starting point (usually 1),
+    x is current itteration (time, in the generic sense), and f is
+    the growth factor. Y is the result that beomes the new itteration x.
 
-    If the multiplier is < 100, you are talking fractional multiplier,
-    which gives you decay instead of growth.
+    For the purposes of this application, if the multiplier (growth factor) is < 100,
+    you are talking fractional multiplier, which gives you decay instead of growth.
   */
   uint32_t Reader::powerCycleHighDurationMs(uint8_t multiplier) {
     if (power_cycle_high_duration_override_ms != 0UL) {
@@ -137,14 +153,6 @@
     }
   }
 
-  uint32_t Reader::tagLastReadHardTimeoutX1000() {
-    return (uint32_t)(S.tag_last_read_hard_timeout*1000UL);
-  }
-
-  uint32_t Reader::cycleHighFinishMs() {
-    //return cycle_low_finish_ms + powerCycleHighDurationMs()*1000UL;
-    return cycle_low_finish_ms + powerCycleHighDurationMs();
-  }
 
   // Polls reader serial port and processes incoming tag data.
   void Reader::pollReader() {
@@ -236,6 +244,7 @@
     }
   }
 
+
   /*
     TODO (Reader): I think part of this function should stay in Controller,
     the part that decides what to do with a successfull tag read/authentication.
@@ -304,14 +313,6 @@
     
   } // processTag()
 
-  void Reader::resetBuffer() {
-    // RD_LOG(6, "Reader::resetBuffer", true); // This makes a mess of other log items.
-    buff_index = 0U;
-    //strncpy(buff, NULL, reader->raw_tag_length);
-    //strncpy(buff, NULL, MAX_TAG_LENGTH);
-    //memcpy(buff, 0, MAX_TAG_LENGTH);
-    memset(buff, 0U, MAX_TAG_LENGTH);
-  }
 
   /*
     If conditions are right, sets the reader power low. Then, during

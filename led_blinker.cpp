@@ -15,6 +15,7 @@
     {200, 200},
   };
 
+
   void Led::PrintStaticIntervals() {
     // TODO: Should this be converted to use LOG function?
     Serial.println(F("PrintStaticIntervals()"));
@@ -27,6 +28,7 @@
       Serial.println("");
     }
   }
+
 
   Led::Led(int pin, const char _name[], const int _freq, const int _pwm) : 
     led_pin(pin),
@@ -46,6 +48,7 @@
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin, LOW);
   }
+
 
   // Starts a new pattern (interval set) with num cycles, and/or freq and pwm
   //void Led::begin(const int _num_cycles, const int _intervals[], const int _freq, const int _pwm) {
@@ -71,6 +74,7 @@
     current_ms = millis();
     handleBlinker();
   }
+
 
   // Calls begin() only if params have changed.
   // Should generally use this instad of begin().
@@ -107,6 +111,7 @@
       begin(_num_cycles, intervals_index, _freq, _pwm);      
     }
   }
+
   
   // Starts a new blinker phase, given int
   void Led::startPhase(int phz) {
@@ -207,6 +212,7 @@
     return n;
   }
 
+
   void Led::printIntervals(const int _intervals[]) {
     if (LogLevel() < 5U) return;
     BK_LOG(5, num_cycles, false);
@@ -217,6 +223,7 @@
     }
     BK_LOG(5, "", true);
   }
+
 
   void Led::logData(const int _lv) {
     if (LogLevel() >= _lv) {
@@ -231,6 +238,7 @@
       BK_LOG(_lv, "", true);
     }
   }
+
 
   void Led::logWriteOneLine(const int _lv) {
     if (LogLevel() >= _lv) {
