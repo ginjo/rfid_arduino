@@ -115,10 +115,13 @@
     int eeprom_address;
     uint16_t checksum;
     char storage_name[STORAGE_NAME_SIZE];
-    
-    // Saves this Storage instance to the correct storage address.
-    // Sub-classes, like Settings, should carry the info about
-    // what address to use.
+
+
+    /*
+      Saves this Storage instance to the correct storage address.
+      Sub-classes, like Settings, should carry the info about
+      what address to use.
+    */
     int save(int _eeprom_address = -1) {
       SO_LOG(6, F("Strg.save BEGIN"), true);
 
@@ -131,10 +134,9 @@
 
       // TODO: Reverse the logic here, just cuz it will read better.
       if (checksumMatch()) {
-
-        SO_LOG(5, F("Strg.save EEPROM update not necessary"), true);
+        
+        LOG(4, F("Storage update not needed"), true);
         SO_LOG(6, F("Strg.save END"), true);
-        LOG(4, F("EEPROM update not necessary"), true);
         return 0;
 
       } else {
@@ -147,10 +149,9 @@
         // The use of the class template is very important here, as the eepprom
         // functions don't seem to get it when called from a subclass.
         EEPROM.put(eeprom_address, *(T*)this);
-        LOG(4, F("EEPROM updated"), true);
 
+        LOG(4, F("Storage updated"), true);
         SO_LOG(6, F("Strg.save END"), true);
-        
         return 1;
       }
     }

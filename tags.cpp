@@ -82,7 +82,7 @@
       }
       TA_LOG(5, "", true);
     #endif
-
+    
     Storage::save(eeprom_address);
   }
 
@@ -124,15 +124,15 @@
     LOG(5, new_tag, true);
     compactTags();
     int tag_count = countTags();
-    
+
     if(new_tag < 1) {
       LOG(3, F("addTag() aborted: Invalid code"), true);
       return 1;
-    } else if (tag_count >= TAG_LIST_SIZE) {
-      LOG(3, F("addTag() failed: Full"), true);
-      return 2;
     } else if (getTagIndex(new_tag) >=0) {
       LOG(3, F("addTag() failed: Dupe"), true);
+      return 2;
+    } else if (tag_count >= TAG_LIST_SIZE) {
+      LOG(3, F("addTag() failed: Full"), true);
       return 3;
     }
 

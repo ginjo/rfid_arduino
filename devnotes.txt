@@ -879,6 +879,15 @@ DONE: √ Changed cycle-high-override and readerCycleHighDuration to return ms.
 
 TODO: √ Change name of "Reader cycle max" setting to something else.
 
+FIX:  √ Typing in a too-long password at the login prompt will lock up the admin UI.
+			Fixed by putting a limit on input buffer.
+
+FIX:  √ Save Settings is still not showing a reliable response when using BT menu.
+
+TODO: √ Consider dupe-tag check before list-full check.
+
+
+
 
 
 /*****  All outstanding ToDo's have been moved down here  2020-02-18  *****/
@@ -937,11 +946,6 @@ TODO: Change the word 'phase' to 'interval' in Led files, or vise-versa.
 
 TODO: Consider moving RunMode to Controller instead of Menu.
 
-FIX:  √ Typing in a too-long password at the login prompt will lock up the admin UI.
-			Fixed by putting a limit on input buffer.
-
-FIX:  Save Settings is still not showing a reliable response when using BT menu.
-
 TODO: Make 3 or 5 failed pw attempts exit admin or reboot.
 
 TODO: Settings setters should probably return boolean in case setting fails (esp for password).
@@ -959,4 +963,9 @@ TODO: Check all of the Menu clear/reset functions and where they are used.
 TODO: Need data entry validation for settings. How to do?
 
 TODO: Clean up and refine readers' processTagData functions.
+
+FIX:  Blinker and Menu debug modes are too big for hardware, even with all other
+			debugs disabled.
+			
+
 

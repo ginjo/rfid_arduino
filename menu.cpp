@@ -60,7 +60,7 @@
     { "List tags", &Menu::menuListTags, nullptr},  // nullptr },
     { "List Readers", &Menu::menuListReaders, nullptr},  // nullptr },
     { "Show free mem", &Menu::menuShowFreeMemory, nullptr},  // nullptr },
-    { "BT command", &Menu::menuManageBT, nullptr},  // nullptr },    
+    { "BT AT+ cmd", &Menu::menuManageBT, nullptr},  // nullptr },    
     { "Settings", &Menu::menuSettings, nullptr},  // nullptr },
     { "Save settings", &Menu::menuSaveSettings, nullptr},  // nullptr },
     { "Restart", &Menu::menuReboot, nullptr},  // nullptr }
@@ -541,10 +541,10 @@
         serial_port->println(F("invalid tag-id string"));
         break;
       case 2:
-        serial_port->println(F("tag list is full"));
+        serial_port->println(F("tag is duplicate"));
         break;
       case 3:
-        serial_port->println(F("tag is duplicate"));
+        serial_port->println(F("tag list is full"));
         break;
       case -1:
         serial_port->println(F("unknown error"));
@@ -803,10 +803,20 @@
     MU_LOG(6, F("menuHandleSaveSettings()"), true);
     
     char *text = (char*)input;
+    bool rslt = false;
+    
     if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1' || text[0] == 13 || text[0] == 10) {
       LOG(5, F("Calling S.save()"), true);
-      S.save();
+      rslt = S.save();
     }
+
+    if (rslt) {
+      serial_port->println(F("Success!"));
+    } else {
+      serial_port->println(F("Save not needed"));
+    }
+
+    serial_port->println("");
     
     menuMain();
   }
