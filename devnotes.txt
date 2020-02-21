@@ -893,9 +893,14 @@ FIX:  √ Blinker and Menu debug modes are too big for hardware, even with all o
 			updating the target nano bootloader to the Uno bootloader, which is
 			newer and smaller than the nano's "old bootloader" (otherwise works the same).
 
+FIX:  √ Settings field, reader-cycle-max, needs to be able to handle much larger numbers than 255.
+			Make it at least as big as the other timeout fields.
+			
+			Update: The problem was in the setter function. All good now.
 
 
-/*****  All outstanding ToDo's have been moved down here  2020-02-18  *****/
+
+/*****  All outstanding items have been moved down here  2020-02-18  *****/
 
 TODO: Change all 'previous_ms' to 'last_<whatever>'.
       Do we still want this?
@@ -920,7 +925,7 @@ TODO:	Add a menu option to change the BT12's advertised name.
 	    This could only be done from the HW serial admin menu (obviously).
 	    
 FIX:  Need some way to recover from sending AT command with no response. Timeout?
-      Create a timeout function for waiting for serial input.
+      Create a timeout function for waiting for serial input?
       
 TODO: Add log line in .ino for initialization of BTserial port.
 
@@ -968,8 +973,8 @@ TODO: Check all of the Menu clear/reset functions and where they are used.
 TODO: Need data entry validation for settings. How to do?
 
 TODO: Clean up and refine readers' processTagData functions.
-			
-TODO: Settings field, reader-cycle-max, needs to be able to handle much larger numbers than 255.
-			Make it at least as big as the other timeout fields.
+
+
+
 
 

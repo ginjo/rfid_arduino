@@ -334,7 +334,7 @@
   void Settings::set_log_level(char *data) {log_level = (uint8_t)strtol(data, NULL, 10);}
 
   void Settings::display_reader_cycle_high_max(char *out) {sprintf_P(out, PSTR("%lu"), reader_cycle_high_max);}
-  void Settings::set_reader_cycle_high_max(char *data) {reader_cycle_high_max = (uint8_t)strtol(data, NULL, 10);}
+  void Settings::set_reader_cycle_high_max(char *data) {reader_cycle_high_max = (uint32_t)strtol(data, NULL, 10);}
 
   void Settings::display_admin_password(char *out) {sprintf_P(out, PSTR("*****"));}
   void Settings::set_admin_password(char *data) {
