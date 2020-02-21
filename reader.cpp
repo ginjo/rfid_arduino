@@ -115,27 +115,30 @@
 
 
   /*
-    Gets calculated value as ms. Accepts a multiplier that if > 1
-    multiplies the current override before doing the logic calcs.
-    This is how the progressive power cycle growth/decay works.
+  Gets calculated value as ms. Accepts a multiplier that if > 1
+  multiplies the current override before doing the logic calcs.
+  This is how the progressive power cycle growth/decay works.
 
-    Don't just run this function and multiply the result.
-    Always pass in the multiplier, if you intend to change the override.
-    
-    Gets the lowest of three values (a good example of generic technique
-    for that). Pass in a multiplier (int8_t) to get a changed value that
-    falls within the confines of the prescribed logic.
+  Don't just run this function and multiply the result.
+  Always pass in the multiplier, if you intend to change the override.
+  
+  Gets the lowest of three values (a good example of generic technique
+  for that). Pass in a multiplier (int8_t) to get a changed value that
+  falls within the confines of the prescribed logic.
 
-    The multiplier represents a a percentage, or decimal with 2 places,
-    so 150 == 150% or 1.5. This is fixed point math... to avoid floating point math.
-    With uint8_t, the highest you can go is 255, so 255/100 == 2.55 multiplier (255%) max.
-    Use this graphing calc to visualize: https://www.desmos.com/calculator/kbbcqwqqwt
-    The formula for growth is y = n(f)^x, where n is starting point (usually 1),
-    x is current itteration (time, in the generic sense), and f is
-    the growth factor. Y is the result that beomes the new itteration x.
+  The multiplier represents a a percentage, or decimal with 2 places,
+  so 150 == 150% or 1.5. This is fixed point math... to avoid floating point math.
+  With uint8_t, the highest you can go is 255, so 255/100 == 2.55 multiplier (255%) max.
+  Use this graphing calc to visualize cycle growth:
+    With fractional growth factor:  https://www.desmos.com/calculator/kbbcqwqqwt
+    Showing elapsed time:           https://www.desmos.com/calculator/acntc5es7q
+    Show decaying cycle, starting at 10s, bottoming out at 1s:  https://www.desmos.com/calculator/f9ddlorw0c
+  The formula for growth is y = n(f)^x, where n is starting point (usually 1),
+  x is current itteration (time, in the generic sense), and f is
+  the growth factor. Y is the result that beomes the new itteration x.
 
-    For the purposes of this application, if the multiplier (growth factor) is < 100,
-    you are talking fractional multiplier, which gives you decay instead of growth.
+  For the purposes of this application, if the multiplier (growth factor) is < 100,
+  you are talking fractional multiplier, which gives you decay instead of growth.
   */
   uint32_t Reader::powerCycleHighDurationMs(uint8_t multiplier) {
     if (power_cycle_high_duration_override_ms != 0UL) {
@@ -215,28 +218,26 @@
 
     } else if (
     /*
-      If no data on Controller serial port and sufficient conditions exist,
-      then call cycle-reader-power.
+    If no data on Controller serial port and sufficient conditions exist,
+    then call cycle-reader-power.
 
-      The divide by 2 reduces short-term (by half) interval duration,
-      if manual tag reads have been made after half the of the current
-      cycle duration has passed. Then the duration goes back to the set
-      override within one cycle. This is not necessary but is not harmful
-      and could be helpful. Without the divide by 2, the reader will always
-      wait to cycle until a tag has not been read for the cycle-high duration.
+    The divide by 2 reduces short-term (by half) interval duration,
+    if manual tag reads have been made after half the of the current
+    cycle duration has passed. Then the duration goes back to the set
+    override within one cycle. This is not necessary but is not harmful
+    and could be helpful. Without the divide by 2, the reader will always
+    wait to cycle until a tag has not been read for the cycle-high duration.
 
-      TODO: Should this condition be inside the cycleReaderPower() function,
-      instead of here (leaving this as just a simple 'else')?
-      If this condition were moved to cycleReaderPower, it would wrap
-      the rest of that function. OR is there a reason
-      to keep this logic out of that function? Is the function used
-      for anything different or called from anywhere else? (No, not used anywehre else right now).
+    TODO: Should this condition be inside the cycleReaderPower() function,
+    instead of here (leaving this as just a simple 'else')?
+    If this condition were moved to cycleReaderPower, it would wrap
+    the rest of that function. OR is there a reason
+    to keep this logic out of that function? Is the function used
+    for anything different or called from anywhere else? (No, not used anywehre else right now).
     */
-      //msSinceLastTagRead() > (powerCycleHighDurationMs() * 1000UL)/2 ||
       msSinceLastTagRead() > powerCycleHighDurationMs()/2 ||
       tag_last_read_ms == 0UL // ||         // if tag has never been read.
-      //current_ms >= cycle_low_finish_ms  // to make sure cycleReader is called when it needs to go HIGH from LOW.
-    ) 
+    )
     {
       // This log line puts out a LOT of data but can be useful.
       //RD_LOG(6, F("poll-calling-cycl "), false); RD_LOG(6, msSinceLastTagRead(), false); RD_LOG(6, F(" "), false); RD_LOG(6, powerCycleHighDurationMs() * 1000UL, true); 
