@@ -974,6 +974,10 @@ TODO: Need data entry validation for settings. How to do?
 
 TODO: Clean up and refine readers' processTagData functions.
 
+TODO: * Call menu-settings-save after modifying reader selection,
+			and remove the suggestion text that is currently output.
+
+			In progress, just needs testing.
 
 
 

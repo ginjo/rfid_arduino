@@ -628,6 +628,8 @@
   void Menu::menuMain(void *dat) {
     MU_LOG(6, F("menuMain()"), true);
 
+    serial_port->println(F("Menu"));
+
     // Extracts MenuItems[n] from PROGMEM and prints index and item name.
     for (int n=0; n < MENU_ITEMS_SIZE; n++) {
       menu_item_T item = {};
@@ -794,7 +796,7 @@
 
   
   void Menu::menuSaveSettings(void *dat) {
-    prompt_P(PSTR("Save settings? [Y/n]"), &Menu::menuHandleSaveSettings);
+    prompt_P(PSTR("Save settings? [y/N]"), &Menu::menuHandleSaveSettings);
   }
 
   
@@ -805,18 +807,18 @@
     char *text = (char*)input;
     bool rslt = false;
     
-    if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1' || text[0] == 13 || text[0] == 10) {
+    if (text[0] == 'Y' || text[0] == 'y' || text[0] == '1') {
       LOG(5, F("Calling S.save()"), true);
       rslt = S.save();
-    }
 
-    if (rslt) {
-      serial_port->println(F("Success!"));
-    } else {
-      serial_port->println(F("Save not needed"));
-    }
+      if (rslt) {
+        serial_port->println(F("Success!"));
+      } else {
+        serial_port->println(F("Save not needed"));
+      }
 
-    serial_port->println("");
+      serial_port->println("");
+    }
     
     menuMain();
   }
@@ -833,6 +835,7 @@
   }
 
 
+  // Handles reader selection.
   void Menu::menuSelectedReader(void *input) {
     uint8_t selected_reader = (uint8_t)strtol((char *)input, NULL, 10);
 
@@ -842,22 +845,27 @@
     //MU_PRINT(F("menuSelectedReader set selected_reader to: "));
     //MU_PRINTLN(selected_reader);
 
-    // If user selected valid reader.
+    // If user selected valid reader, set it.
     if (selected_reader > 0 && selected_reader <= READER_COUNT) {
-      serial_port->print(F("Selected: "));
-      serial_port->println(Reader::NameFromIndex(selected_reader));
-      serial_port->println(F("Save settings to persist"));
 
-      //S.updateSetting(8, (char*)input);
       S.default_reader = selected_reader;
       
-    }
+      serial_port->print(F("Selected: "));
+      serial_port->println(Reader::NameFromIndex(selected_reader));
+      serial_port->println("");
+      
+      Reader::PrintReaders(serial_port);
+      serial_port->println("");
+      
+      menuSaveSettings();
 
-    serial_port->println("");
-    
-    if (selected_reader == 0 || (int)input == 13 || (int)input == 10) {
+    // If user hit return or 0, go back to menu.
+    } else if (selected_reader == 0 || (int)input == 13 || (int)input == 10) {
       menuMain();
+
+    // If user hit any other keys, list readers and query for selection again.
     } else {
+      serial_port->println("");
       menuListReaders();
     }
   }

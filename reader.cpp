@@ -129,19 +129,21 @@
   The multiplier represents a a percentage, or decimal with 2 places,
   so 150 == 150% or 1.5. This is fixed point math... to avoid floating point math.
   With uint8_t, the highest you can go is 255, so 255/100 == 2.55 multiplier (255%) max.
+  
   Use this graphing calc to visualize cycle growth:
     With fractional growth factor:  https://www.desmos.com/calculator/kbbcqwqqwt
     Showing elapsed time:           https://www.desmos.com/calculator/acntc5es7q
     Show decaying cycle, starting at 10s, bottoming out at 1s:  https://www.desmos.com/calculator/f9ddlorw0c
   The formula for growth is y = n(f)^x, where n is starting point (usually 1),
   x is current itteration (time, in the generic sense), and f is
-  the growth factor. Y is the result that beomes the new itteration x.
+  the growth factor. Y is the result that becomes the new itteration x.
 
-  For the purposes of this application, if the multiplier (growth factor) is < 100,
-  you are talking fractional multiplier, which gives you decay instead of growth.
+  Note that if the multiplier (growth factor) is < 100, it is a fractional multiplier,
+  which gives you decay instead of growth.
   */
   uint32_t Reader::powerCycleHighDurationMs(uint8_t multiplier) {
     if (power_cycle_high_duration_override_ms != 0UL) {
+      
       uint32_t o = power_cycle_high_duration_override_ms * multiplier / 100;
       uint32_t s = S.tag_last_read_soft_timeout * 1000UL;
       uint32_t m = S.reader_cycle_high_max * 1000UL;
