@@ -898,7 +898,10 @@ FIX:  √ Settings field, reader-cycle-max, needs to be able to handle much larg
 			
 			Update: The problem was in the setter function. All good now.
 
-
+TODO: √ Call menu-settings-save after modifying reader selection,
+			and remove the suggestion text that is currently output.
+			
+			
 
 /*****  All outstanding items have been moved down here  2020-02-18  *****/
 
@@ -974,11 +977,33 @@ TODO: Need data entry validation for settings. How to do?
 
 TODO: Clean up and refine readers' processTagData functions.
 
-TODO: * Call menu-settings-save after modifying reader selection,
-			and remove the suggestion text that is currently output.
+TODO: √ Output is high for too long at immediate startup, before a state==0
+			condition is recognized and pulls it low. Try to reduce the duration
+			of this brief high without making it start later.
+			Make it end sooner.
+			
+			Update: This happens because output-pin is set high when global.cpp loads.
+			It is not considered again until Controller.begin.
+			
+			Try disabling the call from global.cpp. Maybe with the new bootloader,
+			it won't be needed. Yes, this works!
+						
+TODO: √ At startup, after a couple of reader-cycle-low, the reader-cycle-low
+			is held low for much longer than the prescribed setting. This also
+			happens after a aging or timeout event, when a good tag is finally
+			authorized. This does not happen if output starts high and never goes low.
+			
+			Update: I think we need a power-cycle-state boolean to know
+			when to call cycleReaderPower from pollReader.
+			
+TODO: √ Prompt for settings-save whenever leaving select-setting mode,
+			but only if settings have changed.
+						
+TODO: √ Use Storage.checksumMatch() in Settings.saveSettings()
+			to exit before asking user to save, if checksums still match.
+						
+TODO: √ Don't print first "Password:" in BT serial at startup, until key is pressed.
 
-			In progress, just needs testing.
-
-
+			
 
 

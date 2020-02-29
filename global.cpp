@@ -20,15 +20,13 @@
 
   // Called from main .ino setup().
   void GlobalSetup() {
-    // from main .ino
     pinMode(BT_STATUS_PIN, INPUT_PULLUP);
     //pinMode(FAILSAFE_PIN, INPUT_PULLUP);
     pinMode(DEBUG_PIN, INPUT_PULLUP);
-
-    // from controller
     pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
     pinMode(OUTPUT_SWITCH_PIN, OUTPUT);
-    digitalWrite(OUTPUT_SWITCH_PIN, HIGH);
+    
+    //digitalWrite(OUTPUT_SWITCH_PIN, HIGH);
 
     TempDebug = (digitalRead(DEBUG_PIN) == LOW);
   }

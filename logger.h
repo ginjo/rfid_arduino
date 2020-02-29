@@ -38,8 +38,8 @@
   #ifdef DEBUG
     #define INO_DEBUG    // main ino file
     //#define BK_DEBUG   // blinker
-    //#define CT_DEBUG   // controller
-    //#define RD_DEBUG   // reader
+    #define CT_DEBUG   // controller
+    #define RD_DEBUG   // reader
     //#define MU_DEBUG   // menu
     //#define SK_DEBUG   // stack
     //#define ST_DEBUG   // settings

@@ -32,6 +32,7 @@
     cycle_low_finish_ms(0UL),
     //cycle_high_finish_ms(0UL),
     tag_last_read_id(0UL),
+    cycle_low_status(false),
     serial_port(NULL) // experimental, so that serial_port is initialized
         
   {
@@ -236,9 +237,13 @@
     the rest of that function. OR is there a reason
     to keep this logic out of that function? Is the function used
     for anything different or called from anywhere else? (No, not used anywehre else right now).
+
+    Update: √ I think we need a power-cycle-state here.
+    
     */
-      msSinceLastTagRead() > powerCycleHighDurationMs()/2 ||
-      tag_last_read_ms == 0UL // ||         // if tag has never been read.
+      msSinceLastTagRead() > powerCycleHighDurationMs()/2  // Considers tag-last-read time against cycle-high-duration.
+      || tag_last_read_ms == 0UL                           // If tag never read.
+      || cycle_low_status                                  // If cycle is already low.
     )
     {
       // This log line puts out a LOT of data but can be useful.
@@ -322,7 +327,13 @@
     a future pass thru the loop, sets reader power high again.
   */
   void Reader::cycleReaderPower() {
-    if (current_ms >= cycleHighFinishMs() || last_power_cycle_ms == 0UL) {
+    if (
+        ( current_ms >= cycleHighFinishMs()  // If last cycle done.
+          || last_power_cycle_ms == 0UL      // If never cycled.
+        )
+        
+        && ! cycle_low_status                // If cycle not already low.
+    ) {
     // Sets reader power Off (LOW or HIGH electrical state dependent on reader type).
     
       LOG(5, F("cycleReaderPower tag read "));
@@ -361,14 +372,16 @@
             
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? LOW : HIGH);
       last_power_cycle_ms = current_ms;
+      cycle_low_status = true;
       
-    } else if (current_ms >= cycle_low_finish_ms) {
+    } else if (current_ms >= cycle_low_finish_ms && cycle_low_status) {
     // Sets reader power On (HIGH or LOW electrical state dependent on reader type).
     
       // This log line will produce a LOT of output but can be useful for troubleshooting.
-      //RD_LOG(6, F("cycleReaderPower setting HIGH, high-dur "), false); RD_LOG(6, powerCycleHighDurationMs, true);
+      RD_LOG(6, F("Reader HI"), true);
       
       digitalWrite(READER_POWER_CONTROL_PIN, power_control_logic ? HIGH : LOW);
+      cycle_low_status = false;
     }
   }
 

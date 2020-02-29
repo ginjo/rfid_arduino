@@ -145,7 +145,9 @@
         serial_port->println();
       }
 
-      menuLogin();
+      //menuLogin();
+      // Doesn't prompt for "Password:" yet, but calls login if key pressed.
+      readLineWithCallback(&Menu::menuLogin);
     }
  	}
 
@@ -788,7 +790,8 @@
       
     // If user selects "0", return, or enter, then go back to main menu.
     } else if (bytes[0] == '0' || bytes[0] == '\r' || bytes[0] == '\n') {
-      menuMain();
+      //menuMain();
+      menuSaveSettings();
     } else {
       menuSettings();
     }
@@ -796,7 +799,16 @@
 
   
   void Menu::menuSaveSettings(void *dat) {
-    prompt_P(PSTR("Save settings? [y/N]"), &Menu::menuHandleSaveSettings);
+    // if checksum mismatch, go ahead and prompt to save
+    if (! S.checksumMatch() ) {
+      prompt_P(PSTR("Save settings? [y/N]"), &Menu::menuHandleSaveSettings);
+    
+    // otherwise tell user no save is needed, then go to main menu.
+    } else {
+      serial_port->println(F("Settings have not changed"));
+      serial_port->println("");
+      menuMain();
+    }
   }
 
   
@@ -939,11 +951,11 @@
 
   
   void Menu::menuLogin(void *dat) {
-      resetStack();
-      clearSerialPort();
-      resetInputBuffer();
-      
-      prompt_P(PSTR("Password"), &Menu::menuProcessLogin);  	
+    resetStack();
+    clearSerialPort();
+    resetInputBuffer();
+    
+    prompt_P(PSTR("Password"), &Menu::menuProcessLogin);
   }
 
   

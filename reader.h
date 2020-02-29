@@ -79,6 +79,7 @@
     uint32_t power_cycle_high_duration_override_ms;
     uint32_t cycle_low_finish_ms;
     uint32_t tag_last_read_id;
+    bool     cycle_low_status;
     SoftwareSerial * serial_port;
 
 

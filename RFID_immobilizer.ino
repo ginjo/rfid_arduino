@@ -63,6 +63,7 @@
     while (! Serial) delay(10);
     delay(25);
 
+
     #ifdef INO_DEBUG
       LOG(4, F("Booting RFID proximity control, "));
       LOG(4, VERSION);
@@ -108,6 +109,7 @@
   
       FREERAM("setup() pre new objcts");
     #endif
+
 
     /*  Initialize main objects. See global files for declarations/definitions.  */
 
