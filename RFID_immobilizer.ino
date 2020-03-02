@@ -131,7 +131,8 @@
     OutputControl = new Controller(RfidReader);
     
     Menu::HW = new Menu(&Serial, RfidReader, "HW");
-    Menu::SW = new Menu(BTserial, RfidReader, "SW");
+    //Menu::SW = new Menu(BTserial, RfidReader, "SW");
+    Menu::SW = Menu::HW;
 
     FREERAM("setup() pre obj stp");
     

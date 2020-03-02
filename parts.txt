@@ -1,6 +1,8 @@
 ELECTRONIC COMPONENTS
 
-Arduino Nano with straight headers
+Arduino Nano or Pro Mini with angle headers on the "digital" side
+and nothing on the other sides, except where absolutely necessary
+(like VIN/VCC).
 
 WL-125 RFID reader (or other supported modules)
   with angle headers
@@ -9,16 +11,16 @@ WL-125 RFID reader (or other supported modules)
   
 Mosfet N-channel for reader power control
 
-1M resistor pull-down for reader power mosfet
+4.7k resistor pull-down for reader power mosfet
 
 Bluetooth serial module (HC-06, HC-05, HM-10, BT-12, BT-05)
 
-5v power supply module with angle headers
-or better: LM7805 or LM2937 with .1uf and 10uf capacitors
+5v power supply module with angle headers,
+or LM7805 or LM2937 with .1uf and 10uf capacitors.
 
-7812 12v regulator (only for dash dimmer sensor)
+7812 12v regulator (only for dash dimmer sensor) Really? Would that work?
 
-2K/1K or 20K/10K resistors to form 3.3v voltage divider
+3K/2K or 3.3k/2.2k (or the equivalent x 10) resistors to form 3.3v voltage divider
   for Arduino TX output to BT RX pin.
   
 Piezo speaker (sans beeper circuitry)
@@ -44,9 +46,9 @@ NPN transistor for LED dimmer
   10k for pot supply (Check current build)
   10k for wiper-to-npn-base(Check current build)
 
-Button for momentary debug mode
+Button for failsafe/debug mode
 
-Button for momentary failsafe mode (no longer needed)
+Button for reset, maybe?
 
 SSR output relay (~5v => ~12v)
 
@@ -54,7 +56,9 @@ SSR output relay (~5v => ~12v)
 
 ENCLOSURE, CONNECTORS, HARDWARE
 
-PCB board (2.54mm pitch, number of holes in x/y directions?
+PCB board
+	2.54mm pitch
+	24 x 18
 
 Case
 
@@ -66,7 +70,7 @@ Connectors/terminals for
   
 PCB board with attachment screws
   
-PCB barrel jack for power supply?
+PCB barrel jack for alt power supply?
 
 JST XH right-angle connectors for board connections
   ebay "jst right-angle connectors"
