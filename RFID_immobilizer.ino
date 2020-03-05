@@ -35,31 +35,31 @@
   void setup() {
     GlobalSetup();
 
-    // Initialize (static) BTserial first cuz we need it for logging.
-    // See global files for declaration/definition of BTserial.
-    BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+    // Initialize (static) SWserial first cuz we need it for logging.
+    // See global files for declaration/definition of SWserial.
+    SWserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
     
     // Opens default hardware serial port.
     // Requirement for Settings operations logging.
-    Serial.begin(S.hw_serial_baud);
+    Serial.begin(S.hw_baud);
     while (! Serial) delay(10);
-    BTserial->begin(S.bt_baud);
+    SWserial->begin(S.sw_baud);
     delay(25);
 
     #ifdef INO_DEBUG
       LOG(4, F("RFID proximity sensor pre-boot"), true);
       LOG(4, F("HW, SW serial @ "), false);
-      LOG(4, S.hw_serial_baud, false);
+      LOG(4, S.hw_baud, false);
       LOG(4, F(", "), false);
-      LOG(4, S.bt_baud, true);
+      LOG(4, S.sw_baud, true);
       FREERAM("Before Settings::Load()");
     #endif
     
     Settings::Load();
 
-    BTserial->begin(S.bt_baud);
+    SWserial->begin(S.sw_baud);
     Serial.flush(); // I think flushes only outbound data. See Serial class docs.
-    Serial.begin(S.hw_serial_baud);
+    Serial.begin(S.hw_baud);
     while (! Serial) delay(10);
     delay(25);
 
@@ -80,9 +80,9 @@
       LOG(5, sizeof(S), true);
   
       LOG(4, F("HW, SW serial @ "), false);
-      LOG(4, S.hw_serial_baud, false);
+      LOG(4, S.hw_baud, false);
       LOG(4, F(", "), false);
-      LOG(4, S.bt_baud, true);
+      LOG(4, S.sw_baud, true);
   
       LOG(4, F("Debug mode: "));
       LOG(4, S.debugMode(), true);
@@ -100,10 +100,10 @@
         Serial.println("");
         //
         if (CanLogToBT()) {
-          S.printSettings(BTserial);
-          BTserial->println("");
-          Reader::PrintReaders(BTserial);
-          BTserial->println("");
+          S.printSettings(SWserial);
+          SWserial->println("");
+          Reader::PrintReaders(SWserial);
+          SWserial->println("");
         }
       }
   
@@ -130,8 +130,8 @@
 
     OutputControl = new Controller(RfidReader);
     
-    Menu::HW = new Menu(&Serial, RfidReader, "HW");
-    Menu::SW = new Menu(BTserial, RfidReader, "SW");
+    Menu::M1 = new Menu(&Serial, RfidReader, "HW");
+    Menu::M2 = new Menu(SWserial, RfidReader, "SW");
 
     FREERAM("setup() pre obj stp");
     

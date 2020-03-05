@@ -32,8 +32,8 @@
     { "Log to BT", &Settings::display_log_to_bt, &Settings::set_log_to_bt},
     { "Debug log level", &Settings::display_debug_level, &Settings::set_debug_level},
 
-    { "HW serial baud", &Settings::display_hw_serial_baud, &Settings::set_hw_serial_baud},
-    { "BT serial baud", &Settings::display_bt_baud, &Settings::set_bt_baud},
+    { "HW serial baud", &Settings::display_hw_baud, &Settings::set_hw_baud},
+    { "BT serial baud", &Settings::display_sw_baud, &Settings::set_sw_baud},
     { "Reader serial baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
     { "Tone freq", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
     { "Admin password", &Settings::display_admin_password, &Settings::set_admin_password}
@@ -55,14 +55,14 @@
     tag_read_sleep_interval(1000), // millis
 
     // off duration during reader power cycle
-    reader_cycle_low_duration(150), // millis
+    reader_cycle_low_duration(5), // millis
 
     // max on duration of reader power cycle
-    reader_cycle_high_max(15),
+    reader_cycle_high_max(10),
 
     // on duration before reader next power cycle
     // also is duration before 'aging' stage begins
-    tag_last_read_soft_timeout(15), // seconds
+    tag_last_read_soft_timeout(20), // seconds
 
     // idle time before admin mode switches to run mode
     // should be greater than tag_last_read_soft_timeout
@@ -71,15 +71,15 @@
     // Sets whether output switches off or on at startup.
     proximity_state_startup(2), // 0 = off, 1 = on, 2 = auto (uses last saved state)
 
-    // NOT: enables debugging (separate from using DEBUG macro).
+    // Log level when debug pin is held low.
     // Changed to: Overrides log_level if debug-pin is held low or debugMode() is true.
     debug_level(5),
 
     // sets default reader index
     default_reader(3),
 
-    hw_serial_baud(57600),
-    bt_baud(57600),
+    hw_baud(115200),
+    sw_baud(57600),
     rfid_baud(9600),
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
@@ -303,11 +303,11 @@
   void Settings::display_default_reader(char *out) {sprintf_P(out, PSTR("%i (%s)"), default_reader, Reader::NameFromIndex((int)default_reader));}
   void Settings::set_default_reader(char *data) {default_reader = (uint8_t)strtol(data, NULL, 10);}
 
-  void Settings::display_hw_serial_baud(char *out) {sprintf_P(out, PSTR("%li"), hw_serial_baud);}
-  void Settings::set_hw_serial_baud(char *data) {hw_serial_baud = (long)strtol(data, NULL, 10);}
+  void Settings::display_hw_baud(char *out) {sprintf_P(out, PSTR("%li"), hw_baud);}
+  void Settings::set_hw_baud(char *data) {hw_baud = (long)strtol(data, NULL, 10);}
 
-  void Settings::display_bt_baud(char *out) {sprintf_P(out, PSTR("%li"), bt_baud);}
-  void Settings::set_bt_baud(char *data) {bt_baud = (long)strtol(data, NULL, 10);}
+  void Settings::display_sw_baud(char *out) {sprintf_P(out, PSTR("%li"), sw_baud);}
+  void Settings::set_sw_baud(char *data) {sw_baud = (long)strtol(data, NULL, 10);}
 
   void Settings::display_rfid_baud(char *out) {sprintf_P(out, PSTR("%li"), rfid_baud);}
   void Settings::set_rfid_baud(char *data) {rfid_baud = (long)strtol(data, NULL, 10);}

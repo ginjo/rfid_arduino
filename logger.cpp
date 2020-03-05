@@ -28,7 +28,7 @@
   }
 
 
-  // Checks if conditions are right to log to BTserial.
+  // Checks if conditions are right to log to SWserial.
   extern bool CanLogToBT() {
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
@@ -95,7 +95,7 @@
     
     if (CanLogToBT()) {      
       if (line == true) {
-        BTserial->println("");
+        SWserial->println("");
       }
     }
   

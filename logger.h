@@ -72,7 +72,7 @@
   void PostLog(bool);
 
   
-  // Handles printing to BTserial with numbers, considers integer base.
+  // Handles printing to SWserial with numbers, considers integer base.
   // 
   // The templating here allows to receive any type of parameter!!!
   //
@@ -83,8 +83,8 @@
     const char *prelog = PreLog(level);
     
     if (CanLogToBT()) {
-      BTserial->print(prelog);
-      BTserial->print(dat, base);
+      SWserial->print(prelog);
+      SWserial->print(dat, base);
     }
 
     Serial.print(prelog);
@@ -96,7 +96,7 @@
   }
 
   
-  // Handles printing to BTserial with strings and char arrays
+  // Handles printing to SWserial with strings and char arrays
   //.
   // The templating here allows to receive any type of parameter!!!
   //
@@ -107,8 +107,8 @@
     const char *prelog = PreLog(level);
     
     if (CanLogToBT()) {      
-      BTserial->print(prelog);
-      BTserial->print(dat);
+      SWserial->print(prelog);
+      SWserial->print(dat);
     }
 
     Serial.print(prelog);

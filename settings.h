@@ -103,13 +103,13 @@
 
     uint8_t default_reader;
 
-    long hw_serial_baud;
-    long bt_baud;
+    long hw_baud;
+    long sw_baud;
     long rfid_baud;
 
     int tone_frequency;
     int admin_startup_timeout;
-    bool log_to_bt; // logging to BTserial: 0=No, 1=Yes (but only if bt is connected)
+    bool log_to_bt; // logging to SWserial: 0=No, 1=Yes (but only if bt is connected)
     uint8_t log_level;
     char admin_password[ADMIN_PASSWORD_SIZE];
 
@@ -151,11 +151,11 @@
     void display_default_reader(char*);
     void set_default_reader(char*);
     
-    void display_hw_serial_baud(char*);
-    void set_hw_serial_baud(char*);
+    void display_hw_baud(char*);
+    void set_hw_baud(char*);
     
-    void display_bt_baud(char*);
-    void set_bt_baud(char*);
+    void display_sw_baud(char*);
+    void set_sw_baud(char*);
     
     void display_rfid_baud(char*);
     void set_rfid_baud(char*);

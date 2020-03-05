@@ -34,7 +34,7 @@
   extern bool TempDebug;
 
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
-  extern SoftwareSerial *BTserial;
+  extern SoftwareSerial *SWserial;
 
   class Led; // forward declaration, so that we can...
   

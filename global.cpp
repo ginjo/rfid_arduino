@@ -3,13 +3,13 @@
 
   bool TempDebug = false;
 
-  // Defines & initializes BTserial. This works fine too.
-  //SoftwareSerial *BTserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+  // Defines & initializes SWserial. This works fine too.
+  //SoftwareSerial *SWserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
   
-  // Just defines BTserial. See global.h for declaration and main .ino for initialization.
-  //SoftwareSerial *BTserial
+  // Just defines SWserial. See global.h for declaration and main .ino for initialization.
+  //SoftwareSerial *SWserial
   // Attempting initialization here to maybe avoid mystery UB.
-  SoftwareSerial *BTserial = nullptr;
+  SoftwareSerial *SWserial = nullptr;
 
   // Defines RGB LED -- an array of 3 Led instances.
   Led *RGB[3] = {};

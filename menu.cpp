@@ -47,8 +47,8 @@
 
   // These provide the "definition" of these static vars. See .h file for declarations.
   Menu * Menu::Current = nullptr;
-  Menu * Menu::HW = nullptr;
-  Menu * Menu::SW = nullptr;
+  Menu * Menu::M1 = nullptr;
+  Menu * Menu::M2 = nullptr;
 
 
   menu_item_T const Menu::MenuItems[MENU_ITEMS_SIZE] PROGMEM = { 
@@ -69,16 +69,16 @@
 
   void Menu::Begin() {
     LOG(4, F("Menu.Begin()"), true);
-    HW->begin();
-    SW->begin();
+    M1->begin();
+    M2->begin();
     
     // NOTE: Menu::Current is set in checkSerialPort()
   }
   
   void Menu::Loop() {
     // Runs hardware-serial loop().
-    if (!Current || Current == HW) {
-      HW->loop();
+    if (!Current || Current == M1) {
+      M1->loop();
     }
 
     // Runs software-serial loop.
@@ -87,8 +87,8 @@
     // TODO: Is there a better way to poll input from SW while admining with HW?
     //
     //if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {  // works well.
-    if (Current != HW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {                // also works well but shorter code.
-      SW->loop();
+    if (Current != M1 || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {                // also works well but shorter code.
+      M2->loop();
     }
   }
 
@@ -122,12 +122,12 @@
     clearSerialPort(); // recently added, dunno if needed.
     
     //if (strcmp(instance_name, "HW") == 0) {
-    if (this == HW) {
+    if (this == M1) {
       /* If this is hard-serial instance, just listen for input. */
       readLineWithCallback(&Menu::menuSelectedMainItem);
     
     //} else if (strcmp(instance_name, "SW") == 0) {
-    } else if (this == SW) {
+    } else if (this == M2) {
       /*
         If this is soft-serial instance, prints info,
         but only if soft-serial is connected (via BT).
@@ -155,7 +155,7 @@
     MU_LOG(6, F("MENU LOOP BEGIN "), false); MU_LOG(6, instance_name, true);
 
     // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
-    if (millis() % 1000 < 500 && !Current && this == SW) {
+    if (millis() % 1000 < 500 && !Current && this == M2) {
       reader->power_cycle_high_duration_override_ms = 1000UL; // Resets override to 1 on each pass, so it never decays.
       reader->loop();
       if (reader->tag_last_read_id && !get_tag_from_scanner) {
@@ -254,7 +254,7 @@
   */
   void Menu::checkSerialPort() {
     //if (strcmp(instance_name, "SW") == 0) {
-    if (this == SW) {
+    if (this == M2) {
       SoftwareSerial * sp = (SoftwareSerial*)serial_port;
 
       if (! sp->isListening()) {
@@ -284,10 +284,10 @@
           This should only run on the SW menu object, if 'this'
           is the HW object.
         */
-        if (this == HW) {
-          SW->resetStack();
-          SW->clearSerialPort();
-          SW->resetInputBuffer();
+        if (this == M1) {
+          M2->resetStack();
+          M2->clearSerialPort();
+          M2->resetInputBuffer();
         }
         
         Beeper->mediumBeep(1);
@@ -402,7 +402,7 @@
   // Displays a prompt with string, sending eventual user input to callback.
   void Menu::prompt(const char *_message, CB _cback, bool _read_tag) {
     
-    if (_message[0] && !(this == SW && digitalRead(BT_STATUS_PIN) == HIGH)) {
+    if (_message[0] && !(this == M2 && digitalRead(BT_STATUS_PIN) == HIGH)) {
       serial_port->print(_message);
       serial_port->print(F(": "));
     }
@@ -897,11 +897,11 @@
   void Menu::menuManageBT(void *dat) {
     if (digitalRead(BT_STATUS_PIN) == HIGH) {
       // Cleanup, just to be safe.
-      SW->resetStack();
-      SW->clearSerialPort();
-      SW->resetInputBuffer();
+      M2->resetStack();
+      M2->clearSerialPort();
+      M2->resetInputBuffer();
       
-      HW->prompt_P(PSTR("Enter AT+ command"), &Menu::menuSendAtCommand);
+      M1->prompt_P(PSTR("Enter AT+ command"), &Menu::menuSendAtCommand);
     } else {
       serial_port->println(F("N/A"));
       serial_port->println("");
@@ -921,32 +921,32 @@
     strncpy(output, (char *)_input, len-1);
 
     #ifdef MU_DEBUG
-      HW->serial_port->print(F("Cmd: "));
-      HW->serial_port->println(output);
-      HW->serial_port->println("");
+      M1->serial_port->print(F("Cmd: "));
+      M1->serial_port->println(output);
+      M1->serial_port->println("");
     #endif
 
     //SW->serial_port->println("AT+VERSION"); // this works.
     if (output[0] == 'A') {
-      SW->serial_port->println(output);
-      SW->readLineWithCallback(&Menu::menuPrintATResponse);
+      M2->serial_port->println(output);
+      M2->readLineWithCallback(&Menu::menuPrintATResponse);
       
     } else {
-      SW->resetStack();
-      SW->clearSerialPort();
-      SW->resetInputBuffer();
+      M2->resetStack();
+      M2->clearSerialPort();
+      M2->resetInputBuffer();
 
-      HW->menuMain();
+      M1->menuMain();
     }
   }
 
 
   void Menu::menuPrintATResponse(void *_input) {
     char *input = (char *)_input;
-    HW->serial_port->println((char *)input);
-    HW->serial_port->println("");
+    M1->serial_port->println((char *)input);
+    M1->serial_port->println("");
 
-    HW->menuManageBT();
+    M1->menuManageBT();
   }
 
   

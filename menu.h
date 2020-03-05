@@ -44,8 +44,8 @@
     static int RunMode; // 0=run, 1=admin
 
     static Menu * Current;
-    static Menu * HW;
-    static Menu * SW;
+    static Menu * M1;
+    static Menu * M2;
 
     static menu_item_T const MenuItems[] PROGMEM;
     

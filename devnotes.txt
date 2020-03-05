@@ -1006,15 +1006,17 @@ TODO: √ Don't print first "Password:" in BT serial at startup, until key is pr
 
 TODO: Refactor serial/log/output handling.
 
-			1. Change BTserial to SWserial.
+			√ Change BTserial to SWserial.
 			
-			2. Change Menu::HW and Menu::SW to M1 and M2,
+			√ Change Menu::HW and Menu::SW to M1 and M2,
 			or just have a single menu instance. Would we lose functionality
 			with just a single instance?
 			
 			Pay attention to the weird dance of AT+ commands in Menu functions.
+			
+			* Change bt_baud to sw_serial_baud
 
-			3. Create an Output object that stores the serial-port and
+			* Create an Output object that stores the serial-port and
 			any specifics of the output device, like whether it's a BLE device
 			or whether it has a 'connected' indicator (pin).
 			
@@ -1023,5 +1025,10 @@ TODO: Refactor serial/log/output handling.
 			
 			The output objects, not the Menu or Log functions, should decide
 			if/how/when to send serial output.
+			
+TODO: Consider auto-baud management. The ARD would cycle thru the serial devices'
+			available baud rates, until it found a working one. Then it would set the device's
+			baud and the ARD baud to whatever is best.
+			
 			
 			
