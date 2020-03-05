@@ -17,6 +17,7 @@
 
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
+  // TODO: Convert this to a simple function with no printing.
   extern int FreeRam (const char txt[]) {
     extern int __heap_start, *__brkval; 
     int v; 

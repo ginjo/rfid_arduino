@@ -201,15 +201,8 @@
   // TODO: This is only used in displaySetting(), so maybe it should be rolled into that?
   // 
   void Settings::getSettingByIndex (int index, char *setting_name, char *setting_value) {
-    // TODO: Is this safe? Is there a strlcpy_P that we can use?
-    //strcpy_P(setting_name, (char *)pgm_read_word(&(SETTING_NAMES[index-1])));
-
     settings_list_T setting = {};
     memcpy_P(&setting, &SettingsList[index-1], sizeof(setting));
-    
-    //  strcpy_P(setting_name, (char*)pgm_read_word(&SettingsList[index-1].name));
-    //  ST_LOG(5, F("Settings::getSettingByIndex: "), false); ST_LOG(5, index, false); ST_LOG(5, ", ", false); ST_LOG(5, setting_name, false);
-    //  Serial.println((char*)pgm_read_word(&SettingsList[index-1].name));
 
     sprintf(setting_name, "%s", (char*)setting.name); //, sizeof(SETTINGS_NAME_SIZE));
     ST_LOG(6, F("Stng getSettingByIndex "), false); ST_LOG(6, index, false); ST_LOG(5, ", ", false); ST_LOG(6, setting_name, false);
@@ -277,11 +270,9 @@
     // This used to be in updateSetting().
     strlcpy(settings_name, "custom-settings", SETTINGS_NAME_SIZE);
     
-    //Serial.println(F("Settings::save() BEGIN"));
-    //int result = Storage::save(SETTINGS_EEPROM_ADDRESS);
     result = Storage::save();
     LOG(5, F("Stng.save result ")); LOG(5, result, true);
-    //Serial.println(F("Settings::save() END"))
+
     return result;
   }
 
