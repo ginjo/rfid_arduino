@@ -1020,6 +1020,8 @@ TODO: Refactor serial/log/output handling.
 			any specifics of the output device, like whether it's a BLE device
 			or whether it has a 'connected' indicator (pin).
 			
+			* Or better, see the onlinegdb example of custom universal serial class!
+			
 			ALL serial output should use these Output objects rather than
 			passing around serial ports and BLE indicators.
 			
