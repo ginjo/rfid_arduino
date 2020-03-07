@@ -80,6 +80,7 @@
     uint32_t cycle_low_finish_ms;
     uint32_t tag_last_read_id;
     bool     cycle_low_status;
+    // TODO: Convert this to use SerialPort class.
     SoftwareSerial * serial_port;
 
 

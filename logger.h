@@ -5,6 +5,7 @@
   #include <stdarg.h>
   #include <string.h>
   #include "global.h"
+  #include "serial_port.h"
 
   /*
     DEBUG and XX_DEBUG controls compilation of debug code, it DOES NOT control runtime debug behavior.
@@ -38,9 +39,9 @@
   #ifdef DEBUG
     #define INO_DEBUG    // main ino file
     //#define BK_DEBUG   // blinker
-    #define CT_DEBUG   // controller
-    #define RD_DEBUG   // reader
-    //#define MU_DEBUG   // menu
+    //#define CT_DEBUG   // controller
+    //#define RD_DEBUG   // reader
+    #define MU_DEBUG   // menu
     //#define SK_DEBUG   // stack
     //#define ST_DEBUG   // settings
     //#define SO_DEBUG   // storage
@@ -87,8 +88,8 @@
       SWserial->print(dat, base);
     }
 
-    Serial.print(prelog);
-    Serial.print(dat, base);
+    HWserial->print(prelog);
+    HWserial->print(dat, base);
 
     PostLog(line);
 
@@ -111,8 +112,8 @@
       SWserial->print(dat);
     }
 
-    Serial.print(prelog);
-    Serial.print(dat);
+    HWserial->print(prelog);
+    HWserial->print(dat);
 
     PostLog(line);
 

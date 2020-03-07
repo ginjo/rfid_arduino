@@ -18,14 +18,14 @@
 
   void Led::PrintStaticIntervals() {
     // TODO: Should this be converted to use LOG function?
-    Serial.println(F("PrintStaticIntervals()"));
+    HWserial->println(F("PrintStaticIntervals()"));
     for (int n = 0; n < 6; n++) {
-      Serial.print(n); Serial.print(":");
+      HWserial->print(n); HWserial->print(":");
       for (int m = 0; m < INTERVALS_LENGTH; m++) {
-        Serial.print(StaticIntervals[n][m]);
-        Serial.print(",");
+        HWserial->print(StaticIntervals[n][m]);
+        HWserial->print(",");
       }
-      Serial.println("");
+      HWserial->println("");
     }
   }
 

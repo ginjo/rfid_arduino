@@ -1,5 +1,5 @@
-#ifndef __IO_H__
-#define __IO_H__
+#ifndef __GL_H__
+#define __GL_H__
 
 
   /* Arduino Pin Assignments */
@@ -33,8 +33,14 @@
 
   extern bool TempDebug;
 
+
+  class SerialPort; // forward declaration, so that we can...
+
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
-  extern SoftwareSerial *SWserial;
+  //extern SoftwareSerial *SWserial;
+  extern SerialPort *HWserial;
+  extern SerialPort *SWserial;
+
 
   class Led; // forward declaration, so that we can...
   

@@ -1028,6 +1028,9 @@ TODO: Refactor serial/log/output handling.
 			The output objects, not the Menu or Log functions, should decide
 			if/how/when to send serial output.
 			
+TODO: Should CanLogToBT() be part of SerialPort class?
+			Are there other things (maybe in Menu) that should be part of SerialPort class?
+			
 TODO: Consider auto-baud management. The ARD would cycle thru the serial devices'
 			available baud rates, until it found a working one. Then it would set the device's
 			baud and the ARD baud to whatever is best.

@@ -4,7 +4,6 @@
 #define __MENU_H__
 
   #include <Arduino.h>
-  //#include <Stream.h>
   #include <SoftwareSerial.h>
   #include <string.h>
   // Is this needed here but is being included by another file?

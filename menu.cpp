@@ -251,6 +251,8 @@
     
     All upstream/downstream functions should assume the resulting
     line as described above.
+
+    TODO: Convert this to use SerialPort class.
   */
   void Menu::checkSerialPort() {
     //if (strcmp(instance_name, "SW") == 0) {

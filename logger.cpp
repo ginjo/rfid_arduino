@@ -1,7 +1,8 @@
+  #include <stdio.h>
   #include "logger.h"
   #include "settings.h"
   #include "menu.h"
-  #include <stdio.h>
+  #include "serial_port.h"
 
 
   bool log_in_progress = false; // Controlls PreLog() output for multi-part log entries.
@@ -22,7 +23,7 @@
     extern int __heap_start, *__brkval; 
     int v; 
     int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-    Serial.print(F("FREE RAM (")); Serial.print(rslt); Serial.print(F(") ")); Serial.println(txt);
+    HWserial->print(F("FREE RAM (")); HWserial->print(rslt); HWserial->print(F(") ")); HWserial->println(txt);
     //LOG(4, F("FREE RAM (")); LOG(4, rslt); LOG(4, F(") ")); LOG(4, txt, true);
     return rslt;
   }
@@ -100,7 +101,7 @@
     }
   
     if (line == true) {
-      Serial.println("");
+      HWserial->println("");
     }
 
     if (line) log_in_progress = false;

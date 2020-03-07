@@ -9,7 +9,9 @@
   // Just defines SWserial. See global.h for declaration and main .ino for initialization.
   //SoftwareSerial *SWserial
   // Attempting initialization here to maybe avoid mystery UB.
-  SoftwareSerial *SWserial = nullptr;
+  //SoftwareSerial *SWserial = nullptr;
+  SerialPort *HWserial = nullptr;
+  SerialPort *SWserial = nullptr;
 
   // Defines RGB LED -- an array of 3 Led instances.
   Led *RGB[3] = {};

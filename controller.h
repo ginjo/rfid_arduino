@@ -6,7 +6,6 @@
 #define __CONTROLLER_H__
 
   #include <Arduino.h>
-  //#include <Stream.h>
   #include <string.h>
   #include <SoftwareSerial.h>
 
