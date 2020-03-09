@@ -23,7 +23,9 @@
     extern int __heap_start, *__brkval; 
     int v; 
     int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-    HWserial->print(F("FREE RAM (")); HWserial->print(rslt); HWserial->print(F(") ")); HWserial->println(txt);
+    if (HWserial->can_output()) {
+      HWserial->print(F("FREE RAM (")); HWserial->print(rslt); HWserial->print(F(") ")); HWserial->println(txt);
+    }
     //LOG(4, F("FREE RAM (")); LOG(4, rslt); LOG(4, F(") ")); LOG(4, txt, true);
     return rslt;
   }
@@ -95,12 +97,12 @@
   void PostLog(bool line) {
     
     if (CanLogToBT()) {      
-      if (line == true) {
+      if (line == true && SWserial->can_output()) {
         SWserial->println("");
       }
     }
   
-    if (line == true) {
+    if (line == true && HWserial->can_output()) {
       HWserial->println("");
     }
 

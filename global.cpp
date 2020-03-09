@@ -1,4 +1,6 @@
   #include "global.h"
+  #include "led_blinker.h"
+  #include "serial_port.h"
 
 
   bool TempDebug = false;
@@ -10,6 +12,8 @@
   //SoftwareSerial *SWserial
   // Attempting initialization here to maybe avoid mystery UB.
   //SoftwareSerial *SWserial = nullptr;
+  //  HardwareSerial *HWserial = nullptr;
+  //  SoftwareSerial *SWserial = nullptr;
   SerialPort *HWserial = nullptr;
   SerialPort *SWserial = nullptr;
 

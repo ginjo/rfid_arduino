@@ -4,7 +4,7 @@
  * 
  */
 
-  #include "Stream.h"
+  //#include "Stream.h"
   #include <Arduino.h>
   #include <SoftwareSerial.h>
 
@@ -40,14 +40,19 @@
     // Initialize (static) SWserial first cuz we need it for logging.
     // See global files for declaration/definition of SWserial.
     ///SWserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
-    HWserial = (SerialPort*)&Serial; HWserial->is_bt = true;
-    SWserial = (SerialPort*)(new SoftwareSerial(BT_RX_PIN, BT_TX_PIN));
+    //HWserial = (SerialPort*)&Serial; HWserial->is_bt = true;
+    //SWserial = (SerialPort*)(new SoftwareSerial(BT_RX_PIN, BT_TX_PIN));
+    HardwareSerial *hw_serial = &Serial;
+    SoftwareSerial *sw_serial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+
+    HWserial = (SerialPort*)hw_serial; HWserial->is_bt = true;
+    SWserial = (SerialPort*)sw_serial;
     
     // Opens default hardware serial port.
     // Requirement for Settings operations logging.
-    HWserial->begin(S.hw_baud);
-    while (! HWserial) delay(10);
-    SWserial->begin(S.sw_baud);
+    hw_serial->begin(S.hw_baud);
+    while (! hw_serial) delay(10);
+    sw_serial->begin(S.sw_baud);
     delay(25);
 
     #ifdef INO_DEBUG
@@ -61,10 +66,10 @@
     
     Settings::Load();
 
-    SWserial->begin(S.sw_baud);
-    HWserial->flush(); // I think flushes only outbound data. See Serial class docs.
-    HWserial->begin(S.hw_baud);
-    while (! HWserial) delay(10);
+    sw_serial->begin(S.sw_baud);
+    hw_serial->flush(); // I think flushes only outbound data. See Serial class docs.
+    hw_serial->begin(S.hw_baud);
+    while (! hw_serial) delay(10);
     delay(25);
 
 
@@ -96,15 +101,17 @@
   
   
       // Displays current settings and readers.
-      // TODO: Make this part of Logger or SerialPort
-      if (false && LogLevel() >= 4U) {
-        LOG(4, "", true);
-        S.printSettings(HWserial);
-        HWserial->println("");
-        Reader::PrintReaders(HWserial);
-        HWserial->println("");
-        //
-        if (CanLogToBT()) {
+      // TODO: Make this part of Logger or SerialPort.
+      // TODO: Maybe put the common logic in SerialPort class as .can_log_to_bt()
+      if (LogLevel() >= 5U) {
+        if (HWserial->can_output()) {
+          LOG(5, "", true);
+          S.printSettings(HWserial);
+          HWserial->println("");
+          Reader::PrintReaders(HWserial);
+          HWserial->println("");
+        }
+        if (SWserial->can_output()) {
           S.printSettings(SWserial);
           SWserial->println("");
           Reader::PrintReaders(SWserial);
@@ -135,8 +142,8 @@
 
     OutputControl = new Controller(RfidReader);
     
-    Menu::M1 = new Menu(HWserial, RfidReader, "HW");
-    Menu::M2 = new Menu(SWserial, RfidReader, "SW");
+    Menu::M1 = new Menu(hw_serial, RfidReader, "HW");
+    Menu::M2 = new Menu(sw_serial, RfidReader, "SW");
 
     FREERAM("setup() pre obj stp");
     

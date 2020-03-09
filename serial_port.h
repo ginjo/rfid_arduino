@@ -2,6 +2,7 @@
 #define __SERIAL_PORT__
 
   #include <Arduino.h>
+  #include "logger.h"
 
   // See logger.h for master debug controls.
   #ifdef SL_DEBUG
@@ -17,6 +18,8 @@
     bool is_bt;
     //virtual void begin(unsigned long);
     //virtual void begin(unsigned long, uint8_t);
+
+    bool can_output();
 
   };
 

@@ -901,8 +901,19 @@ FIX:  √ Settings field, reader-cycle-max, needs to be able to handle much larg
 TODO: √ Call menu-settings-save after modifying reader selection,
 			and remove the suggestion text that is currently output.
 			
+NOTE: √ If serial port disappears when trying to upload to ARD,
+			you might not have enough power. And/or you might have a semi-bricked target
+			due to a bad upload that causes rapid repetitive reboots.
 			
-
+			Use the UsbAsp device to upload a new bootloader to the target.
+			
+NOTE: If an upload crashes during the writing process, you may have a corrupt boot loader,
+			OR you maybe have serial issues. When this happens during upload using BT-serial,
+			try using hard-wired serial instead.
+			
+			
+			
+			
 /*****  All outstanding items have been moved down here  2020-02-18  *****/
 
 TODO: Change all 'previous_ms' to 'last_<whatever>'.
@@ -1035,5 +1046,5 @@ TODO: Consider auto-baud management. The ARD would cycle thru the serial devices
 			available baud rates, until it found a working one. Then it would set the device's
 			baud and the ARD baud to whatever is best.
 			
-			
+
 			
