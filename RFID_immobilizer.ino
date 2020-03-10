@@ -1,4 +1,4 @@
-  /* 
+/* 
  * Passive RFID-activated switch with bluetooth serial admin console.
  * For use in any switching application where RFID tag proximity is required for operation.
  * 
