@@ -41,7 +41,7 @@
     //#define BK_DEBUG   // blinker
     //#define CT_DEBUG   // controller
     //#define RD_DEBUG   // reader
-    //#define MU_DEBUG   // menu
+    #define MU_DEBUG   // menu
     //#define SK_DEBUG   // stack
     //#define ST_DEBUG   // settings
     //#define SO_DEBUG   // storage
@@ -84,13 +84,13 @@
     const char *prelog = PreLog(level);
     
     //if (CanLogToBT() || ! SWserial->is_bt) {
-    if (SWserial->can_output()) {
+    if (SWserial && SWserial->can_output()) {
       SWserial->print(prelog);
       SWserial->print(dat, base);
     }
 
     //if (CanLogToBT() || ! HWserial->is_bt) {
-    if (HWserial->can_output()) {
+    if (HWserial && HWserial->can_output()) {
       HWserial->print(prelog);
       HWserial->print(dat, base);
     }
@@ -112,13 +112,13 @@
     const char *prelog = PreLog(level);
     
     //if (CanLogToBT() || ! SWserial->is_bt) {
-    if (SWserial->can_output()) {
+    if (SWserial && SWserial->can_output()) {
       SWserial->print(prelog);
       SWserial->print(dat);
     }
 
     //if (CanLogToBT() || ! HWserial->is_bt) {
-    if (HWserial->can_output()) {
+    if (HWserial && HWserial->can_output()) {
       HWserial->print(prelog);
       HWserial->print(dat);
     }

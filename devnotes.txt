@@ -911,8 +911,47 @@ NOTE: If an upload crashes during the writing process, you may have a corrupt bo
 			OR you maybe have serial issues. When this happens during upload using BT-serial,
 			try using hard-wired serial instead.
 			
+TODO: √ Output is high for too long at immediate startup, before a state==0
+			condition is recognized and pulls it low. Try to reduce the duration
+			of this brief high without making it start later.
+			Make it end sooner.
 			
+			Update: This happens because output-pin is set high when global.cpp loads.
+			It is not considered again until Controller.begin.
 			
+			Try disabling the call from global.cpp. Maybe with the new bootloader,
+			it won't be needed. Yes, this works!
+						
+TODO: √ At startup, after a couple of reader-cycle-low, the reader-cycle-low
+			is held low for much longer than the prescribed setting. This also
+			happens after a aging or timeout event, when a good tag is finally
+			authorized. This does not happen if output starts high and never goes low.
+			
+			Update: I think we need a power-cycle-state boolean to know
+			when to call cycleReaderPower from pollReader.
+			
+TODO: √ Prompt for settings-save whenever leaving select-setting mode,
+			but only if settings have changed.
+						
+TODO: √ Use Storage.checksumMatch() in Settings.saveSettings()
+			to exit before asking user to save, if checksums still match.
+						
+TODO: √ Don't print first "Password:" in BT serial at startup, until key is pressed.			
+			
+NOTE: √ If you get compiler warnings about "invalid use of incomplete type SerialPort",
+			there is probably something else going on that is related to SerialPort.
+			
+			Update: I think I fixed this by correcting the forward-declaration stuff.
+			
+TODO: √ Change name of Menu.adminTimeout() to checkAdminTimeout().
+			
+TODO: √ In Menu.Loop() and Menu.Begin(), check if each menu has a valid serial_port.
+
+
+
+
+
+
 			
 /*****  All outstanding items have been moved down here  2020-02-18  *****/
 
@@ -988,33 +1027,6 @@ TODO: Need data entry validation for settings. How to do?
 
 TODO: Clean up and refine readers' processTagData functions.
 
-TODO: √ Output is high for too long at immediate startup, before a state==0
-			condition is recognized and pulls it low. Try to reduce the duration
-			of this brief high without making it start later.
-			Make it end sooner.
-			
-			Update: This happens because output-pin is set high when global.cpp loads.
-			It is not considered again until Controller.begin.
-			
-			Try disabling the call from global.cpp. Maybe with the new bootloader,
-			it won't be needed. Yes, this works!
-						
-TODO: √ At startup, after a couple of reader-cycle-low, the reader-cycle-low
-			is held low for much longer than the prescribed setting. This also
-			happens after a aging or timeout event, when a good tag is finally
-			authorized. This does not happen if output starts high and never goes low.
-			
-			Update: I think we need a power-cycle-state boolean to know
-			when to call cycleReaderPower from pollReader.
-			
-TODO: √ Prompt for settings-save whenever leaving select-setting mode,
-			but only if settings have changed.
-						
-TODO: √ Use Storage.checksumMatch() in Settings.saveSettings()
-			to exit before asking user to save, if checksums still match.
-						
-TODO: √ Don't print first "Password:" in BT serial at startup, until key is pressed.
-
 TODO: Refactor serial/log/output handling.
 
 			√ Change BTserial to SWserial.
@@ -1025,19 +1037,18 @@ TODO: Refactor serial/log/output handling.
 			
 			Pay attention to the weird dance of AT+ commands in Menu functions.
 			
-			* Change bt_baud to sw_serial_baud
+			√ Change bt_baud to sw_serial_baud
 
-			* Create an Output object that stores the serial-port and
-			any specifics of the output device, like whether it's a BLE device
-			or whether it has a 'connected' indicator (pin).
+			√ Create a SerialPort object that stores the serial-port and
+			any specifics of the output device, like whether it's a BLE device,
+			whether it has a 'connected' indicator (pin), and whether it's
+			a software-serial port.
 			
-			* Or better, see the onlinegdb example of custom universal serial class!
+			√ Or better, see the onlinegdb example of custom universal serial class!
 			
-			ALL serial output should use these Output objects rather than
-			passing around serial ports and BLE indicators.
-			
-			The output objects, not the Menu or Log functions, should decide
-			if/how/when to send serial output.
+			ALL serial output should use these SerialPort objects rather than
+			passing around raw serial ports and BLE indicators.
+
 			
 TODO: Should CanLogToBT() be part of SerialPort class?
 			Are there other things (maybe in Menu) that should be part of SerialPort class?
@@ -1046,5 +1057,26 @@ TODO: Consider auto-baud management. The ARD would cycle thru the serial devices
 			available baud rates, until it found a working one. Then it would set the device's
 			baud and the ARD baud to whatever is best.
 			
+TODO: Refactoring Menu to use an array of *menu_ary[2] instead of M1, M2.
+			Do not use M1,M2 to determine if using BT serial.
+			See Menu::Loop() body for example.
+			Maybe create a Menu::Menus static var to hold the menu objects.
+			
+TODO: Refactor Menu to read/set BT module AT commands at startup.
+			Maybe this should not be in Menu but in Settings? In it's own file/class?
 
+TODO: Even with bt-status-pin held high, individual input characters are being echoed
+			back to unconnected BT module, probably in Menu.checkSerialPort().
+			
+TODO: I had to disable the startup tag-scanning code in menu loop.
+			Find a better way to run this code. It shouldn't be in any single menu's
+			loop, it should be in the global Menu::Loop().
+			
+			Update: I re-enabled and it's working but still needs a refactor.
+			
+TODO: Re-arrange pins for Pro Mini setup.
+
+TODO: Is it possible to move all global vars and funcs to the main .ino file?
+
+			
 			

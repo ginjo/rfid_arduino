@@ -39,19 +39,18 @@
 
     // Initialize (static) SWserial first cuz we need it for logging.
     // See global files for declaration/definition of SWserial.
-    ///SWserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+    ///SWserial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
     //HWserial = (SerialPort*)&Serial; HWserial->is_bt = true;
-    //SWserial = (SerialPort*)(new SoftwareSerial(BT_RX_PIN, BT_TX_PIN));
+    //SWserial = (SerialPort*)(new SoftwareSerial(SW_RX_PIN, SW_TX_PIN));
     HardwareSerial *hw_serial = &Serial;
-    SoftwareSerial *sw_serial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+    SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
 
     HWserial = (SerialPort*)hw_serial; HWserial->is_bt = true;
-    SWserial = (SerialPort*)sw_serial;
+    //SWserial = (SerialPort*)sw_serial; SWserial->is_sw_serial = true;
     
-    // Opens default hardware serial port.
-    // Requirement for Settings operations logging.
     hw_serial->begin(S.hw_baud);
     while (! hw_serial) delay(10);
+    
     sw_serial->begin(S.sw_baud);
     delay(25);
 
@@ -93,25 +92,25 @@
       LOG(4, F(", "), false);
       LOG(4, S.sw_baud, true);
   
-      LOG(4, F("Debug mode: "));
+      LOG(4, F("S.debugMode() "));
       LOG(4, S.debugMode(), true);
   
-      LOG(4, F("LogLevel(): "));
+      LOG(4, F("LogLevel() "));
       LOG(4, LogLevel(), true);
   
   
       // Displays current settings and readers.
       // TODO: Make this part of Logger or SerialPort.
-      // TODO: Maybe put the common logic in SerialPort class as .can_log_to_bt()
-      if (LogLevel() >= 5U) {
+      if (LogLevel() >= 4U) {
         if (HWserial->can_output()) {
-          LOG(5, "", true);
+          LOG(4, "", true);
           S.printSettings(HWserial);
           HWserial->println("");
           Reader::PrintReaders(HWserial);
           HWserial->println("");
         }
-        if (SWserial->can_output()) {
+        if (SWserial && SWserial->can_output()) {
+          LOG(4, "", true);
           S.printSettings(SWserial);
           SWserial->println("");
           Reader::PrintReaders(SWserial);
@@ -142,8 +141,8 @@
 
     OutputControl = new Controller(RfidReader);
     
-    Menu::M1 = new Menu(hw_serial, RfidReader, "HW");
-    Menu::M2 = new Menu(sw_serial, RfidReader, "SW");
+    Menu::M1 = new Menu(HWserial, RfidReader, "HW");
+    //Menu::M2 = new Menu(SWserial, RfidReader, "SW");
 
     FREERAM("setup() pre obj stp");
     

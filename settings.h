@@ -56,8 +56,12 @@
   /*  Defines types for settings getters and setters  */
 
   class Settings; // forward declaration for the following...
+  // This is a cleaner way to do typedefs.
 
+  // typdef for pointer to function (TODO: is this a pionter to member function?)
   using getter_setter_T = void(Settings::*)(char*);
+
+  // typedef for list of settings containing function pointers.
   using settings_list_T = struct {
     const char name[SETTINGS_NAME_SIZE];
     getter_setter_T display_fp;

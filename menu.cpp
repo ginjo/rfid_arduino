@@ -69,34 +69,42 @@
 
   void Menu::Begin() {
     LOG(4, F("Menu.Begin()"), true);
-    M1->begin();
-    M2->begin();
+    if (M1) M1->begin();
+    if (M2) M2->begin();
     
     // NOTE: Menu::Current is set in checkSerialPort()
   }
   
   void Menu::Loop() {
-    // Runs hardware-serial loop().
-    if (!Current || Current == M1) {
-      M1->loop();
-    }
+    Menu *menu_ary[2] = {M1, M2};
 
-    // Runs software-serial loop.
-    //
-    // The last condition allows AT commands to be sent from the HW menu to the BT module.
-    // TODO: Is there a better way to poll input from SW while admining with HW?
-    //
-    //if (!Current || Current == SW || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {  // works well.
-    if (Current != M1 || (digitalRead(BT_STATUS_PIN) == 1 && RunMode != 0)) {                // also works well but shorter code.
-      M2->loop();
+    for (int n=0; n < 2; n++) {
+      if (! menu_ary[n]) continue;
+      
+      if (  !Current
+            || Current == menu_ary[n]
+
+            // allows AT commands to be sent from one menu instance
+            // to the BT module associated with the other menu instance.
+            // TODO: Make this work regardless of what menu or serial port BT is attached to.
+            //  || ( digitalRead(BT_STATUS_PIN) == 1 &&
+            //    RunMode != 0 &&
+            //    menu_ary[n]->serial_port->is_bt 
+            //  )
+         )
+         
+      // then...
+      {
+        menu_ary[n]->loop();
+      }      
     }
   }
 
 
   /*** Constructors ***/
 
-  Menu::Menu(Stream *stream_ref, Reader *_reader, const char _instance_name[]) :
-    serial_port(stream_ref),
+  Menu::Menu(SerialPort *_serial_port, Reader *_reader, const char _instance_name[]) :
+    serial_port(_serial_port),
     reader(_reader),    
     previous_ms(0UL),
     admin_timeout(0UL),
@@ -116,52 +124,61 @@
 
   /***  Controll  ***/
   
-  void Menu::begin() {    
+  void Menu::begin() {
+    // TODO: Should we have a LOG(6...) line here?
+    
     updateAdminTimeout((void*)S.admin_startup_timeout);
     resetInputBuffer();
     clearSerialPort(); // recently added, dunno if needed.
+
+    if (! serial_port) return;
     
-    //if (strcmp(instance_name, "HW") == 0) {
-    if (this == M1) {
-      /* If this is hard-serial instance, just listen for input. */
-      readLineWithCallback(&Menu::menuSelectedMainItem);
-    
-    //} else if (strcmp(instance_name, "SW") == 0) {
-    } else if (this == M2) {
+    //if (this == M1) {
+    if (serial_port->can_output()) {
       /*
-        If this is soft-serial instance, prints info,
-        but only if soft-serial is connected (via BT).
+        Prints info, but only if BT is connected.
         Then it sets up the login challenge.
 
         NOTE: Don't use Logger here, since this needs
         to be printed in cases where Logger would skip it.
         So basically, always print this if BT is connected.
+        (This is UI output, not log output).
       */
-      if (digitalRead(BT_STATUS_PIN) == LOW) {
-        serial_port->print(F("RFID admin console, "));
-        serial_port->print(VERSION);
-        serial_port->print(", ");
-        serial_port->println(TIMESTAMP);
-        serial_port->println();
-      }
+      serial_port->print(F("RFID admin console, "));
+      serial_port->print(VERSION);
+      serial_port->print(", ");
+      serial_port->println(TIMESTAMP);
+      serial_port->println();
+    }
 
+    if (serial_port->is_bt) {
+      // If we call menuLogin(), it will print a 'password:' promp.
       //menuLogin();
-      // Doesn't prompt for "Password:" yet, but calls login if key pressed.
+      // Waits for key press, then calls menuLogin() if key pressed.
       readLineWithCallback(&Menu::menuLogin);
+    
+    } else {
+      /* If this is NOT a BT serial port, just wait for possible key press.
+         Then call main menu if key pressed (actually sends key to menuSelected...). */
+      readLineWithCallback(&Menu::menuSelectedMainItem);
     }
  	}
 
   void Menu::loop() {
     MU_LOG(6, F("MENU LOOP BEGIN "), false); MU_LOG(6, instance_name, true);
 
+    if (! serial_port) return;
+
     // IF Current not assigned yet, checks tag reader periodically, and exits admin if tag read.
-    if (millis() % 1000 < 500 && !Current && this == M2) {
+    // TODO: This should be refactored. It's a kludge that it's inserted here.
+    // Why is this using M2? Won't it conflict with reader's serial port?
+    if (millis() % 1000 < 500 && !Current && this == M1) {
       reader->power_cycle_high_duration_override_ms = 1000UL; // Resets override to 1 on each pass, so it never decays.
       reader->loop();
       if (reader->tag_last_read_id && !get_tag_from_scanner) {
         exitAdmin();
       }
-
+  
       return;
     }
 
@@ -169,10 +186,10 @@
     // TODO: This should probably call something like Controller::outputoff().
     if (RunMode == 1 && admin_timeout == S.admin_timeout) digitalWrite(OUTPUT_SWITCH_PIN, LOW);
     
-    if (! Current || Current == this) adminTimeout();
+    if (! Current || Current == this) checkAdminTimeout();
 
     // TODO: Re-enable this after decoupling from readLine (which should only care about completed buff).
-    //       Really? Is this still relevant?
+    //       This is an old todo... is it still relevant?
     //checkSerialPort();
     
     call();
@@ -180,11 +197,11 @@
   }
 
   // Checks timer for admin timeout and reboots or enters RunMode 0 if true.
-  void Menu::adminTimeout() {
+  void Menu::checkAdminTimeout() {
     unsigned long current_ms = millis();
     unsigned long elapsed_ms = current_ms - previous_ms;
     
-    MU_LOG(6, F("adminTimeout() mode, adm-tmout, now, prev-ms: "), false);
+    MU_LOG(6, F("checkAdminTimeout() mode, adm-tmout, now, prev-ms: "), false);
     MU_LOG(6, RunMode, false); MU_LOG(6, " ", false);
     MU_LOG(6, admin_timeout, false); MU_LOG(6, " ", false);
     MU_LOG(6, current_ms, false); MU_LOG(6, " ", false);
@@ -252,19 +269,30 @@
     All upstream/downstream functions should assume the resulting
     line as described above.
 
-    TODO: Convert this to use SerialPort class.
+    TODO: Convert this to use SerialPort class and to not use M1,M2.
   */
   void Menu::checkSerialPort() {
     //if (strcmp(instance_name, "SW") == 0) {
-    if (this == M2) {
-      SoftwareSerial * sp = (SoftwareSerial*)serial_port;
-
-      if (! sp->isListening()) {
-        sp->listen();
+    //  if (this == M2) {
+    //    SoftwareSerial * sp = (SoftwareSerial*)serial_port;
+    //    
+    //    if (! sp->isListening()) {
+    //      sp->listen();
+    //      LOG(6, F("Menu listen"), true);
+    //      delay(100);
+    //    }
+    //    while (! sp->isListening()) {
+    //      ; //delay(2);
+    //    }
+    //  }
+    if (serial_port->is_sw_serial) {
+      
+      if (! serial_port->isListening()) {
+        serial_port->listen();
         LOG(6, F("Menu listen"), true);
         delay(100);
       }
-      while (! sp->isListening()) {
+      while (! serial_port->isListening()) {
         ; //delay(2);
       }
     }
@@ -285,12 +313,15 @@
           after tag-scanning during add-tag.
           This should only run on the SW menu object, if 'this'
           is the HW object.
+
+          TODO: This is not relevant to a single-serial setup (even if it uses BT).
+                But this functionality should be re-enabled somehow, if only conditionally.
         */
-        if (this == M1) {
-          M2->resetStack();
-          M2->clearSerialPort();
-          M2->resetInputBuffer();
-        }
+        //  if (this == M1) {
+        //    M2->resetStack();
+        //    M2->clearSerialPort();
+        //    M2->resetInputBuffer();
+        //  }
         
         Beeper->mediumBeep(1);
       }
@@ -348,7 +379,7 @@
   // Clears any data waiting on serial port, if any.
   void Menu::clearSerialPort() {
     MU_LOG(6, F("Menu.clearSerialPort()"), true);
-    while (serial_port->available()) serial_port->read();    
+    while (serial_port && serial_port->available()) serial_port->read();    
   }
 
   // Clears all bytes in input buffer c-string.
@@ -404,7 +435,8 @@
   // Displays a prompt with string, sending eventual user input to callback.
   void Menu::prompt(const char *_message, CB _cback, bool _read_tag) {
     
-    if (_message[0] && !(this == M2 && digitalRead(BT_STATUS_PIN) == HIGH)) {
+    //if (_message[0] && !(this == M2 && digitalRead(BT_STATUS_PIN) == HIGH)) {
+    if (_message[0] && !(serial_port->is_bt && digitalRead(BT_STATUS_PIN) == HIGH)) {
       serial_port->print(_message);
       serial_port->print(F(": "));
     }
@@ -897,7 +929,7 @@
   */
   
   void Menu::menuManageBT(void *dat) {
-    if (digitalRead(BT_STATUS_PIN) == HIGH) {
+    if (digitalRead(BT_STATUS_PIN) == HIGH && ! ! serial_port->is_bt) {
       // Cleanup, just to be safe.
       M2->resetStack();
       M2->clearSerialPort();

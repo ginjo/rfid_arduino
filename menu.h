@@ -12,6 +12,7 @@
 
   #include "settings.h"
   #include "reader.h"
+  #include "serial_port.h"
   #include "stack.h"
 
   // See logger.h for master debug controls.
@@ -26,7 +27,7 @@
   #define MENU_ITEM_NAME_SIZE 16
 
   using CB = Stack<Menu>::CB;
-  using menu_item_T = struct { // This is like typdef buf better syntax.
+  using menu_item_T = struct { // This is like typdef but better syntax.
     const char name[MENU_ITEM_NAME_SIZE];
     CB fp;
     void *data;
@@ -54,7 +55,7 @@
 
     /* Instance vars */
     
-    Stream *serial_port;
+    SerialPort *serial_port;
     Reader *reader;
     // NOTE: instance_name is a two-character string with a terminating null.
     char instance_name[3];
@@ -72,14 +73,14 @@
         Receives a serial port instance from HardwareSerial or SoftwareSerial.
     */
 
-    Menu(Stream*, Reader*, const char* = "");
+    Menu(SerialPort*, Reader*, const char* = "");
 
 
     /* Control */
 
     void begin();
     void loop();
-    void adminTimeout();
+    void checkAdminTimeout();
     //void updateAdminTimeout(uint32_t = S.admin_timeout); // seconds
     void updateAdminTimeout(void* = (void*)S.admin_timeout); // seconds
     void exitAdmin();

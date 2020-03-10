@@ -33,7 +33,7 @@
     { "Debug log level", &Settings::display_debug_level, &Settings::set_debug_level},
 
     { "HW serial baud", &Settings::display_hw_baud, &Settings::set_hw_baud},
-    { "BT serial baud", &Settings::display_sw_baud, &Settings::set_sw_baud},
+    { "SW serial baud", &Settings::display_sw_baud, &Settings::set_sw_baud},
     { "Reader serial baud", &Settings::display_rfid_baud, &Settings::set_rfid_baud},
     { "Tone freq", &Settings::display_tone_frequency, &Settings::set_tone_frequency},
     { "Admin password", &Settings::display_admin_password, &Settings::set_admin_password}

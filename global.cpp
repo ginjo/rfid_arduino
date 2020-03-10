@@ -6,7 +6,7 @@
   bool TempDebug = false;
 
   // Defines & initializes SWserial. This works fine too.
-  //SoftwareSerial *SWserial = new SoftwareSerial(BT_RX_PIN, BT_TX_PIN);
+  //SoftwareSerial *SWserial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
   
   // Just defines SWserial. See global.h for declaration and main .ino for initialization.
   //SoftwareSerial *SWserial

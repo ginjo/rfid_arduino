@@ -2,7 +2,6 @@
 #define __SERIAL_PORT__
 
   #include <Arduino.h>
-  #include "logger.h"
 
   // See logger.h for master debug controls.
   #ifdef SL_DEBUG
@@ -11,15 +10,22 @@
     #define SL_LOG(...)
   #endif
 
+  extern bool CanLogToBT(); // forward declaration, see serial_port.cpp.
 
   class SerialPort : public Stream {
   public:
 
+    // Constructor
+    SerialPort();
+
+    // Instance vars & functions
     bool is_bt;
-    //virtual void begin(unsigned long);
-    //virtual void begin(unsigned long, uint8_t);
+    bool is_sw_serial;
 
     bool can_output();
+
+    bool isListening();
+    bool listen();
 
   };
 

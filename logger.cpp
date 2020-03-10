@@ -31,7 +31,7 @@
   }
 
 
-  // Checks if conditions are right to log to SWserial.
+  // Checks if conditions are right to log to any BT device.
   extern bool CanLogToBT() {
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
@@ -96,13 +96,11 @@
   // Handles final new-line at end of log entry.
   void PostLog(bool line) {
     
-    if (CanLogToBT()) {      
-      if (line == true && SWserial->can_output()) {
-        SWserial->println("");
-      }
+    if (line == true && SWserial && SWserial->can_output()) {
+      SWserial->println("");
     }
   
-    if (line == true && HWserial->can_output()) {
+    if (line == true && HWserial && HWserial->can_output()) {
       HWserial->println("");
     }
 

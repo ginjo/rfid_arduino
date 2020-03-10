@@ -7,7 +7,7 @@
   #include <Arduino.h>
   #include <SoftwareSerial.h>
   // Don't load any custom classes here, as global.h should load before anything custom.
-  // Use forward declarations instead, if you need to refer to custom classes here.
+  // Use forward declarations instead, if you need to refer to custom classes here.fre
   
   #define DEBUG_PIN 11
   //#define FAILSAFE_PIN 12
@@ -24,8 +24,8 @@
   #define RFID_TX_PIN A6 // generally not used
   #define READER_POWER_CONTROL_PIN 5
 
-  #define BT_RX_PIN 2
-  #define BT_TX_PIN 3 // remember to reduce arduino output (BT input) to 3.3v with voltage divider
+  #define SW_RX_PIN 2
+  #define SW_TX_PIN 3 // remember to reduce arduino output (BT input) to 3.3v with voltage divider
   #define BT_STATUS_PIN 10 // low == connected
 
 

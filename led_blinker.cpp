@@ -18,14 +18,17 @@
 
   void Led::PrintStaticIntervals() {
     // TODO: Should this be converted to use LOG function?
-    HWserial->println(F("PrintStaticIntervals()"));
-    for (int n = 0; n < 6; n++) {
-      HWserial->print(n); HWserial->print(":");
-      for (int m = 0; m < INTERVALS_LENGTH; m++) {
-        HWserial->print(StaticIntervals[n][m]);
-        HWserial->print(",");
+    int level = 5;
+    if (LogLevel() >= level) {
+      LOG(level, F("PrintStaticIntervals()"), true);
+      for (int n = 0; n < 6; n++) {
+        LOG(level, n); LOG(level, ":");
+        for (int m = 0; m < INTERVALS_LENGTH; m++) {
+          LOG(level, StaticIntervals[n][m]);
+          LOG(level, ",");
+        }
+        LOG(level, "", true);
       }
-      HWserial->println("");
     }
   }
 
