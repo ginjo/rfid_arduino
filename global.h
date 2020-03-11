@@ -34,7 +34,6 @@
 
   extern bool TempDebug;
 
-
   class SerialPort; // forward declaration, so that we can...
 
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
@@ -43,15 +42,10 @@
   extern SerialPort *HWserial;
   extern SerialPort *SWserial;
 
-
-
   class Led; // forward declaration, so that we can...
   
   extern Led *RGB[3];
   extern Led *Beeper;
-
-  extern void GlobalSetup();
-
   
 #endif
 

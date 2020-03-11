@@ -18,6 +18,25 @@
   #include "serial_port.h"
 
 
+  /***  Global definitions (declared as extern in global.h)  ***/
+
+  bool TempDebug = false;
+
+  Led *RGB[3] = {
+    new Led(LED_RED_PIN, "Rd"),
+    new Led(LED_GREEN_PIN, "Gr"),
+    new Led(LED_BLUE_PIN, "Bl")
+  };
+
+  Led *Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
+
+  HardwareSerial *hw_serial = &Serial;
+  //SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
+
+  SerialPort *HWserial = (SerialPort*)hw_serial;
+  SerialPort *SWserial = nullptr; //(SerialPort*)sw_serial;
+
+
   /***  Local Declarations  ***/
 
   // See global files for extern declarations & definitions used in this file.
@@ -42,16 +61,18 @@
     ///SWserial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
     //HWserial = (SerialPort*)&Serial; HWserial->is_bt = true;
     //SWserial = (SerialPort*)(new SoftwareSerial(SW_RX_PIN, SW_TX_PIN));
-    HardwareSerial *hw_serial = &Serial;
-    SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
+    //  HardwareSerial *hw_serial = &Serial;
+    //  SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
 
-    HWserial = (SerialPort*)hw_serial; HWserial->is_bt = true;
-    //SWserial = (SerialPort*)sw_serial; SWserial->is_sw_serial = true;
+    //  HWserial = (SerialPort*)hw_serial;
+    HWserial->is_bt = true;
+    //  SWserial = (SerialPort*)sw_serial;
+    //SWserial->is_sw_serial = true;
     
     hw_serial->begin(S.hw_baud);
     while (! hw_serial) delay(10);
     
-    sw_serial->begin(S.sw_baud);
+    //sw_serial->begin(S.sw_baud);
     delay(25);
 
     #ifdef INO_DEBUG
@@ -65,7 +86,7 @@
     
     Settings::Load();
 
-    sw_serial->begin(S.sw_baud);
+    //sw_serial->begin(S.sw_baud);
     hw_serial->flush(); // I think flushes only outbound data. See Serial class docs.
     hw_serial->begin(S.hw_baud);
     while (! hw_serial) delay(10);
@@ -128,11 +149,11 @@
       if (LogLevel() >= 5U ) Led::PrintStaticIntervals();
     #endif
 
-    RGB[0] = new Led(LED_RED_PIN, "Rd");
-    RGB[1] = new Led(LED_GREEN_PIN, "Gr");
-    RGB[2] = new Led(LED_BLUE_PIN, "Bl");
+    //  RGB[0] = new Led(LED_RED_PIN, "Rd");
+    //  RGB[1] = new Led(LED_GREEN_PIN, "Gr");
+    //  RGB[2] = new Led(LED_BLUE_PIN, "Bl");
     
-    Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
+    //  Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
     RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
@@ -187,4 +208,14 @@
     //FREERAM(); // Only for memory debugging.
   } // end loop()
 
-  
+  void GlobalSetup() {
+    pinMode(BT_STATUS_PIN, INPUT_PULLUP);
+    //pinMode(FAILSAFE_PIN, INPUT_PULLUP);
+    pinMode(DEBUG_PIN, INPUT_PULLUP);
+    pinMode(READER_POWER_CONTROL_PIN, OUTPUT);
+    pinMode(OUTPUT_SWITCH_PIN, OUTPUT);
+    
+    //digitalWrite(OUTPUT_SWITCH_PIN, HIGH);
+
+    TempDebug = (digitalRead(DEBUG_PIN) == LOW);
+  }

@@ -9,7 +9,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-  #define VERSION "v0.1.0.pre208"
+  #define VERSION "v0.1.0.pre209l"
   #define TIMESTAMP __DATE__ ", " __TIME__
 
   #include <Arduino.h>
@@ -58,10 +58,11 @@
   class Settings; // forward declaration for the following...
   // This is a cleaner way to do typedefs.
 
-  // typdef for pointer to function (TODO: is this a pionter to member function?)
+  // typdef for pointer to function (QUESTION: is this a pointer to member function?)
   using getter_setter_T = void(Settings::*)(char*);
 
   // typedef for list of settings containing function pointers.
+  // QUESTION: Why can't we just do "struct settings_list_T {...}"?
   using settings_list_T = struct {
     const char name[SETTINGS_NAME_SIZE];
     getter_setter_T display_fp;
@@ -113,7 +114,7 @@
 
     int tone_frequency;
     int admin_startup_timeout;
-    bool log_to_bt; // logging to SWserial: 0=No, 1=Yes (but only if bt is connected)
+    bool log_to_bt; // Allows logging to SerialPort instances whos is_bt == true; 0=No, 1=Yes (but only if bt is connected).
     uint8_t log_level;
     char admin_password[ADMIN_PASSWORD_SIZE];
 
