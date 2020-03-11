@@ -19,14 +19,13 @@
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   // TODO: Convert this to a simple function with no printing.
-  extern int FreeRam (const char txt[]) {
+  extern int FreeRam() {   // (const char txt[]) {
     extern int __heap_start, *__brkval; 
     int v; 
     int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-    if (HWserial->can_output()) {
-      HWserial->print(F("FREE RAM (")); HWserial->print(rslt); HWserial->print(F(") ")); HWserial->println(txt);
-    }
-    //LOG(4, F("FREE RAM (")); LOG(4, rslt); LOG(4, F(") ")); LOG(4, txt, true);
+    //  if (HWserial->can_output()) {
+    //    HWserial->print(F("FREE RAM (")); HWserial->print(rslt); HWserial->print(F(") ")); HWserial->println(txt);
+    //  }
     return rslt;
   }
 
@@ -95,14 +94,22 @@
 
   // Handles final new-line at end of log entry.
   void PostLog(bool line) {
+
+    for (uint8_t n = 0; n < SerialPort::Count; n++) {
+      SerialPort *sp = SerialPort::List[n];
+      
+      if (line == true && sp && sp->can_output()) {
+        sp->println("");
+      }      
+    }
     
-    if (line == true && SWserial && SWserial->can_output()) {
-      SWserial->println("");
-    }
-  
-    if (line == true && HWserial && HWserial->can_output()) {
-      HWserial->println("");
-    }
+    //  if (line == true && SWserial && SWserial->can_output()) {
+    //    SWserial->println("");
+    //  }
+    //
+    //  if (line == true && HWserial && HWserial->can_output()) {
+    //    HWserial->println("");
+    //  }
 
     if (line) log_in_progress = false;
   }

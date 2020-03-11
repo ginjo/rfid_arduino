@@ -34,7 +34,7 @@
     delay(50);
     digitalWrite(READER_POWER_CONTROL_PIN, reader->power_control_logic ? HIGH : LOW);
     
-  } // setup()
+  } // begin()
 
 
   void Controller::loop() {

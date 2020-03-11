@@ -68,7 +68,7 @@
 
 
   void Menu::Begin() {
-    LOG(4, F("Menu.Begin()"), true);
+    LOG(4, F("Menu.Begin()"), true); LOG(4, "", true);
     if (M1) M1->begin();
     if (M2) M2->begin();
     
@@ -148,7 +148,7 @@
       serial_port->print(VERSION);
       serial_port->print(", ");
       serial_port->println(TIMESTAMP);
-      serial_port->println();
+      //serial_port->println("");
     }
 
     if (serial_port->is_bt) {
@@ -245,8 +245,9 @@
       TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 
       RunMode = 0;
-      
-      FREERAM("exitAdmin()");
+
+      LOG(4, F("exitAdmin(), freeram "));
+      LOG(4, FreeRam(), true);
     }
   }
 

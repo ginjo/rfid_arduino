@@ -47,19 +47,16 @@
     //#define SO_DEBUG   // storage
     //#define TA_DEBUG   // tags
   #endif
-  
-  #ifdef DEBUG    // Macros are usually in all capital letters.
-    #define FREERAM(...)   if(S.debugMode()){FreeRam(__VA_ARGS__);}
-  #else
-    #define FREERAM(...)
-  #endif
+
 
   // Forward declaration
   class Menu;
 
+  extern bool TempDebug;
+
   extern uint8_t LogLevel();
 
-  extern int FreeRam(const char[] = "");
+  extern int FreeRam();  // (const char[] = "");
 
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
   extern const char *Uptime();
@@ -72,6 +69,7 @@
   // TODO: Should this return like PreLog() ?
   void PostLog(bool);
 
+
   
   // Handles printing to SWserial with numbers, considers integer base.
   // 
@@ -82,18 +80,25 @@
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
     const char *prelog = PreLog(level);
-    
-    //if (CanLogToBT() || ! SWserial->is_bt) {
-    if (SWserial && SWserial->can_output()) {
-      SWserial->print(prelog);
-      SWserial->print(dat, base);
-    }
 
-    //if (CanLogToBT() || ! HWserial->is_bt) {
-    if (HWserial && HWserial->can_output()) {
-      HWserial->print(prelog);
-      HWserial->print(dat, base);
+    for (uint8_t n = 0; n < SerialPort::Count; n++) {
+      SerialPort *sp = SerialPort::List[n];
+      
+      if (sp && sp->can_output()) {
+        sp->print(prelog);
+        sp->print(dat, base);
+      }
     }
+    
+    //  if (SWserial && SWserial->can_output()) {
+    //    SWserial->print(prelog);
+    //    SWserial->print(dat, base);
+    //  }
+    //
+    //  if (HWserial && HWserial->can_output()) {
+    //    HWserial->print(prelog);
+    //    HWserial->print(dat, base);
+    //  }
 
     PostLog(line);
 
@@ -110,18 +115,25 @@
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
     const char *prelog = PreLog(level);
-    
-    //if (CanLogToBT() || ! SWserial->is_bt) {
-    if (SWserial && SWserial->can_output()) {
-      SWserial->print(prelog);
-      SWserial->print(dat);
-    }
 
-    //if (CanLogToBT() || ! HWserial->is_bt) {
-    if (HWserial && HWserial->can_output()) {
-      HWserial->print(prelog);
-      HWserial->print(dat);
+    for (uint8_t n = 0; n < SerialPort::Count; n++) {
+      SerialPort *sp = SerialPort::List[n];
+      
+      if (sp && sp->can_output()) {
+        sp->print(prelog);
+        sp->print(dat);
+      }
     }
+    
+    //  if (SWserial && SWserial->can_output()) {
+    //    SWserial->print(prelog);
+    //    SWserial->print(dat);
+    //  }
+    //  
+    //  if (HWserial && HWserial->can_output()) {
+    //    HWserial->print(prelog);
+    //    HWserial->print(dat);
+    //  }
 
     PostLog(line);
 

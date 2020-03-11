@@ -18,7 +18,9 @@
   #include "serial_port.h"
 
 
-  /***  Global definitions (declared as extern in global.h)  ***/
+
+  /***  Global Definitions (some declared as extern in global.h)
+        and Local Declarations and Definitions  ***/
 
   bool TempDebug = false;
 
@@ -28,18 +30,21 @@
     new Led(LED_BLUE_PIN, "Bl")
   };
 
-  Led *Led::Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
+  //Led *Led::Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
+  Led *Led::Beeper;
+
+
+
+  // Defines standard and custom serial port objects and adds them to SerialPort::List[].
+  //
   HardwareSerial *hw_serial = &Serial;
   //SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
+  //
+  SerialPort *HWserial = SerialPort::Add(hw_serial, true);
+  //SerialPort *SWserial = SerialPort::Add(sw_serial);
+  SerialPort *SWserial = nullptr;
 
-  SerialPort *HWserial = (SerialPort*)hw_serial;
-  SerialPort *SWserial = nullptr; //(SerialPort*)sw_serial;
-
-
-  /***  Local Declarations  ***/
-
-  // See global files for extern declarations & definitions used in this file.
 
   // Declares local serial port for RFID reader.
   SoftwareSerial *RfidSerial;
@@ -51,29 +56,27 @@
   Controller *OutputControl;
 
 
-  /*** Setup  ***/
+
+  /***  Setup   ***/
 
   void setup() {
+    //hw_serial->println(F("global setup bgn"));
+    
     GlobalSetup();
 
-    // Initialize (static) SWserial first cuz we need it for logging.
-    // See global files for declaration/definition of SWserial.
-    ///SWserial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
-    //HWserial = (SerialPort*)&Serial; HWserial->is_bt = true;
-    //SWserial = (SerialPort*)(new SoftwareSerial(SW_RX_PIN, SW_TX_PIN));
-    //  HardwareSerial *hw_serial = &Serial;
-    //  SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
+    //hw_serial->println(F("global setup fin"));
 
-    //  HWserial = (SerialPort*)hw_serial;
-    HWserial->is_bt = true;
-    //  SWserial = (SerialPort*)sw_serial;
-    //SWserial->is_sw_serial = true;
+
+    //hw_serial->println(F("hw_serial bgn"));
     
     hw_serial->begin(S.hw_baud);
-    while (! hw_serial) delay(10);
+    while (! hw_serial) delay(1);
     
-    //sw_serial->begin(S.sw_baud);
+    //hw_serial->println(F("hw_serial fin"));
+    
+    // sw_serial->begin(S.sw_baud);
     delay(25);
+
 
     #ifdef INO_DEBUG
       LOG(4, F("RFID proximity sensor pre-boot"), true);
@@ -81,17 +84,21 @@
       LOG(4, S.hw_baud, false);
       LOG(4, F(", "), false);
       LOG(4, S.sw_baud, true);
-      FREERAM("Before Settings::Load()");
+      LOG(5, F("FreeRam b4 settings-load "));
+      LOG(5, FreeRam(), true);
     #endif
+
     
     Settings::Load();
 
-    //sw_serial->begin(S.sw_baud);
+    // sw_serial->begin(S.sw_baud);
     hw_serial->flush(); // I think flushes only outbound data. See Serial class docs.
     hw_serial->begin(S.hw_baud);
     while (! hw_serial) delay(10);
     delay(25);
 
+    //delete Led::Beeper;
+    Led::Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
     #ifdef INO_DEBUG
       LOG(4, F("Booting RFID proximity control, "));
@@ -121,51 +128,42 @@
   
   
       // Displays current settings and readers.
-      // TODO: Make this part of Logger or SerialPort.
+      // TODO: Maybe make this part of Logger or SerialPort.
       if (LogLevel() >= 4U) {
-        if (HWserial->can_output()) {
-          LOG(4, "", true);
-          S.printSettings(HWserial);
-          HWserial->println("");
-          Reader::PrintReaders(HWserial);
-          HWserial->println("");
-        }
-        if (SWserial && SWserial->can_output()) {
-          LOG(4, "", true);
-          S.printSettings(SWserial);
-          SWserial->println("");
-          Reader::PrintReaders(SWserial);
-          SWserial->println("");
+        for (uint8_t n = 0; n < SerialPort::Count; n++) {
+          SerialPort *sp = SerialPort::List[n];
+          if (sp->can_output()) {
+            LOG(4, "", true);
+            S.printSettings(sp);
+            sp->println("");
+            Reader::PrintReaders(sp);
+            sp->println("");
+          }
         }
       }
-  
-      FREERAM("setup() pre new objcts");
+
+      LOG(5, F("FreeRam at setup() b4 new objcts "));
+      LOG(5, FreeRam(), true);
     #endif
 
-
-    /*  Initialize main objects. See global files for declarations/definitions.  */
 
     #ifdef BK_DEBUG
       if (LogLevel() >= 5U ) Led::PrintStaticIntervals();
     #endif
 
-    //  RGB[0] = new Led(LED_RED_PIN, "Rd");
-    //  RGB[1] = new Led(LED_GREEN_PIN, "Gr");
-    //  RGB[2] = new Led(LED_BLUE_PIN, "Bl");
-    
-    //  Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
-
-    RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
 
     RfidReader = Reader::GetReader((int)S.default_reader);
+    RfidSerial = new SoftwareSerial(RFID_RX_PIN, RFID_TX_PIN);
     RfidReader->serial_port = RfidSerial;
 
     OutputControl = new Controller(RfidReader);
-    
+
+    // TODO: Rfactor this, when you get Menu::List[] implemented.
     Menu::M1 = new Menu(HWserial, RfidReader, "HW");
     //Menu::M2 = new Menu(SWserial, RfidReader, "SW");
 
-    FREERAM("setup() pre obj stp");
+    LOG(5, F("FreeRam at setup() pre obj stp "));
+    LOG(5, FreeRam(), true);
     
     
     /*  Run setup/begin/init functions  */
@@ -182,14 +180,16 @@
     // Activates the admin console.
     Menu::Begin();
 
-   #ifdef BK_DEBUG
-    FREERAM("setup() end");
+   #ifdef INO_DEBUG
+    LOG(5, F("FreeRam at setup() end "));
+    LOG(5, FreeRam(), true);
 
     // Add empty line before beginning loop.
     LOG(4, "", true);
   #endif
 
   } // setup()
+
 
 
   void loop() {
@@ -208,6 +208,8 @@
     //FREERAM(); // Only for memory debugging.
   } // end loop()
 
+
+
   void GlobalSetup() {
     pinMode(BT_STATUS_PIN, INPUT_PULLUP);
     //pinMode(FAILSAFE_PIN, INPUT_PULLUP);
@@ -219,3 +221,5 @@
 
     TempDebug = (digitalRead(DEBUG_PIN) == LOW);
   }
+
+  

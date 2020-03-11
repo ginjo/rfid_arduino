@@ -15,10 +15,23 @@
   class SerialPort : public Stream {
   public:
 
-    // Constructor
+
+    /*  Static  */
+
+    static SerialPort *List[];
+    static uint8_t Count;
+
+    static SerialPort* Add(HardwareSerial*, bool = false);
+    static SerialPort* Add(SoftwareSerial*, bool = false);
+    
+
+    /*  Constructor  */
+    
     SerialPort();
 
-    // Instance vars & functions
+
+    /*  Instance vars & functions  */
+    
     bool is_bt;
     bool is_sw_serial;
 

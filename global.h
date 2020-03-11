@@ -1,6 +1,8 @@
 #ifndef __GL_H__
 #define __GL_H__
 
+  // TODO: Everything in this file can (should?) be in main ino file.
+
 
   /* Arduino Pin Assignments */
 
@@ -32,15 +34,18 @@
 
   // TODO: Can all of these be moved into static arrays in their respective classes?
 
-  extern bool TempDebug;
+  // extern bool TempDebug;
 
-  class SerialPort; // forward declaration, so that we can...
+
+  // I think all of this serial port stuff can be removed after
+  // implementation of SerialPort::List[] and Menu::List[]
+  //class SerialPort; // forward declaration, so that we can...
 
   // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
   //  extern HardwareSerial *HWserial;
   //  extern SoftwareSerial *SWserial;
-  extern SerialPort *HWserial;
-  extern SerialPort *SWserial;
+  //extern SerialPort *HWserial;
+  //extern SerialPort *SWserial;
 
   //  class Led; // forward declaration, so that we can...
   //  extern Led *RGB[3];
