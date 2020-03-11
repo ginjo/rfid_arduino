@@ -158,7 +158,7 @@
 
     OutputControl = new Controller(RfidReader);
 
-    // TODO: Rfactor this, when you get Menu::List[] implemented.
+    // TODO: Refactor this, when you get Menu::List[] implemented.
     Menu::M1 = new Menu(HWserial, RfidReader, "HW");
     //Menu::M2 = new Menu(SWserial, RfidReader, "SW");
 

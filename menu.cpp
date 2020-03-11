@@ -248,6 +248,7 @@
 
       LOG(4, F("exitAdmin(), freeram "));
       LOG(4, FreeRam(), true);
+      LOG(4, "", true);
     }
   }
 

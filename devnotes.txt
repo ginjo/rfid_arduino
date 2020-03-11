@@ -1078,5 +1078,9 @@ TODO: Re-arrange pins for Pro Mini setup.
 
 TODO: Is it possible to move all global vars and funcs to the main .ino file?
 
-			
+TODO: Globals refactor is mostly complete. Finish conversion of Menu class M1, M2.
+
+TODO: Make bounds of some of the new arrays into global vars (macro defines).
+
+
 			
