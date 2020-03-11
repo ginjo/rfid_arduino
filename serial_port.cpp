@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include "serial_port.h"
 
-  SerialPort *SerialPort::List[2] = {};
+  SerialPort *SerialPort::List[SERIAL_PORT_LIST_SIZE] = {};
   uint8_t SerialPort::Count = 0U;
 
   SerialPort* SerialPort::Add (HardwareSerial *hw, bool _is_bt) {

@@ -10,6 +10,9 @@
     #define SL_LOG(...)
   #endif
 
+  #define SERIAL_PORT_LIST_SIZE 1
+  
+
   extern bool CanLogToBT(); // forward declaration, see serial_port.cpp.
 
   class SerialPort : public Stream {

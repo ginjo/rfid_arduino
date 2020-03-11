@@ -102,14 +102,6 @@
         sp->println("");
       }      
     }
-    
-    //  if (line == true && SWserial && SWserial->can_output()) {
-    //    SWserial->println("");
-    //  }
-    //
-    //  if (line == true && HWserial && HWserial->can_output()) {
-    //    HWserial->println("");
-    //  }
 
     if (line) log_in_progress = false;
   }

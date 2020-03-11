@@ -89,16 +89,6 @@
         sp->print(dat, base);
       }
     }
-    
-    //  if (SWserial && SWserial->can_output()) {
-    //    SWserial->print(prelog);
-    //    SWserial->print(dat, base);
-    //  }
-    //
-    //  if (HWserial && HWserial->can_output()) {
-    //    HWserial->print(prelog);
-    //    HWserial->print(dat, base);
-    //  }
 
     PostLog(line);
 
@@ -124,16 +114,6 @@
         sp->print(dat);
       }
     }
-    
-    //  if (SWserial && SWserial->can_output()) {
-    //    SWserial->print(prelog);
-    //    SWserial->print(dat);
-    //  }
-    //  
-    //  if (HWserial && HWserial->can_output()) {
-    //    HWserial->print(prelog);
-    //    HWserial->print(dat);
-    //  }
 
     PostLog(line);
 
