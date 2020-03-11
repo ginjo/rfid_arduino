@@ -323,7 +323,7 @@
         //    M2->resetInputBuffer();
         //  }
         
-        Beeper->mediumBeep(1);
+        Led::Beeper->mediumBeep(1);
       }
 
       // Always update the admin timeout when user inputs anything.
@@ -588,11 +588,11 @@
     }
 
     if (result == 0) {
-      Beeper->mediumBeep(1);
+      Led::Beeper->mediumBeep(1);
     } else if (result > 0) {
-      Beeper->shortBeep(result);
+      Led::Beeper->shortBeep(result);
     } else if (result < 0) {
-      Beeper->shortBeep(5);
+      Led::Beeper->shortBeep(5);
     }
     
     serial_port->println("");

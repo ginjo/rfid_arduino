@@ -22,13 +22,13 @@
 
   bool TempDebug = false;
 
-  Led *RGB[3] = {
+  Led *Led::RGB[3] = {
     new Led(LED_RED_PIN, "Rd"),
     new Led(LED_GREEN_PIN, "Gr"),
     new Led(LED_BLUE_PIN, "Bl")
   };
 
-  Led *Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
+  Led *Led::Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
 
   HardwareSerial *hw_serial = &Serial;
   //SoftwareSerial *sw_serial = new SoftwareSerial(SW_RX_PIN, SW_TX_PIN);
@@ -194,10 +194,10 @@
 
   void loop() {
 
-    RGB[0]->loop();
-    RGB[1]->loop();
-    RGB[2]->loop();
-    Beeper->loop();
+    Led::RGB[0]->loop();
+    Led::RGB[1]->loop();
+    Led::RGB[2]->loop();
+    Led::Beeper->loop();
 
     if (Menu::RunMode > 0) {
       Menu::Loop();

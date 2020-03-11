@@ -285,8 +285,8 @@
     //  RD_LOG(5, tag_id, true);
 
     if (tag_id) {
-      RGB[0]->go_low();
-      RGB[2]->once();
+      Led::RGB[0]->go_low();
+      Led::RGB[2]->once();
     }
 
     if (tag_id > 0UL && ::Tags::TagSet.getTagIndex(tag_id) >= 0) { // 0 is a valid index.  

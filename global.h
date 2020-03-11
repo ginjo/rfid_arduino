@@ -42,10 +42,9 @@
   extern SerialPort *HWserial;
   extern SerialPort *SWserial;
 
-  class Led; // forward declaration, so that we can...
-  
-  extern Led *RGB[3];
-  extern Led *Beeper;
+  //  class Led; // forward declaration, so that we can...
+  //  extern Led *RGB[3];
+  //  extern Led *Beeper;
   
 #endif
 

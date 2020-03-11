@@ -55,15 +55,15 @@
     // shut down output until a successful tag read).
     digitalWrite(OUTPUT_SWITCH_PIN, proximity_state);
 
-    RGB[0]->off();
-    RGB[1]->off();
-    RGB[2]->off();
-    Beeper->off();
+    Led::RGB[0]->off();
+    Led::RGB[1]->off();
+    Led::RGB[2]->off();
+    Led::Beeper->off();
     
     if (proximity_state) {
-      RGB[1]->startupBlink();
+      Led::RGB[1]->startupBlink();
     } else {
-      RGB[0]->startupBlink();
+      Led::RGB[0]->startupBlink();
     }
   }
 
@@ -95,8 +95,8 @@
       ){
       
       CT_LOG(6, F("Timeout:grace"), true);
-      RGB[0]->slowBlink();
-      RGB[1]->off();
+      Led::RGB[0]->slowBlink();
+      Led::RGB[1]->off();
       
       setProximityState(0);
       //reader->power_cycle_high_duration_override_ms = 3UL;
@@ -106,7 +106,7 @@
       if (ctrl_status != 1) {
         reader->power_cycle_high_duration_override_ms = 1000UL;
         LOG(3, F("TIMEOUT"), true);
-        Beeper->slowBeep(3);
+        Led::Beeper->slowBeep(3);
       }
 
       ctrl_status = 1;
@@ -122,8 +122,8 @@
       ){
 
       CT_LOG(6, F("Timeout:general"), true);
-      RGB[0]->slowBlink();
-      RGB[1]->off();
+      Led::RGB[0]->slowBlink();
+      Led::RGB[1]->off();
       
       setProximityState(0);
       //reader->power_cycle_high_duration_override_ms = 3UL;
@@ -132,7 +132,7 @@
       if (ctrl_status != 2) {
         reader->power_cycle_high_duration_override_ms = 1000UL;
         LOG(3, F("TIMEOUT"), true); // only prints once.
-        Beeper->slowBeep(3);
+        Led::Beeper->slowBeep(3);
       }
 
       ctrl_status = 2;
@@ -150,15 +150,15 @@
 
       CT_LOG(6, F("Aging"), true);
       if (proximity_state) {
-        RGB[0]->off();
-        RGB[1]->fastBlink();
+        Led::RGB[0]->off();
+        Led::RGB[1]->fastBlink();
       } else {
-        RGB[0]->fastBlink();
-        RGB[1]->off(); 
+        Led::RGB[0]->fastBlink();
+        Led::RGB[1]->off(); 
       }
       
-      //RGB[2]->off();
-      Beeper->fastBeep();
+      //Led::RGB[2]->off();
+      Led::Beeper->fastBeep();
       
       setProximityState(1);
       //reader->power_cycle_high_duration_override_ms = 3UL;
@@ -181,10 +181,10 @@
       ){
         
       CT_LOG(6, F("Fresh"), true);
-      RGB[0]->off();
-      RGB[1]->steady();
-      //RGB[2]->off();
-      Beeper->off();
+      Led::RGB[0]->off();
+      Led::RGB[1]->steady();
+      //Led::RGB[2]->off();
+      Led::Beeper->off();
       
       setProximityState(1);
       //reader->power_cycle_high_duration_override_ms = 0UL;

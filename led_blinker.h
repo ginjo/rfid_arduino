@@ -28,6 +28,9 @@
     // Static pre-defined 2D interval array.
     static const int StaticIntervals[][INTERVALS_LENGTH];
 
+    static Led *RGB[3];
+    static Led *Beeper;
+
     // Prints all StaticIntervals.
     static void PrintStaticIntervals();
     
