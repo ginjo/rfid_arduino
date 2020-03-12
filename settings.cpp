@@ -5,7 +5,11 @@
   // This is moved here by suggestion to stop EEPROM warnings.
   #include <EEPROM.h>
 
-
+  #ifdef DEBUG
+    #define DEBUG_DEFAULTS 1
+  #else
+    #define DEBUG_DEFAULTS 0
+  #endif
 
   /***  Static & Extern  ***/
 
@@ -73,7 +77,7 @@
 
     // Log level when debug pin is held low.
     // Changed to: Overrides log_level if debug-pin is held low or debugMode() is true.
-    debug_level(5),
+    debug_level(DEBUG_DEFAULTS ? 6 : 5),
 
     // sets default reader index
     default_reader(3),
@@ -81,10 +85,10 @@
     hw_baud(115200),
     sw_baud(57600),
     rfid_baud(9600),
-    tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
+    tone_frequency(DEBUG_DEFAULTS ? 2800 : 1260), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
-    log_to_bt(true),
-    log_level(5)
+    log_to_bt(DEBUG_DEFAULTS ? true : false),
+    log_level(DEBUG_DEFAULTS ? 5 : 4)
   {     
     strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
     strlcpy(admin_password, "12345", ADMIN_PASSWORD_SIZE);

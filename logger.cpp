@@ -45,9 +45,8 @@
 
   // Converts milliseconds to readable h:m:s.ms
   // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  const char *Uptime() {
-    uint8_t output_length = 13;
-    
+  bool Uptime(char *_out, int _size) {
+        
     unsigned long milliseconds = millis();
     unsigned long seconds  = milliseconds/1000;
     unsigned long rmillis  = milliseconds % 1000;
@@ -56,52 +55,50 @@
     unsigned long hours    = minutes/60;
     unsigned long rminutes = minutes % 60;
 
-    char *_out = new char[output_length];
-    snprintf_P(_out, output_length, PSTR("%02li:%02li:%02li.%-3li"), hours, rminutes, rseconds, rmillis);
-    return _out;
+    snprintf_P(_out, _size, PSTR("%02li:%02li:%02li.%-3li"), hours, rminutes, rseconds, rmillis);
+    return _out ? true : false;
   }
 
 
-  // Returns pointer to pre-log text.
-  // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  const char *PreLog(int level) {
-    uint8_t output_length = 22;
+  bool PreLog(int _level, char *_out, int _size) {
     
-    char *_out = new char[output_length];
-    if (_out[0]) {
-      SerialPort::List[0]->print(F("prelog '"));
-      SerialPort::List[0]->print(_out);
-      SerialPort::List[0]->println(F("'"));
-    }
+    //  if (_out[0]) {
+    //    SerialPort::List[0]->print(F("prelog '"));
+    //    SerialPort::List[0]->print(_out);
+    //    SerialPort::List[0]->println(F("'"));
+    //  }
 
-    if (log_in_progress) return (const char*)_out;
+    if (log_in_progress) return false;
+    
     log_in_progress = true;
     
     if (Menu::RunMode == 0) {
-      const char *uptime = Uptime();
-      snprintf_P(_out, output_length, PSTR("%s  "), uptime);
-      delete uptime;
+      char uptime[UPTIME_SIZE] = {};
+      Uptime(uptime, UPTIME_SIZE);
+      
+      snprintf_P(_out, _size, PSTR("%s  "), uptime);
     }
 
-    switch (level) {
+    switch (_level) {
       case (3) :
-        snprintf_P(_out, output_length, PSTR("%sWARN: "), _out);
+        snprintf_P(_out, _size, PSTR("%sWARN: "), _out);
         break;
       case (2) :
-        snprintf_P(_out, output_length, PSTR("%sERROR: "), _out);
+        snprintf_P(_out, _size, PSTR("%sERROR: "), _out);
         break;
       case (1) :
-        snprintf_P(_out, output_length, PSTR("%sFATAL: "), _out);
+        snprintf_P(_out, _size, PSTR("%sFATAL: "), _out);
         break;
     }
     
-    if (_out[0]) {
-      SerialPort::List[0]->print(F("prelog '"));
-      SerialPort::List[0]->print(_out);
-      SerialPort::List[0]->println(F("'"));
-    }
-    return (const char*)_out;
+    //  if (_out[0]) {
+    //    SerialPort::List[0]->print(F("prelog '"));
+    //    SerialPort::List[0]->print(_out);
+    //    SerialPort::List[0]->println(F("'"));
+    //  }
+    return true;
   }
+
 
 
   // Handles final new-line at end of log entry.

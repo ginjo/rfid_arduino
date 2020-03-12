@@ -244,11 +244,11 @@
       */
       TempDebug = (digitalRead(DEBUG_PIN) == LOW);
 
-      RunMode = 0;
-
       LOG(5, F("exitAdmin(), fr"));
       LOG(5, FreeRam(), true);
       LOG(5, "", true);
+
+      RunMode = 0;
     }
   }
 
@@ -785,6 +785,7 @@
 
   void Menu::menuReboot(void *dat) {
     MU_LOG(6, F("menuReboot()"), true);
+    serial_port->println();
     resetFunc();
   }
 

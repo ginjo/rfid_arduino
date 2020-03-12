@@ -35,9 +35,9 @@
   */
   
   #define DEBUG        // master debug control
+  #define INO_DEBUG    // main ino file
   
   #ifdef DEBUG
-    #define INO_DEBUG    // main ino file
     //#define BK_DEBUG   // blinker
     //#define CT_DEBUG   // controller
     //#define RD_DEBUG   // reader
@@ -49,6 +49,10 @@
   #endif
 
 
+  #define PRELOG_SIZE 22
+  #define UPTIME_SIZE 13
+
+
   // Forward declaration
   class Menu;
 
@@ -58,15 +62,12 @@
 
   extern int FreeRam();  // (const char[] = "");
 
-  // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  extern const char *Uptime();
+  extern bool Uptime(char*, int = UPTIME_SIZE);
   
   extern bool CanLogToBT();
 
-  // NOTE: You must free or delete the dynamic memory pointed to by the result.
-  char const *PreLog(int);
+  bool PreLog(int, char*, int = PRELOG_SIZE);
 
-  // TODO: Should this return like PreLog() ?
   void PostLog(bool);
 
 
@@ -79,13 +80,11 @@
   void LOG(int level, T dat, const int base, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
-    const char *prelog = PreLog(level);
+    char prelog[PRELOG_SIZE] = {};
+    PreLog(level, prelog, PRELOG_SIZE);
 
     for (uint8_t n = 0; n < SerialPort::Count; n++) {
-      if (! SerialPort::List[n]) {
-        delete prelog;
-        return;
-      }
+      if (! SerialPort::List[n]) return;
       
       SerialPort *sp = SerialPort::List[n];
       
@@ -96,8 +95,6 @@
     }
 
     PostLog(line);
-
-    delete prelog;
   }
 
   
@@ -109,13 +106,11 @@
   void LOG(int level, T dat, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
-    const char *prelog = PreLog(level);
+    char prelog[PRELOG_SIZE] = {};
+    PreLog(level, prelog, PRELOG_SIZE);
 
     for (uint8_t n = 0; n < SerialPort::Count; n++) {
-      if (! SerialPort::List[n]) {
-        delete prelog;
-        return;
-      }
+      if (! SerialPort::List[n]) return;
       
       SerialPort *sp = SerialPort::List[n];
       
@@ -126,8 +121,6 @@
     }
 
     PostLog(line);
-
-    delete prelog;
   }
   
 #endif

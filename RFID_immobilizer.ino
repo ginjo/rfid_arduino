@@ -66,7 +66,7 @@
     // sw_serial->begin(S.sw_baud);
     delay(25);
 
-    hw_serial->println(F("serial setup fin"));
+    //hw_serial->println(F("serial setup fin"));
 
     #ifdef INO_DEBUG
       LOG(4, F("RFID proximity control pre-boot"), true);
@@ -87,7 +87,7 @@
     while (! hw_serial) delay(10);
     delay(25);
 
-    hw_serial->println(F("serial re-setup fin"));
+    //hw_serial->println(F("serial re-setup fin"));
 
     // Beeper must be initialized after settings are loaded.
     Led::Beeper = new Led(BEEPER_PIN, "au", S.tone_frequency);
