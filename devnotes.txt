@@ -1074,7 +1074,7 @@ TODO: I had to disable the startup tag-scanning code in menu loop.
 			
 			Update: I re-enabled and it's working but still needs a refactor.
 			
-TODO: Re-arrange pins for Pro Mini setup.
+TODO: √ Re-arrange pins for Pro Mini setup.
 
 TODO: Is it possible to move all global vars and funcs to the main .ino file?
 
@@ -1082,5 +1082,5 @@ TODO: Globals refactor is mostly complete. Finish conversion of Menu class M1, M
 
 TODO: Make bounds of some of the new arrays into global vars (macro defines).
 
-
+TODO: I think UB is coming from logger PreLog()
 			

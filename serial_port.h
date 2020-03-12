@@ -2,6 +2,7 @@
 #define __SERIAL_PORT__
 
   #include <Arduino.h>
+  #include <SoftwareSerial.h>
 
   // See logger.h for master debug controls.
   #ifdef SL_DEBUG
@@ -21,7 +22,7 @@
 
     /*  Static  */
 
-    static SerialPort *List[];
+    static SerialPort *List[SERIAL_PORT_LIST_SIZE]; // Is the size even recognized here?
     static uint8_t Count;
 
     static SerialPort* Add(HardwareSerial*, bool = false);

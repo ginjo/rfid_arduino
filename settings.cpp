@@ -83,8 +83,8 @@
     rfid_baud(9600),
     tone_frequency(2800), /* 2800, 2093, 1259, 1201 */
     admin_startup_timeout(7),
-    log_to_bt(false),
-    log_level(4)
+    log_to_bt(true),
+    log_level(5)
   {     
     strlcpy(settings_name, "default-settings", SETTINGS_NAME_SIZE);
     strlcpy(admin_password, "12345", ADMIN_PASSWORD_SIZE);
@@ -139,6 +139,7 @@
     }
     
     LOG(4, settings_obj->settings_name); LOG(4, "'", true);
+    
     #ifdef ST_DEBUG
       LOG(6, F("Stng Load() END"), true);
     #endif

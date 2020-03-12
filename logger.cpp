@@ -5,6 +5,8 @@
   #include "serial_port.h"
 
 
+  bool TempDebug = false;
+  
   bool log_in_progress = false; // Controlls PreLog() output for multi-part log entries.
 
 
@@ -19,7 +21,7 @@
 
   // Free RAM calc.  From https://forum.arduino.cc/index.php?topic=431912.0
   // TODO: Convert this to a simple function with no printing.
-  extern int FreeRam() {   // (const char txt[]) {
+  int FreeRam() {   // (const char txt[]) {
     extern int __heap_start, *__brkval; 
     int v; 
     int rslt = (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
@@ -31,7 +33,7 @@
 
 
   // Checks if conditions are right to log to any BT device.
-  extern bool CanLogToBT() {
+  bool CanLogToBT() {
     //return (S.log_to_bt > 0 && Menu::run_mode == 0 && digitalRead(BT_STATUS_PIN) == LOW);
     return (
       digitalRead(BT_STATUS_PIN) == LOW &&
@@ -66,8 +68,13 @@
     uint8_t output_length = 22;
     
     char *_out = new char[output_length];
+    if (_out[0]) {
+      SerialPort::List[0]->print(F("prelog '"));
+      SerialPort::List[0]->print(_out);
+      SerialPort::List[0]->println(F("'"));
+    }
 
-    if (log_in_progress) return _out;
+    if (log_in_progress) return (const char*)_out;
     log_in_progress = true;
     
     if (Menu::RunMode == 0) {
@@ -78,17 +85,22 @@
 
     switch (level) {
       case (3) :
-        sprintf_P(_out, PSTR("%sWARN: "), _out);
+        snprintf_P(_out, output_length, PSTR("%sWARN: "), _out);
         break;
       case (2) :
-        sprintf_P(_out, PSTR("%sERROR: "), _out);
+        snprintf_P(_out, output_length, PSTR("%sERROR: "), _out);
         break;
       case (1) :
-        sprintf_P(_out, PSTR("%sFATAL: "), _out);
+        snprintf_P(_out, output_length, PSTR("%sFATAL: "), _out);
         break;
     }
-
-    return _out;
+    
+    if (_out[0]) {
+      SerialPort::List[0]->print(F("prelog '"));
+      SerialPort::List[0]->print(_out);
+      SerialPort::List[0]->println(F("'"));
+    }
+    return (const char*)_out;
   }
 
 
@@ -96,6 +108,8 @@
   void PostLog(bool line) {
 
     for (uint8_t n = 0; n < SerialPort::Count; n++) {
+      if (! SerialPort::List[n]) return;
+      
       SerialPort *sp = SerialPort::List[n];
       
       if (line == true && sp && sp->can_output()) {

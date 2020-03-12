@@ -6,8 +6,8 @@
 
   /* Arduino Pin Assignments */
 
-  #include <Arduino.h>
-  #include <SoftwareSerial.h>
+  //#include <Arduino.h>
+  //#include <SoftwareSerial.h>
   // Don't load any custom classes here, as global.h should load before anything custom.
   // Use forward declarations instead, if you need to refer to custom classes here.fre
   
@@ -29,27 +29,6 @@
   #define SW_TX_PIN 12 // remember to reduce arduino output (at BT RX pin) to 3.3v with voltage divider.
   #define BT_STATUS_PIN 2 // low == connected.
 
-
-  /* Global Vars & Functions */
-
-  // TODO: Can all of these be moved into static arrays in their respective classes?
-
-  // extern bool TempDebug;
-
-
-  // I think all of this serial port stuff can be removed after
-  // implementation of SerialPort::List[] and Menu::List[]
-  //class SerialPort; // forward declaration, so that we can...
-
-  // See https://stackoverflow.com/questions/12290451/access-extern-variable-in-c-from-another-file
-  //  extern HardwareSerial *HWserial;
-  //  extern SoftwareSerial *SWserial;
-  //extern SerialPort *HWserial;
-  //extern SerialPort *SWserial;
-
-  //  class Led; // forward declaration, so that we can...
-  //  extern Led *RGB[3];
-  //  extern Led *Beeper;
   
 #endif
 

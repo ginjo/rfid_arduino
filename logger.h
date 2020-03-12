@@ -76,12 +76,17 @@
   // The templating here allows to receive any type of parameter!!!
   //
   template<typename T>
-  extern void LOG(int level, T dat, const int base, bool line = false) {
+  void LOG(int level, T dat, const int base, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
     const char *prelog = PreLog(level);
 
     for (uint8_t n = 0; n < SerialPort::Count; n++) {
+      if (! SerialPort::List[n]) {
+        delete prelog;
+        return;
+      }
+      
       SerialPort *sp = SerialPort::List[n];
       
       if (sp && sp->can_output()) {
@@ -101,12 +106,17 @@
   // The templating here allows to receive any type of parameter!!!
   //
   template<typename T>
-  extern void LOG(int level, T dat, bool line = false) {
+  void LOG(int level, T dat, bool line = false) {
     if ((uint8_t)level > (uint8_t)LogLevel()) return;
 
     const char *prelog = PreLog(level);
 
     for (uint8_t n = 0; n < SerialPort::Count; n++) {
+      if (! SerialPort::List[n]) {
+        delete prelog;
+        return;
+      }
+      
       SerialPort *sp = SerialPort::List[n];
       
       if (sp && sp->can_output()) {

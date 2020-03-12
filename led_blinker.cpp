@@ -2,7 +2,6 @@
   #include "logger.h"
 
 
-
   // Static pre-defined 2D interval array.
   const int Led::StaticIntervals[][INTERVALS_LENGTH] = {
     {1000},

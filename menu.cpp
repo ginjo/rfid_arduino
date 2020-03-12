@@ -246,9 +246,9 @@
 
       RunMode = 0;
 
-      LOG(4, F("exitAdmin(), freeram "));
-      LOG(4, FreeRam(), true);
-      LOG(4, "", true);
+      LOG(5, F("exitAdmin(), fr"));
+      LOG(5, FreeRam(), true);
+      LOG(5, "", true);
     }
   }
 
