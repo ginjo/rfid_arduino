@@ -34,7 +34,7 @@
       6 trace
   */
   
-  #define DEBUG        // master debug control
+  //#define DEBUG        // master debug control
   #define INO_DEBUG    // main ino file
   
   #ifdef DEBUG
